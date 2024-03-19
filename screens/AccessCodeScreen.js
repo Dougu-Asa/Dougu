@@ -2,12 +2,12 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 
-function JoinOrgScreen({navigation}) {
+function AccessCodeScreen({navigation}) {
     return(
       <View style={MainStyle.container}>
-        <Text>Join an Org</Text>
+        <Text>Access Code!</Text>
         <Button
-            title="Join My Org"
+            title="Start Managing!"
             onPress={() => navigation.navigate('MemberTabs', {screen: 'My Equipment'})}
         />
         <StatusBar style="auto" />
@@ -15,4 +15,4 @@ function JoinOrgScreen({navigation}) {
     );
 }
 
-export default JoinOrgScreen;
+export default AccessCodeScreen;
