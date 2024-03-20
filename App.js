@@ -7,12 +7,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 //screens
 import HomeScreen from './screens/HomeScreen';
 import MenuScreen from './screens/MenuScreen';
-import CreateAccountScreen from './screens/CreateAccountScreen';
+import CreateScreen from './screens/CreateScreen'
 import MyOrgsScreen from './screens/MyOrgs';
 import CreateOrgScreen from './screens/CreateOrgScreen';
 import JoinOrgScreen from './screens/JoinOrgScreen';
 import MemberTabs from './screens/OrgMember';
 import AccessCodeScreen from './screens/AccessCodeScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,8 +57,10 @@ function App() {
         })}
       >
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerLeft: () => null }}/>
-        <Stack.Screen name="Menu" component={MenuScreen}/>
-        <Stack.Screen name="CreateAccount" component={CreateAccountScreen}/>
+        <Stack.Screen name="Menu" component={MenuScreen}
+        initialParams={{ screenOptions: { backScreen: 'Home' } }}/>
+        <Stack.Screen name="Login" component={LoginScreen}/>
+        <Stack.Screen name="Create" component={CreateScreen}/>
         <Stack.Screen name="MyOrgs" component={MyOrgsScreen}/>
         <Stack.Screen name="JoinOrg" component={JoinOrgScreen}/>
         <Stack.Screen name="CreateOrg" component={CreateOrgScreen}/>

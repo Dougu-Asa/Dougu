@@ -1,8 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { useEffect } from 'react';
+import { BackHandler } from 'react-native';
 import CurrOrgsDropdown from '../components/CurrOrgsDropown';
 
 function MenuScreen({navigation}) {
+    // Custom so that a back button press goes to home
+    useEffect(() => {
+        const backAction = () => {
+          navigation.navigate('Home');
+          return true;
+        };
+    
+        // Add the backAction handler when the component mounts
+        BackHandler.addEventListener('hardwareBackPress', backAction);
+        // Remove the backAction handler when the component unmounts
+        return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
+      }, [navigation]);
+
     return(
         <View style={MenuStyle.container}>
             <View style={MenuStyle.button}>
