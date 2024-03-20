@@ -22,7 +22,7 @@ function CreateAccountScreen({navigation}) {
       onChangeText={onChangePassword}
       value={password}
       placeholder="password"
-      keyboardType="text"
+      keyboardType="default"
       />
       <Button title="Create Account!" onPress={() => navigation.goBack()} />
       <StatusBar style="auto" />

@@ -22,7 +22,7 @@ function HomeScreen({navigation}) {
         onChangeText={onChangePassword}
         value={password}
         placeholder="password"
-        keyboardType="text"
+        keyboardType="default"
         />
         <Button
           title="Login"

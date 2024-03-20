@@ -14,7 +14,7 @@ function CreateOrgScreen({navigation}) {
       onChangeText={onChangeName}
       value={name}
       placeholder="Org Name"
-      keyboardType="text"
+      keyboardType="default"
       />
       <Button title="Create Org!" onPress={() => navigation.navigate('Access Code')} />
       <StatusBar style="auto" />
