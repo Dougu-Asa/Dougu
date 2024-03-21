@@ -3,6 +3,8 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Amplify } from 'aws-amplify';
+import amplifyconfig from './src/amplifyconfiguration.json';
 
 //screens
 import HomeScreen from './screens/HomeScreen';
@@ -15,6 +17,7 @@ import MemberTabs from './screens/OrgMember';
 import AccessCodeScreen from './screens/AccessCodeScreen';
 import LoginScreen from './screens/LoginScreen';
 
+Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
 
 // Custom header back button w/ custom back screens
