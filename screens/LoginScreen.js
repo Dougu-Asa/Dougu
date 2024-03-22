@@ -4,6 +4,8 @@ import MainStyle from '../styles/MainStyle';
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
+//import { signIn } from 'aws-amplify/auth';
+import {Auth} from 'aws-amplify';
 
 function LoginScreen({navigation}) {
   // Function to toggle the password visibility state 
@@ -12,17 +14,36 @@ function LoginScreen({navigation}) {
     setShowPassword(!showPassword); 
   }; 
 
-  const [userName, onChangeUsername] = React.useState('');
+  /*async function signUserIn({ username, password }) {
+    try {
+      const { isSignedIn, nextStep } = await signIn({
+        'username': username,
+        'password': password});
+      console.log(isSignedIn);
+    } catch (error) {
+      console.log('error signing in', error);
+    }
+  } */
+  async function signIn({username, password}) {
+    try {
+      const user = await Auth.signIn(username, password);
+      console.log(user);
+    } catch (error) {
+      console.log('error signing in', error);
+    }
+  }
+
+  const [username, onChangeUsername] = React.useState('');
   const [password, onChangePassword] = React.useState('');
 
   return(
     <View style={MainStyle.container}>
-      <Text>Create Account</Text>
+      <Text>Login</Text>
       <TextInput
       style={styles.input}
       onChangeText={onChangeUsername}
-      value={userName}
-      placeholder="username/email"
+      value={username}
+      placeholder="email"
       keyboardType="email-address"
       />
       <View style={styles.password}>
@@ -42,7 +63,7 @@ function LoginScreen({navigation}) {
           onPress={toggleShowPassword} 
         /> 
       </View>
-      <Button title="Login!" onPress={() => navigation.navigate('Menu')} />
+      <Button title="Login!" onPress={() => signIn({username, password})} />
       <StatusBar style="auto" />
     </View>
   );

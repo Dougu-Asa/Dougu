@@ -54,4 +54,3 @@ const MenuStyle = StyleSheet.create({
   });
 
 export default MenuScreen;
-  

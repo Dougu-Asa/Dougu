@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "asa-app",
+    "scheme": "com.asa.app",
     "slug": "asa-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.asa.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.asa.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
