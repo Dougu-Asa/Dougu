@@ -4,7 +4,6 @@ import MainStyle from '../styles/MainStyle';
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
-//import { signIn } from 'aws-amplify/auth';
 import {Auth} from 'aws-amplify';
 
 function LoginScreen({navigation}) {
@@ -14,20 +13,11 @@ function LoginScreen({navigation}) {
     setShowPassword(!showPassword); 
   }; 
 
-  /*async function signUserIn({ username, password }) {
-    try {
-      const { isSignedIn, nextStep } = await signIn({
-        'username': username,
-        'password': password});
-      console.log(isSignedIn);
-    } catch (error) {
-      console.log('error signing in', error);
-    }
-  } */
   async function signIn({username, password}) {
     try {
       const user = await Auth.signIn(username, password);
-      console.log(user);
+      //console.log(user);
+      navigation.navigate('Menu');
     } catch (error) {
       console.log('error signing in', error);
     }

@@ -1,10 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Text, View, TextInput, StyleSheet } from 'react-native';
 import MainStyle from '../styles/MainStyle';
-import React from 'react';
+import React, {useEffect} from 'react';
+import { BackHandler } from 'react-native';
 
 function CreateOrgScreen({navigation}) {
   const [name, onChangeName] = React.useState('');
+  // Custom so thata back button press goes to the menu
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Menu');
+      return true;
+    };
+
+    // Add the backAction handler when the component mounts
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+    // Remove the backAction handler when the component unmounts
+    return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
+  }, [navigation]);
 
   return(
     <View style={MainStyle.container}>

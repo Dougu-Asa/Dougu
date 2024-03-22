@@ -1,0 +1,49 @@
+import React, { useState} from 'react';
+import { Hub } from 'aws-amplify';
+
+const AuthContext = React.createContext();
+
+export const AuthProvider = ({ children }) => {
+    const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+
+    // In AuthProvider component
+    const updateUserAuthentication = (isAuthenticated) => {
+        setIsUserAuthenticated(isAuthenticated);
+    };
+
+    const listener = (data) => {
+        switch (data?.payload?.event) {
+        case 'signIn':
+            console.log('user signed in');
+            setIsUserAuthenticated(true);
+            break;
+        case 'signIn_failure':
+            console.log('user sign in failed');
+            setIsUserAuthenticated(false);
+            break;
+        case 'signUp':
+            console.log('user signed up');
+            break;
+        case 'signUp_failure':
+            console.log('user sign up failed');
+            setIsUserAuthenticated(false);
+            break;
+        case 'signOut':
+            console.log('user signed out');
+            setIsUserAuthenticated(false);
+            break;
+        default:
+            console.log('unknown: ', data.payload.event);
+            break;
+        }
+    };
+    Hub.listen('auth', listener);
+
+    return (
+    <AuthContext.Provider value={{ isUserAuthenticated, setIsUserAuthenticated, updateUserAuthentication }}>
+        {children}
+    </AuthContext.Provider>
+    );
+};
+
+export const useAuth = () => React.useContext(AuthContext);

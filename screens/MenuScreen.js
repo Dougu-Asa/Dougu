@@ -3,11 +3,13 @@ import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import CurrOrgsDropdown from '../components/CurrOrgsDropown';
+import { Auth } from 'aws-amplify';
 
 function MenuScreen({navigation}) {
     // Custom so that a back button press goes to home
     useEffect(() => {
-        const backAction = () => {
+        async function backAction() {
+          await Auth.signOut();
           navigation.navigate('Home');
           return true;
         };

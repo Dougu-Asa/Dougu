@@ -1,22 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
 import MainStyle from '../styles/MainStyle';
-import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { useState } from 'react';
-//import { signUp } from 'aws-amplify/auth';
-import { useEffect } from 'react';
-//import { autoSignIn } from 'aws-amplify/auth';
+import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { Hub } from 'aws-amplify';
 
-function CreateScreen({navigation}) {
+function CreateAccScreen({navigation}) {
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
   const toggleShowPassword = (num) => { 
     setShowPassword(!showPassword);
   }; 
 
+  // for the form
   const [email, onChangeEmail] = React.useState('');
   const [first, onChangeFirst] = React.useState('');
   const [last, onChangeLast] = React.useState('');
@@ -28,37 +24,6 @@ function CreateScreen({navigation}) {
     onChangeUsername(first + ' ' + last);
   }, [first, last]);
 
-  // auto sign in
-  useEffect(() => {
-    listenToAutoSignInEvent();
-  }, []);
-
-  // no need for email to be verified
-  /*async function handleAutoSignIn() {
-  try {
-    const signInOutput = await autoSignIn();
-    // handle sign-in steps
-    console.log(signInOutput);
-  } catch (error) {
-    console.log(error.underlyingError);
-  }
-  }*/
-
-  function listenToAutoSignInEvent() {
-    Hub.listen('auth', ({ payload }) => {
-      const { event } = payload;
-      if (event === 'autoSignIn') {
-        const user = payload.data;
-        console.log('auto sign in success');
-        console.log(user);
-        // assign user
-      } else if (event === 'autoSignIn_failure') {
-        // redirect to sign in page
-        console.log('redirect to sign in page');
-      }
-    });
-  }
-
   async function handleSignUp({ username, password, email }) {
     try {
       console.log(username, password, email);
@@ -67,16 +32,16 @@ function CreateScreen({navigation}) {
         return;
       }
       const { user } = await Auth.signUp({
-        username: email,
+        username: email,   // email is the username
         password: password,
-        name: username,
-        options: {
-          autoSignIn: true // sign in once created
+        attributes: {
+          name: username,
         }
       });
-      console.log(user);
-      //handleAutoSignIn();
-      navigation.navigate('Login');
+      //console.log(user);
+      const loggedInUser = await Auth.signIn(email, password);    // sign in once created
+      //console.log(loggedInUser);
+      navigation.navigate('Menu');
     } catch (error) {
       console.log('error signing up:', error.underlyingException);
     }
@@ -169,4 +134,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CreateScreen;
+export default CreateAccScreen;
