@@ -1,0 +1,41 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type Organization @model {
+  id: ID!
+  name: String!
+  accessCode: String!
+  equipment: [Equipment] @hasMany
+  storages: [OrgStorage] @hasMany
+  manager: OrgStorage @hasOne                # maybe user instead
+}
+
+type User @model {
+  id: ID!
+  name: String!
+  email: String!
+  organizations: [OrgStorage] @hasMany    # debatable
+}
+
+# can either be a user or a storage
+type OrgStorage @model {
+  id: ID!
+  name: String!
+  isStorage: Boolean!
+  organization: Organization! @belongsTo
+  user: User @belongsTo
+  equipment: [Equipment] @hasMany
+  details: String
+}
+
+type Equipment @model {
+  id: ID!
+  name: String!
+  organization: Organization! @belongsTo
+  lastUpdatedDate: String!
+  assignedTo: OrgStorage @belongsTo
+  parent: Equipment @belongsTo
+  children: [Equipment] @hasMany
+  details: String
+}

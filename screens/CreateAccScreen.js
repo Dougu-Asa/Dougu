@@ -4,6 +4,8 @@ import MainStyle from '../styles/MainStyle';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
+import { API } from 'aws-amplify';
+import { createUser } from '../src/graphql/mutations';
 
 function CreateAccScreen({navigation}) {
   // Function to toggle the password visibility state 
@@ -31,16 +33,23 @@ function CreateAccScreen({navigation}) {
         console.log('missing fields');
         return;
       }
-      const { user } = await Auth.signUp({
+      await Auth.signUp({
         username: email,   // email is the username
         password: password,
         attributes: {
           name: username,
         }
       });
-      //console.log(user);
-      const loggedInUser = await Auth.signIn(email, password);    // sign in once created
-      //console.log(loggedInUser);
+      const user = await Auth.signIn(email, password);    // sign in once created
+      const newUser = { id: user.attributes.sub, name: user.attributes.name, email: user.attributes.email};
+      console.log(newUser);
+      // upload our new user to the database
+      await API.graphql({
+        query: createUser,
+        variables: {
+          input: newUser
+        }
+      }); 
       navigation.navigate('Menu');
     } catch (error) {
       console.log('error signing up:', error.underlyingException);

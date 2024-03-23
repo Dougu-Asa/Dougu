@@ -15,6 +15,9 @@
       "auth": {
         "asaappddd920b5": {},
         "userPoolGroups": {}
+      },
+      "api": {
+        "asaapp": {}
       }
     }
   }

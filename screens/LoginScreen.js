@@ -16,7 +16,6 @@ function LoginScreen({navigation}) {
   async function signIn({username, password}) {
     try {
       const user = await Auth.signIn(username, password);
-      //console.log(user);
       navigation.navigate('Menu');
     } catch (error) {
       console.log('error signing in', error);
