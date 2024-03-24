@@ -6,11 +6,6 @@ const AuthContext = React.createContext();
 export const AuthProvider = ({ children }) => {
     const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
-    // In AuthProvider component
-    const updateUserAuthentication = (isAuthenticated) => {
-        setIsUserAuthenticated(isAuthenticated);
-    };
-
     const listener = (data) => {
         switch (data?.payload?.event) {
         case 'signIn':
@@ -40,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     Hub.listen('auth', listener);
 
     return (
-    <AuthContext.Provider value={{ isUserAuthenticated, setIsUserAuthenticated, updateUserAuthentication }}>
+    <AuthContext.Provider value={{ isUserAuthenticated, setIsUserAuthenticated}}>
         {children}
     </AuthContext.Provider>
     );

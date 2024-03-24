@@ -3,6 +3,7 @@ import { Text, View, Button } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
+import ProfileComponent from '../components/ProfileComponent';
 
 function AccessCodeScreen({navigation}) {
   // Custom so thata back button press goes to the menu
@@ -20,6 +21,7 @@ function AccessCodeScreen({navigation}) {
 
   return(
     <View style={MainStyle.container}>
+      <ProfileComponent />
       <Text>Access Code!</Text>
       <Button
           title="Start Managing!"

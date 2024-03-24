@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import {Text, View, Button, SafeAreaView, StyleSheet, TextInput } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import React, {useEffect} from 'react';
-import { AuthProvider } from '../components/AuthProvider';
 import { useAuth } from '../components/AuthProvider';
 
 function HomeScreen({navigation}) {

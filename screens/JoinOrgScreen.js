@@ -3,6 +3,7 @@ import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
+import ProfileComponent from '../components/ProfileComponent';
 
 function JoinOrgScreen({navigation}) {
   const [code, onChangeCode] = React.useState('');
@@ -21,6 +22,7 @@ function JoinOrgScreen({navigation}) {
 
     return(
       <View style={MainStyle.container}>
+        <ProfileComponent />
         <Text>Join an Org</Text>
         <TextInput
           style={styles.input}

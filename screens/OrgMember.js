@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
+import ProfileComponent from '../components/ProfileComponent';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
@@ -35,6 +36,7 @@ function MemberTabs({navigation}) {
 function MyEquipmentScreen(){
     return (
         <View style={MainStyle.container}>
+            <ProfileComponent />
             <Text>My Equipment!</Text>
             <StatusBar style="auto" />
         </View>
@@ -44,6 +46,7 @@ function MyEquipmentScreen(){
 function TeamEquipmentScreen(){
     return (
         <View style={MainStyle.container}>
+            <ProfileComponent />
             <Text>Team Equipment!</Text>
             <StatusBar style="auto" />
         </View>
@@ -53,6 +56,7 @@ function TeamEquipmentScreen(){
 function SwapEquipmentScreen(){
     return (
         <View style={MainStyle.container}>
+            <ProfileComponent />
             <Text>Swap Equipment!</Text>
             <StatusBar style="auto" />
         </View>

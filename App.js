@@ -1,13 +1,14 @@
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Amplify } from 'aws-amplify';
 import amplifyconfig from './src/amplifyconfiguration.json';
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { AuthProvider } from './components/AuthProvider';
+import { ModalProvider, useModal } from './components/ModalProvider';
 import { useAuth } from './components/AuthProvider';
 
 //screens
@@ -19,6 +20,7 @@ import JoinOrgScreen from './screens/JoinOrgScreen';
 import MemberTabs from './screens/OrgMember';
 import AccessCodeScreen from './screens/AccessCodeScreen';
 import LoginScreen from './screens/LoginScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -27,7 +29,9 @@ function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <AppContent />
+        <ModalProvider>
+          <AppContent/>
+        </ModalProvider>
       </NavigationContainer>
     </AuthProvider>
   );
@@ -36,7 +40,7 @@ export default App;
 
 function AppContent() {
   const { isUserAuthenticated } = useAuth();
-  const { updateUserAuthentication } = useAuth();
+  const { setIsUserAuthenticated } = useAuth();
 
   useEffect(() => {
     checkCurrentUser();
@@ -48,12 +52,23 @@ function AppContent() {
       await Auth.currentAuthenticatedUser();
         // If this succeeds, there is a logged-in user
         console.log("User is logged in");
-        updateUserAuthentication(true);
+        setIsUserAuthenticated(true);
     } catch (error) {
         // No current authenticated user
         console.log("No user is logged in");
-        updateUserAuthentication(false);
+        setIsUserAuthenticated(false);
     }
+  };
+
+  // Custom header logout button on the right
+  const { setIsModalVisible } = useModal();
+  const { isModalVisible } = useModal();
+  const MyHeaderProfileButton = () => {
+    return (
+      <TouchableOpacity onPress={() => {setIsModalVisible(!isModalVisible)}}>
+        <FontAwesome name="user-circle-o" size={35} color="black" style={{padding: 5}}/>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -80,8 +95,7 @@ function AppContent() {
       )
     })}>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerLeft: () => null }}/>
-      <Stack.Screen name="Menu" component={MenuScreen} 
-      initialParams={{ screenOptions: { backScreen: 'Home' } }} />
+      <Stack.Screen name="Menu" component={MenuScreen} options={{ headerLeft: () => null, headerBackVisible: false }}/>
       <Stack.Screen name="Login" component={LoginScreen}/>
       <Stack.Screen name="CreateAcc" component={CreateAccScreen}/>
       <Stack.Screen name="JoinOrg" component={JoinOrgScreen}
@@ -92,6 +106,7 @@ function AppContent() {
       initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
       <Stack.Screen name="Access Code" component={AccessCodeScreen}
       initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
+      <Stack.Screen name="Profile" component={ProfileScreen}/>
     </Stack.Navigator>
   );
 };
@@ -112,24 +127,5 @@ const MyHeaderBackButton = ({ navigation, backScreen}) => {
     <TouchableOpacity onPress={handlePress}>
       <AntDesign name="arrowleft" size={30} color="black"/>
     </TouchableOpacity>
-  );
-};
-
-// Custom header logout button on the right
-const MyHeaderProfileButton = ({navigation}) => {
-  async function signOut() {
-    try {
-      await Auth.signOut();
-      navigation.navigate('Home');
-    } catch (error) {
-      console.log('error signing out: ', error);
-    }
-  }
-  return (
-    <>
-      <TouchableOpacity onPress={() => {signOut()}}>
-        <MaterialCommunityIcons name="logout" size={30} color="black" />
-      </TouchableOpacity>
-    </>
   );
 };
