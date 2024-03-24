@@ -24,7 +24,6 @@ function HomeScreen({navigation}) {
         title="Create Account"
         onPress={() => navigation.navigate('CreateAcc')}
       />
-      <StatusBar style="auto" />
     </View>
   );
 }

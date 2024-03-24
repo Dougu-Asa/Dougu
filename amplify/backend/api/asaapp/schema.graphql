@@ -24,7 +24,7 @@ type OrgStorage @model {
   name: String!
   isStorage: Boolean!
   organization: Organization! @belongsTo
-  user: User @belongsTo
+  user: User! @belongsTo
   equipment: [Equipment] @hasMany
   details: String
 }

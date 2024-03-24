@@ -46,7 +46,7 @@ function CreateAccScreen({navigation}) {
       });
       const user = await Auth.signIn(email, password);
       const newUser = { id: user.attributes.sub, name: user.attributes.name, email: user.attributes.email};
-      console.log(newUser);
+      //console.log(newUser);
       await API.graphql({
         query: createUser,
         variables: {
