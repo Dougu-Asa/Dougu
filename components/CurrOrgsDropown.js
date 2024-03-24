@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
+// This component is a dropdown menu that allows the user to select their organization
 const data = [
   { label: 'Item 1', value: '1'},
   { label: 'Item 2', value: '2' },

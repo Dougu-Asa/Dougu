@@ -4,6 +4,7 @@ import { useModal } from './ModalProvider';
 import { Auth } from 'aws-amplify';
 import { useNavigation } from '@react-navigation/native';
 
+// this component is displayed when the user clicks on the profile icon
 const ProfileComponent = () => {  
     const { isModalVisible } = useModal();
     const { setIsModalVisible } = useModal();
@@ -16,7 +17,10 @@ const ProfileComponent = () => {
 
     const checkCurrentUser = async () => {
         try {
-            setUser(await Auth.currentAuthenticatedUser());
+            const getUser = await Auth.currentAuthenticatedUser({
+                bypassCache: true
+            });
+            setUser(getUser);
         } catch (error) {
             console.log("No user is logged in");
         }
