@@ -1,4 +1,4 @@
-import { ModelInit, MutableModel, __modelMeta__, ManagedIdentifier } from "@aws-amplify/datastore";
+import { ModelInit, MutableModel, __modelMeta__, ManagedIdentifier, CustomIdentifier } from "@aws-amplify/datastore";
 // @ts-ignore
 import { LazyLoading, LazyLoadingDisabled, AsyncCollection, AsyncItem } from "@aws-amplify/datastore";
 
@@ -22,7 +22,7 @@ type EagerOrganization = {
   readonly manager: User;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
-  readonly organizationManagerId: string;
+  readonly organizationManagerUserId: string;
 }
 
 type LazyOrganization = {
@@ -38,7 +38,7 @@ type LazyOrganization = {
   readonly manager: AsyncItem<User>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
-  readonly organizationManagerId: string;
+  readonly organizationManagerUserId: string;
 }
 
 export declare type Organization = LazyLoading extends LazyLoadingDisabled ? EagerOrganization : LazyOrganization
@@ -49,10 +49,10 @@ export declare const Organization: (new (init: ModelInit<Organization>) => Organ
 
 type EagerUser = {
   readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<User, 'id'>;
+    identifier: CustomIdentifier<User, 'userId'>;
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
-  readonly id: string;
+  readonly userId: string;
   readonly name: string;
   readonly email: string;
   readonly organizations?: (OrgUserStorage | null)[] | null;
@@ -62,10 +62,10 @@ type EagerUser = {
 
 type LazyUser = {
   readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<User, 'id'>;
+    identifier: CustomIdentifier<User, 'userId'>;
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
-  readonly id: string;
+  readonly userId: string;
   readonly name: string;
   readonly email: string;
   readonly organizations: AsyncCollection<OrgUserStorage>;
@@ -93,7 +93,7 @@ type EagerOrgUserStorage = {
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationUserOrStoragesId?: string | null;
-  readonly userOrganizationsId?: string | null;
+  readonly userOrganizationsUserId?: string | null;
 }
 
 type LazyOrgUserStorage = {
@@ -110,7 +110,7 @@ type LazyOrgUserStorage = {
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationUserOrStoragesId?: string | null;
-  readonly userOrganizationsId?: string | null;
+  readonly userOrganizationsUserId?: string | null;
 }
 
 export declare type OrgUserStorage = LazyLoading extends LazyLoadingDisabled ? EagerOrgUserStorage : LazyOrgUserStorage

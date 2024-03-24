@@ -67,10 +67,10 @@ export const schema = {
                     "association": {
                         "connectionType": "HAS_ONE",
                         "associatedWith": [
-                            "id"
+                            "userId"
                         ],
                         "targetNames": [
-                            "organizationManagerId"
+                            "organizationManagerUserId"
                         ]
                     }
                 },
@@ -90,8 +90,8 @@ export const schema = {
                     "attributes": [],
                     "isReadOnly": true
                 },
-                "organizationManagerId": {
-                    "name": "organizationManagerId",
+                "organizationManagerUserId": {
+                    "name": "organizationManagerUserId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": true,
@@ -110,8 +110,8 @@ export const schema = {
         "User": {
             "name": "User",
             "fields": {
-                "id": {
-                    "name": "id",
+                "userId": {
+                    "name": "userId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": true,
@@ -143,7 +143,7 @@ export const schema = {
                     "association": {
                         "connectionType": "HAS_MANY",
                         "associatedWith": [
-                            "userOrganizationsId"
+                            "userOrganizationsUserId"
                         ]
                     }
                 },
@@ -170,6 +170,14 @@ export const schema = {
                 {
                     "type": "model",
                     "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "fields": [
+                            "userId"
+                        ]
+                    }
                 }
             ]
         },
@@ -218,7 +226,7 @@ export const schema = {
                     "association": {
                         "connectionType": "BELONGS_TO",
                         "targetNames": [
-                            "userOrganizationsId"
+                            "userOrganizationsUserId"
                         ]
                     }
                 },
@@ -268,8 +276,8 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "userOrganizationsId": {
-                    "name": "userOrganizationsId",
+                "userOrganizationsUserId": {
+                    "name": "userOrganizationsUserId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": false,
@@ -436,5 +444,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "b91c199cfa4f9a16ce450f639b3f2a29"
+    "version": "b769a0c14d132864e0699fdfa39d543e"
 };

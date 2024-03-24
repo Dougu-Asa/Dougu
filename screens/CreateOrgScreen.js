@@ -8,25 +8,11 @@ import { API } from 'aws-amplify';
 import * as queries from '../src/graphql/queries'
 import * as mutations from '../src/graphql/mutations'
 import PopupModal from '../components/PopupModal';
+import { Auth } from 'aws-amplify';
+import { DataStore } from '@aws-amplify/datastore';
+import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
 
 function CreateOrgScreen({navigation}) {
-  const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        checkCurrentUser();
-    }, []);
-
-    const checkCurrentUser = async () => {
-        try {
-          const getUser = await Auth.currentAuthenticatedUser({
-              bypassCache: true
-          });
-          setUser(getUser);
-        } catch (error) {
-          console.log("No user is logged in");
-        }
-    };
-
   const [name, onChangeName] = React.useState('');
   // Custom so thata back button press goes to the menu
   useEffect(() => {
@@ -46,54 +32,47 @@ function CreateOrgScreen({navigation}) {
   [modalText, setModalText] = React.useState('');
   async function createOrg(){
     try {
+      const user = await Auth.currentAuthenticatedUser();
+      if(user == null){
+        throw new Error("User is not authenticated.");
+      }
       const code = randomstring.generate({
         length: 7,
         capitalization: 'uppercase',
       });
       console.log("Org Code: " + code);
-      const filter = {
-        filter: {
-          or: [{ accessCode: { eq: code } }, { name: { eq: name } }]
-        }
-      };
       // Check that access code and name are unique
-      const org = await API.graphql({
-        query: queries.listOrganizations,
-        variables: filter
-      });
-      console.log(org.data.listOrganizations.items);
-      if(org && org.data.listOrganizations.items.length > 0){
-        console.log("Access code already exists");
-        return;
+      const orgs = await DataStore.query(Organization, (c) => c.or(c => [
+        c.accessCode.eq(code),
+        c.name.eq(name)
+      ]));
+      console.log('orgs: ', orgs);
+      if(orgs && orgs.length > 0){
+        throw new Error("Organization name or access code is not unique.");
       }
+      // query for the user that is the org manager
+      const DBuser = await DataStore.query(User, (c) => c.userId.eq(user.attributes.sub));
+      console.log('DBUser: ', DBuser[0]);
       // Add the org to the database
-      const orgData = {
-        name: name,
-        accessCode: code
-      };
-      console.log(orgData);
-      /* const newOrg = await API.graphql({
-        query: queries.createOrganization,
-        variables: { input: orgData }
-      });
-      console.log(newOrg); */
-      // Create OrgStorage
-      /*const orgStorageData = {
-        name: name,
-        isStorage: false,
-        organization: newOrg.data.createOrganization.id,
-        user: user.attributes.sub,
-      }; 
-      console.log(orgStorageData);
-      const newOrgStorage = await API.graphql({
-        query: mutations.createOrgStorage,
-        variables: { input: orgStorageData }
-      });  */
-      // Add the OrgStorage to Organization
-
+      const newOrg = await DataStore.save(
+        new Organization({
+          name: name,
+          accessCode: code,
+          manager: DBuser[0],
+        })
+      );
+      console.log('newOrg: ', newOrg);
+      // Add the OrgUserStorage to the DB
+      const newOrgUserStorage = await DataStore.save(
+        new OrgUserStorage({
+          organization: newOrg,
+          type: UserOrStorage.USER,
+          user: DBuser[0],
+        })
+      );
+      console.log('newOrgUserStorage: ', newOrgUserStorage);
       // Navigate to the access code screen
-
-      //navigation.navigate('Access Code');
+      navigation.navigate('Access Code');
     }
     catch (e) {
       // setup popups

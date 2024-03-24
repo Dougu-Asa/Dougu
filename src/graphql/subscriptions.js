@@ -20,7 +20,7 @@ export const onCreateOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -35,7 +35,7 @@ export const onCreateOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -59,7 +59,7 @@ export const onUpdateOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -74,7 +74,7 @@ export const onUpdateOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -98,7 +98,7 @@ export const onDeleteOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -113,7 +113,7 @@ export const onDeleteOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -121,7 +121,7 @@ export const onDeleteOrganization = /* GraphQL */ `
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
     onCreateUser(filter: $filter) {
-      id
+      userId
       name
       email
       organizations {
@@ -141,7 +141,7 @@ export const onCreateUser = /* GraphQL */ `
 export const onUpdateUser = /* GraphQL */ `
   subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
     onUpdateUser(filter: $filter) {
-      id
+      userId
       name
       email
       organizations {
@@ -161,7 +161,7 @@ export const onUpdateUser = /* GraphQL */ `
 export const onDeleteUser = /* GraphQL */ `
   subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
     onDeleteUser(filter: $filter) {
-      id
+      userId
       name
       email
       organizations {
@@ -193,12 +193,12 @@ export const onCreateOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -220,7 +220,7 @@ export const onCreateOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -240,12 +240,12 @@ export const onUpdateOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -267,7 +267,7 @@ export const onUpdateOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -287,12 +287,12 @@ export const onDeleteOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -314,7 +314,7 @@ export const onDeleteOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -335,7 +335,7 @@ export const onCreateEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -349,7 +349,7 @@ export const onCreateEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {
@@ -401,7 +401,7 @@ export const onUpdateEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -415,7 +415,7 @@ export const onUpdateEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {
@@ -467,7 +467,7 @@ export const onDeleteEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -481,7 +481,7 @@ export const onDeleteEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {

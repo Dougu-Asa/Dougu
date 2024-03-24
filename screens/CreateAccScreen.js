@@ -3,10 +3,12 @@ import { Alert, Modal, View, Button, TextInput, StyleSheet, Pressable, Text } fr
 import MainStyle from '../styles/MainStyle';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
-import { Auth } from 'aws-amplify';
-import { API } from 'aws-amplify';
-import { createUser } from '../src/graphql/mutations';
+import { Auth } from 'aws-amplify'
 import PopupModal from '../components/PopupModal';
+import { API, graphqlOperation } from 'aws-amplify';
+import {CreateUser} from '../src/graphql/mutations';
+import { DataStore } from '@aws-amplify/datastore';
+import { User } from '../src/models';
 
 function CreateAccScreen({navigation}) {
   // Function to toggle the password visibility state 
@@ -46,14 +48,15 @@ function CreateAccScreen({navigation}) {
         }
       });
       const user = await Auth.signIn(email, password);
-      const newUser = { id: user.attributes.sub, name: user.attributes.name, email: user.attributes.email};
-      //console.log(newUser);
-      await API.graphql({
-        query: createUser,
-        variables: {
-          input: newUser
-        }
-      });
+      console.log(user);
+      const newUser = await DataStore.save(
+        new User({
+          userId: user.attributes.sub,
+          name: user.attributes.name,
+          email: user.attributes.email,
+        })
+      );
+      console.log(newUser);
       navigation.navigate('Menu');
     } catch (error) {
       console.log('error signing up:', error);
@@ -62,7 +65,6 @@ function CreateAccScreen({navigation}) {
       setModalVisible(true);
     }
   }
-
 
   return(
     <View style={MainStyle.container}>

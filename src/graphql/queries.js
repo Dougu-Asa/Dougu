@@ -18,7 +18,7 @@ export const getOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -33,7 +33,7 @@ export const getOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -54,7 +54,7 @@ export const listOrganizations = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       nextToken
@@ -85,7 +85,7 @@ export const syncOrganizations = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       nextToken
@@ -95,9 +95,9 @@ export const syncOrganizations = /* GraphQL */ `
   }
 `;
 export const getUser = /* GraphQL */ `
-  query GetUser($id: ID!) {
-    getUser(id: $id) {
-      id
+  query GetUser($userId: ID!) {
+    getUser(userId: $userId) {
+      userId
       name
       email
       organizations {
@@ -116,13 +116,21 @@ export const getUser = /* GraphQL */ `
 `;
 export const listUsers = /* GraphQL */ `
   query ListUsers(
+    $userId: ID
     $filter: ModelUserFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
-    listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listUsers(
+      userId: $userId
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
       items {
-        id
+        userId
         name
         email
         createdAt
@@ -152,7 +160,7 @@ export const syncUsers = /* GraphQL */ `
       lastSync: $lastSync
     ) {
       items {
-        id
+        userId
         name
         email
         createdAt
@@ -181,12 +189,12 @@ export const getOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -208,7 +216,7 @@ export const getOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -230,7 +238,7 @@ export const listOrgUserStorages = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       nextToken
@@ -262,7 +270,7 @@ export const syncOrgUserStorages = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       nextToken
@@ -285,7 +293,7 @@ export const getEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -299,7 +307,7 @@ export const getEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {

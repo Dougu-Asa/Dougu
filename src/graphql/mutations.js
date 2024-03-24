@@ -21,7 +21,7 @@ export const createOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -36,7 +36,7 @@ export const createOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -61,7 +61,7 @@ export const updateOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -76,7 +76,7 @@ export const updateOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -101,7 +101,7 @@ export const deleteOrganization = /* GraphQL */ `
         __typename
       }
       manager {
-        id
+        userId
         name
         email
         createdAt
@@ -116,7 +116,7 @@ export const deleteOrganization = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      organizationManagerId
+      organizationManagerUserId
       __typename
     }
   }
@@ -127,7 +127,7 @@ export const createUser = /* GraphQL */ `
     $condition: ModelUserConditionInput
   ) {
     createUser(input: $input, condition: $condition) {
-      id
+      userId
       name
       email
       organizations {
@@ -150,7 +150,7 @@ export const updateUser = /* GraphQL */ `
     $condition: ModelUserConditionInput
   ) {
     updateUser(input: $input, condition: $condition) {
-      id
+      userId
       name
       email
       organizations {
@@ -173,7 +173,7 @@ export const deleteUser = /* GraphQL */ `
     $condition: ModelUserConditionInput
   ) {
     deleteUser(input: $input, condition: $condition) {
-      id
+      userId
       name
       email
       organizations {
@@ -206,12 +206,12 @@ export const createOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -233,7 +233,7 @@ export const createOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -254,12 +254,12 @@ export const updateOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -281,7 +281,7 @@ export const updateOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -302,12 +302,12 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       type
       user {
-        id
+        userId
         name
         email
         createdAt
@@ -329,7 +329,7 @@ export const deleteOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsId
+      userOrganizationsUserId
       __typename
     }
   }
@@ -351,7 +351,7 @@ export const createEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -365,7 +365,7 @@ export const createEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {
@@ -418,7 +418,7 @@ export const updateEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -432,7 +432,7 @@ export const updateEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {
@@ -485,7 +485,7 @@ export const deleteEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationManagerId
+        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -499,7 +499,7 @@ export const deleteEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsId
+        userOrganizationsUserId
         __typename
       }
       parent {

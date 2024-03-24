@@ -12,7 +12,7 @@ type Organization @model {
 }
 
 type User @model {
-  id: ID!
+  userId: ID! @primaryKey                     # special bc of cognito
   name: String!
   email: String!
   organizations: [OrgUserStorage] @hasMany    # debatable
