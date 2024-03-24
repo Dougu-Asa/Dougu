@@ -10,6 +10,7 @@ import { Auth } from 'aws-amplify';
 import { AuthProvider } from './components/AuthProvider';
 import { ModalProvider, useModal } from './components/ModalProvider';
 import { useAuth } from './components/AuthProvider';
+import '@azure/core-asynciterator-polyfill';
 
 //screens
 import HomeScreen from './screens/HomeScreen';

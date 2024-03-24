@@ -9,25 +9,30 @@ export const getOrganization = /* GraphQL */ `
       accessCode
       equipment {
         nextToken
+        startedAt
         __typename
       }
-      storages {
+      UserOrStorages {
         nextToken
+        startedAt
         __typename
       }
       manager {
         id
         name
-        isStorage
-        details
+        email
         createdAt
         updatedAt
-        organizationStoragesId
-        userOrganizationsId
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationManagerId
       __typename
     }
@@ -46,10 +51,45 @@ export const listOrganizations = /* GraphQL */ `
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
       nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncOrganizations = /* GraphQL */ `
+  query SyncOrganizations(
+    $filter: ModelOrganizationFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncOrganizations(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        accessCode
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerId
+        __typename
+      }
+      nextToken
+      startedAt
       __typename
     }
   }
@@ -62,10 +102,14 @@ export const getUser = /* GraphQL */ `
       email
       organizations {
         nextToken
+        startedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       __typename
     }
   }
@@ -83,68 +127,146 @@ export const listUsers = /* GraphQL */ `
         email
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       nextToken
+      startedAt
       __typename
     }
   }
 `;
-export const getOrgStorage = /* GraphQL */ `
-  query GetOrgStorage($id: ID!) {
-    getOrgStorage(id: $id) {
+export const syncUsers = /* GraphQL */ `
+  query SyncUsers(
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncUsers(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        email
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getOrgUserStorage = /* GraphQL */ `
+  query GetOrgUserStorage($id: ID!) {
+    getOrgUserStorage(id: $id) {
       id
-      name
-      isStorage
       organization {
         id
         name
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
+      type
       user {
         id
         name
         email
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       equipment {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
-      organizationStoragesId
+      _version
+      _deleted
+      _lastChangedAt
+      organizationUserOrStoragesId
       userOrganizationsId
       __typename
     }
   }
 `;
-export const listOrgStorages = /* GraphQL */ `
-  query ListOrgStorages(
-    $filter: ModelOrgStorageFilterInput
+export const listOrgUserStorages = /* GraphQL */ `
+  query ListOrgUserStorages(
+    $filter: ModelOrgUserStorageFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listOrgStorages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listOrgUserStorages(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        name
-        isStorage
+        type
         details
         createdAt
         updatedAt
-        organizationStoragesId
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
         userOrganizationsId
         __typename
       }
       nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncOrgUserStorages = /* GraphQL */ `
+  query SyncOrgUserStorages(
+    $filter: ModelOrgUserStorageFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncOrgUserStorages(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        type
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsId
+        __typename
+      }
+      nextToken
+      startedAt
       __typename
     }
   }
@@ -160,18 +282,23 @@ export const getEquipment = /* GraphQL */ `
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
       lastUpdatedDate
       assignedTo {
         id
-        name
-        isStorage
+        type
         details
         createdAt
         updatedAt
-        organizationStoragesId
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
         userOrganizationsId
         __typename
       }
@@ -182,20 +309,27 @@ export const getEquipment = /* GraphQL */ `
         details
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationEquipmentId
-        orgStorageEquipmentId
+        orgUserStorageEquipmentId
         equipmentChildrenId
         __typename
       }
       children {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationEquipmentId
-      orgStorageEquipmentId
+      orgUserStorageEquipmentId
       equipmentChildrenId
       __typename
     }
@@ -215,12 +349,50 @@ export const listEquipment = /* GraphQL */ `
         details
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationEquipmentId
-        orgStorageEquipmentId
+        orgUserStorageEquipmentId
         equipmentChildrenId
         __typename
       }
       nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncEquipment = /* GraphQL */ `
+  query SyncEquipment(
+    $filter: ModelEquipmentFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncEquipment(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        lastUpdatedDate
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationEquipmentId
+        orgUserStorageEquipmentId
+        equipmentChildrenId
+        __typename
+      }
+      nextToken
+      startedAt
       __typename
     }
   }

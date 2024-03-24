@@ -12,25 +12,30 @@ export const createOrganization = /* GraphQL */ `
       accessCode
       equipment {
         nextToken
+        startedAt
         __typename
       }
-      storages {
+      UserOrStorages {
         nextToken
+        startedAt
         __typename
       }
       manager {
         id
         name
-        isStorage
-        details
+        email
         createdAt
         updatedAt
-        organizationStoragesId
-        userOrganizationsId
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationManagerId
       __typename
     }
@@ -47,25 +52,30 @@ export const updateOrganization = /* GraphQL */ `
       accessCode
       equipment {
         nextToken
+        startedAt
         __typename
       }
-      storages {
+      UserOrStorages {
         nextToken
+        startedAt
         __typename
       }
       manager {
         id
         name
-        isStorage
-        details
+        email
         createdAt
         updatedAt
-        organizationStoragesId
-        userOrganizationsId
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationManagerId
       __typename
     }
@@ -82,25 +92,30 @@ export const deleteOrganization = /* GraphQL */ `
       accessCode
       equipment {
         nextToken
+        startedAt
         __typename
       }
-      storages {
+      UserOrStorages {
         nextToken
+        startedAt
         __typename
       }
       manager {
         id
         name
-        isStorage
-        details
+        email
         createdAt
         updatedAt
-        organizationStoragesId
-        userOrganizationsId
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationManagerId
       __typename
     }
@@ -117,10 +132,14 @@ export const createUser = /* GraphQL */ `
       email
       organizations {
         nextToken
+        startedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       __typename
     }
   }
@@ -136,10 +155,14 @@ export const updateUser = /* GraphQL */ `
       email
       organizations {
         nextToken
+        startedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       __typename
     }
   }
@@ -155,126 +178,157 @@ export const deleteUser = /* GraphQL */ `
       email
       organizations {
         nextToken
+        startedAt
         __typename
       }
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       __typename
     }
   }
 `;
-export const createOrgStorage = /* GraphQL */ `
-  mutation CreateOrgStorage(
-    $input: CreateOrgStorageInput!
-    $condition: ModelOrgStorageConditionInput
+export const createOrgUserStorage = /* GraphQL */ `
+  mutation CreateOrgUserStorage(
+    $input: CreateOrgUserStorageInput!
+    $condition: ModelOrgUserStorageConditionInput
   ) {
-    createOrgStorage(input: $input, condition: $condition) {
+    createOrgUserStorage(input: $input, condition: $condition) {
       id
-      name
-      isStorage
       organization {
         id
         name
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
+      type
       user {
         id
         name
         email
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       equipment {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
-      organizationStoragesId
+      _version
+      _deleted
+      _lastChangedAt
+      organizationUserOrStoragesId
       userOrganizationsId
       __typename
     }
   }
 `;
-export const updateOrgStorage = /* GraphQL */ `
-  mutation UpdateOrgStorage(
-    $input: UpdateOrgStorageInput!
-    $condition: ModelOrgStorageConditionInput
+export const updateOrgUserStorage = /* GraphQL */ `
+  mutation UpdateOrgUserStorage(
+    $input: UpdateOrgUserStorageInput!
+    $condition: ModelOrgUserStorageConditionInput
   ) {
-    updateOrgStorage(input: $input, condition: $condition) {
+    updateOrgUserStorage(input: $input, condition: $condition) {
       id
-      name
-      isStorage
       organization {
         id
         name
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
+      type
       user {
         id
         name
         email
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       equipment {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
-      organizationStoragesId
+      _version
+      _deleted
+      _lastChangedAt
+      organizationUserOrStoragesId
       userOrganizationsId
       __typename
     }
   }
 `;
-export const deleteOrgStorage = /* GraphQL */ `
-  mutation DeleteOrgStorage(
-    $input: DeleteOrgStorageInput!
-    $condition: ModelOrgStorageConditionInput
+export const deleteOrgUserStorage = /* GraphQL */ `
+  mutation DeleteOrgUserStorage(
+    $input: DeleteOrgUserStorageInput!
+    $condition: ModelOrgUserStorageConditionInput
   ) {
-    deleteOrgStorage(input: $input, condition: $condition) {
+    deleteOrgUserStorage(input: $input, condition: $condition) {
       id
-      name
-      isStorage
       organization {
         id
         name
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
+      type
       user {
         id
         name
         email
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         __typename
       }
       equipment {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
-      organizationStoragesId
+      _version
+      _deleted
+      _lastChangedAt
+      organizationUserOrStoragesId
       userOrganizationsId
       __typename
     }
@@ -294,18 +348,23 @@ export const createEquipment = /* GraphQL */ `
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
       lastUpdatedDate
       assignedTo {
         id
-        name
-        isStorage
+        type
         details
         createdAt
         updatedAt
-        organizationStoragesId
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
         userOrganizationsId
         __typename
       }
@@ -316,20 +375,27 @@ export const createEquipment = /* GraphQL */ `
         details
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationEquipmentId
-        orgStorageEquipmentId
+        orgUserStorageEquipmentId
         equipmentChildrenId
         __typename
       }
       children {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationEquipmentId
-      orgStorageEquipmentId
+      orgUserStorageEquipmentId
       equipmentChildrenId
       __typename
     }
@@ -349,18 +415,23 @@ export const updateEquipment = /* GraphQL */ `
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
       lastUpdatedDate
       assignedTo {
         id
-        name
-        isStorage
+        type
         details
         createdAt
         updatedAt
-        organizationStoragesId
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
         userOrganizationsId
         __typename
       }
@@ -371,20 +442,27 @@ export const updateEquipment = /* GraphQL */ `
         details
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationEquipmentId
-        orgStorageEquipmentId
+        orgUserStorageEquipmentId
         equipmentChildrenId
         __typename
       }
       children {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationEquipmentId
-      orgStorageEquipmentId
+      orgUserStorageEquipmentId
       equipmentChildrenId
       __typename
     }
@@ -404,18 +482,23 @@ export const deleteEquipment = /* GraphQL */ `
         accessCode
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationManagerId
         __typename
       }
       lastUpdatedDate
       assignedTo {
         id
-        name
-        isStorage
+        type
         details
         createdAt
         updatedAt
-        organizationStoragesId
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
         userOrganizationsId
         __typename
       }
@@ -426,20 +509,27 @@ export const deleteEquipment = /* GraphQL */ `
         details
         createdAt
         updatedAt
+        _version
+        _deleted
+        _lastChangedAt
         organizationEquipmentId
-        orgStorageEquipmentId
+        orgUserStorageEquipmentId
         equipmentChildrenId
         __typename
       }
       children {
         nextToken
+        startedAt
         __typename
       }
       details
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
       organizationEquipmentId
-      orgStorageEquipmentId
+      orgUserStorageEquipmentId
       equipmentChildrenId
       __typename
     }

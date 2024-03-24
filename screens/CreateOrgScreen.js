@@ -72,13 +72,13 @@ function CreateOrgScreen({navigation}) {
         accessCode: code
       };
       console.log(orgData);
-      const newOrg = await API.graphql({
+      /* const newOrg = await API.graphql({
         query: queries.createOrganization,
         variables: { input: orgData }
       });
-      console.log(newOrg);
+      console.log(newOrg); */
       // Create OrgStorage
-      const orgStorageData = {
+      /*const orgStorageData = {
         name: name,
         isStorage: false,
         organization: newOrg.data.createOrganization.id,
@@ -88,7 +88,7 @@ function CreateOrgScreen({navigation}) {
       const newOrgStorage = await API.graphql({
         query: mutations.createOrgStorage,
         variables: { input: orgStorageData }
-      });
+      });  */
       // Add the OrgStorage to Organization
 
       // Navigate to the access code screen
