@@ -4,9 +4,6 @@ import MainStyle from '../styles/MainStyle';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import ProfileComponent from '../components/ProfileComponent';
-import { API } from 'aws-amplify';
-import * as queries from '../src/graphql/queries'
-import * as mutations from '../src/graphql/mutations'
 import PopupModal from '../components/PopupModal';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
@@ -71,8 +68,18 @@ function CreateOrgScreen({navigation}) {
         })
       );
       console.log('newOrgUserStorage: ', newOrgUserStorage);
-      // Navigate to the access code screen
-      navigation.navigate('Access Code');
+      // add our OrgUserStorage to the user and organization
+      await DataStore.save(
+        User.copyOf(DBuser[0], updated => {
+          updated.organizations = newOrgUserStorage;
+        })
+      );
+      await DataStore.save(
+        Organization.copyOf(newOrg, updated => {
+          updated.UserOrStorages = newOrgUserStorage;
+        })
+      );
+      navigation.navigate('Access Code', {accessCode: code});
     }
     catch (e) {
       // setup popups

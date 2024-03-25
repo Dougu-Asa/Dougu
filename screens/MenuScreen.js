@@ -7,19 +7,19 @@ import { Auth } from 'aws-amplify';
 import ProfileComponent from '../components/ProfileComponent';
 
 function MenuScreen({navigation}) {
-    // Custom so that a back button press goes to home
-    useEffect(() => {
-        async function backAction() {
-          await Auth.signOut();
-          navigation.navigate('Home');
-          return true;
-        };
-    
-        // Add the backAction handler when the component mounts
-        BackHandler.addEventListener('hardwareBackPress', backAction);
-        // Remove the backAction handler when the component unmounts
-        return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
-      }, [navigation]);
+  // Custom so that a back button press goes to home
+  useEffect(() => {
+      async function backAction() {
+        await Auth.signOut();
+        navigation.navigate('Home');
+        return true;
+      };
+  
+      // Add the backAction handler when the component mounts
+      BackHandler.addEventListener('hardwareBackPress', backAction);
+      // Remove the backAction handler when the component unmounts
+      return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
+    }, [navigation]);
 
     return(
         <View style={MenuStyle.container}>
