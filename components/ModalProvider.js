@@ -1,4 +1,6 @@
 import React, { createContext, useState } from 'react';
+// This component provides context for whether the profile modal
+// should be displayed in all components that need it
 
 // Create the context
 const ModalContext = React.createContext();

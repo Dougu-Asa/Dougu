@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, StyleSheet, View, Button } from 'react-native';
+import { TouchableOpacity} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -22,6 +22,7 @@ import MemberTabs from './screens/OrgMember';
 import AccessCodeScreen from './screens/AccessCodeScreen';
 import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import { UserOrgProvider } from './components/UserOrgProvider';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -31,7 +32,9 @@ function App() {
     <AuthProvider>
       <NavigationContainer>
         <ModalProvider>
-          <AppContent/>
+          <UserOrgProvider>
+            <AppContent/>
+          </UserOrgProvider>
         </ModalProvider>
       </NavigationContainer>
     </AuthProvider>

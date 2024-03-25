@@ -5,8 +5,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
 import PopupModal from '../components/PopupModal';
-import { API, graphqlOperation } from 'aws-amplify';
-import {CreateUser} from '../src/graphql/mutations';
 import { DataStore } from '@aws-amplify/datastore';
 import { User } from '../src/models';
 

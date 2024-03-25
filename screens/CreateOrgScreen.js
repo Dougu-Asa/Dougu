@@ -8,9 +8,12 @@ import PopupModal from '../components/PopupModal';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
+import { useUserOrg } from '../components/UserOrgProvider';
 
 function CreateOrgScreen({navigation}) {
   const [name, onChangeName] = React.useState('');
+  const { setCurrOrg } = useUserOrg();
+  const { setCurrOrgUserStorage } = useUserOrg();
   // Custom so thata back button press goes to the menu
   useEffect(() => {
     const backAction = () => {
@@ -48,14 +51,14 @@ function CreateOrgScreen({navigation}) {
         throw new Error("Organization name or access code is not unique.");
       }
       // query for the user that is the org manager
-      const DBuser = await DataStore.query(User, (c) => c.userId.eq(user.attributes.sub));
-      console.log('DBUser: ', DBuser[0]);
+      const DBuser = await DataStore.query(User, user.attributes.sub);
+      console.log('DBuser: ', DBuser);
       // Add the org to the database
       const newOrg = await DataStore.save(
         new Organization({
           name: name,
           accessCode: code,
-          manager: DBuser[0],
+          manager: DBuser,
         })
       );
       console.log('newOrg: ', newOrg);
@@ -64,21 +67,23 @@ function CreateOrgScreen({navigation}) {
         new OrgUserStorage({
           organization: newOrg,
           type: UserOrStorage.USER,
-          user: DBuser[0],
+          user: DBuser,
         })
       );
       console.log('newOrgUserStorage: ', newOrgUserStorage);
       // add our OrgUserStorage to the user and organization
       await DataStore.save(
-        User.copyOf(DBuser[0], updated => {
+        User.copyOf(DBuser, updated => {
           updated.organizations = newOrgUserStorage;
         })
       );
-      await DataStore.save(
+      const currOrg = await DataStore.save(
         Organization.copyOf(newOrg, updated => {
           updated.UserOrStorages = newOrgUserStorage;
         })
       );
+      setCurrOrg(currOrg);
+      setCurrOrgUserStorage(newOrgUserStorage);
       navigation.navigate('Access Code', {accessCode: code});
     }
     catch (e) {
