@@ -7,12 +7,13 @@ const UserOrStorage = {
   "STORAGE": "STORAGE"
 };
 
-const { Organization, User, OrgUserStorage, Equipment } = initSchema(schema);
+const { Organization, User, OrgUserStorage, Container, Equipment } = initSchema(schema);
 
 export {
   Organization,
   User,
   OrgUserStorage,
+  Container,
   Equipment,
   UserOrStorage
 };

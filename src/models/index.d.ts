@@ -19,6 +19,7 @@ type EagerOrganization = {
   readonly accessCode: string;
   readonly equipment?: (Equipment | null)[] | null;
   readonly UserOrStorages?: (OrgUserStorage | null)[] | null;
+  readonly containers?: (Container | null)[] | null;
   readonly manager: User;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -35,6 +36,7 @@ type LazyOrganization = {
   readonly accessCode: string;
   readonly equipment: AsyncCollection<Equipment>;
   readonly UserOrStorages: AsyncCollection<OrgUserStorage>;
+  readonly containers: AsyncCollection<Container>;
   readonly manager: AsyncItem<User>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -89,6 +91,7 @@ type EagerOrgUserStorage = {
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly user?: User | null;
   readonly equipment?: (Equipment | null)[] | null;
+  readonly containers?: (Container | null)[] | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -106,6 +109,7 @@ type LazyOrgUserStorage = {
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly user: AsyncItem<User | undefined>;
   readonly equipment: AsyncCollection<Equipment>;
+  readonly containers: AsyncCollection<Container>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -119,6 +123,48 @@ export declare const OrgUserStorage: (new (init: ModelInit<OrgUserStorage>) => O
   copyOf(source: OrgUserStorage, mutator: (draft: MutableModel<OrgUserStorage>) => MutableModel<OrgUserStorage> | void): OrgUserStorage;
 }
 
+type EagerContainer = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Container, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly organization: Organization;
+  readonly lastUpdatedDate: string;
+  readonly assignedTo?: OrgUserStorage | null;
+  readonly equipment?: (Equipment | null)[] | null;
+  readonly details?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly organizationContainersId?: string | null;
+  readonly orgUserStorageContainersId?: string | null;
+}
+
+type LazyContainer = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Container, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly organization: AsyncItem<Organization>;
+  readonly lastUpdatedDate: string;
+  readonly assignedTo: AsyncItem<OrgUserStorage | undefined>;
+  readonly equipment: AsyncCollection<Equipment>;
+  readonly details?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly organizationContainersId?: string | null;
+  readonly orgUserStorageContainersId?: string | null;
+}
+
+export declare type Container = LazyLoading extends LazyLoadingDisabled ? EagerContainer : LazyContainer
+
+export declare const Container: (new (init: ModelInit<Container>) => Container) & {
+  copyOf(source: Container, mutator: (draft: MutableModel<Container>) => MutableModel<Container> | void): Container;
+}
+
 type EagerEquipment = {
   readonly [__modelMeta__]: {
     identifier: ManagedIdentifier<Equipment, 'id'>;
@@ -129,14 +175,13 @@ type EagerEquipment = {
   readonly organization: Organization;
   readonly lastUpdatedDate: string;
   readonly assignedTo?: OrgUserStorage | null;
-  readonly parent?: Equipment | null;
-  readonly children?: (Equipment | null)[] | null;
+  readonly parent?: Container | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationEquipmentId?: string | null;
   readonly orgUserStorageEquipmentId?: string | null;
-  readonly equipmentChildrenId?: string | null;
+  readonly containerEquipmentId?: string | null;
 }
 
 type LazyEquipment = {
@@ -149,14 +194,13 @@ type LazyEquipment = {
   readonly organization: AsyncItem<Organization>;
   readonly lastUpdatedDate: string;
   readonly assignedTo: AsyncItem<OrgUserStorage | undefined>;
-  readonly parent: AsyncItem<Equipment | undefined>;
-  readonly children: AsyncCollection<Equipment>;
+  readonly parent: AsyncItem<Container | undefined>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationEquipmentId?: string | null;
   readonly orgUserStorageEquipmentId?: string | null;
-  readonly equipmentChildrenId?: string | null;
+  readonly containerEquipmentId?: string | null;
 }
 
 export declare type Equipment = LazyLoading extends LazyLoadingDisabled ? EagerEquipment : LazyEquipment

@@ -56,6 +56,22 @@ export const schema = {
                         ]
                     }
                 },
+                "containers": {
+                    "name": "containers",
+                    "isArray": true,
+                    "type": {
+                        "model": "Container"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "organizationContainersId"
+                        ]
+                    }
+                },
                 "manager": {
                     "name": "manager",
                     "isArray": false,
@@ -246,6 +262,22 @@ export const schema = {
                         ]
                     }
                 },
+                "containers": {
+                    "name": "containers",
+                    "isArray": true,
+                    "type": {
+                        "model": "Container"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "orgUserStorageContainersId"
+                        ]
+                    }
+                },
                 "details": {
                     "name": "details",
                     "isArray": false,
@@ -286,6 +318,123 @@ export const schema = {
             },
             "syncable": true,
             "pluralName": "OrgUserStorages",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                }
+            ]
+        },
+        "Container": {
+            "name": "Container",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "organization": {
+                    "name": "organization",
+                    "isArray": false,
+                    "type": {
+                        "model": "Organization"
+                    },
+                    "isRequired": true,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "organizationContainersId"
+                        ]
+                    }
+                },
+                "lastUpdatedDate": {
+                    "name": "lastUpdatedDate",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "assignedTo": {
+                    "name": "assignedTo",
+                    "isArray": false,
+                    "type": {
+                        "model": "OrgUserStorage"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "orgUserStorageContainersId"
+                        ]
+                    }
+                },
+                "equipment": {
+                    "name": "equipment",
+                    "isArray": true,
+                    "type": {
+                        "model": "Equipment"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "containerEquipmentId"
+                        ]
+                    }
+                },
+                "details": {
+                    "name": "details",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "organizationContainersId": {
+                    "name": "organizationContainersId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "orgUserStorageContainersId": {
+                    "name": "orgUserStorageContainersId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "Containers",
             "attributes": [
                 {
                     "type": "model",
@@ -351,30 +500,14 @@ export const schema = {
                     "name": "parent",
                     "isArray": false,
                     "type": {
-                        "model": "Equipment"
+                        "model": "Container"
                     },
                     "isRequired": false,
                     "attributes": [],
                     "association": {
                         "connectionType": "BELONGS_TO",
                         "targetNames": [
-                            "equipmentChildrenId"
-                        ]
-                    }
-                },
-                "children": {
-                    "name": "children",
-                    "isArray": true,
-                    "type": {
-                        "model": "Equipment"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true,
-                    "association": {
-                        "connectionType": "HAS_MANY",
-                        "associatedWith": [
-                            "equipmentChildrenId"
+                            "containerEquipmentId"
                         ]
                     }
                 },
@@ -415,8 +548,8 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "equipmentChildrenId": {
-                    "name": "equipmentChildrenId",
+                "containerEquipmentId": {
+                    "name": "containerEquipmentId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": false,
@@ -444,5 +577,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "b769a0c14d132864e0699fdfa39d543e"
+    "version": "5fca74227262a40cc0fbfd1aa9365f18"
 };

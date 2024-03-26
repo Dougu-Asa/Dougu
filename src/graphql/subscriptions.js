@@ -19,6 +19,11 @@ export const onCreateOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
       manager {
         userId
         name
@@ -58,6 +63,11 @@ export const onUpdateOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
       manager {
         userId
         name
@@ -93,6 +103,11 @@ export const onDeleteOrganization = /* GraphQL */ `
         __typename
       }
       UserOrStorages {
+        nextToken
+        startedAt
+        __typename
+      }
+      containers {
         nextToken
         startedAt
         __typename
@@ -213,6 +228,11 @@ export const onCreateOrgUserStorage = /* GraphQL */ `
         startedAt
         __typename
       }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
       details
       createdAt
       updatedAt
@@ -256,6 +276,11 @@ export const onUpdateOrgUserStorage = /* GraphQL */ `
         __typename
       }
       equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      containers {
         nextToken
         startedAt
         __typename
@@ -307,6 +332,11 @@ export const onDeleteOrgUserStorage = /* GraphQL */ `
         startedAt
         __typename
       }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
       details
       createdAt
       updatedAt
@@ -315,6 +345,156 @@ export const onDeleteOrgUserStorage = /* GraphQL */ `
       _lastChangedAt
       organizationUserOrStoragesId
       userOrganizationsUserId
+      __typename
+    }
+  }
+`;
+export const onCreateContainer = /* GraphQL */ `
+  subscription OnCreateContainer(
+    $filter: ModelSubscriptionContainerFilterInput
+  ) {
+    onCreateContainer(filter: $filter) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      lastUpdatedDate
+      assignedTo {
+        id
+        type
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationContainersId
+      orgUserStorageContainersId
+      __typename
+    }
+  }
+`;
+export const onUpdateContainer = /* GraphQL */ `
+  subscription OnUpdateContainer(
+    $filter: ModelSubscriptionContainerFilterInput
+  ) {
+    onUpdateContainer(filter: $filter) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      lastUpdatedDate
+      assignedTo {
+        id
+        type
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationContainersId
+      orgUserStorageContainersId
+      __typename
+    }
+  }
+`;
+export const onDeleteContainer = /* GraphQL */ `
+  subscription OnDeleteContainer(
+    $filter: ModelSubscriptionContainerFilterInput
+  ) {
+    onDeleteContainer(filter: $filter) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      lastUpdatedDate
+      assignedTo {
+        id
+        type
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationContainersId
+      orgUserStorageContainersId
       __typename
     }
   }
@@ -362,14 +542,8 @@ export const onCreateEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationEquipmentId
-        orgUserStorageEquipmentId
-        equipmentChildrenId
-        __typename
-      }
-      children {
-        nextToken
-        startedAt
+        organizationContainersId
+        orgUserStorageContainersId
         __typename
       }
       details
@@ -380,7 +554,7 @@ export const onCreateEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      equipmentChildrenId
+      containerEquipmentId
       __typename
     }
   }
@@ -428,14 +602,8 @@ export const onUpdateEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationEquipmentId
-        orgUserStorageEquipmentId
-        equipmentChildrenId
-        __typename
-      }
-      children {
-        nextToken
-        startedAt
+        organizationContainersId
+        orgUserStorageContainersId
         __typename
       }
       details
@@ -446,7 +614,7 @@ export const onUpdateEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      equipmentChildrenId
+      containerEquipmentId
       __typename
     }
   }
@@ -494,14 +662,8 @@ export const onDeleteEquipment = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
-        organizationEquipmentId
-        orgUserStorageEquipmentId
-        equipmentChildrenId
-        __typename
-      }
-      children {
-        nextToken
-        startedAt
+        organizationContainersId
+        orgUserStorageContainersId
         __typename
       }
       details
@@ -512,7 +674,7 @@ export const onDeleteEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      equipmentChildrenId
+      containerEquipmentId
       __typename
     }
   }

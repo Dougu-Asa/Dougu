@@ -8,6 +8,7 @@ type Organization @model {
   accessCode: String!
   equipment: [Equipment] @hasMany
   UserOrStorages: [OrgUserStorage] @hasMany
+  containers: [Container] @hasMany
   manager: User! @hasOne                # maybe user instead
 }
 
@@ -30,6 +31,17 @@ type OrgUserStorage @model {
   type: UserOrStorage!
   user: User @belongsTo
   equipment: [Equipment] @hasMany
+  containers: [Container] @hasMany
+  details: String
+}
+
+type Container @model{
+  id: ID!
+  name: String!
+  organization: Organization! @belongsTo
+  lastUpdatedDate: String!
+  assignedTo: OrgUserStorage @belongsTo
+  equipment: [Equipment] @hasMany
   details: String
 }
 
@@ -39,7 +51,6 @@ type Equipment @model{
   organization: Organization! @belongsTo
   lastUpdatedDate: String!
   assignedTo: OrgUserStorage @belongsTo
-  parent: Equipment @belongsTo
-  children: [Equipment] @hasMany
+  parent: Container @belongsTo
   details: String
 }

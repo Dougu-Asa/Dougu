@@ -73,7 +73,7 @@ function JoinOrgScreen({navigation}) {
       );
       setCurrOrg(currOrg);
       setCurrOrgUserStorage(newOrgUserStorage);
-      navigation.navigate('MemberTabs', {screen: 'My Equipment'})
+      navigation.navigate('MemberTabs', {screen: 'My Equipment'});
     }
     catch(e){
       console.log(e);
