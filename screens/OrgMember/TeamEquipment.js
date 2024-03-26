@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
 import MainStyle from '../../styles/MainStyle';
 import React from 'react';
-import ProfileComponent from '../../components/ProfileComponent';
 import { useUserOrg } from '../../components/UserOrgProvider';
 
 function TeamEquipmentScreen(){
@@ -10,12 +9,12 @@ function TeamEquipmentScreen(){
 
     return (
         <View style={MainStyle.container}>
-            <ProfileComponent />
-            <Text>{currOrg.name}</Text>
+            <Text>Temp</Text>
             <Text>Team Equipment!</Text>
             <StatusBar style="auto" />
         </View>
     );
 };
+// <Text>{currOrg.name}</Text>
 
 export default TeamEquipmentScreen;

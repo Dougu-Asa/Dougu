@@ -1,23 +1,22 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useEffect, useLayoutEffect } from 'react';
 import { BackHandler } from 'react-native';
-import MyEquipmentScreen from './OrgMember/MyEquipment';
-import SwapEquipmentScreen from './OrgMember/SwapEquipment';
-import TeamEquipmentScreen from './OrgMember/TeamEquipment';
-import ManagerScreen from './OrgMember/ManagerScreen';
-import { useUserOrg } from '../components/UserOrgProvider';
+import MyEquipmentScreen from './MyEquipment';
+import SwapEquipmentScreen from './SwapEquipment';
+import TeamEquipmentScreen from './TeamEquipment';
+import ManagerScreen from './ManagerScreen';
+import { useUserOrg } from '../../components/UserOrgProvider';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
 
 function MemberTabs({navigation}) {
-    const { currOrg } = useUserOrg();
+    //const { currOrg } = useUserOrg();
 
     // Custom so thata back button press goes to the menu
     useEffect(() => {
     const backAction = () => {
       navigation.navigate('Menu');
-      return true;
     };
 
     // Add the backAction handler when the component mounts
@@ -28,7 +27,8 @@ function MemberTabs({navigation}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: currOrg.name, // Set your dynamic title here
+      //headerTitle: currOrg.name, // Set your dynamic title here
+      headerTitle: 'temp',
     });
   }, [navigation]);
 

@@ -8,21 +8,15 @@ import amplifyconfig from './src/amplifyconfiguration.json';
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { AuthProvider } from './components/AuthProvider';
-import { ModalProvider, useModal } from './components/ModalProvider';
 import { useAuth } from './components/AuthProvider';
 import '@azure/core-asynciterator-polyfill';
 
 //screens
 import HomeScreen from './screens/HomeScreen';
-import MenuScreen from './screens/MenuScreen';
 import CreateAccScreen from './screens/CreateAccScreen'
-import CreateOrgScreen from './screens/CreateOrgScreen';
-import JoinOrgScreen from './screens/JoinOrgScreen';
-import MemberTabs from './screens/OrgMember';
-import AccessCodeScreen from './screens/AccessCodeScreen';
 import LoginScreen from './screens/LoginScreen';
-import ProfileScreen from './screens/ProfileScreen';
 import { UserOrgProvider } from './components/UserOrgProvider';
+import DrawerNav from './screens/OrgMember/DrawerNav';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -31,11 +25,9 @@ function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <ModalProvider>
-          <UserOrgProvider>
-            <AppContent/>
-          </UserOrgProvider>
-        </ModalProvider>
+        <UserOrgProvider>
+          <AppContent/>
+        </UserOrgProvider>
       </NavigationContainer>
     </AuthProvider>
   );
@@ -43,9 +35,7 @@ function App() {
 export default App;
 
 function AppContent() {
-  const { isUserAuthenticated } = useAuth();
   const { setIsUserAuthenticated } = useAuth();
-
   useEffect(() => {
     checkCurrentUser();
   }, []);
@@ -64,53 +54,30 @@ function AppContent() {
     }
   };
 
-  // Custom header logout button on the right
-  const { setIsModalVisible } = useModal();
-  const { isModalVisible } = useModal();
-  const MyHeaderProfileButton = () => {
-    return (
-      <TouchableOpacity onPress={() => {setIsModalVisible(!isModalVisible)}}>
-        <FontAwesome name="user-circle-o" size={35} color="black" style={{padding: 5}}/>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <Stack.Navigator
-      screenOptions={({ navigation, route }) => ({
-        headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-      headerTitleAlign: 'center',
-      headerLeft: (props) => {
-        // Access custom options set for the current screen, assuming they are passed as route params
-        const screenOptions = route.params?.screenOptions || {};
-        return (
-          <MyHeaderBackButton
-            {...props}
-            navigation={navigation}
-            backScreen={screenOptions.backScreen}
-            backScreenLabel={screenOptions.backScreenLabel}
-          />
-        );
-      },
-      headerRight: () => (
-        isUserAuthenticated ? <MyHeaderProfileButton navigation={navigation}/> : null
-      )
+    screenOptions={({ navigation, route }) => ({
+      headerTitleStyle: {
+      fontWeight: 'bold',
+    },
+    headerTitleAlign: 'center',
+    headerLeft: (props) => {
+      // Access custom options set for the current screen, assuming they are passed as route params
+      const screenOptions = route.params?.screenOptions || {};
+      return (
+        <MyHeaderBackButton
+          {...props}
+          navigation={navigation}
+          backScreen={screenOptions.backScreen}
+          backScreenLabel={screenOptions.backScreenLabel}
+        />
+      );
+    },
     })}>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerLeft: () => null }}/>
-      <Stack.Screen name="Menu" component={MenuScreen} options={{ headerLeft: () => null, headerBackVisible: false }}/>
       <Stack.Screen name="Login" component={LoginScreen}/>
       <Stack.Screen name="CreateAcc" component={CreateAccScreen}/>
-      <Stack.Screen name="JoinOrg" component={JoinOrgScreen}
-      initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
-      <Stack.Screen name="CreateOrg" component={CreateOrgScreen}
-      initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
-      <Stack.Screen name="MemberTabs" component={MemberTabs}
-      initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
-      <Stack.Screen name="Access Code" component={AccessCodeScreen}
-      initialParams={{ screenOptions: { backScreen: 'Menu' } }}/>
-      <Stack.Screen name="Profile" component={ProfileScreen}/>
+      <Stack.Screen name="DrawerNav" component={DrawerNav} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 };

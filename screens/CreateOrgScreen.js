@@ -3,7 +3,6 @@ import { Button, Text, View, TextInput, StyleSheet } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
-import ProfileComponent from '../components/ProfileComponent';
 import PopupModal from '../components/PopupModal';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
@@ -96,7 +95,6 @@ function CreateOrgScreen({navigation}) {
 
   return(
     <View style={MainStyle.container}>
-      <ProfileComponent />
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={modalText}/>
       <Text>Create an Org!</Text>
       <TextInput

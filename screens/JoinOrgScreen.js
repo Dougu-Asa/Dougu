@@ -3,7 +3,6 @@ import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
 import MainStyle from '../styles/MainStyle';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
-import ProfileComponent from '../components/ProfileComponent';
 import PopupModal from '../components/PopupModal';
 import { OrgUserStorage, Organization, User, UserOrStorage } from '../src/models';
 import { DataStore } from '@aws-amplify/datastore';
@@ -84,7 +83,6 @@ function JoinOrgScreen({navigation}) {
 
   return(
     <View style={MainStyle.container}>
-      <ProfileComponent />
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text>Join an Org</Text>
       <TextInput

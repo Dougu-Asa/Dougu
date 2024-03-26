@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, PanResponder, Animated, StyleSheet } from 'react-native';
-import ProfileComponent from '../../components/ProfileComponent';
 
 const DraggableItem = ({ item, onDrop, onStart }) => {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -75,7 +74,6 @@ const SwapEquipmentScreen = () => {
 
   return (
     <View style={{ flex: 1, flexDirection: 'col' }}>
-        <ProfileComponent />
         <ListContainer data={listOne} onDrop={handleDrop} onStart={handleStart} />
         <ListContainer data={listTwo} onDrop={handleDrop} onStart={handleStart} />
     </View>

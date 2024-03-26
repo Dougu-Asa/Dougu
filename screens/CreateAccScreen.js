@@ -55,7 +55,7 @@ function CreateAccScreen({navigation}) {
         })
       );
       console.log(newUser);
-      navigation.navigate('Menu');
+      navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
     } catch (error) {
       console.log('error signing up:', error);
       console.log(error);

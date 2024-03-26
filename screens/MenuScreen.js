@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import CurrOrgsDropdown from '../components/CurrOrgsDropown';
 import { Auth } from 'aws-amplify';
-import ProfileComponent from '../components/ProfileComponent';
 
 function MenuScreen({navigation}) {
   // Custom so that a back button press goes to home
@@ -23,7 +22,6 @@ function MenuScreen({navigation}) {
 
     return(
         <View style={MenuStyle.container}>
-            <ProfileComponent />
             <View style={MenuStyle.button}>
                 <CurrOrgsDropdown />
             </View>

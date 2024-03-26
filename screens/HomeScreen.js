@@ -8,7 +8,7 @@ function HomeScreen({navigation}) {
   
   useEffect(() => {
     if(isUserAuthenticated) {
-      navigation.navigate('Menu');
+      navigation.navigate('DrawerNav' , {screen: 'MemberTabs'});
     }
   });
 

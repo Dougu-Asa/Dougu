@@ -21,7 +21,7 @@ function LoginScreen({navigation}) {
   async function signIn({username, password}) {
     try {
       await Auth.signIn(username, password);
-      navigation.navigate('Menu');
+      navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
     } catch (error) {
       console.log('error signing in', error);
       setErrorMsg(error.toString());

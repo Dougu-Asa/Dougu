@@ -7,6 +7,7 @@ import { OrgUserStorage, Organization, User } from '../src/models';
 import { useUserOrg } from './UserOrgProvider';
 import { useNavigation } from '@react-navigation/native';
 
+
 const CurrOrgsDropdown = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -52,7 +53,7 @@ const CurrOrgsDropdown = () => {
     ]));
     console.log('orgUserStorage: ', orgUserStorage[0]);
     setCurrOrgUserStorage(orgUserStorage[0]);
-    navigation.navigate('MemberTabs', {screen: 'My Equipment'});
+    navigation.navigate('DrawerNav');
   }
 
   return (
