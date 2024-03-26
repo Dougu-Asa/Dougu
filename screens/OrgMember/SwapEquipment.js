@@ -1,71 +1,85 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { View, Text, PanResponder, Animated, StyleSheet } from 'react-native';
 import ProfileComponent from '../../components/ProfileComponent';
-import { Auth } from 'aws-amplify';
-import Equipment from '../../components/Equipment';
 
-function SwapEquipmentScreen(){
-    [userName, setUserName] = useState('');
+const DraggableItem = ({ item, onDrop, onStart }) => {
+  const pan = useRef(new Animated.ValueXY()).current;
 
-    useEffect(() => {
-        getUser();
-    }, []);
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt, gestureState) => {
+        onStart(item, gestureState.y0); // Pass the item and its start position
+      },
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: (e, gesture) => {
+        onDrop(item, gesture.moveY); // Pass the item and its drop position
+        Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
+      },
+    })
+  ).current;
 
-    getUser = async () => {
-        const user = await Auth.currentAuthenticatedUser();
-        setUserName(user.attributes.name);
+  return (
+    <Animated.View
+      style={[pan.getLayout(), { padding: 10, backgroundColor: 'skyblue', margin: 5 }]}
+      {...panResponder.panHandlers}
+    >
+      <Text>{item.label}</Text>
+    </Animated.View>
+  );
+};
+
+const ListContainer = ({ data, onDrop, onStart }) => {
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center' , borderWidth: 1}}>
+      {data.map((item) => (
+        <DraggableItem key={item.id} item={item} onDrop={onDrop} onStart={onStart} />
+      ))}
+    </View>
+  );
+};
+
+const SwapEquipmentScreen = () => {
+    const [listOne, setListOne] = useState([
+        { id: 'a1', label: 'a1' },
+        { id: 'a2', label: 'a2' },
+    ]);
+    const [listTwo, setListTwo] = useState([
+        { id: 'b1', label: 'b1' },
+        { id: 'b2', label: 'b2' },
+    ]);
+    const startPosition = useRef(null);
+
+    const handleDrop = (item, dropPositionY) => {
+        console.log("Item: ", item, "Drop Position Y: ", dropPositionY, "Start: ", startPosition.current);
+        if (dropPositionY > 300) { 
+            if(startPosition.current == 2) return; // no change if move item into list it's current in
+            setListOne((prevListOne) => prevListOne.filter((i) => i.id !== item.id));
+            setListTwo((prevListTwo) => [...prevListTwo, item]);    
+        } else {
+            if(startPosition.current == 1) return; // no change if move item into list it's current in
+            setListTwo((prevListTwo) => prevListTwo.filter((i) => i.id !== item.id));
+            setListOne((prevListOne) => [...prevListOne, item]);
+        }
+        console.log("List One: ", listOne, "List Two: ", listTwo);
     };
 
-    handleSwap = () => {
-        console.log("Swapping equipment");
+    const handleStart = (item, startY) => {
+        console.log("Item: ", item, "Start Y: ", startY);
+        startPosition.current = startY > 300 ? 2 : 1;
+        console.log("Start: ", startPosition.current);
     };
 
-    return (
-        <View style={styles.container}>
-            <ProfileComponent />
-            <View style={styles.userStorage}>
-                <Text>{userName}</Text>
-                <Equipment />
-            </View>
-            <TouchableOpacity
-                style={styles.swapBtnContainer}
-                onPress={handleSwap}
-                accessibilityLabel="Learn more about this purple button"
-            >
-                <Text>Swap</Text>
-            </TouchableOpacity>
-            <View style={styles.userStorage}>
-                <Text>Person 2</Text>
-                <Equipment />
-            </View>
-        </View>
-    );
+  return (
+    <View style={{ flex: 1, flexDirection: 'col' }}>
+        <ProfileComponent />
+        <ListContainer data={listOne} onDrop={handleDrop} onStart={handleStart} />
+        <ListContainer data={listTwo} onDrop={handleDrop} onStart={handleStart} />
+    </View>
+  );
 };
 
 export default SwapEquipmentScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '100%',
-    },
-    userStorage: {
-        flex: 1,
-        backgroundColor: 'lightblue',
-        width: '100%',
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-    },
-    swapBtnContainer: {
-        position: 'absolute',
-        backgroundColor: '#841584',
-        width: 80,
-        height: 50,
-        zIndex: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
