@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, Button } from 'react-native';
+import { Text, View, TouchableOpacity} from 'react-native';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
+import createJoinStyles from '../styles/CreateJoinStyles';
 
 function AccessCodeScreen({route, navigation}) {
   const {accessCode} = route.params;
@@ -20,15 +21,15 @@ function AccessCodeScreen({route, navigation}) {
   }, [navigation]);
 
   return(
-    <View >
-      <Text>Access Code!</Text>
-      <Text>{accessCode}</Text>
-      <Text>Give this code to your members so they can join your organization!</Text>
-      <Button
-          title="Start Managing!"
-          onPress={() => navigation.navigate('MemberTabs', {screen: 'My Equipment'})}
-      />
-      <StatusBar style="auto" />
+    <View style={createJoinStyles.mainContainer}>
+      <Text style={createJoinStyles.title}>Access Code!</Text>
+      <Text style={createJoinStyles.accessCode}>{accessCode}</Text>
+      <Text style={createJoinStyles.subtitle}>Give this code to your members so they can join your organization!</Text>
+      <TouchableOpacity 
+      onPress={() => navigation.navigate('DrawerNav', {screen: 'MyOrgs'})}
+      style={createJoinStyles.button}>
+        <Text style={createJoinStyles.btnText}>Start Managing!</Text>
+      </TouchableOpacity>
     </View>
   );
 }

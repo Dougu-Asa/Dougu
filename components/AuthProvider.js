@@ -1,5 +1,10 @@
 import React, { useState} from 'react';
 import { Hub } from 'aws-amplify';
+// import { AuthProvider } from './components/AuthProvider';
+//import { useAuth } from './components/AuthProvider';
+/* setIsUserAuthenticated(true);
+        const { setIsUserAuthenticated } = useAuth();
+        */
 
 const AuthContext = React.createContext();
 

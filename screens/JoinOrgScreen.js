@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
+import { Text, View, Button, TextInput, createJoinStylesheet } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import PopupModal from '../components/PopupModal';
@@ -7,6 +7,8 @@ import { OrgUserStorage, Organization, User, UserOrStorage } from '../src/models
 import { DataStore } from '@aws-amplify/datastore';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import createJoinStyles from '../styles/CreateJoinStyles';
 
 function JoinOrgScreen({navigation}) {
   const [code, onChangeCode] = React.useState('');
@@ -69,9 +71,9 @@ function JoinOrgScreen({navigation}) {
         })
       );
       // save the currOrg and newOrgUserStorage to async storage
-      await AsyncStorage.setItem('currOrg', JSON.stringify(currOrg));
-      await AsyncStorage.setItem('currOrgUserStorage', JSON.stringify(newOrgUserStorage));
-      navigation.navigate('MemberTabs', {screen: 'Equipment'});
+      const key = user.attributes.sub + ' currOrg';
+      await AsyncStorage.setItem(key, JSON.stringify(currOrg));
+      navigation.navigate('DrawerNav', {screen: 'MyOrgs'});
     }
     catch(e){
       console.log(e);
@@ -81,32 +83,23 @@ function JoinOrgScreen({navigation}) {
   }
 
   return(
-    <View>
+    <View style={createJoinStyles.mainContainer}>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
-      <Text>Join an Org</Text>
+      <Text style={createJoinStyles.title}>Join Org</Text>
+      <Text style={createJoinStyles.subtitle}>Enter the access code provided by the organization manager</Text>
       <TextInput
-        style={styles.input}
+        style={createJoinStyles.input}
         onChangeText={onChangeCode}
         value={code}
-        placeholder="Org Code"
+        placeholder="Ex. ABC1234"
         keyboardType="default"
       />
-      <Button
-          title="Join My Org"
-          onPress={() => {joinOrg()}}
-      />
+      <TouchableOpacity style={createJoinStyles.button} onPress={() => {joinOrg()}}>
+        <Text style={createJoinStyles.btnText}>Join My Org</Text>
+      </TouchableOpacity>
       <StatusBar style="auto" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-});
 
 export default JoinOrgScreen;

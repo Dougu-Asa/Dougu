@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Text, View, TextInput, StyleSheet } from 'react-native';
+import { Button, Text, View, TextInput, createJoinStylesheet, TouchableOpacity } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import PopupModal from '../components/PopupModal';
@@ -7,6 +7,8 @@ import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Dimensions } from 'react-native'
+import createJoinStyles from '../styles/CreateJoinStyles';
 
 function CreateOrgScreen({navigation}) {
   const [name, onChangeName] = React.useState('');
@@ -25,7 +27,7 @@ function CreateOrgScreen({navigation}) {
 
   var randomstring = require("randomstring");
   [modalVisible, setModalVisible] = React.useState(false);
-  [modalText, setModalText] = React.useState('');
+  [errorMsg, setErrorMsg] = React.useState('');
   async function createOrg(){
     try {
       const user = await Auth.currentAuthenticatedUser();
@@ -78,44 +80,38 @@ function CreateOrgScreen({navigation}) {
           updated.UserOrStorages = newOrgUserStorage;
         })
       );
-      // save the currOrg and newOrgUserStorage to async storage
-      await AsyncStorage.setItem('currOrg', JSON.stringify(currOrg));
-      await AsyncStorage.setItem('currOrgUserStorage', JSON.stringify(newOrgUserStorage));
+      // save the currOrg to async storage
+      // use a key to keep track of currentOrg per user
+      const key = user.attributes.sub + ' currOrg';
+      await AsyncStorage.setItem(key, JSON.stringify(currOrg));
       onChangeName('');
       navigation.navigate('Access Code', {accessCode: code});
     }
     catch (e) {
       // setup popups
       console.log(e);
-      setModalText(e.toString());
+      setErrorMsg(e.toString());
       setModalVisible(true);
     }
   }
 
   return(
-    <View>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={modalText}/>
-      <Text>Create an Org!</Text>
+    <View style={createJoinStyles.mainContainer}>
+      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
+      <Text style={createJoinStyles.title}>Create Org</Text>
+      <Text style={createJoinStyles.subtitle}>Create a name for your org</Text>
       <TextInput
-      style={styles.input}
-      onChangeText={onChangeName}
-      value={name}
-      placeholder="Org Name"
-      keyboardType="default"
-      />
-      <Button title="Create Org!" onPress={createOrg} />
-      <StatusBar style="auto" />
-    </View>
+        style={createJoinStyles.input}
+        onChangeText={onChangeName}
+        value={name}
+        placeholder="Ex. Asayake Taiko"
+        keyboardType="default"
+        />
+      <TouchableOpacity style={createJoinStyles.button} onPress={() => {createOrg()}}>
+        <Text style={createJoinStyles.btnText}>Create Org</Text>
+      </TouchableOpacity>
+  </View>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-});
 
 export default CreateOrgScreen;

@@ -5,15 +5,19 @@ import { BackHandler } from 'react-native';
 import EquipmentScreen from './Equipment';
 import SwapEquipmentScreen from './SwapEquipment';
 import TeamEquipmentScreen from './TeamEquipment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesone5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Auth } from 'aws-amplify';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ManagerScreen from './Manager';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
 
 function MemberTabs({navigation}) {
   const [currOrgName, setCurrOrgName] = React.useState('');
+  const [isManager, setIsManager] = React.useState(false);
   const isFocused = useIsFocused();
 
   // Custom so thata back button press goes to the menu
@@ -28,31 +32,37 @@ function MemberTabs({navigation}) {
     return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, [navigation]);
 
-  useEffect(() => {
-    if(isFocused){
-      console.log('isFocused: ', isFocused);
-      getCurrOrg();
-    }
-  }, [isFocused]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: currOrgName,
-    });
-  }, [navigation, currOrgName]);
-
-  async function getCurrOrg() {
-    try {
-        const org = await AsyncStorage.getItem('currOrg');
-        const orgJSON = JSON.parse(org);
-        if(org == null){
-          // navigate to joinOrg with a false prop
-          navigation.navigate('JoinOrg');
+      headerRight: () => {
+        if(isManager) {
+          return <MaterialCommunityIcons name="crown" color={'#791111'} size={35} style={{padding: 5}} />;
         }
-        console.log('orgJSON: ', orgJSON.name);
-        setCurrOrgName(orgJSON.name);
-    } catch (error) {
-        console.log('error getting current org: ', error);
+        else return <></>;
+      }
+    });
+  }, [navigation, currOrgName, isManager]);
+
+  useEffect(() => {
+    if(isFocused){
+      checkUserOrg();
+    }
+  }, [isFocused]);
+
+  async function checkUserOrg() {
+    setIsManager(false);
+    const user = await Auth.currentAuthenticatedUser();
+    const key = user.attributes.sub + ' currOrg';
+    const org = await AsyncStorage.getItem(key);
+    if(org == null){
+      navigation.navigate('JoinOrCreate');
+      return;
+    }
+    const orgJSON = JSON.parse(org);
+    setCurrOrgName(orgJSON.name);
+    if(orgJSON.organizationManagerUserId == user.attributes.sub){
+      setIsManager(true);
     }
   }
 
@@ -90,6 +100,12 @@ function MemberTabs({navigation}) {
             <FontAwesone5 name="users" color={'black'} size={19} />
           ),
         }}/>
+        {isManager ? <Tab.Screen name="Manager" component={ManagerScreen} 
+        options={{
+          tabBarIcon: () => (
+            <MaterialCommunityIcons name="crown" color={'black'} size={21} />
+          ),
+        }}/> : <></>}
     </Tab.Navigator>
   );
 };

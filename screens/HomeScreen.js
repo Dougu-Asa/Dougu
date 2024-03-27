@@ -1,18 +1,10 @@
 import {Text, View, Button, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import React, {useEffect} from 'react';
-import { useAuth } from '../components/AuthProvider';
 import LoginScreen from '../components/Login';
 import CreateAccScreen from '../components/CreateAcc';
 
 function HomeScreen({navigation}) {
-  const { isUserAuthenticated } = useAuth();
   const [login, setLogin] = React.useState(true);
-  
-  useEffect(() => {
-    if(isUserAuthenticated) {
-      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
-    }
-  });
 
   return(
     <View style={styles.container}>

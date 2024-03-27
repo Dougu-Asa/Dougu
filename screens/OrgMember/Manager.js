@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, Organization, User } from '../src/models';
+import { OrgUserStorage, Organization, User } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const MyOrgsScreen = ({navigation}) => {
+const ManagerScreen = ({navigation}) => {
   const [orgNames, setOrgNames] = useState([]);
 
   useEffect(() => {
@@ -13,16 +13,18 @@ const MyOrgsScreen = ({navigation}) => {
   }, []);
 
   async function subscribeToChanges() {
-    DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
+    DataStore.observeQuery(Organization).subscribe(snapshot => {
       const { items, isSynced } = snapshot;
       console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
       getOrgs();
     });
   }
 
+  // get the orgs user is a manager of
   async function getOrgs() {
     const user = await Auth.currentAuthenticatedUser();
-    let orgs = await DataStore.query(Organization, (c) => c.UserOrStorages.user.userId.eq(user.attributes.sub));
+    let orgs = await DataStore.query(Organization, (c) => c.organizationManagerUserId.eq(user.attributes.sub));
+    console.log('orgs: ', orgs);
     const orgData = orgs.map((org, index) => ({
       label: org['name'],
       value: index,
@@ -34,9 +36,8 @@ const MyOrgsScreen = ({navigation}) => {
     const user = await Auth.currentAuthenticatedUser();
     const org = await DataStore.query(Organization, (c) => c.name.eq(orgName));
     // save into our current async storage
-    const key = user.attributes.sub + ' currOrg';
+    const key = user.attributes.name + ' currOrg';
     await AsyncStorage.setItem(key, JSON.stringify(org[0]));
-    console.log(key);
     navigation.navigate('MemberTabs');
   }
 
@@ -55,7 +56,7 @@ const MyOrgsScreen = ({navigation}) => {
   );
 };
 
-export default MyOrgsScreen;
+export default ManagerScreen;
 
 const styles = StyleSheet.create({
   orgContainer: {
