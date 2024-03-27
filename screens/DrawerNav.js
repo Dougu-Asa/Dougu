@@ -1,19 +1,20 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
-import { TouchableOpacity, Text, View, StyleSheet} from 'react-native';
-import ProfileScreen from '../ProfileScreen';
-import JoinOrgScreen from '../JoinOrgScreen';
-import CreateOrgScreen from '../CreateOrgScreen';
-import AccessCodeScreen from '../AccessCodeScreen';
-import MemberTabs from './MemberTabs';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { TouchableOpacity, Text, View, StyleSheet, Image} from 'react-native';
+import ProfileScreen from './ProfileScreen';
+import JoinOrgScreen from './JoinOrgScreen';
+import CreateOrgScreen from './CreateOrgScreen';
+import AccessCodeScreen from './AccessCodeScreen';
+import MyOrgsScreen from './MyOrgsScreen';
+import MemberTabs from './OrgMember/MemberTabs';
 import { BackHandler } from 'react-native';
 import { Auth } from 'aws-amplify';
-import React, { useEffect } from 'react';
+import React, { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
     const insets = useSafeAreaInsets();
+    const [username, setUsername] = React.useState('');
 
     // custom android back button
     useEffect(() => {
@@ -28,12 +29,25 @@ function DrawerNav({navigation}) {
         // Remove the backAction handler when the component unmounts
         return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
     }, [navigation]);
+
+    useEffect(() => {
+        async function getUsername() {
+            try {
+                const user = await Auth.currentAuthenticatedUser();
+                console.log('user: ', user.attributes.name);
+                setUsername(user.attributes.name);
+            } catch (error) {
+                console.log('error getting username: ', error);
+            }
+        }
+        getUsername();
+    }, []);
     
     //Custom header logout button on the right
     const MyHeaderProfileButton = ({navigation}) => {
         return (
             <TouchableOpacity style={styles.profile} onPress={() => navigation.toggleDrawer()}>
-                <FontAwesome name="user-circle-o" size={35} color="black" style={{padding: 5}}/>
+                <Image source={require('../assets/miku.jpg')} style={styles.circleImage}/>
             </TouchableOpacity>
         );
     };
@@ -56,11 +70,12 @@ function DrawerNav({navigation}) {
             height: '100%',
           }}>
             <View style={styles.header}>
-                <DrawerItem label="User Name" />
+                <Text style={styles.headerText}>{username}</Text>
             </View>
             <View style={styles.listContainer}>
                 <DrawerItem label="Profile" onPress={() => {navigation.navigate('Profile')}}/>
                 <DrawerItem label="Current Org" onPress={() => {navigation.navigate('MemberTabs')}}/>
+                <DrawerItem label="My Orgs" onPress={() => {navigation.navigate('MyOrgs')}}/>
                 <DrawerItem label="Join Org!" onPress={() => {navigation.navigate('JoinOrg')}}/>
                 <DrawerItem label="Create an Org!" onPress={() => {navigation.navigate('CreateOrg')}}/>
             </View>
@@ -76,9 +91,11 @@ function DrawerNav({navigation}) {
         screenOptions={({navigation}) => ({
             headerLeft: () => <MyHeaderProfileButton navigation={navigation}/>,
             headerTitleAlign: 'center',
-            headerStyle: {
-                backgroundColor: 'gray',
-            },
+            headerTitleStyle: {
+                fontSize: 28,
+                fontWeight: 'bold',
+                color: '#791111'
+            }
         })}
         drawerContent={(props) => <CustomDrawerContent {...props}/>}>
             <Drawer.Screen name="Profile" component={ProfileScreen}/>
@@ -86,6 +103,7 @@ function DrawerNav({navigation}) {
             <Drawer.Screen name="JoinOrg" component={JoinOrgScreen}/>
             <Drawer.Screen name="CreateOrg" component={CreateOrgScreen}/>
             <Drawer.Screen name="Access Code" component={AccessCodeScreen}/>
+            <Drawer.Screen name="MyOrgs" component={MyOrgsScreen}/>
         </Drawer.Navigator>
     );
 };
@@ -98,7 +116,8 @@ const styles = StyleSheet.create({
         height: '10%',
     },
     headerText: {
-        fontSize: 32,
+        fontSize: 18,
+        left: 20,
     },
     listContainer: {
         borderWidth: 1,
@@ -109,5 +128,12 @@ const styles = StyleSheet.create({
     },
     profile: {
         left: 20
-    }
+    },
+    circleImage: {
+        width: 45, 
+        height: 45, 
+        borderRadius: 35 / 2, 
+        padding: 5, 
+        left: 5,
+    },
 });

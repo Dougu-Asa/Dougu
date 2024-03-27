@@ -1,5 +1,4 @@
 import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
-import MainStyle from '../styles/MainStyle';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
 
@@ -17,7 +16,7 @@ function ProfileScreen({navigation}) {
     }, [navigation]);
 
     return(
-      <View style={MainStyle.container}>
+      <View>
         <Text>Profile!</Text>
       </View>
     );

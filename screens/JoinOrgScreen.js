@@ -1,13 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
-import MainStyle from '../styles/MainStyle';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import PopupModal from '../components/PopupModal';
 import { OrgUserStorage, Organization, User, UserOrStorage } from '../src/models';
 import { DataStore } from '@aws-amplify/datastore';
 import { Auth } from 'aws-amplify';
-import { useUserOrg } from '../components/UserOrgProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function JoinOrgScreen({navigation}) {
   const [code, onChangeCode] = React.useState('');
@@ -27,7 +26,6 @@ function JoinOrgScreen({navigation}) {
   // popup modal
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('Error!');
-  const { setCurrOrg, setCurrOrgUserStorage } = useUserOrg();
   async function joinOrg(){
     try{
       console.log("Joining Org");
@@ -70,8 +68,9 @@ function JoinOrgScreen({navigation}) {
           updated.UserOrStorages = newOrgUserStorage;
         })
       );
-      setCurrOrg(currOrg);
-      setCurrOrgUserStorage(newOrgUserStorage);
+      // save the currOrg and newOrgUserStorage to async storage
+      await AsyncStorage.setItem('currOrg', JSON.stringify(currOrg));
+      await AsyncStorage.setItem('currOrgUserStorage', JSON.stringify(newOrgUserStorage));
       navigation.navigate('MemberTabs', {screen: 'My Equipment'});
     }
     catch(e){
@@ -82,7 +81,7 @@ function JoinOrgScreen({navigation}) {
   }
 
   return(
-    <View style={MainStyle.container}>
+    <View>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text>Join an Org</Text>
       <TextInput

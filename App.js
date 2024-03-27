@@ -13,10 +13,7 @@ import '@azure/core-asynciterator-polyfill';
 
 //screens
 import HomeScreen from './screens/HomeScreen';
-import CreateAccScreen from './screens/CreateAccScreen'
-import LoginScreen from './screens/LoginScreen';
-import { UserOrgProvider } from './components/UserOrgProvider';
-import DrawerNav from './screens/OrgMember/DrawerNav';
+import DrawerNav from './screens/DrawerNav';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -25,9 +22,7 @@ function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <UserOrgProvider>
-          <AppContent/>
-        </UserOrgProvider>
+        <AppContent/>
       </NavigationContainer>
     </AuthProvider>
   );
@@ -55,48 +50,9 @@ function AppContent() {
   };
 
   return (
-    <Stack.Navigator
-    screenOptions={({ navigation, route }) => ({
-      headerTitleStyle: {
-      fontWeight: 'bold',
-    },
-    headerTitleAlign: 'center',
-    headerLeft: (props) => {
-      // Access custom options set for the current screen, assuming they are passed as route params
-      const screenOptions = route.params?.screenOptions || {};
-      return (
-        <MyHeaderBackButton
-          {...props}
-          navigation={navigation}
-          backScreen={screenOptions.backScreen}
-          backScreenLabel={screenOptions.backScreenLabel}
-        />
-      );
-    },
-    })}>
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerLeft: () => null }}/>
-      <Stack.Screen name="Login" component={LoginScreen}/>
-      <Stack.Screen name="CreateAcc" component={CreateAccScreen}/>
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DrawerNav" component={DrawerNav} options={{ headerShown: false }}/>
     </Stack.Navigator>
-  );
-};
-
-// Custom header back button w/ custom back screens
-const MyHeaderBackButton = ({ navigation, backScreen}) => {
-  async function handlePress() {
-    if (backScreen) {
-      if(backScreen === 'Home') {
-        await Auth.signOut();
-      }
-      navigation.navigate(backScreen);
-    } else {
-      navigation.goBack();
-    }
-  };
-  return (
-    <TouchableOpacity onPress={handlePress}>
-      <AntDesign name="arrowleft" size={30} color="black"/>
-    </TouchableOpacity>
   );
 };

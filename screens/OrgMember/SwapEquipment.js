@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, PanResponder, Animated, StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native'
+
+//const halfWindowsWidth = Dimensions.get('window').width / 2
 
 const DraggableItem = ({ item, onDrop, onStart }) => {
   const pan = useRef(new Animated.ValueXY()).current;

@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button } from 'react-native';
-import MainStyle from '../styles/MainStyle';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
 
@@ -21,7 +20,7 @@ function AccessCodeScreen({route, navigation}) {
   }, [navigation]);
 
   return(
-    <View style={MainStyle.container}>
+    <View >
       <Text>Access Code!</Text>
       <Text>{accessCode}</Text>
       <Text>Give this code to your members so they can join your organization!</Text>

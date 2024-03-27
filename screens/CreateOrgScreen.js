@@ -1,18 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Text, View, TextInput, StyleSheet } from 'react-native';
-import MainStyle from '../styles/MainStyle';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import PopupModal from '../components/PopupModal';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
-import { useUserOrg } from '../components/UserOrgProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function CreateOrgScreen({navigation}) {
   const [name, onChangeName] = React.useState('');
-  const { setCurrOrg } = useUserOrg();
-  const { setCurrOrgUserStorage } = useUserOrg();
   // Custom so thata back button press goes to the menu
   useEffect(() => {
     const backAction = () => {
@@ -81,8 +78,10 @@ function CreateOrgScreen({navigation}) {
           updated.UserOrStorages = newOrgUserStorage;
         })
       );
-      setCurrOrg(currOrg);
-      setCurrOrgUserStorage(newOrgUserStorage);
+      // save the currOrg and newOrgUserStorage to async storage
+      await AsyncStorage.setItem('currOrg', JSON.stringify(currOrg));
+      await AsyncStorage.setItem('currOrgUserStorage', JSON.stringify(newOrgUserStorage));
+      onChangeName('');
       navigation.navigate('Access Code', {accessCode: code});
     }
     catch (e) {
@@ -94,7 +93,7 @@ function CreateOrgScreen({navigation}) {
   }
 
   return(
-    <View style={MainStyle.container}>
+    <View>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={modalText}/>
       <Text>Create an Org!</Text>
       <TextInput

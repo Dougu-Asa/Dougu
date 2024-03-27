@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
-import MainStyle from '../../styles/MainStyle';
 import React from 'react';
 
 function MyEquipmentScreen(){
     return (
-        <View style={MainStyle.container}>
+        <View>
             <Text>My Equipment!</Text>
             <StatusBar style="auto" />
         </View>

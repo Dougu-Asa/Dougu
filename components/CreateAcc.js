@@ -1,10 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Modal, View, Button, TextInput, StyleSheet, Pressable, Text } from 'react-native';
-import MainStyle from '../styles/MainStyle';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
-import PopupModal from '../components/PopupModal';
+import PopupModal from './PopupModal';
 import { DataStore } from '@aws-amplify/datastore';
 import { User } from '../src/models';
 
@@ -65,9 +64,8 @@ function CreateAccScreen({navigation}) {
   }
 
   return(
-    <View style={MainStyle.container}>
+    <View>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
-      <Text>Create Account</Text>
       <View style={styles.nameContainer}>
         <TextInput
         style={styles.name}

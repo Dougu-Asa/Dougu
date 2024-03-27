@@ -1,11 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { Alert, Modal, Pressable, Text, View, Button, TextInput, StyleSheet } from 'react-native';
-import MainStyle from '../styles/MainStyle';
+import { View, Button, TextInput, StyleSheet } from 'react-native';
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
-import PopupModal from '../components/PopupModal';
+import PopupModal from './PopupModal';
 
 function LoginScreen({navigation}) {
   // Function to toggle the password visibility state 
@@ -21,6 +19,8 @@ function LoginScreen({navigation}) {
   async function signIn({username, password}) {
     try {
       await Auth.signIn(username, password);
+      onChangePassword('');
+      onChangeUsername('');
       navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
     } catch (error) {
       console.log('error signing in', error);
@@ -33,8 +33,8 @@ function LoginScreen({navigation}) {
   const [password, onChangePassword] = React.useState('');
 
   return(
-    <View style={MainStyle.container}>
-      <Text>Login</Text>
+    <View style={styles.container}>
+      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <TextInput
       style={styles.input}
       onChangeText={onChangeUsername}
@@ -59,14 +59,18 @@ function LoginScreen({navigation}) {
           onPress={toggleShowPassword} 
         /> 
       </View>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Button title="Login!" onPress={() => signIn({username, password})} />
-      <StatusBar style="auto" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },  
   input: {
     height: 60,
     margin: '5%',
