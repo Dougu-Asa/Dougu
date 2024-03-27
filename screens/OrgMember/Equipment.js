@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet, Modal, Pressable } from 'react-native';
 import React from 'react';
 
-function MyEquipmentScreen(){
+function EquipmentScreen(){
+
     return (
         <View>
             <Text>My Equipment!</Text>
@@ -11,4 +12,4 @@ function MyEquipmentScreen(){
     );
 };
 
-export default MyEquipmentScreen;
+export default EquipmentScreen;

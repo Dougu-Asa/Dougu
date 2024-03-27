@@ -10,7 +10,7 @@ function HomeScreen({navigation}) {
   
   useEffect(() => {
     if(isUserAuthenticated) {
-      navigation.navigate('DrawerNav' , {screen: 'MemberTabs'});
+      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     }
   });
 

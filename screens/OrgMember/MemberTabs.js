@@ -2,10 +2,12 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useEffect, useState, useLayoutEffect} from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
-import MyEquipmentScreen from './MyEquipment';
+import EquipmentScreen from './Equipment';
 import SwapEquipmentScreen from './SwapEquipment';
 import TeamEquipmentScreen from './TeamEquipment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FontAwesone5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
@@ -44,7 +46,8 @@ function MemberTabs({navigation}) {
         const org = await AsyncStorage.getItem('currOrg');
         const orgJSON = JSON.parse(org);
         if(org == null){
-            navigation.navigate('Home');
+          // navigate to joinOrg with a false prop
+          navigation.navigate('JoinOrg');
         }
         console.log('orgJSON: ', orgJSON.name);
         setCurrOrgName(orgJSON.name);
@@ -57,11 +60,36 @@ function MemberTabs({navigation}) {
     // tab navigator has the tab bar at the bottom of the screen
     <Tab.Navigator tabBarPosition='bottom'
     screenOptions={{
-        tabBarLabelStyle: { fontSize: 10 },
-      }}>
-        <Tab.Screen name="Equipment" component={MyEquipmentScreen} />
-        <Tab.Screen name="Swap" component={SwapEquipmentScreen} />
-        <Tab.Screen name="Team" component={TeamEquipmentScreen} />
+      tabBarLabelStyle: { 
+        fontSize: 9,
+      },
+      tabBarStyle: { 
+        height: 70, 
+        paddingTop: 5,
+      },
+      tabBarIconStyle: { 
+        marginTop: -5, 
+      },
+      tabBarShowIcon: true,
+    }}>
+        <Tab.Screen name="Equipment" component={EquipmentScreen} 
+        options={{
+          tabBarIcon: () => (
+            <FontAwesone5 name="home" color={'black'} size={20} />
+          ),
+        }}/>
+        <Tab.Screen name="Swap" component={SwapEquipmentScreen} 
+        options={{
+          tabBarIcon: () => (
+            <Entypo name="cycle" color={'black'} size={20} />
+          ),
+        }}/>
+        <Tab.Screen name="Team" component={TeamEquipmentScreen} 
+        options={{
+          tabBarIcon: () => (
+            <FontAwesone5 name="users" color={'black'} size={19} />
+          ),
+        }}/>
     </Tab.Navigator>
   );
 };

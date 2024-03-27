@@ -11,11 +11,13 @@ import { Auth } from 'aws-amplify';
 import React, { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ManagerScreen from './ManagerScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
     const insets = useSafeAreaInsets();
     const [username, setUsername] = React.useState('');
+    const [hasOrg, setHasOrg] = React.useState(false);
 
     // custom android back button
     useEffect(() => {
@@ -37,12 +39,31 @@ function DrawerNav({navigation}) {
                 const user = await Auth.currentAuthenticatedUser();
                 console.log('user: ', user.attributes.name);
                 setUsername(user.attributes.name);
+                checkUserOrg();
             } catch (error) {
                 console.log('error getting username: ', error);
             }
         }
         getUsername();
     }, []);
+    
+      async function checkUserOrg() {
+        try {
+            const org = await AsyncStorage.getItem('currOrg');
+            const userOrg = await AsyncStorage.getItem('currUserOrg');
+            const orgJSON = JSON.parse(org);
+            console.log(userOrg);
+            if(org == null || userOrg == null){
+              setHasOrg(false);
+            }
+            else{
+                setHasOrg(true);
+                console.log('orgJSON: ', orgJSON.name);
+            }
+        } catch (error) {
+            console.log('error getting current org: ', error);
+        }
+      }
     
     //Custom header logout button on the right
     const MyHeaderProfileButton = ({navigation}) => {
@@ -75,11 +96,11 @@ function DrawerNav({navigation}) {
             </View>
             <View style={styles.listContainer}>
                 <DrawerItem label="Profile" onPress={() => {navigation.navigate('Profile')}}/>
-                <DrawerItem label="Current Org" onPress={() => {navigation.navigate('MemberTabs')}}/>
+                {hasOrg ? <DrawerItem label="Current Org" onPress={() => {navigation.navigate('MemberTabs')}}/> : null}
                 <DrawerItem label="My Orgs" onPress={() => {navigation.navigate('MyOrgs')}}/>
                 <DrawerItem label="Join Org!" onPress={() => {navigation.navigate('JoinOrg')}}/>
                 <DrawerItem label="Create an Org!" onPress={() => {navigation.navigate('CreateOrg')}}/>
-                <DrawerItem label="Mange Orgs" onPress={() => {navigation.navigate('Manager')}}/>
+                <DrawerItem label="Manage Orgs" onPress={() => {navigation.navigate('Manager')}}/>
             </View>
             <View style={styles.footer}>
                 <DrawerItem label="Logout" onPress={signOut}/>

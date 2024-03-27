@@ -21,7 +21,7 @@ function LoginScreen({navigation}) {
       await Auth.signIn(username, password);
       onChangePassword('');
       onChangeUsername('');
-      navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
+      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       console.log('error signing in', error);
       setErrorMsg(error.toString());
