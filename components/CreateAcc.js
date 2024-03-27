@@ -54,7 +54,7 @@ function CreateAccScreen({navigation}) {
         })
       );
       console.log(newUser);
-      navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
+      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       console.log('error signing up:', error);
       console.log(error);
@@ -64,7 +64,7 @@ function CreateAccScreen({navigation}) {
   }
 
   return(
-    <View>
+    <View style={styles.container}>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <View style={styles.nameContainer}>
         <TextInput
@@ -114,6 +114,12 @@ function CreateAccScreen({navigation}) {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
   input: {
     height: 60,
     borderWidth: 1,
@@ -146,7 +152,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   icon: {
-    padding: 10,
+    padding: 5,
     width: '18%',
   },
 });
