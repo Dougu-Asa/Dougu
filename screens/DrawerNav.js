@@ -10,6 +10,7 @@ import { BackHandler } from 'react-native';
 import { Auth } from 'aws-amplify';
 import React, { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ManagerScreen from './ManagerScreen';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
@@ -78,6 +79,7 @@ function DrawerNav({navigation}) {
                 <DrawerItem label="My Orgs" onPress={() => {navigation.navigate('MyOrgs')}}/>
                 <DrawerItem label="Join Org!" onPress={() => {navigation.navigate('JoinOrg')}}/>
                 <DrawerItem label="Create an Org!" onPress={() => {navigation.navigate('CreateOrg')}}/>
+                <DrawerItem label="Mange Orgs" onPress={() => {navigation.navigate('Manager')}}/>
             </View>
             <View style={styles.footer}>
                 <DrawerItem label="Logout" onPress={signOut}/>
@@ -104,6 +106,7 @@ function DrawerNav({navigation}) {
             <Drawer.Screen name="CreateOrg" component={CreateOrgScreen}/>
             <Drawer.Screen name="Access Code" component={AccessCodeScreen}/>
             <Drawer.Screen name="MyOrgs" component={MyOrgsScreen}/>
+            <Drawer.Screen name="Manager" component={ManagerScreen}/>
         </Drawer.Navigator>
     );
 };

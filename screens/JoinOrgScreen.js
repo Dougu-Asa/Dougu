@@ -71,7 +71,7 @@ function JoinOrgScreen({navigation}) {
       // save the currOrg and newOrgUserStorage to async storage
       await AsyncStorage.setItem('currOrg', JSON.stringify(currOrg));
       await AsyncStorage.setItem('currOrgUserStorage', JSON.stringify(newOrgUserStorage));
-      navigation.navigate('MemberTabs', {screen: 'My Equipment'});
+      navigation.navigate('MemberTabs', {screen: 'Equipment'});
     }
     catch(e){
       console.log(e);

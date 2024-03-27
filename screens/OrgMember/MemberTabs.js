@@ -5,7 +5,6 @@ import { BackHandler } from 'react-native';
 import MyEquipmentScreen from './MyEquipment';
 import SwapEquipmentScreen from './SwapEquipment';
 import TeamEquipmentScreen from './TeamEquipment';
-import ManagerScreen from './ManagerScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // The navigator for a logged in member of an organization
@@ -60,10 +59,9 @@ function MemberTabs({navigation}) {
     screenOptions={{
         tabBarLabelStyle: { fontSize: 10 },
       }}>
-        <Tab.Screen name="My Equipment" component={MyEquipmentScreen} />
-        <Tab.Screen name="Swap Equipment" component={SwapEquipmentScreen} />
-        <Tab.Screen name="Team Equipment" component={TeamEquipmentScreen} />
-        <Tab.Screen name="Manage Equpment" component={ManagerScreen} />
+        <Tab.Screen name="Equipment" component={MyEquipmentScreen} />
+        <Tab.Screen name="Swap" component={SwapEquipmentScreen} />
+        <Tab.Screen name="Team" component={TeamEquipmentScreen} />
     </Tab.Navigator>
   );
 };
