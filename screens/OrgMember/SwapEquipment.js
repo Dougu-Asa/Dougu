@@ -24,7 +24,6 @@ const SwapEquipmentScreen = () => {
   const initialTouchPoint = useRef({ x: 0, y: 0 });
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
-  let fullHeight = useRef(0);
   const [floatingPosition, setFloatingPosition] = useState({ top: 0, left: 0 });
   let scrollOffsetXTop = useRef(0);
   let scrollOffsetXBottom = useRef(0);
@@ -32,8 +31,7 @@ const SwapEquipmentScreen = () => {
   // we need to know the size of our container
   const onLayout = (event) => {
     const {x, y, width, height} = event.nativeEvent.layout;
-    fullHeight.current = height;
-    halfLine.current = (height / 2) + headerHeight;
+    halfLine.current = ((height - 80) / 2) + headerHeight + 80;
   };
 
   // we need to know who we dropped the equipment to
@@ -66,7 +64,7 @@ const SwapEquipmentScreen = () => {
     setDraggingOffset({ x: 0, y: 0 }); 
     const topOrBottom = gestureState.y0 > halfLine.current ? 2 : 1;
     startPosition.current = topOrBottom;
-    let posy = (topOrBottom == 2) ? initialPosition.y + (fullHeight.current / 2) + 40 : initialPosition.y + 40;
+    let posy = (topOrBottom == 2) ? initialPosition.y + halfLine.current - 60 : initialPosition.y + 120;
     let posx = (topOrBottom == 2) ? initialPosition.x - scrollOffsetXBottom.current : initialPosition.x - scrollOffsetXTop.current;
     setFloatingPosition({ top: posy, left: posx });
     initialTouchPoint.current = { x: gestureState.x0, y: gestureState.y0 };
@@ -81,13 +79,17 @@ const SwapEquipmentScreen = () => {
 
   return (
     <View style={styles.scrollContainer} onLayout={onLayout}>
+      <View style={styles.info}>
+        <Text style={styles.infoTxt}>To swap equipment, drag-and-drop your equipment with a team member!</Text>
+      </View>
+      <Text style={styles.scrollText}>My Equipment</Text>
       <ScrollView horizontal={true}
       onScroll={handleScrollTop}
       scrollEventThrottle={10}
       scrollEnabled={!draggingItem}
-      decelerationRate={'normal'}>
+      decelerationRate={'normal'}
+      showsHorizontalScrollIndicator={false}>
         <View style={styles.scrollRow}>
-          <Text style={styles.scrollText}>My Equipment</Text>
           <View style={styles.scrollTop}>
             {listOne.map((item) => (
               <DraggableEquipment key={item.id} item={item} onDrop={handleDrop} onStart={handleStart} onMove={handleMove} />
@@ -95,12 +97,13 @@ const SwapEquipmentScreen = () => {
           </View>
         </View>
       </ScrollView>
+      <Text style={styles.scrollText}>Other Name</Text>
       <ScrollView horizontal={true}
       onScroll={handleScrollBottom}
       scrollEventThrottle={10}
-      scrollEnabled={!draggingItem}>
+      scrollEnabled={!draggingItem}
+      showsHorizontalScrollIndicator={false}>
         <View style={styles.scrollRow}>
-          <Text style={styles.scrollText}>Other Name</Text>
           <View style={styles.scrollBottom}>
             {listTwo.map((item) => (
               <DraggableEquipment key={item.id} item={item} onDrop={handleDrop} onStart={handleStart} onMove={handleMove} />
@@ -125,19 +128,29 @@ const styles = StyleSheet.create({
     flexDirection: 'column', 
     backgroundColor: 'white',
   },
+  info: {
+    height: 80,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoTxt: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   scrollRow: {
     flex: 1,
     flexDirection: 'column',
     minWidth: Dimensions.get('window').width, 
     height: Dimensions.get('window').height / 2,
-    borderTopColor: 'grey',
-    borderTopWidth: 0.5,
   },
   scrollText: {
     height: 40,
     fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 20,
+    borderTopColor: 'grey',
+    borderTopWidth: 0.5,
   },
   scrollTop: {
     flex: 1,
