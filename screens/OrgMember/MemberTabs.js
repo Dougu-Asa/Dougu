@@ -61,6 +61,7 @@ function MemberTabs({navigation}) {
     }
     const orgJSON = JSON.parse(org);
     setCurrOrgName(orgJSON.name);
+    //organizationManagerUserId
     if(orgJSON.organizationManagerUserId == user.attributes.sub){
       setIsManager(true);
     }

@@ -40,7 +40,7 @@ type Container @model{
   name: String!
   organization: Organization! @belongsTo
   lastUpdatedDate: String!
-  assignedTo: OrgUserStorage @belongsTo
+  assignedTo: OrgUserStorage! @belongsTo
   equipment: [Equipment] @hasMany
   details: String
 }
@@ -50,7 +50,7 @@ type Equipment @model{
   name: String!
   organization: Organization! @belongsTo
   lastUpdatedDate: String!
-  assignedTo: OrgUserStorage @belongsTo
+  assignedTo: OrgUserStorage! @belongsTo
   parent: Container @belongsTo
   details: String
 }

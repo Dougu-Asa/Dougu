@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 //screens
 import HomeScreen from './screens/HomeScreen';
 import DrawerNav from './screens/DrawerNav';
+import CreateEquipmentScreen from './screens/OrgMember/CreateEquipmentScreen';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,7 @@ function AppContent() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DrawerNav" component={DrawerNav} options={{ headerShown: false }}/>
+      <Stack.Screen name="CreateEquipment" component={CreateEquipmentScreen}/>
     </Stack.Navigator>
   );
 };

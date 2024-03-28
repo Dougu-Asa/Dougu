@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Animated, StyleSheet} from 'react-native';
 import { Dimensions } from 'react-native';
 import DraggableEquipment from '../../components/DraggableEquipment';
 import { useHeaderHeight } from '@react-navigation/elements';
+import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 
 const SwapEquipmentScreen = () => {
   const [listOne, setListOne] = useState([
@@ -97,7 +98,7 @@ const SwapEquipmentScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <Text style={styles.scrollText}>Other Name</Text>
+      <CurrMembersDropdown />
       <ScrollView horizontal={true}
       onScroll={handleScrollBottom}
       scrollEventThrottle={10}
