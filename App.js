@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import '@azure/core-asynciterator-polyfill';
 import { useNavigation } from '@react-navigation/native';
-import { UserOrgProvider } from './components/UserOrgProvider';
 
 //screens
 import HomeScreen from './screens/HomeScreen';
@@ -18,9 +17,7 @@ const Stack = createNativeStackNavigator();
 function App() {
   return (
     <NavigationContainer>
-      <UserOrgProvider>
         <AppContent />
-      </UserOrgProvider>
     </NavigationContainer>
   );
 }

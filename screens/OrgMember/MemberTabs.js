@@ -81,6 +81,7 @@ function MemberTabs({navigation}) {
         marginTop: -5, 
       },
       tabBarShowIcon: true,
+      swipeEnabled: false,
     }}>
         <Tab.Screen name="Equipment" component={EquipmentScreen} 
         options={{

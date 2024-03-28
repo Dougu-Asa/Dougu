@@ -5,9 +5,9 @@ import CreateOrgScreen from './CreateOrgScreen';
 
 function JoinOrCreateScreen({navigation}) {
     return (
-        <ScrollView>
+        <ScrollView style={{backgroundColor: 'white'}}>
             <View style={styles.mainContainer}>
-                <Text style={styles.titleText}>Looks like you aren't part of an org yet! Join or Create!</Text>
+                <Text style={styles.titleText}>Looks like you aren't part of an org yet! Join or Create an org!</Text>
                 <View style={styles.container}>
                     <JoinOrgScreen navigation={navigation}/>
                 </View>
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
         color: '#791111',
         margin: 20,
         textAlign: 'center',
+        width: '80%'
     },
     container: {
         width: '80%',

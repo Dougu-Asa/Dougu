@@ -133,17 +133,21 @@ const styles = StyleSheet.create({
     header: {
         justifyContent: 'center',
         height: '10%',
+        borderBottomColor: 'grey',
+        borderBottomWidth: 0.5,
     },
     headerText: {
         fontSize: 18,
         left: 20,
     },
     listContainer: {
-        borderWidth: 1,
         height: '80%',
     },
     footer: {
         height: '10%',
+        justifyContent: 'center',
+        borderTopColor: 'grey',
+        borderTopWidth: 0.5,
     },
     profile: {
         left: 20

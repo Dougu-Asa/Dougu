@@ -53,7 +53,10 @@ function CreateAccScreen({navigation}) {
           email: user.attributes.email,
         })
       );
-      console.log(newUser);
+      onChangeEmail('');
+      onChangeFirst('');
+      onChangeLast('');
+      onChangePassword('');
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       console.log('error signing up:', error);
