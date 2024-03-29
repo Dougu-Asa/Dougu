@@ -8,7 +8,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const EquipmentScreen = ({navigation}) => {
   const [equipment, setEquipment] = useState([]);
-    const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if(isFocused){
@@ -25,22 +25,22 @@ const EquipmentScreen = ({navigation}) => {
   }
 
     async function getEquipment() {
-        const user = await Auth.currentAuthenticatedUser();
-        const key = user.attributes.sub + ' currOrg';
-        const org = await AsyncStorage.getItem(key);
-        if(org == null){
-            return;
-        };
-        const orgJSON = JSON.parse(org);
-        const equipment = await DataStore.query(Equipment, (c) => c.and(c => [
-            c.organization.id.eq(orgJSON.id),
-            c.assignedTo.user.userId.eq(user.attributes.sub),
-        ]));
-        const equipmentData = equipment.map((equip, index) => ({
-            label: equip['name'],
-            value: index,
-        }));
-        setEquipment(equipmentData);
+      const user = await Auth.currentAuthenticatedUser();
+      const key = user.attributes.sub + ' currOrg';
+      const org = await AsyncStorage.getItem(key);
+      if(org == null){
+          return;
+      };
+      const orgJSON = JSON.parse(org);
+      const equipment = await DataStore.query(Equipment, (c) => c.and(c => [
+          c.organization.id.eq(orgJSON.id),
+          c.assignedTo.user.userId.eq(user.attributes.sub),
+      ]));
+      const equipmentData = equipment.map((equip, index) => ({
+          label: equip['name'],
+          value: index,
+      }));
+      setEquipment(equipmentData);
     }
 
   const renderItem = ({ item }) => (

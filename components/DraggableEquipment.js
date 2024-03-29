@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { Text, Animated, PanResponder, StyleSheet } from 'react-native';
+import { Text, Animated, PanResponder, StyleSheet, View } from 'react-native';
 
-const DraggableEquipment = ({ item, onDrop, onStart, onMove }) => {
+const DraggableEquipment = ({ item, onDrop, onStart, onMove, onTerminate }) => {
     const pan = useRef(new Animated.ValueXY()).current;
     let position = useRef(null);
 
@@ -28,9 +28,12 @@ const DraggableEquipment = ({ item, onDrop, onStart, onMove }) => {
             onDrop(item, gesture.moveY); // Pass the item and its drop position
             Animated.spring(pan, { toValue: { x: 0, y: 0, zIndex: 0 }, useNativeDriver: false }).start();
         },
+        onPanResponderTerminate: () => {
+            onTerminate();
+        }
       })
     ).current;
-  
+
     return (
       <Animated.View
         onLayout={onLayout}
@@ -38,6 +41,9 @@ const DraggableEquipment = ({ item, onDrop, onStart, onMove }) => {
         {...panResponder.panHandlers}
       >
         <Text>{item.label}</Text>
+        <View style={styles.circle}>
+          <Text style={styles.count}>{item.count}</Text>
+        </View>
       </Animated.View>
     );
 };
@@ -54,4 +60,20 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    circle: {
+      backgroundColor: 'white',
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      right: 5,
+      bottom: 5,
+      borderWidth: 1,
+    },
+    count: {
+      fontSize: 10,
+      fontWeight: 'bold',
+    }
   });

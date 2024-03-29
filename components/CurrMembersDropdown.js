@@ -62,9 +62,7 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
   }
 
   async function handleChangeUser(value) {
-    if(isCreate){
-      setUser(value);
-    }
+    setUser(value);
   }
 
   return (

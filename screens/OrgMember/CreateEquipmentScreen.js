@@ -54,7 +54,7 @@ function CreateEquipmentScreen({navigation}){
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
             const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
                 c.organization.name.eq(orgJSON.name),
-                c.user.userId.eq(user.attributes.sub)
+                c.user.userId.eq(assignUser.userId)
             ]));
             // create however many equipment specified by quantity
             for(let i = 0; i < quantityCt; i++){
