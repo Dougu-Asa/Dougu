@@ -370,7 +370,7 @@ export const schema = {
                     "type": {
                         "model": "OrgUserStorage"
                     },
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": [],
                     "association": {
                         "connectionType": "BELONGS_TO",
@@ -487,7 +487,7 @@ export const schema = {
                     "type": {
                         "model": "OrgUserStorage"
                     },
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": [],
                     "association": {
                         "connectionType": "BELONGS_TO",
@@ -577,5 +577,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "5fca74227262a40cc0fbfd1aa9365f18"
+    "version": "a1130d8e18ad5f11b320cfd7189ff09a"
 };

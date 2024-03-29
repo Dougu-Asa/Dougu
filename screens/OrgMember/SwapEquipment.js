@@ -32,7 +32,7 @@ const SwapEquipmentScreen = () => {
   // we need to know the size of our container
   const onLayout = (event) => {
     const {x, y, width, height} = event.nativeEvent.layout;
-    halfLine.current = ((height - 80) / 2) + headerHeight + 80;
+    halfLine.current = height / 2 + headerHeight + 40;
   };
 
   // we need to know who we dropped the equipment to
@@ -65,7 +65,7 @@ const SwapEquipmentScreen = () => {
     setDraggingOffset({ x: 0, y: 0 }); 
     const topOrBottom = gestureState.y0 > halfLine.current ? 2 : 1;
     startPosition.current = topOrBottom;
-    let posy = (topOrBottom == 2) ? initialPosition.y + halfLine.current - 60 : initialPosition.y + 120;
+    let posy = (topOrBottom == 2) ? initialPosition.y + halfLine.current - headerHeight : initialPosition.y + 120;
     let posx = (topOrBottom == 2) ? initialPosition.x - scrollOffsetXBottom.current : initialPosition.x - scrollOffsetXTop.current;
     setFloatingPosition({ top: posy, left: posx });
     initialTouchPoint.current = { x: gestureState.x0, y: gestureState.y0 };
