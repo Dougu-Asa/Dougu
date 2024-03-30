@@ -15,7 +15,7 @@ const MyOrgsScreen = ({navigation}) => {
   async function subscribeToChanges() {
     DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
       const { items, isSynced } = snapshot;
-      console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+      console.log(`OrgUserStorage [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
       getOrgs();
     });
   }

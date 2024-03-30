@@ -17,10 +17,8 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
 
   // useEffect 
   useEffect(() => {
-    if(isFocused){
-      subscribeToChanges();
-    }
-  }, [isFocused]);
+    subscribeToChanges();
+  }, []);
 
 
 
@@ -30,7 +28,7 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
       OrgUserStorage,
     ).subscribe(snapshot => {
       const { items, isSynced } = snapshot;
-      console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+      console.log(`OrgUserStorage Dropdown [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
       getMembers();
     });
   }

@@ -12,14 +12,18 @@ const EquipmentScreen = ({navigation}) => {
 
   useEffect(() => {
     if(isFocused){
-        subscribeToChanges();
+      getEquipment();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    subscribeToChanges();
+  }, []);
 
   async function subscribeToChanges() {
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
-        console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+        console.log(`myEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
         getEquipment();
     });
   }
@@ -50,17 +54,32 @@ const EquipmentScreen = ({navigation}) => {
   );
 
   return (
-    <FlatList
+    <View style={styles.container}>
+      <Text style={styles.title}>My Equipment</Text>
+      <FlatList
       data={equipment}
       renderItem={renderItem}
       keyExtractor={item => item.value}
-    />
+      />
+    </View>
   );
 };
 
 export default EquipmentScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },  
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    color: '#000',
+  },
   orgContainer: {
     padding: 20,
     marginVertical: 8,

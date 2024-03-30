@@ -3,7 +3,6 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
-import PopupModal from './PopupModal';
 import { Dimensions } from 'react-native';
 
 function LoginScreen({navigation}) {
@@ -25,8 +24,6 @@ function LoginScreen({navigation}) {
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       console.log('error signing in', error);
-      //setErrorMsg(error.toString());
-      //setModalVisible(true);
       Alert.alert('Error', error.message, [{text: 'OK'}]);
     }
   }
@@ -36,7 +33,6 @@ function LoginScreen({navigation}) {
 
   return(
     <View style={styles.container}>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text style={styles.headerText}>Login</Text>
       <TextInput
       style={styles.input}

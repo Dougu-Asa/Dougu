@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Auth, DataStore } from 'aws-amplify';
-import { Equipment, OrgUserStorage, User, Storage } from '../src/models';
+import { Equipment, OrgUserStorage, User, Storage, Organization } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class EquipmentTable extends Component {
   constructor(props) {
     super(props);
     const equipmentData = this.getEquipment();
-    console.log('equipmentdata: ', equipmentData);
+    this.subscribeToChanges();
     this.state = {
       tableHead: ['Name', 'Assigned To', 'Quantity', ''],
       tableData: [],
@@ -18,12 +18,23 @@ export default class EquipmentTable extends Component {
 
   componentDidMount() {
     this.getEquipment().then((equipmentData) => {
-      console.log('equipmentdata: ', equipmentData);
       this.setState({
         tableData: equipmentData,
       });
     });
   }
+
+  // subscribe to changes in equipment
+  async subscribeToChanges() {
+    DataStore.observeQuery(Equipment).subscribe(snapshot => {
+      const { items, isSynced } = snapshot;
+      console.log(`table [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+      this.getEquipment().then((equipmentData) => {
+        this.setState({
+          tableData: equipmentData,
+        });
+      });
+    })};
 
   // get all the equipment that belongs to an org
   async getEquipment() {
@@ -48,8 +59,30 @@ export default class EquipmentTable extends Component {
     return equipmentData;
   };
 
+  handleDelete = async (rowData) => {
+    // delete equipment
+    const equipment = await DataStore.query(Equipment, rowData.id);
+    await DataStore.delete(equipment);
+    Alert.alert("Equipment Deleted");
+  }
+
+  // make sure the owner wants to delete the equipment
   handleEdit = (rowData) => {
-    console.log(rowData);
+    Alert.alert(
+      "Delete Equipment",
+      "Would you like to delete this equipment?",
+      [
+        {
+          text: "Delete",
+          onPress: () => this.handleDelete(rowData),
+          style: "destructive",
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
   }
 
   render() {

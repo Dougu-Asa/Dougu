@@ -6,8 +6,9 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore, Auth } from 'aws-amplify';
-import { Equipment, OrgUserStorage } from '../../src/models';
+import { Equipment, OrgUserStorage, Organization } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const SwapEquipmentScreen = () => {
   let [listOne, setListOne] = useState([]);
@@ -73,13 +74,11 @@ const SwapEquipmentScreen = () => {
     if (dropPositionY > halfLine.current) { 
       if(startPosition.current == 2) return;
       // drag from top to bottom
-      // user -> swap
       console.log('user -> swap')
       reassignEquipment(item, swapUser.current.userId);
     } else {
       if(startPosition.current == 1) return; 
       // drag from bottom to top
-      // swap -> user
       console.log('swap -> user')
       const user = await Auth.currentAuthenticatedUser();
       reassignEquipment(item, user.attributes.sub);
@@ -88,6 +87,7 @@ const SwapEquipmentScreen = () => {
 
   // reassign the equipment
   async function reassignEquipment(item, assignedTo) {
+    console.log('assignedTo: ', assignedTo);
     const user = await Auth.currentAuthenticatedUser();
     const key = user.attributes.sub + ' currOrg';
     const org = await AsyncStorage.getItem(key);
@@ -99,13 +99,13 @@ const SwapEquipmentScreen = () => {
     console.log('orgUserStorage: ', orgUserStorage);
     const equip = await DataStore.query(Equipment, item.id);
     console.log(equip);
-    /*const newEquip = await DataStore.save(
+    const newEquip = await DataStore.save(
       Equipment.copyOf(equip, updated => {
-        updated.assignedTo = { user: { userId: assignedTo } };
+        updated.assignedTo = orgUserStorage[0];
         updated.lastUpdatedDate = new Date().toISOString();
       })
-    ); */
-    //console.log('newEquipment: ', newEquip);
+    );
+    Alert.alert("Equipment swapped!");
   }
 
   // if the scrollbar interferes with drag
@@ -115,23 +115,30 @@ const SwapEquipmentScreen = () => {
 
   // get selected user equipment
   const handleSet = (user) => {
+    if(!user || user==null) return;
     swapUser.current = user;
-    subscribeToChanges(false, user.userId);
+    getEquipment(false, user.userId);
   }
 
   // get myUser equipment
   const isFocused = useIsFocused();
   useEffect(() => {
     if(isFocused){
-      subscribeToChanges(true, '');
-      if(swapUser.current != null) subscribeToChanges(false, swapUser.current.userId)
+      getEquipment(true, '');
+      if(swapUser.current != null) getEquipment(false, swapUser.current.userId)
     }
   }, [isFocused]);
-  async function subscribeToChanges(isCurrentUser, swapId) {
+
+  useEffect(() => {
+    subscribeToChanges(true, '');
+  }, []);
+
+  async function subscribeToChanges() {
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
-        console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
-        getEquipment(isCurrentUser, swapId);
+        console.log(`Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`);
+        getEquipment(true, '');
+        if(swapUser.current != null) getEquipment(false, swapUser.current.userId)
     });
   }
     async function getEquipment(isCurrentUser, swapId) {
