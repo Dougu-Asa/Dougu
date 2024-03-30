@@ -68,7 +68,6 @@ const SwapEquipmentScreen = () => {
 
    // we need to know who we dropped the equipment to
    const handleDrop = async (item, dropPositionY) => {
-    console.log('droppedItem: ', item);
     setDraggingItem(null);
     if(swapUser.current == null) return;
     if (dropPositionY > halfLine.current) { 
@@ -87,7 +86,6 @@ const SwapEquipmentScreen = () => {
 
   // reassign the equipment
   async function reassignEquipment(item, assignedTo) {
-    console.log('assignedTo: ', assignedTo);
     const user = await Auth.currentAuthenticatedUser();
     const key = user.attributes.sub + ' currOrg';
     const org = await AsyncStorage.getItem(key);
@@ -96,9 +94,7 @@ const SwapEquipmentScreen = () => {
       c.organization.name.eq(orgJSON.name),
       c.user.userId.eq(assignedTo)
     ]));
-    console.log('orgUserStorage: ', orgUserStorage);
     const equip = await DataStore.query(Equipment, item.id);
-    console.log(equip);
     const newEquip = await DataStore.save(
       Equipment.copyOf(equip, updated => {
         updated.assignedTo = orgUserStorage[0];

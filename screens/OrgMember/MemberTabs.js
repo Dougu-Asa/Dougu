@@ -10,8 +10,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ManageEquipmentScreen from './ManageEquipment';
-import ManagerScreen from './ManagerScreen';
+import InfoScreen from './InfoScreen';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
@@ -103,12 +102,12 @@ function MemberTabs({navigation}) {
             <FontAwesone5 name="users" color={'black'} size={19} />
           ),
         }}/>
-        {isManager ? <Tab.Screen name="Manager" component={ManagerScreen} 
+        <Tab.Screen name="Org Info" component={InfoScreen} 
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons name="crown" color={'black'} size={21} />
           ),
-        }}/> : <></>}
+        }}/>
     </Tab.Navigator>
   );
 };

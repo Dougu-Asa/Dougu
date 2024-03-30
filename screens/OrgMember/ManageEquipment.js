@@ -1,16 +1,27 @@
 import React, { useState, useEffect, Component } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EquipmentTable from '../../components/EquipmentTable';
 
-const ManageEquipmentScreen = ({navigation}) => {
+const ManageEquipmentScreen = ({route, navigation}) => {
+  const { isManager } = route.params;
+
+  const handleCreate = () => {
+    console.log(isManager);
+    if(isManager){
+      navigation.navigate('CreateEquipment');
+    }
+    else {
+      Alert.alert('Error', 'You do not have permission to create equipment', [{text: 'OK'}]);
+    }
+  }
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Manage Equipment</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('CreateEquipment')}>
+          <TouchableOpacity onPress={handleCreate}>
             <Ionicons name="add" size={40} style={styles.addIcon} />
           </TouchableOpacity>
         </View>

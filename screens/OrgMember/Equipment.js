@@ -5,6 +5,8 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Equipment } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import EquipmentItem from '../../components/EquipmentItem';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const EquipmentScreen = ({navigation}) => {
   const [equipment, setEquipment] = useState([]);
@@ -40,27 +42,54 @@ const EquipmentScreen = ({navigation}) => {
           c.organization.id.eq(orgJSON.id),
           c.assignedTo.user.userId.eq(user.attributes.sub),
       ]));
-      const equipmentData = equipment.map((equip, index) => ({
-          label: equip['name'],
-          value: index,
-      }));
-      setEquipment(equipmentData);
+      const equipmentData = processEquipmentData(equipment);
+      const groupedEquipment = chunkedEquipment(equipmentData, 2);
+      setEquipment(groupedEquipment);
     }
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.orgContainer}>
-      <Text>{item.label}</Text>
-    </TouchableOpacity>
-  );
+    // get duplicates and merge their counts
+    function processEquipmentData(equipment) {
+      const equipmentMap = new Map();
+    
+      equipment.forEach((equip) => {
+        if (equipmentMap.has(equip.name)) {
+          const existingEquip = equipmentMap.get(equip.name);
+          existingEquip.count += 1; // Increment the count
+          existingEquip.data.push(equip.id); // Add the equipment to the data array
+          equipmentMap.set(equip.name, existingEquip); // Update the Map
+        } else {
+          equipmentMap.set(equip.name, {
+            id: equip.id, 
+            label: equip.name,
+            count: 1,
+            data: [equip.id],
+          });
+        }
+      });
+    
+      // Convert the Map back to an array
+      const processedEquipmentData = Array.from(equipmentMap.values());
+      return processedEquipmentData;
+    }  
+
+    // Function to chunk the equipment array into subarrays of 2 items each
+  const chunkedEquipment = (equipment, size) =>
+  equipment.reduce((acc, _, i) => i % size ? acc : [...acc, equipment.slice(i, i + size)], []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>My Equipment</Text>
-      <FlatList
-      data={equipment}
-      renderItem={renderItem}
-      keyExtractor={item => item.value}
-      />
+    <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
+      <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>My Equipment</Text>
+        {equipment.map((group, index) => (
+        <View key={index} style={styles.equipmentRow}>
+          {group.map((equip) => (
+            <EquipmentItem key={equip.id} item={equip} />
+          ))}
+        </View>
+        ))}
+      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -86,5 +115,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     backgroundColor: '#777777',
     borderRadius: 5,
-  }
+  },
+  equipmentRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%', // Adjust width as needed
+    marginBottom: 20, // Adjust spacing between rows as needed
+  },
 });

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Auth, DataStore } from 'aws-amplify';
 import { Equipment, OrgUserStorage, User, Storage, Organization } from '../src/models';
@@ -94,6 +94,7 @@ export default class EquipmentTable extends Component {
           <Text style={[styles.headerText, {flex: 3}]}>{this.state.tableHead[2]}</Text>
           <Text style={[styles.headerText, {flex: 1}]}>{this.state.tableHead[3]}</Text>
         </View>
+        <ScrollView>
         {
           this.state.tableData.map((rowData, index) => (
             <View key={index} style={styles.row}>
@@ -112,6 +113,7 @@ export default class EquipmentTable extends Component {
             </View>
           ))
         }
+        </ScrollView>
       </View>
     )
   }

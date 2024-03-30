@@ -4,9 +4,10 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Auth } from 'aws-amplify';
 
-function ManagerScreen({navigation}) {
+function InfoScreen({navigation}) {
   const [orgName, setOrgName] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const [isManager, setIsManager] = useState(false);
 
   // get the accesscode and orgName
   useEffect(() => {
@@ -21,6 +22,9 @@ function ManagerScreen({navigation}) {
       return;
     }
     const orgJSON = JSON.parse(org);
+    if(orgJSON.organizationManagerUserId == user.attributes.sub){
+      setIsManager(true);
+    };
     setOrgName(orgJSON.name);
     setAccessCode(orgJSON.accessCode);
   }
@@ -39,25 +43,25 @@ function ManagerScreen({navigation}) {
       <View style={styles.row}>
         <Text style={styles.rowHeader}>Members</Text>
         <TouchableOpacity style={styles.rightArrow}>
-          <Text>Manage Members</Text>
+          <Text>View Members</Text>
           <AntDesign name="right" size={20} />
         </TouchableOpacity>
       </View>
       <View style={styles.row}>
         <Text style={styles.rowHeader}>Storages</Text>
         <TouchableOpacity style={styles.rightArrow}>
-          <Text>Manage Storagse</Text>
+          <Text>View Storages</Text>
           <AntDesign name="right" size={20} />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.equipmentBtn} onPress={() => navigation.navigate('ManageEquipment')}>
-        <Text style={styles.eBtnText}>Manage Equipment</Text>
+      <TouchableOpacity style={styles.equipmentBtn} onPress={() => navigation.navigate('ManageEquipment', {isManager: isManager})}>
+        <Text style={styles.eBtnText}>Equipment List</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-export default ManagerScreen;
+export default InfoScreen;
 
 const styles = StyleSheet.create({
   container: {
