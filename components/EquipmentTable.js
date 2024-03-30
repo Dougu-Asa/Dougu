@@ -45,6 +45,9 @@ export default class EquipmentTable extends Component {
         return;
     };
     const orgJSON = JSON.parse(org);
+    // check if the user is the manager
+    if(orgJSON.organizationManagerUserId == user.attributes.sub) this.isManager = true;
+    else this.isManager = false;
     const equipment = await DataStore.query(Equipment, (c) => c.organization.id.eq(orgJSON.id));
     const equipmentData = await Promise.all(equipment.map(async (equip) => {
       let assignedTo = await DataStore.query(OrgUserStorage, (c) => c.equipment.id.eq(equip.id));
@@ -96,6 +99,7 @@ export default class EquipmentTable extends Component {
 
   // make sure the owner wants to delete the equipment
   handleEdit = (rowData) => {
+    if(!this.isManager) Alert.alert("You must be a manager to edit equipment");
     Alert.alert(
       "Delete Equipment",
       "Would you like to delete this equipment?",

@@ -3,11 +3,24 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Auth } from 'aws-amplify';
+import { BackHandler } from 'react-native';
 
 function InfoScreen({navigation}) {
   const [orgName, setOrgName] = useState('');
   const [accessCode, setAccessCode] = useState('');
   const [isManager, setIsManager] = useState(false);
+
+  // Custom so thata back button press goes to the menu
+  useEffect(() => {
+    const backAction = () => {
+    navigation.navigate('MemberTabs');
+    return true;
+  };
+  // Add the backAction handler when the component mounts
+  BackHandler.addEventListener('hardwareBackPress', backAction);
+  // Remove the backAction handler when the component unmounts
+  return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
+  }, [navigation]);
 
   // get the accesscode and orgName
   useEffect(() => {
@@ -42,14 +55,16 @@ function InfoScreen({navigation}) {
       </View>
       <View style={styles.row}>
         <Text style={styles.rowHeader}>Members</Text>
-        <TouchableOpacity style={styles.rightArrow}>
+        <TouchableOpacity style={styles.rightArrow} 
+        onPress={() => navigation.navigate('UserStorages', {tabParam: 'Members'})}>
           <Text>View Members</Text>
           <AntDesign name="right" size={20} />
         </TouchableOpacity>
       </View>
       <View style={styles.row}>
         <Text style={styles.rowHeader}>Storages</Text>
-        <TouchableOpacity style={styles.rightArrow}>
+        <TouchableOpacity style={styles.rightArrow} 
+        onPress={() => navigation.navigate('UserStorages', {tabParam: 'Storages'})}>
           <Text>View Storages</Text>
           <AntDesign name="right" size={20} />
         </TouchableOpacity>

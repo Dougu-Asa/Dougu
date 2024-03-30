@@ -8,7 +8,7 @@ import { User, OrgUserStorage, Equipment, Organization } from '../../src/models'
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function CreateEquipmentScreen({navigation}){
+export default function CreateStorageScreen({navigation}){
     const [name, onChangeName] = useState('');
     const [quantity, onChangeQuantity] = useState('');
     const [assignUser, setAssignUser] = useState(null);
@@ -153,8 +153,6 @@ function CreateEquipmentScreen({navigation}){
         </View>
     );
 };
-
-export default CreateEquipmentScreen;
 
 const styles = StyleSheet.create({
     container: {

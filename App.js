@@ -12,6 +12,8 @@ import HomeScreen from './screens/HomeScreen';
 import DrawerNav from './screens/DrawerNav';
 import CreateEquipmentScreen from './screens/OrgMember/CreateEquipmentScreen';
 import ManageEquipmentScreen from './screens/OrgMember/ManageEquipment';
+import UserStorages from './screens/OrgMember/UserStorages';
+import CreateStorageScreen from './screens/OrgMember/CreateStorageScreen';
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -46,11 +48,15 @@ function AppContent() {
   };
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+    screenOptions={{headerTitleAlign: 'center'}}
+    >
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="DrawerNav" component={DrawerNav} options={{ headerShown: false }}/>
       <Stack.Screen name="ManageEquipment" component={ManageEquipmentScreen}/>
       <Stack.Screen name="CreateEquipment" component={CreateEquipmentScreen}/>
+      <Stack.Screen name="UserStorages" component={UserStorages}/>
+      <Stack.Screen name="CreateStorage" component={CreateStorageScreen}/>
     </Stack.Navigator>
   );
 };

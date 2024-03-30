@@ -2,6 +2,7 @@ import React, { useState, useEffect, Component } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EquipmentTable from '../../components/EquipmentTable';
+import { BackHandler } from 'react-native';
 
 const ManageEquipmentScreen = ({route, navigation}) => {
   const { isManager } = route.params;

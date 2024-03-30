@@ -71,7 +71,7 @@ function CreateOrgScreen({navigation}) {
       );
       console.log('newOrgUserStorage: ', newOrgUserStorage);
       // add our OrgUserStorage to the user and organization
-      await DataStore.save(
+      /*await DataStore.save(
         User.copyOf(DBuser, updated => {
           updated.organizations = newOrgUserStorage;
         })
@@ -80,7 +80,7 @@ function CreateOrgScreen({navigation}) {
         Organization.copyOf(newOrg, updated => {
           updated.UserOrStorages = newOrgUserStorage;
         })
-      );
+      ); */
       // save the currOrg to async storage
       // use a key to keep track of currentOrg per user
       const key = user.attributes.sub + ' currOrg';
