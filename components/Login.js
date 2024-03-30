@@ -1,9 +1,10 @@
-import { View, Button, TextInput, StyleSheet } from 'react-native';
+import { View, Button, TextInput, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
 import PopupModal from './PopupModal';
+import { Dimensions } from 'react-native';
 
 function LoginScreen({navigation}) {
   // Function to toggle the password visibility state 
@@ -24,8 +25,9 @@ function LoginScreen({navigation}) {
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       console.log('error signing in', error);
-      setErrorMsg(error.toString());
-      setModalVisible(true);
+      //setErrorMsg(error.toString());
+      //setModalVisible(true);
+      Alert.alert('Error', error.message, [{text: 'OK'}]);
     }
   }
 
@@ -35,6 +37,7 @@ function LoginScreen({navigation}) {
   return(
     <View style={styles.container}>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
+      <Text style={styles.headerText}>Login</Text>
       <TextInput
       style={styles.input}
       onChangeText={onChangeUsername}
@@ -59,7 +62,9 @@ function LoginScreen({navigation}) {
           onPress={toggleShowPassword} 
         /> 
       </View>
-      <Button title="Login!" onPress={() => signIn({username, password})} />
+      <TouchableOpacity style={styles.button} onPress={() => signIn({username, password})}>
+        <Text style={styles.btnText}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -68,15 +73,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
   },  
   input: {
     height: 60,
     margin: '5%',
     borderWidth: 1,
+    borderRadius: 10,
     padding: 10,
-    width: '50%'
+    width: '80%'
   },
   pinput: {
     height: 50,
@@ -88,8 +93,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    width: '50%',
+    borderRadius: 10,
+    width: '80%',
     height: 60,
+  },
+  button: {
+    height: 50,
+    margin: 15,
+    backgroundColor: '#333333',
+    width: '80%',  
+    borderRadius: 10,
+  },
+  btnText: {
+    textAlign: 'center',
+    color: '#fff',
+    padding: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: '8%',
   },
 });
 

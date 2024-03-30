@@ -87,6 +87,7 @@ type EagerOrgUserStorage = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
+  readonly name: string;
   readonly organization: Organization;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly user?: User | null;
@@ -105,6 +106,7 @@ type LazyOrgUserStorage = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
+  readonly name: string;
   readonly organization: AsyncItem<Organization>;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly user: AsyncItem<User | undefined>;

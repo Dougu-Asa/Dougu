@@ -56,6 +56,7 @@ function JoinOrgScreen({navigation}) {
           organization: org[0],
           type: UserOrStorage.USER,
           user: DBuser,
+          name: DBuser.name,
         })
       );
       console.log('newOrgUserStorage: ', newOrgUserStorage);

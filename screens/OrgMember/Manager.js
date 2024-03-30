@@ -6,6 +6,7 @@ import { OrgUserStorage, Organization, User } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScrollView } from 'react-native-gesture-handler';
+import EquipmentTable from '../../components/EquipmentTable';
 
 const ManagerScreen = ({navigation}) => {
 
@@ -23,18 +24,6 @@ const ManagerScreen = ({navigation}) => {
     </View>
   );
 };
-
-function EquipmentTable() {
-
-  return (
-    <ScrollView>
-      <View>
-        <Text style={tableStyles.header}>Equipment</Text>
-      </View>
-    </ScrollView>
-    );
-};
-
 export default ManagerScreen;
 
 const styles = StyleSheet.create({
@@ -47,7 +36,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#fff',
-    margin: 25,
     borderWidth: 1,
   },
   header: {
@@ -65,15 +53,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f4',
     borderRadius: 10,
     marginLeft: 30,
-  },
-});
-
-const tableStyles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 1,
-    width: '100%',
   },
 });

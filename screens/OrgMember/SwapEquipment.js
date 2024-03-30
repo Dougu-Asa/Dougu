@@ -73,18 +73,12 @@ const SwapEquipmentScreen = () => {
     if (dropPositionY > halfLine.current) { 
       if(startPosition.current == 2) return;
       // drag from top to bottom
-      //const {updatedList, newItem} = findAndDecrement(item, listOne);
-      //setListOne(updatedList);
-      //setListTwo((prevListTwo) => [...prevListTwo, newItem]); 
       // user -> swap
       console.log('user -> swap')
       reassignEquipment(item, swapUser.current.userId);
     } else {
       if(startPosition.current == 1) return; 
       // drag from bottom to top
-      //const {updatedList, newItem} = findAndDecrement(item, listTwo);
-      //setListTwo(updatedList);
-      //setListOne((prevListOne) => [...prevListOne, newItem]);
       // swap -> user
       console.log('swap -> user')
       const user = await Auth.currentAuthenticatedUser();
@@ -160,27 +154,27 @@ const SwapEquipmentScreen = () => {
 
     // get duplicates and merge their counts
     function processEquipmentData(equipment) {
-      const equipmentMap = new Map();
+    const equipmentMap = new Map();
   
-      equipment.forEach((equip) => {
-          if (equipmentMap.has(equip.name)) {
-              const existingEquip = equipmentMap.get(equip.name);
-              existingEquip.count += 1; // Increment the count
-              existingEquip.data.push(equip.id); // Add the equipment to the data array
-              equipmentMap.set(equip.name, existingEquip); // Update the Map
-          } else {
-              equipmentMap.set(equip.name, {
-                  id: equip.id, 
-                  label: equip.name,
-                  count: 1,
-                  data: [equip.id],
-              });
-          }
-      });
+    equipment.forEach((equip) => {
+      if (equipmentMap.has(equip.name)) {
+        const existingEquip = equipmentMap.get(equip.name);
+        existingEquip.count += 1; // Increment the count
+        existingEquip.data.push(equip.id); // Add the equipment to the data array
+        equipmentMap.set(equip.name, existingEquip); // Update the Map
+      } else {
+        equipmentMap.set(equip.name, {
+          id: equip.id, 
+          label: equip.name,
+          count: 1,
+          data: [equip.id],
+        });
+      }
+    });
   
-      // Convert the Map back to an array
-      const processedEquipmentData = Array.from(equipmentMap.values());
-      return processedEquipmentData;
+    // Convert the Map back to an array
+    const processedEquipmentData = Array.from(equipmentMap.values());
+    return processedEquipmentData;
   }  
 
   return (

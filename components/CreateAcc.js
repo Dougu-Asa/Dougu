@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Modal, View, Button, TextInput, StyleSheet, Pressable, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
@@ -69,6 +70,7 @@ function CreateAccScreen({navigation}) {
   return(
     <View style={styles.container}>
       <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
+      <Text style={styles.header}>Create Account</Text>
       <View style={styles.nameContainer}>
         <TextInput
         style={styles.name}
@@ -109,9 +111,9 @@ function CreateAccScreen({navigation}) {
           onPress={() => toggleShowPassword()}
         /> 
       </View>
-      
-      <Button title="Create Account!" onPress={() => handleSignUp({username, email, password})} />
-      <StatusBar style="auto" />
+      <TouchableOpacity style={styles.button} onPress={() => handleSignUp({username, email, password})}>
+        <Text style={styles.btnText}>Create</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -120,13 +122,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: '8%',
   },
   input: {
     height: 60,
     borderWidth: 1,
-    width: '70%',
+    borderRadius: 10,
+    margin: 10,
+    width: '80%',
     padding: 10,
   },
   pinput: {
@@ -139,24 +147,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    width: '70%',
+    borderRadius: 10,
+    width: '80%',
     height: 60,
   },
   nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '70%'
+    width: '80%'
   },
   name: {
     width: '40%',
     height: 60,
     borderWidth: 1,
+    borderRadius: 10,
     padding: 10,
   },
   icon: {
     padding: 5,
     width: '18%',
+  },
+  button: {
+    height: 50,
+    margin: 15,
+    backgroundColor: '#333333',
+    width: '80%',   
+    borderRadius: 10,
+  },
+  btnText: {
+    textAlign: 'center',
+    color: '#fff',
+    padding: 10,
   },
 });
 

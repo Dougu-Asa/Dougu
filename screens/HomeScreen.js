@@ -31,23 +31,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
   },
   title: {
+    marginTop: '10%',
     fontSize: 40,
     fontWeight: 'bold',
     color: '#791111'
   },
   loginCreateContainer: {
     width: '80%',
-    height: '50%',
+    height: '80%',
     borderWidth: 1,
+    borderRadius: 20,
   },
   header: {
     height: '10%',
     width: '100%',
     borderWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',

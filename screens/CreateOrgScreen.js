@@ -66,6 +66,7 @@ function CreateOrgScreen({navigation}) {
           organization: newOrg,
           type: UserOrStorage.USER,
           user: DBuser,
+          name: DBuser.name,
         })
       );
       console.log('newOrgUserStorage: ', newOrgUserStorage);

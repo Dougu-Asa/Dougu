@@ -16,6 +16,7 @@ const DraggableEquipment = ({ item, onDrop, onStart, onMove, onTerminate }) => {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: (evt, gestureState) => {
+            console.log(item);
             onStart(item, gestureState, position.current); // Pass the item and its start position
         },
         onPanResponderMove: (event, gestureState) => {

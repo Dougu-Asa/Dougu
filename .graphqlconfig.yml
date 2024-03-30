@@ -2,14 +2,14 @@ projects:
   asaapp:
     schemaPath: src/graphql/schema.json
     includes:
-      - src/graphql/**/*.js
+      - 'y'
     excludes:
       - ./amplify/**
     extensions:
       amplify:
         codeGenTarget: javascript
         generatedFileName: ''
-        docsFilePath: src/graphql
+        docsFilePath: .
 extensions:
   amplify:
     version: 3

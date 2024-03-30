@@ -27,6 +27,7 @@ enum UserOrStorage {
 # organizations can have users or storage to hold equipment
 type OrgUserStorage @model {
   id: ID!
+  name: String!
   organization: Organization! @belongsTo
   type: UserOrStorage!
   user: User @belongsTo
