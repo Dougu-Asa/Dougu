@@ -43,7 +43,7 @@ const EquipmentScreen = ({navigation}) => {
           c.assignedTo.user.userId.eq(user.attributes.sub),
       ]));
       const equipmentData = processEquipmentData(equipment);
-      const groupedEquipment = chunkedEquipment(equipmentData, 2);
+      const groupedEquipment = chunkedEquipment(equipmentData, 3);
       setEquipment(groupedEquipment);
     }
 
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fff',
   },  
   title: {
@@ -109,17 +110,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     color: '#000',
   },
-  orgContainer: {
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    backgroundColor: '#777777',
-    borderRadius: 5,
-  },
   equipmentRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%', // Adjust width as needed
+    justifyContent: 'flex-start',
+    width: '90%', // Adjust width as needed
     marginBottom: 20, // Adjust spacing between rows as needed
   },
 });

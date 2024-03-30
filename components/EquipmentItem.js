@@ -1,24 +1,33 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native';
+import Entypo from 'react-native-vector-icons/Entypo';
 
-export default function EquipmentItem({item}) {
+export default function EquipmentItem({item, count}) {
     return (
-        <View style={equipment.equipment}>
-            <Text>{item.label}</Text>
+        <View style={equipment.container}>
+            <View style={equipment.equipment}>
+            <Entypo style={equipment.photo} name='camera' size={50} color="black" />
             <View style={equipment.circle}>
-                <Text style={equipment.count}>{item.count}</Text>
+                <Text style={equipment.count}>{count ? count : item.count}</Text>
             </View>
+            </View>
+            <Text style={{fontSize: 12}}>{item.label}</Text>
         </View>
     )
 }
 
 const equipment = StyleSheet.create({
+    container: {
+        alignItems: 'center',
+        maxWidth: Dimensions.get('window').width / 4,
+        marginHorizontal: 8,
+    },
     equipment: {
       backgroundColor: 'skyblue',
-      margin: 8,
-      width: 140,
-      height: 140,
-      borderRadius: 70,
+      width: Dimensions.get('window').width / 4,
+      height: Dimensions.get('window').width / 4,
+      borderRadius: Dimensions.get('window').width / 8,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -30,8 +39,8 @@ const equipment = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       position: 'absolute',
-      right: 5,
-      bottom: 5,
+      right: 0,
+      bottom: 0,
       borderWidth: 1,
     },
     count: {

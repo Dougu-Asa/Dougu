@@ -9,6 +9,7 @@ import { DataStore, Auth } from 'aws-amplify';
 import { Equipment, OrgUserStorage, Organization } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import EquipmentItem from '../../components/EquipmentItem';
 
 const SwapEquipmentScreen = () => {
   let [listOne, setListOne] = useState([]);
@@ -217,19 +218,13 @@ const SwapEquipmentScreen = () => {
       </ScrollView>
       {draggingItem && (
         <Animated.View style={[styles.floatingItem, { transform: [{ translateX: draggingOffset.x }, { translateY: draggingOffset.y }] }, { top: floatingPosition.top, left: floatingPosition.left }]}>
-          <Text>{draggingItem.label}</Text>
-          <View style={styles.circle}>
-            <Text style={styles.count}>1</Text>
-          </View>
+          <EquipmentItem item={draggingItem} count={1} />
         </Animated.View>
       )}
       {(draggingItem != null && draggingItem.count > 1) ?
         <Animated.View style={[styles.floatingItem, { top: floatingPosition.top,
         left: floatingPosition.left }]}>
-        <Text>{draggingItem.label}</Text>
-        <View style={styles.circle}>
-          <Text style={styles.count}>{draggingItem.count - 1}</Text>
-        </View>
+          <EquipmentItem item={draggingItem} count={draggingItem.count - 1}/>
       </Animated.View> : null}
     </View>
   );
@@ -278,11 +273,10 @@ const styles = StyleSheet.create({
   },
   floatingItem: {
     position: 'absolute',
-    width: 140,
+    /*width: 140,
     height: 140,
     borderRadius: 70,
-    
-    backgroundColor: 'skyblue',
+    backgroundColor: 'skyblue', */
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100, // Make sure the floating item is rendered above everything else

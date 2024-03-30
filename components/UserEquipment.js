@@ -27,7 +27,7 @@ export default UserEquipment;
 
 const styles = StyleSheet.create({
     userContainer: {
-        height: 200,
+        minHeight: 200,
         backgroundColor: 'white',
     },
     info: {

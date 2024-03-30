@@ -44,7 +44,7 @@ function TeamEquipmentScreen(){
             const userEquipment = await DataStore.query(Equipment, (c) =>
             c.assignedTo.id.eq(orgUserStorages[i].id));
             const processedEquipment = processEquipmentData(userEquipment);
-            equipment.push(processedEquipment);
+            equipment.push({'key': i, data: processedEquipment});
         }
         setOrgEquipment(equipment);
     }
@@ -78,7 +78,7 @@ function TeamEquipmentScreen(){
         <View style={{backgroundColor: 'white', minHeight: '100%'}}>
             <ScrollView>
             {orgEquipment.map((equipmentRow, index) => (
-                <UserEquipment list={equipmentRow} name={orgUserStorages[index]} />
+                <UserEquipment list={equipmentRow.data} name={orgUserStorages[index]} />
             ))}
             </ScrollView>
         </View>

@@ -56,8 +56,36 @@ export default class EquipmentTable extends Component {
         assignedToName: assignedTo[0].name,
       };
     })); 
-    return equipmentData;
+    const processedEquipmentData = this.processData(equipmentData);
+    return processedEquipmentData;
   };
+
+  processData(equipment) {
+    const equipmentMap = new Map();
+  
+    equipment.forEach((equip) => {
+      let key = equip.name + equip.assignedTo;
+      if (equipmentMap.has(key)) {
+        const existingEquip = equipmentMap.get(key);
+        existingEquip.quantity += 1; // Increment the count
+        existingEquip.data.push(equip.id); // Add the equipment to the data array
+        equipmentMap.set(key, existingEquip); // Update the Map
+      } else {
+        equipmentMap.set(key, {
+          id: equip.id, 
+          name: equip.name,
+          quantity: 1,
+          data: [equip.id],
+          assignedTo: equip.assignedTo,
+          assignedToName: equip.assignedToName,
+        });
+      }
+    });
+  
+    // Convert the Map back to an array
+    const processedEquipmentData = Array.from(equipmentMap.values());
+    return processedEquipmentData;
+  }
 
   handleDelete = async (rowData) => {
     // delete equipment
