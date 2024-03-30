@@ -1,14 +1,9 @@
 import React, { useState, useEffect, Component } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { Auth } from 'aws-amplify';
-import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, Organization, User } from '../../src/models';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ScrollView } from 'react-native-gesture-handler';
 import EquipmentTable from '../../components/EquipmentTable';
 
-const ManagerScreen = ({navigation}) => {
+const ManageEquipmentScreen = ({navigation}) => {
 
   return (
     <View style={styles.mainContainer}>
@@ -24,7 +19,7 @@ const ManagerScreen = ({navigation}) => {
     </View>
   );
 };
-export default ManagerScreen;
+export default ManageEquipmentScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {

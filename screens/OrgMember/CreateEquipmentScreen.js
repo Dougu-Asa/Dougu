@@ -67,7 +67,6 @@ function CreateEquipmentScreen({navigation}){
                         details: details
                     })
                 );
-                console.log('newEquipment: ', newEquipment);
             }
             setErrorMsg('Equipment created successfully!');
             setModalVisible(true);

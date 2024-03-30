@@ -10,7 +10,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ManagerScreen from './Manager';
+import ManageEquipmentScreen from './ManageEquipment';
+import ManagerScreen from './ManagerScreen';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
