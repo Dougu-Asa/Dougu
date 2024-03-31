@@ -43,6 +43,7 @@ const DraggableEquipment = ({ item, onDrop, onStart, onMove, onTerminate }) => {
         },
         onPanResponderTerminate: () => {
             onTerminate();
+            Animated.spring(pan, { toValue: { x: 0, y: 0, zIndex: 0 }, useNativeDriver: false }).start();
         }
       })
     ).current;

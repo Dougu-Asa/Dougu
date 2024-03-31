@@ -125,7 +125,7 @@ function MemberRow({item, manager, isManager}){
         if(!isManager){
             Alert.alert("You must be a manager to edit users/storages");
             return;
-          }
+        }
         Alert.alert(
           "Delete " + item.name + "?",
           "Would you like to delete this equipment? \n WARNING: Deleting will remove all associated equipment and data.",
@@ -151,9 +151,11 @@ function MemberRow({item, manager, isManager}){
                 {manager ? <MaterialCommunityIcons name="crown" 
                 color={'#791111'} size={32} style={{marginLeft: 10}} /> : null}
             </View>
-            <TouchableOpacity style={userStorage.icon} onPress={handleEdit}>
-                <Entypo name="dots-three-horizontal" size={24} />
-              </TouchableOpacity>
+            {!manager ?                         //let's not delete the manager...
+                <TouchableOpacity style={userStorage.icon} onPress={handleEdit}>
+                    <Entypo name="dots-three-horizontal" size={24} />
+                </TouchableOpacity> : null
+            }
         </View>
     );
 }

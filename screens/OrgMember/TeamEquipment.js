@@ -17,7 +17,7 @@ function TeamEquipmentScreen(){
     }, []);
 
     async function subscribeToChanges() {
-        DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
+        DataStore.observeQuery(Equipment).subscribe(snapshot => {
             const { items, isSynced } = snapshot;
             console.log(`teamEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
             getOrgEquipment();
@@ -56,9 +56,9 @@ function TeamEquipmentScreen(){
         equipment.forEach((equip) => {
           if (equipmentMap.has(equip.name)) {
             const existingEquip = equipmentMap.get(equip.name);
-            existingEquip.count += 1; // Increment the count
-            existingEquip.data.push(equip.id); // Add the equipment to the data array
-            equipmentMap.set(equip.name, existingEquip); // Update the Map
+            existingEquip.count += 1; 
+            existingEquip.data.push(equip.id); 
+            equipmentMap.set(equip.name, existingEquip); 
           } else {
             equipmentMap.set(equip.name, {
               id: equip.id, 

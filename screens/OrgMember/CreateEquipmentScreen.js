@@ -39,10 +39,7 @@ function CreateEquipmentScreen({navigation}){
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
-            const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-                c.organization.name.eq(orgJSON.name),
-                c.user.userId.eq(assignUser.userId)
-            ]));
+            const orgUserStorage = await DataStore.query(OrgUserStorage, assignUser.id);
             // create however many equipment specified by quantity
             for(let i = 0; i < quantityCt; i++){
                 const newEquipment = await DataStore.save(
@@ -50,7 +47,7 @@ function CreateEquipmentScreen({navigation}){
                         name: name,
                         organization: dataOrg,
                         lastUpdatedDate: new Date().toISOString(),
-                        assignedTo: orgUserStorage[0],
+                        assignedTo: orgUserStorage,
                         details: details
                     })
                 );

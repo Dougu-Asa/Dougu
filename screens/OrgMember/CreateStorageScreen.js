@@ -15,19 +15,17 @@ export default function CreateStorageScreen({navigation}){
             if(name == ''){
                 throw new Error("Name must not be empty.");
             }
-            // create the equipment
+            // create the storage
             const user = await Auth.currentAuthenticatedUser();
             let key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
-            const userData = await DataStore.query(User, user.attributes.sub);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
             const storage = await DataStore.save(
                 new OrgUserStorage({
                     name: name,
                     organization: dataOrg,
                     type: 'STORAGE',
-                    user: userData,
                     details: details,
                 })
             );

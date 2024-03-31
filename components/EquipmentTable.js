@@ -8,20 +8,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class EquipmentTable extends Component {
   constructor(props) {
     super(props);
-    const equipmentData = this.getEquipment();
     this.subscribeToChanges();
     this.state = {
       tableHead: ['Name', 'Assigned To', 'Quantity', ''],
       tableData: [],
     }
-  }
-
-  componentDidMount() {
-    this.getEquipment().then((equipmentData) => {
-      this.setState({
-        tableData: equipmentData,
-      });
-    });
   }
 
   // subscribe to changes in equipment
@@ -51,6 +42,7 @@ export default class EquipmentTable extends Component {
     const equipment = await DataStore.query(Equipment, (c) => c.organization.id.eq(orgJSON.id));
     const equipmentData = await Promise.all(equipment.map(async (equip) => {
       let assignedTo = await DataStore.query(OrgUserStorage, (c) => c.equipment.id.eq(equip.id));
+      if(assignedTo.length == 0) assignedTo = [{id: "UNASSIGNED", name: "UNASSIGNED"}]; // should never happen... but it did :/
       return {
         id: equip.id,
         name: equip.name,
@@ -58,7 +50,7 @@ export default class EquipmentTable extends Component {
         assignedTo: assignedTo[0].id,
         assignedToName: assignedTo[0].name,
       };
-    })); 
+    }));
     const processedEquipmentData = this.processData(equipmentData);
     return processedEquipmentData;
   };

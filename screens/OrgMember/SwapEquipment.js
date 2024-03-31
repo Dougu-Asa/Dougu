@@ -6,7 +6,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore, Auth } from 'aws-amplify';
-import { Equipment, OrgUserStorage, Organization } from '../../src/models';
+import { Equipment, OrgUserStorage, Organization, User } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import EquipmentItem from '../../components/EquipmentItem';
@@ -114,46 +114,48 @@ const SwapEquipmentScreen = () => {
   const handleSet = (user) => {
     if(!user || user==null) return;
     swapUser.current = user;
-    getEquipment(false, user.userId);
+    getEquipment(swapUser.current.id);
   }
 
-  // get myUser equipment
-  const isFocused = useIsFocused();
   useEffect(() => {
-    if(isFocused){
-      getEquipment(true, '');
-      if(swapUser.current != null) getEquipment(false, swapUser.current.userId)
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    subscribeToChanges(true, '');
+    subscribeToChanges();
   }, []);
 
   async function subscribeToChanges() {
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
         console.log(`Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`);
-        getEquipment(true, '');
-        if(swapUser.current != null) getEquipment(false, swapUser.current.userId)
+        getEquipment();
+        if(swapUser.current != null) getEquipment(swapUser.current.userId)
     });
   }
-    async function getEquipment(isCurrentUser, swapId) {
+    async function getEquipment(swapId) {
+      console.log("swapId: " + swapId);
       const user = await Auth.currentAuthenticatedUser();
       const key = user.attributes.sub + ' currOrg';
       const org = await AsyncStorage.getItem(key);
       if(org == null){
           return;
       };
-      const userId = isCurrentUser ? user.attributes.sub : swapId;
       const orgJSON = JSON.parse(org);
-      const equipment = await DataStore.query(Equipment, (c) => c.and(c => [
-          c.organization.id.eq(orgJSON.id),
-          c.assignedTo.user.userId.eq(userId),
-      ]));
+      // passed in orgUserStorage
+      let orgUserStorage;
+      if(swapId){
+        orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
+      }
+      // no orgUserStorage (default user)
+      else {
+        orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
+          c.organization.name.eq(orgJSON.name),
+          c.user.userId.eq(user.attributes.sub),
+          c.type.eq('USER'),
+        ]));
+        orgUserStorage = orgUserStorage[0];
+      }
+      const equipment = await DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id));
       const equipmentData = processEquipmentData(equipment);
-      if(isCurrentUser) setListOne(equipmentData);
-      else setListTwo(equipmentData);
+      if(swapId) setListTwo(equipmentData);
+      else setListOne(equipmentData);
     }
 
     // get duplicates and merge their counts
