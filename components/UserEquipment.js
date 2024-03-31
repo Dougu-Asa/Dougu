@@ -7,13 +7,13 @@ function UserEquipment({list, name}) {
 
     return (
         <View style={styles.userContainer}>
-            <Text style={styles.scrollText}>{name.name}</Text>
+            <Text style={styles.scrollText}>{name}</Text>
             <ScrollView horizontal={true}
             decelerationRate={'normal'}
             showsHorizontalScrollIndicator={false}>
                 <View style={styles.scrollRow}>
                 <View style={styles.scrollTop}>
-                    {list.map((item) => (
+                    {list.map((item, index) => (
                         <EquipmentItem key={item.label} item={item} />
                     ))}
                 </View>

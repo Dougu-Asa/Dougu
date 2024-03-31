@@ -13,7 +13,6 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [userNames, setUserNames] = useState([]);
-  const isFocused = useIsFocused();
 
   // useEffect 
   useEffect(() => {
@@ -41,17 +40,19 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
       return;
     };
     const orgJSON = JSON.parse(org);
-    let users;
     if(isCreate){
-      users = await DataStore.query(User, (c) => c.organizations.organization.name.eq(orgJSON.name));
+      data = await DataStore.query(OrgUserStorage, (c) => c.organization.name.eq(orgJSON.name));
     }
     else{
-      users = await DataStore.query(User, (c) => c.and(c => [
-        c.organizations.organization.name.eq(orgJSON.name),
-        c.userId.ne(user.attributes.sub)
+      data = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
+        c.organization.name.eq(orgJSON.name),
+        c.or(c => [
+          c.type.eq('STORAGE'),
+          c.user.userId.ne(user.attributes.sub),
+        ])
       ]));
     }
-    const userNames = users.map(user => ({
+    const userNames = data.map(user => ({
       label: user['name'],
       value: user['name'], 
       data: user,

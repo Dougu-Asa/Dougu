@@ -1,34 +1,16 @@
-import { Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { BackHandler } from 'react-native';
-import CurrMembersDropdown from '../../components/CurrMembersDropdown';
-import PopupModal from '../../components/PopupModal';
 import { User, OrgUserStorage, Equipment, Organization } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateStorageScreen({navigation}){
     const [name, onChangeName] = useState('');
-    const [quantity, onChangeQuantity] = useState('');
-    const [assignUser, setAssignUser] = useState(null);
     const [details, onChangeDetails] = useState('');
-    const [modalVisible, setModalVisible] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('Error!');
-    const [selected, setSelected] = useState('equip')
 
     async function handleCreate(){
         try{
-            let quantityCt = parseInt(quantity);
-            console.log('quantityCt: ', quantityCt);
-            // check that quantity > 1
-            if(quantityCt < 1 || isNaN(quantityCt)){
-                throw new Error("Quantity must be a number or greater than 0.");
-            }
-            // check that selected user isn't null
-            if(assignUser == null){
-                throw new Error("User must be selected.");
-            }
             // check that name isn't empty
             if(name == ''){
                 throw new Error("Name must not be empty.");
@@ -38,47 +20,27 @@ export default function CreateStorageScreen({navigation}){
             let key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
+            const userData = await DataStore.query(User, user.attributes.sub);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
-            const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-                c.organization.name.eq(orgJSON.name),
-                c.user.userId.eq(assignUser.userId)
-            ]));
-            // create however many equipment specified by quantity
-            for(let i = 0; i < quantityCt; i++){
-                const newEquipment = await DataStore.save(
-                    new Equipment({
-                        name: name,
-                        organization: dataOrg,
-                        lastUpdatedDate: new Date().toISOString(),
-                        assignedTo: orgUserStorage[0],
-                        details: details
-                    })
-                );
-            }
-            setErrorMsg('Equipment created successfully!');
-            setModalVisible(true);
+            const storage = await DataStore.save(
+                new OrgUserStorage({
+                    name: name,
+                    organization: dataOrg,
+                    type: 'STORAGE',
+                    user: userData,
+                    details: details,
+                })
+            );
+            console.log('storage: ', storage);
+            Alert.alert('Storage Created Successfully!');
         }
         catch(error){
-            setErrorMsg(error.toString());
-            setModalVisible(true);
+            Alert.alert('Error!', error.toString());
         }
     };
-
-    // ensure the quantity is only a numeric value
-    const handleNumberChange = (text) => { 
-        if (!isNaN(text)) { 
-            onChangeQuantity(text); 
-        } 
-    }; 
-
-    const handleUserChange = (user) => {
-        setAssignUser(user);
-    };
-
     return (
         <View style={styles.container}>
-            <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
-            <View style={styles.rowContainer}>
+            <View style={[styles.rowContainer, {marginTop: 20}]}>
                 <View style={styles.row1}>
                     <Text style={styles.rowHeader}>Name</Text>
                 </View>
@@ -92,45 +54,7 @@ export default function CreateStorageScreen({navigation}){
                     />
                 </View>
             </View>
-            <View style={styles.rowContainer}>
-                <View style={styles.row1}>
-                    <Text style={styles.rowHeader}>Type</Text>
-                </View>
-                <View style={styles.row2}>
-                    <View style={styles.toggleContainer}>
-                    <TouchableOpacity
-                        style={[styles.button, selected === 'equip' ? styles.selectedBtn : null]}
-                        onPress={() => setSelected('equip')}
-                    >
-                        <Text style={[styles.buttonText, selected === 'equip' ? styles.selectedText : null]}>
-                        Equip
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.button, selected === 'container' ? styles.selectedBtn : null]}
-                        onPress={() => setSelected('container')}
-                    >
-                        <Text style={[styles.buttonText, selected === 'container' ? styles.selectedText : null]}>
-                        Container
-                        </Text>
-                    </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-            <View style={styles.rowContainer}>
-                <View style={styles.row1}>
-                    <Text style={styles.rowHeader}>Quantity</Text>
-                </View>
-                <View style={styles.row2}>
-                    <TextInput
-                    style={styles.input}
-                    onChangeText={handleNumberChange}
-                    value={quantity}
-                    placeholder="quantity"
-                    keyboardType="numeric"
-                    />
-                </View>
-            </View>
+
             <View style={styles.rowContainer}>
                 <View style={styles.row1}>
                     <Text style={styles.rowHeader}>Details</Text>
@@ -146,7 +70,6 @@ export default function CreateStorageScreen({navigation}){
                     />
                 </View>
             </View>
-            <CurrMembersDropdown setUser={handleUserChange} isCreate={true} />
             <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
                 <Text style={styles.createBtnTxt}> Create </Text>
             </TouchableOpacity>
@@ -187,30 +110,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         alignSelf: 'center',
     },
-    toggleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-    selectedBtn: {
-        backgroundColor: '#000000', // Selected background color
-    },
-    selectedText: {
-        color: '#ffffff', // Selected text color
-    },
-    button: {
-        backgroundColor: '#f6f6f6',
-        padding: 10,
-        borderRadius: 10,
-        width: '35%',
-    },
     createBtn: {
         backgroundColor: '#791111',
         width: '50%',
         padding: 10,
         height: 50,
         alignSelf: 'center',
-        marginTop: 30,
+        marginTop: 20,
     },
     createBtnTxt: {
         color: '#ffffff',

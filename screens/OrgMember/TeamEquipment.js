@@ -17,7 +17,7 @@ function TeamEquipmentScreen(){
     }, []);
 
     async function subscribeToChanges() {
-        DataStore.observeQuery(Equipment).subscribe(snapshot => {
+        DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
             const { items, isSynced } = snapshot;
             console.log(`teamEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
             getOrgEquipment();
@@ -44,7 +44,7 @@ function TeamEquipmentScreen(){
             const userEquipment = await DataStore.query(Equipment, (c) =>
             c.assignedTo.id.eq(orgUserStorages[i].id));
             const processedEquipment = processEquipmentData(userEquipment);
-            equipment.push({'key': i, data: processedEquipment});
+            equipment.push(processedEquipment);
         }
         setOrgEquipment(equipment);
     }
@@ -78,7 +78,7 @@ function TeamEquipmentScreen(){
         <View style={{backgroundColor: 'white', minHeight: '100%'}}>
             <ScrollView>
             {orgEquipment.map((equipmentRow, index) => (
-                <UserEquipment list={equipmentRow.data} name={orgUserStorages[index]} />
+            <UserEquipment key={index} list={equipmentRow} name={orgUserStorages[index] ? orgUserStorages[index].name : null} />
             ))}
             </ScrollView>
         </View>

@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LinearGradient} from 'expo-linear-gradient';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, User } from '../../src/models';
+import { OrgUserStorage, User, Equipment } from '../../src/models';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Dimensions } from 'react-native';
@@ -28,7 +28,16 @@ export default function UserStorages({route, navigation}) {
     useEffect(() => {
         if(tabParam == 'Members') setTab('Members');
         else setTab('Storages');
+        subscribeToChanges();
     }, []);
+
+    // subscribe to changes in equipment
+    async function subscribeToChanges() {
+        DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
+            const { items, isSynced } = snapshot;
+            console.log(`table [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+            getData();
+    })};
 
     // update data whenever tab changes
     useEffect(() => {
@@ -64,9 +73,8 @@ export default function UserStorages({route, navigation}) {
         setCurrData(data);
     }
     const handleCreate = async () => {
-        if(!isManager){
-            Alert.alert('You need to be a manager to create a storage!');
-        }
+        if(!isManager) Alert.alert('You need to be a manager to create a storage!');
+        else navigation.navigate('CreateStorage');
     }
 
     return (
@@ -91,8 +99,8 @@ export default function UserStorages({route, navigation}) {
                 </TouchableOpacity>
             </View>
             <ScrollView style={{width: Dimensions.get('window').width}}>
-                {tab === 'Members' ? <MemberRow item={manager} manager={true} /> : null}
-                {currData.map((item) => (<MemberRow item={item}/>))}
+                {tab === 'Members' ? <MemberRow item={manager} manager={true} isManager={isManager} /> : null}
+                {currData.map((item,index) => (<MemberRow key={index} item={item} isManager={isManager}/>))}
                 {tab === 'Storages' ? 
                 <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
                     <Text style={styles.createBtnTxt}>Create Storage</Text>
@@ -103,7 +111,38 @@ export default function UserStorages({route, navigation}) {
     );
 }
 
-function MemberRow({item, manager}){
+function MemberRow({item, manager, isManager}){
+    handleDelete = async () => {
+        // delete equipment
+        const orgUserStorage = await DataStore.query(OrgUserStorage, item.id);
+        console.log(orgUserStorage);
+        await DataStore.delete(orgUserStorage);
+        Alert.alert("User/Storage Deleted");
+      }
+    
+      // make sure the owner wants to delete the equipment
+      handleEdit = () => {
+        if(!isManager){
+            Alert.alert("You must be a manager to edit users/storages");
+            return;
+          }
+        Alert.alert(
+          "Delete " + item.name + "?",
+          "Would you like to delete this equipment? \n WARNING: Deleting will remove all associated equipment and data.",
+          [
+            {
+              text: "Delete",
+              onPress: () => handleDelete(),
+              style: "destructive",
+            },
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+          ]
+        );
+      }
+
     return (
         <View style={userStorage.row}>
             <FontAwesome name="user-circle" size={32} color="gray" style={userStorage.profile} />
@@ -112,7 +151,7 @@ function MemberRow({item, manager}){
                 {manager ? <MaterialCommunityIcons name="crown" 
                 color={'#791111'} size={32} style={{marginLeft: 10}} /> : null}
             </View>
-            <TouchableOpacity style={userStorage.icon} >
+            <TouchableOpacity style={userStorage.icon} onPress={handleEdit}>
                 <Entypo name="dots-three-horizontal" size={24} />
               </TouchableOpacity>
         </View>

@@ -99,7 +99,10 @@ export default class EquipmentTable extends Component {
 
   // make sure the owner wants to delete the equipment
   handleEdit = (rowData) => {
-    if(!this.isManager) Alert.alert("You must be a manager to edit equipment");
+    if(!this.isManager){
+      Alert.alert("You must be a manager to edit equipment");
+      return;
+    }
     Alert.alert(
       "Delete Equipment",
       "Would you like to delete this equipment?",
