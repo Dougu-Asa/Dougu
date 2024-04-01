@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "asa-app",
+    "name": "Dougu",
     "scheme": "com.asa.app",
     "slug": "asa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/asayake.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.asa.app"
+      "bundleIdentifier": "com.asa.Dougu"
     },
     "android": {
       "adaptiveIcon": {

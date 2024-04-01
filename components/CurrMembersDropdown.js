@@ -19,6 +19,13 @@ const CurrMembersDropdown = ({setUser, isCreate}) => {
     subscribeToChanges();
   }, []);
 
+  // check focused
+  useEffect(() => {
+    if(isFocused){
+      getMembers();
+    }
+  }, [isFocused]);
+
   async function subscribeToChanges() {
     // Query for the organizations that the user is a part of
     DataStore.observeQuery(

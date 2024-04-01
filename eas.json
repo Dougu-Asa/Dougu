@@ -5,12 +5,28 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "APP_ICON": "./assets/asayake.png",
+        "APP_NAME": "Dougu"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ICON": "./assets/asayake.png",
+        "APP_NAME": "Dougu"
+      }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "APP_ICON": "./assets/asayake.png",
+        "APP_NAME": "Dougu"
+      }
+    }
   },
   "submit": {
     "production": {}

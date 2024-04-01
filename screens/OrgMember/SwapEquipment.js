@@ -17,6 +17,7 @@ const SwapEquipmentScreen = () => {
   const {setIsLoading} = useLoad();
   const isFocused = useIsFocused();
   const {user} = useUser();
+  const [reset, setReset] = useState(false);
 
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
@@ -27,6 +28,7 @@ const SwapEquipmentScreen = () => {
 
   useEffect(() => {
     if(isFocused){
+      setReset(!reset);
       getEquipment(user.attributes.sub);
       if(swapUser.current != null) getEquipment(swapUser.current.id);
     }
@@ -239,7 +241,7 @@ const SwapEquipmentScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <CurrMembersDropdown setUser={handleSet} isCreate={false} />
+      <CurrMembersDropdown setUser={handleSet} isCreate={false}/>
       <ScrollView horizontal={true}
       onScroll={handleScrollBottom}
       scrollEventThrottle={10}
