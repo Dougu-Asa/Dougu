@@ -1,5 +1,5 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
-import { TouchableOpacity, Text, View, StyleSheet, Image} from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Image, Alert} from 'react-native';
 import JoinOrgScreen from './JoinOrgScreen';
 import CreateOrgScreen from './CreateOrgScreen';
 import AccessCodeScreen from './AccessCodeScreen';
@@ -12,6 +12,7 @@ import React, { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useLoad } from '../components/LoadingContext';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
@@ -19,6 +20,7 @@ function DrawerNav({navigation}) {
     const [username, setUsername] = React.useState('');
     const [hasOrg, setHasOrg] = React.useState(false);
     const isFocused = useIsFocused();
+    const {setIsLoading} = useLoad();
 
     // custom android back button
     useEffect(() => {
@@ -73,10 +75,14 @@ function DrawerNav({navigation}) {
 
     async function signOut() {
         try {
-          await Auth.signOut();
-          navigation.navigate('Home'); // Navigate to the home screen
+            setIsLoading(true);
+            await Auth.signOut();
+            setIsLoading(false);
+            navigation.navigate('Home'); // Navigate to the home screen
         } catch (error) {
-          console.log('error signing out: ', error);
+            setIsLoading(false);
+            console.log('error signing out: ', error);
+            Alert.alert('Error!', 'Error signing out. Please try again.', [{text: 'OK'}]);
         }
     }
       
