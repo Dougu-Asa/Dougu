@@ -13,6 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { useLoad } from '../components/LoadingContext';
+import { OrgUserStorage } from '../src/models';
+import { DataStore } from '@aws-amplify/datastore';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
@@ -45,14 +47,22 @@ function DrawerNav({navigation}) {
       async function checkUserOrg() {
         try {
             const user = await Auth.currentAuthenticatedUser();
-            console.log('user: ', user.attributes.name);
+            console.log('Drawer user: ', user.attributes);
             setUsername(user.attributes.name);
+            // check if there was a previous org session
             const key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
+            const orgUserStorages = await DataStore.query(OrgUserStorage, (c) => c.user.userId.eq(user.attributes.sub));
             if(org == null){
-                setHasOrg(false);
-                navigation.navigate('JoinOrCreate');
+                // check if the user is part of an org from a previous device
+                if(orgUserStorages.length <= 0){
+                    setHasOrg(false);
+                    navigation.navigate('JoinOrCreate');
+                    return;
+                }
+                setHasOrg(true);
+                navigation.navigate('MyOrgs');
             }
             else{
                 setHasOrg(true);
@@ -60,6 +70,7 @@ function DrawerNav({navigation}) {
             }
         } catch (error) {
             console.log('error getting user: ', error);
+            Alert.alert('Drawer Error', error.message, [{text: 'OK'}]);
             navigation.navigate('Home');
         }
       }
@@ -82,7 +93,7 @@ function DrawerNav({navigation}) {
         } catch (error) {
             setIsLoading(false);
             console.log('error signing out: ', error);
-            Alert.alert('Error!', 'Error signing out. Please try again.', [{text: 'OK'}]);
+            Alert.alert('Sign Out Error!', 'Error signing out. Please try again.', [{text: 'OK'}]);
         }
     }
       

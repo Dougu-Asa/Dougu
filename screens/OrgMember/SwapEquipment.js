@@ -141,7 +141,7 @@ const SwapEquipmentScreen = () => {
     catch(e){
       console.log(e);
       setIsLoading(false);
-      Alert.alert('Error!', e.message, [{text: 'OK'}]);
+      Alert.alert('Swap Error!', e.message, [{text: 'OK'}]);
     }
   }
 
@@ -191,14 +191,13 @@ const SwapEquipmentScreen = () => {
       }
       catch(e){
         console.log(e);
-        Alert.alert('Error!', e.message, [{text: 'OK'}]);
+        Alert.alert('Swap Get Error!', e.message, [{text: 'OK'}]);
       }
     }
 
     // get duplicates and merge their counts
     function processEquipmentData(equipment) {
     const equipmentMap = new Map();
-  
     equipment.forEach((equip) => {
       if (equipmentMap.has(equip.name)) {
         const existingEquip = equipmentMap.get(equip.name);

@@ -38,7 +38,7 @@ export default function CreateStorageScreen({navigation}){
         }
         catch(error){
             setIsLoading(false);
-            Alert.alert('Error!', error.toString());
+            Alert.alert('Create Storage Error!', error.toString());
         }
     };
     return (

@@ -82,7 +82,7 @@ function CreateOrgScreen({navigation}) {
       setIsLoading(false);
       // setup popups
       console.log(e);
-      Alert.alert('Error!', e.message, [{text: 'OK'}]);
+      Alert.alert('Create Org Error!', e.message, [{text: 'OK'}]);
     }
   }
 

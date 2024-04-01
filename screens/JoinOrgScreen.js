@@ -69,7 +69,7 @@ function JoinOrgScreen({navigation}) {
     catch(e){
       setIsLoading(false);
       console.log(e);
-      Alert.alert('Error!', e.message, [{text: 'OK'}]);
+      Alert.alert('Join Org Error!', e.message, [{text: 'OK'}]);
     }
   }
 

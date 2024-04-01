@@ -31,8 +31,8 @@ function CreateAccScreen({navigation}) {
 
   async function handleSignUp({ username, password, email }) {
     try {
-      if(username === undefined || password === undefined || email === undefined) {
-        Alert.alert('Error', 'Please fill out all fields.', [{text: 'OK'}]);
+      if(username === undefined || username == ' ' || password === undefined || email === undefined) {
+        Alert.alert('Form Error', 'Please fill out all fields.', [{text: 'OK'}]);
         return;
       }
       setIsLoading(true);
@@ -44,6 +44,7 @@ function CreateAccScreen({navigation}) {
         }
       });
       const user = await Auth.signIn(email, password);
+      console.log('user:', user);
       const newUser = await DataStore.save(
         new User({
           userId: user.attributes.sub,
@@ -51,19 +52,16 @@ function CreateAccScreen({navigation}) {
           email: user.attributes.email,
         })
       );
-      // update our context
-      const currentUser = await Auth.currentAuthenticatedUser();
-      setUser(currentUser);
       onChangeEmail('');
       onChangeFirst('');
       onChangeLast('');
       onChangePassword('');
       setIsLoading(false);
-      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
+      navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
       setIsLoading(false);
       console.log('error signing up:', error);
-      Alert.alert('Error', error.message, [{text: 'OK'}]);
+      Alert.alert('Create Error', error.message, [{text: 'OK'}]);
     }
   }
 
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderWidth: 1,
     borderRadius: 10,
-    margin: 10,
+    margin: '5%',
     width: '80%',
     padding: 10,
   },
@@ -154,7 +152,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '80%'
+    width: '80%',
+    marginTop: '5%',
   },
   name: {
     width: '40%',

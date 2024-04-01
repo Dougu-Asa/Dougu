@@ -14,7 +14,7 @@ const ManageEquipmentScreen = ({route, navigation}) => {
       navigation.navigate('CreateEquipment');
     }
     else {
-      Alert.alert('Error', 'You do not have permission to create equipment', [{text: 'OK'}]);
+      Alert.alert('Authorization Error', 'You do not have permission to create equipment', [{text: 'OK'}]);
     }
   }
 

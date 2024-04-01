@@ -94,7 +94,7 @@ export default class EquipmentTable extends Component {
     }
     catch (error) {
       this.props.setIsLoading(false);
-      Alert.alert('Error', error.message, [{text: 'OK'}]);
+      Alert.alert('Delete Error', error.message, [{text: 'OK'}]);
     }
   }
 

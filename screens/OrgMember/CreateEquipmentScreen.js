@@ -58,7 +58,7 @@ function CreateEquipmentScreen({navigation}){
             Alert.alert('Equipment created successfully!');
         }
         catch(error){
-            Alert.alert('Error', error.message, [{text: 'OK'}]);
+            Alert.alert('Create Equipment Error', error.message, [{text: 'OK'}]);
         }
     };
 

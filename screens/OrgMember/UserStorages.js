@@ -128,7 +128,7 @@ function MemberRow({item, manager, isManager}){
         catch (e) {
             setIsLoading(false);
             console.log(e);
-            Alert.alert("Error", e.message, [{text: 'OK'}]);
+            Alert.alert("Delete UserStorage Error", e.message, [{text: 'OK'}]);
         }
       }
     
