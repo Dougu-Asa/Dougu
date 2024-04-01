@@ -4,11 +4,21 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Auth } from 'aws-amplify';
 import { BackHandler } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 function InfoScreen({navigation}) {
   const [orgName, setOrgName] = useState('');
   const [accessCode, setAccessCode] = useState('');
   const [isManager, setIsManager] = useState(false);
+  const isFocused = useIsFocused();
+
+  // get the accesscode and orgName
+  useEffect(() => {
+    if(isFocused){
+      getOrgInfo();
+    }
+  }, [isFocused]);
+
 
   // Custom so thata back button press goes to the menu
   useEffect(() => {
@@ -22,11 +32,6 @@ function InfoScreen({navigation}) {
   return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, [navigation]);
 
-  // get the accesscode and orgName
-  useEffect(() => {
-    getOrgInfo();
-  }, []);
-
   async function getOrgInfo() {
     const user = await Auth.currentAuthenticatedUser();
     const key = user.attributes.sub + ' currOrg';
@@ -34,6 +39,7 @@ function InfoScreen({navigation}) {
     if(org == null){
       return;
     }
+    console.log('org: ', org);
     const orgJSON = JSON.parse(org);
     if(orgJSON.organizationManagerUserId == user.attributes.sub){
       setIsManager(true);

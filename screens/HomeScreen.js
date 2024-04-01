@@ -1,9 +1,9 @@
 import {Text, View, Button, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import LoginScreen from '../components/Login';
 import CreateAccScreen from '../components/CreateAcc';
 
-function HomeScreen({navigation}) {
+export default function HomeScreen({navigation}) {
   const [login, setLogin] = React.useState(true);
 
   return(
@@ -23,8 +23,6 @@ function HomeScreen({navigation}) {
     </View>
   );
 }
-
-export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

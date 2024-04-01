@@ -1,21 +1,21 @@
-import { Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { BackHandler } from 'react-native';
 import CurrMembersDropdown from '../../components/CurrMembersDropdown';
-import PopupModal from '../../components/PopupModal';
 import { User, OrgUserStorage, Equipment, Organization } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLoad } from '../../components/LoadingContext';
+
 
 function CreateEquipmentScreen({navigation}){
     const [name, onChangeName] = useState('');
     const [quantity, onChangeQuantity] = useState('');
     const [assignUser, setAssignUser] = useState(null);
     const [details, onChangeDetails] = useState('');
-    const [modalVisible, setModalVisible] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('Error!');
     const [selected, setSelected] = useState('equip')
+    const {setIsLoading} = useLoad();
 
     async function handleCreate(){
         try{
@@ -33,6 +33,7 @@ function CreateEquipmentScreen({navigation}){
             if(name == ''){
                 throw new Error("Name must not be empty.");
             }
+            setIsLoading(true);
             // create the equipment
             const user = await Auth.currentAuthenticatedUser();
             let key = user.attributes.sub + ' currOrg';
@@ -40,6 +41,9 @@ function CreateEquipmentScreen({navigation}){
             const orgJSON = JSON.parse(org);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
             const orgUserStorage = await DataStore.query(OrgUserStorage, assignUser.id);
+            if(dataOrg == null || orgUserStorage == null){
+                throw new Error("Organization or User not found.");
+            }
             // create however many equipment specified by quantity
             for(let i = 0; i < quantityCt; i++){
                 const newEquipment = await DataStore.save(
@@ -52,12 +56,11 @@ function CreateEquipmentScreen({navigation}){
                     })
                 );
             }
-            setErrorMsg('Equipment created successfully!');
-            setModalVisible(true);
+            setIsLoading(false);
+            Alert.alert('Equipment created successfully!');
         }
         catch(error){
-            setErrorMsg(error.toString());
-            setModalVisible(true);
+            Alert.alert('Error', error.message, [{text: 'OK'}]);
         }
     };
 
@@ -74,7 +77,6 @@ function CreateEquipmentScreen({navigation}){
 
     return (
         <View style={styles.container}>
-            <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
             <View style={styles.rowContainer}>
                 <View style={styles.row1}>
                     <Text style={styles.rowHeader}>Name</Text>

@@ -4,11 +4,13 @@ import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
-import PopupModal from './PopupModal';
 import { DataStore } from '@aws-amplify/datastore';
 import { User } from '../src/models';
+import { useLoad } from '../components/LoadingContext';
 
 function CreateAccScreen({navigation}) {
+  const {setIsLoading} = useLoad();
+
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
   const toggleShowPassword = (num) => { 
@@ -22,10 +24,6 @@ function CreateAccScreen({navigation}) {
   const [username, onChangeUsername] = React.useState('');
   const [password, onChangePassword] = React.useState('');
 
-  // popup modal
-  const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('Error!');
-
   // username = first + ' ' + last
   useEffect(() => {
     onChangeUsername(first + ' ' + last);
@@ -38,6 +36,7 @@ function CreateAccScreen({navigation}) {
         console.log('missing fields');
         return;
       }
+      setIsLoading(true);
       await Auth.signUp({
         username: email,   // email is the username
         password: password,
@@ -58,18 +57,17 @@ function CreateAccScreen({navigation}) {
       onChangeFirst('');
       onChangeLast('');
       onChangePassword('');
+      setIsLoading(false);
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
+      setIsLoading(false);
       console.log('error signing up:', error);
-      console.log(error);
-      setErrorMsg(error.toString());
-      setModalVisible(true);
+      Alert.alert('Error', error.message, [{text: 'OK'}]);
     }
   }
 
   return(
     <View style={styles.container}>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text style={styles.header}>Create Account</Text>
       <View style={styles.nameContainer}>
         <TextInput

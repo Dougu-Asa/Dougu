@@ -18,8 +18,8 @@ const DraggableEquipment = ({ item, onDrop, onStart, onMove, onTerminate }) => {
     // Check if the touch is within the bounds of the equipment
     const isWithinBounds = (gestureState) => {
       const { x0, y0 } = gestureState;
-      const withinXBounds = x0 >= position.x && x0 <= position.x + dimensions.width;
-      const withinYBounds = y0 >= position.y && y0 <= position.y + dimensions.height;
+      const withinXBounds = x0 >= position.x && x0 <= position.x + (dimensions.width) / 2;
+      const withinYBounds = y0 >= position.y && y0 <= position.y + (dimensions.height) / 2;
       return withinXBounds && withinYBounds;
     };
   

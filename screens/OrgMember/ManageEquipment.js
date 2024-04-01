@@ -3,9 +3,11 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EquipmentTable from '../../components/EquipmentTable';
 import { BackHandler } from 'react-native';
+import { useLoad } from '../../components/LoadingContext';
 
 const ManageEquipmentScreen = ({route, navigation}) => {
   const { isManager } = route.params;
+  const {setIsLoading} = useLoad();
 
   const handleCreate = () => {
     console.log(isManager);
@@ -26,7 +28,7 @@ const ManageEquipmentScreen = ({route, navigation}) => {
             <Ionicons name="add" size={40} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable />
+        <EquipmentTable setIsLoading={setIsLoading}/>
       </View>
     </View>
   );

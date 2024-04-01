@@ -1,16 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, Button, TextInput, createJoinStylesheet } from 'react-native';
+import { Text, View, Button, TextInput, createJoinStylesheet, Alert } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
-import PopupModal from '../components/PopupModal';
 import { OrgUserStorage, Organization, User, UserOrStorage } from '../src/models';
 import { DataStore } from '@aws-amplify/datastore';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import createJoinStyles from '../styles/CreateJoinStyles';
+import { useLoad } from '../components/LoadingContext';
 
 function JoinOrgScreen({navigation}) {
+  const {setIsLoading} = useLoad();
   const [code, onChangeCode] = React.useState('');
   // Custom so thata back button press goes to the menu
   useEffect(() => {
@@ -25,13 +26,11 @@ function JoinOrgScreen({navigation}) {
     return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, [navigation]);
 
-  // popup modal
-  const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('Error!');
   async function joinOrg(){
     try{
       console.log("Joining Org");
       // Query for the org with the access code
+      setIsLoading(true);
       const org = await DataStore.query(Organization, (c) => c.accessCode.eq(code.toUpperCase()));
       if(org.length <= 0){
         throw new Error("Organization does not exist!");
@@ -50,7 +49,7 @@ function JoinOrgScreen({navigation}) {
       }
       // If the org exists, create an OrgUserStorage object
       const DBuser = await DataStore.query(User, user.attributes.sub);
-      console.log('DBUser: ', DBuser);
+      if(DBuser == null) throw new Error("User does not exist!");
       const newOrgUserStorage = await DataStore.save(
         new OrgUserStorage({
           organization: org[0],
@@ -59,33 +58,24 @@ function JoinOrgScreen({navigation}) {
           name: DBuser.name,
         })
       );
-      console.log('newOrgUserStorage: ', newOrgUserStorage);
+      // get the current org after being updated
+      const currOrg = await DataStore.query(Organization, (c) => c.id.eq(org[0].id));
       // add our OrgUserStorage to the user and organization
-      /*await DataStore.save(
-        User.copyOf(DBuser, updated => {
-          updated.organizations = newOrgUserStorage;
-        })
-      );
-      const currOrg = await DataStore.save(
-        Organization.copyOf(org[0], updated => {
-          updated.UserOrStorages = newOrgUserStorage;
-        })
-      ); */
       // save the currOrg and newOrgUserStorage to async storage
       const key = user.attributes.sub + ' currOrg';
       await AsyncStorage.setItem(key, JSON.stringify(currOrg));
+      setIsLoading(false);
       navigation.navigate('DrawerNav', {screen: 'MyOrgs'});
     }
     catch(e){
+      setIsLoading(false);
       console.log(e);
-      setErrorMsg(e.toString());
-      setModalVisible(true);
+      Alert.alert('Error!', e.message, [{text: 'OK'}]);
     }
   }
 
   return(
     <View style={createJoinStyles.mainContainer}>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text style={createJoinStyles.title}>Join Org</Text>
       <Text style={createJoinStyles.subtitle}>Enter the access code provided by the organization manager</Text>
       <TextInput

@@ -4,6 +4,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { Auth, DataStore } from 'aws-amplify';
 import { Equipment, OrgUserStorage, User, Storage, Organization } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLoad } from './LoadingContext';
 
 export default class EquipmentTable extends Component {
   constructor(props) {
@@ -84,9 +85,18 @@ export default class EquipmentTable extends Component {
 
   handleDelete = async (rowData) => {
     // delete equipment
-    const equipment = await DataStore.query(Equipment, rowData.id);
-    await DataStore.delete(equipment);
-    Alert.alert("Equipment Deleted");
+    try {
+      this.props.setIsLoading(true);
+      const equipment = await DataStore.query(Equipment, rowData.id);
+      if(equipment == null) throw new Error("Equipment not found");
+      await DataStore.delete(equipment);
+      this.props.setIsLoading(false);
+      Alert.alert("Equipment Deleted Successfully!");
+    }
+    catch (error) {
+      this.props.setIsLoading(false);
+      Alert.alert('Error', error.message, [{text: 'OK'}]);
+    }
   }
 
   // make sure the owner wants to delete the equipment

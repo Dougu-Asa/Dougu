@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { User, OrgUserStorage, Equipment, Organization } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLoad } from '../../components/LoadingContext';
 
 export default function CreateStorageScreen({navigation}){
     const [name, onChangeName] = useState('');
     const [details, onChangeDetails] = useState('');
+    const {setIsLoading} = useLoad();
 
     async function handleCreate(){
         try{
@@ -15,12 +17,14 @@ export default function CreateStorageScreen({navigation}){
             if(name == ''){
                 throw new Error("Name must not be empty.");
             }
+            setIsLoading(true);
             // create the storage
             const user = await Auth.currentAuthenticatedUser();
             let key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);
+            if(dataOrg == null) throw new Error("Organization not found.");
             const storage = await DataStore.save(
                 new OrgUserStorage({
                     name: name,
@@ -30,9 +34,11 @@ export default function CreateStorageScreen({navigation}){
                 })
             );
             console.log('storage: ', storage);
+            setIsLoading(false);
             Alert.alert('Storage Created Successfully!');
         }
         catch(error){
+            setIsLoading(false);
             Alert.alert('Error!', error.toString());
         }
     };

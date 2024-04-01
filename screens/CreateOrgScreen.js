@@ -1,16 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Text, View, TextInput, createJoinStylesheet, TouchableOpacity } from 'react-native';
+import { Button, Text, View, TextInput, createJoinStylesheet, TouchableOpacity, Alert } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
-import PopupModal from '../components/PopupModal';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dimensions } from 'react-native'
 import createJoinStyles from '../styles/CreateJoinStyles';
+import { useLoad } from '../components/LoadingContext';
 
 function CreateOrgScreen({navigation}) {
+  const {setIsLoading} = useLoad();
   const [name, onChangeName] = React.useState('');
   // Custom so thata back button press goes to the menu
   useEffect(() => {
@@ -26,10 +27,9 @@ function CreateOrgScreen({navigation}) {
   }, [navigation]);
 
   var randomstring = require("randomstring");
-  [modalVisible, setModalVisible] = React.useState(false);
-  [errorMsg, setErrorMsg] = React.useState('');
   async function createOrg(){
     try {
+      setIsLoading(true);
       const user = await Auth.currentAuthenticatedUser();
       if(user == null){
         throw new Error("User is not authenticated.");
@@ -51,6 +51,7 @@ function CreateOrgScreen({navigation}) {
       // query for the user that is the org manager
       const DBuser = await DataStore.query(User, user.attributes.sub);
       console.log('DBuser: ', DBuser);
+      if(DBuser == null) throw new Error("User not found in database.");
       // Add the org to the database
       const newOrg = await DataStore.save(
         new Organization({
@@ -59,6 +60,7 @@ function CreateOrgScreen({navigation}) {
           manager: DBuser,
         })
       );
+      if(newOrg == null) throw new Error("Organization not created successfully.");
       console.log('newOrg: ', newOrg);
       // Add the OrgUserStorage to the DB
       const newOrgUserStorage = await DataStore.save(
@@ -69,36 +71,26 @@ function CreateOrgScreen({navigation}) {
           name: DBuser.name,
         })
       );
+      // query current org to be saved in async storage
+      const currOrg = await DataStore.query(Organization, newOrg.id);
       console.log('newOrgUserStorage: ', newOrgUserStorage);
-      // add our OrgUserStorage to the user and organization
-      /*await DataStore.save(
-        User.copyOf(DBuser, updated => {
-          updated.organizations = newOrgUserStorage;
-        })
-      );
-      const currOrg = await DataStore.save(
-        Organization.copyOf(newOrg, updated => {
-          updated.UserOrStorages = newOrgUserStorage;
-        })
-      ); */
-      // save the currOrg to async storage
       // use a key to keep track of currentOrg per user
       const key = user.attributes.sub + ' currOrg';
       await AsyncStorage.setItem(key, JSON.stringify(currOrg));
       onChangeName('');
+      setIsLoading(false);
       navigation.navigate('Access Code', {accessCode: code});
     }
     catch (e) {
+      setIsLoading(false);
       // setup popups
       console.log(e);
-      setErrorMsg(e.toString());
-      setModalVisible(true);
+      Alert.alert('Error!', e.message, [{text: 'OK'}]);
     }
   }
 
   return(
     <View style={createJoinStyles.mainContainer}>
-      <PopupModal modalVisible={modalVisible} setModalVisible={setModalVisible} text={errorMsg}/>
       <Text style={createJoinStyles.title}>Create Org</Text>
       <Text style={createJoinStyles.subtitle}>Create a name for your org</Text>
       <TextInput

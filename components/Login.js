@@ -3,26 +3,27 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
-import { Dimensions } from 'react-native';
+import {useLoad} from '../components/LoadingContext';
 
 function LoginScreen({navigation}) {
+  const {setIsLoading} = useLoad();
+
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
   const toggleShowPassword = () => { 
     setShowPassword(!showPassword); 
   }; 
 
-  // modal popup
-  const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('Error!');
-
   async function signIn({username, password}) {
     try {
+      setIsLoading(true);
       await Auth.signIn(username, password);
       onChangePassword('');
       onChangeUsername('');
+      setIsLoading(false);
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
+      setIsLoading(false);
       console.log('error signing in', error);
       Alert.alert('Error', error.message, [{text: 'OK'}]);
     }

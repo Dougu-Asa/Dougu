@@ -7,14 +7,22 @@ import { useState } from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 import { OrgUserStorage, Equipment } from '../../src/models';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 
 function TeamEquipmentScreen(){
     const [orgEquipment, setOrgEquipment] = useState([]);
     const [orgUserStorages, setOrgUserStorages] = useState([]);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         subscribeToChanges();
     }, []);
+
+    useEffect(() => {
+        if(isFocused){
+            getOrgEquipment();
+        }
+    }, [isFocused]);
 
     async function subscribeToChanges() {
         DataStore.observeQuery(Equipment).subscribe(snapshot => {

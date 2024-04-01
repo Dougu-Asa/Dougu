@@ -9,6 +9,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useLoad } from '../../components/LoadingContext';
 
 export default function UserStorages({route, navigation}) {
     const {tabParam} = route.params;
@@ -112,12 +113,23 @@ export default function UserStorages({route, navigation}) {
 }
 
 function MemberRow({item, manager, isManager}){
+    const {setIsLoading} = useLoad();
+
     handleDelete = async () => {
-        // delete equipment
-        const orgUserStorage = await DataStore.query(OrgUserStorage, item.id);
-        console.log(orgUserStorage);
-        await DataStore.delete(orgUserStorage);
-        Alert.alert("User/Storage Deleted");
+        // delete 
+        try {
+            setIsLoading(true);
+            const orgUserStorage = await DataStore.query(OrgUserStorage, item.id);
+            if(orgUserStorage == null) throw new Error("User/Storage not found");
+            await DataStore.delete(orgUserStorage);
+            setIsLoading(false);
+            Alert.alert("User/Storage Deleted Successfully!");
+        }
+        catch (e) {
+            setIsLoading(false);
+            console.log(e);
+            Alert.alert("Error", e.message, [{text: 'OK'}]);
+        }
       }
     
       // make sure the owner wants to delete the equipment

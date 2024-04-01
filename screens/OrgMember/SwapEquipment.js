@@ -10,10 +10,26 @@ import { Equipment, OrgUserStorage, Organization, User } from '../../src/models'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import EquipmentItem from '../../components/EquipmentItem';
+import { useLoad } from '../../components/LoadingContext';
 
 const SwapEquipmentScreen = () => {
+  const {setIsLoading} = useLoad();
+  const isFocused = useIsFocused();
+
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
+
+  useEffect(() => {
+    subscribeToChanges();
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if(isFocused){
+      getEquipment();
+      if(swapUser.current != null) getEquipment(swapUser.current.id);
+    }
+  }, [isFocused]);
 
   // we build an absolute overlay to mirror the movements
   // of dragging because we can't drag between scroll views
@@ -33,7 +49,6 @@ const SwapEquipmentScreen = () => {
   const onLayout = (event) => {
     const {x, y, width, height} = event.nativeEvent.layout;
     halfLine.current = height + 120 + headerHeight;
-    //halfLine.current = height / 2 + headerHeight + 40;
     rowHeight.current = height;
   };
 
@@ -70,12 +85,15 @@ const SwapEquipmentScreen = () => {
    // we need to know who we dropped the equipment to
    const handleDrop = async (item, dropPositionY) => {
     setDraggingItem(null);
-    if(swapUser.current == null) return;
     if (dropPositionY > halfLine.current) { 
       if(startPosition.current == 2) return;
       // drag from top to bottom
-      console.log('user -> swap')
-      reassignEquipment(item, swapUser.current.userId);
+      console.log('user -> swap');
+      if(swapUser.current == null){
+        Alert.alert('Please select a user to swap equipment with!', [{text: 'OK'}]);
+        return;
+      }
+      reassignEquipment(item, swapUser.current.id);
     } else {
       if(startPosition.current == 1) return; 
       // drag from bottom to top
@@ -87,22 +105,47 @@ const SwapEquipmentScreen = () => {
 
   // reassign the equipment
   async function reassignEquipment(item, assignedTo) {
-    const user = await Auth.currentAuthenticatedUser();
-    const key = user.attributes.sub + ' currOrg';
-    const org = await AsyncStorage.getItem(key);
-    const orgJSON = JSON.parse(org);
-    const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-      c.organization.name.eq(orgJSON.name),
-      c.user.userId.eq(assignedTo)
-    ]));
-    const equip = await DataStore.query(Equipment, item.id);
-    const newEquip = await DataStore.save(
-      Equipment.copyOf(equip, updated => {
-        updated.assignedTo = orgUserStorage[0];
-        updated.lastUpdatedDate = new Date().toISOString();
-      })
-    );
-    Alert.alert("Equipment swapped!");
+    try {
+      setIsLoading(true);
+      console.log("assignedTo: ", assignedTo);
+      const user = await Auth.currentAuthenticatedUser();
+      const key = user.attributes.sub + ' currOrg';
+      const org = await AsyncStorage.getItem(key);
+      const orgJSON = JSON.parse(org);
+      let orgUserStorage;
+      // current user
+      if(assignedTo == null){
+        orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
+          c.organization.name.eq(orgJSON.name),
+          c.user.userId.eq(assignedTo)
+        ]));
+        orgUserStorage = orgUserStorage[0];
+      }
+      else {
+        orgUserStorage = await DataStore.query(OrgUserStorage, assignedTo);
+      }
+      console.log("item: ", item);
+      const equip = await DataStore.query(Equipment, item.id);
+      if(orgUserStorage == null || equip == null){
+        console.log("orgUserStorage: ", orgUserStorage);
+        console.log("equip: ", equip);
+        throw new Error("User or Equipment not found!");
+      }
+      const newEquip = await DataStore.save(
+        Equipment.copyOf(equip, updated => {
+          updated.assignedTo = orgUserStorage;
+          updated.lastUpdatedDate = new Date().toISOString();
+        })
+      );
+      setIsLoading(false);
+      Alert.alert("Equipment swapped!");
+    }
+    catch(e){
+      console.log(e);
+      console.log("new Change!");
+      setIsLoading(false);
+      Alert.alert('Error!', e.message, [{text: 'OK'}]);
+    }
   }
 
   // if the scrollbar interferes with drag
@@ -114,17 +157,15 @@ const SwapEquipmentScreen = () => {
   const handleSet = (user) => {
     if(!user || user==null) return;
     swapUser.current = user;
-    getEquipment(swapUser.current.id);
+    console.log("swapUser: ", swapUser.current);
+    if(swapUser.current != null) getEquipment(swapUser.current.id);
   }
-
-  useEffect(() => {
-    subscribeToChanges();
-  }, []);
 
   async function subscribeToChanges() {
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
         console.log(`Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`);
+        console.log("swapUser!: ", swapUser.current);
         getEquipment();
         if(swapUser.current != null) getEquipment(swapUser.current.userId)
     });
@@ -152,7 +193,9 @@ const SwapEquipmentScreen = () => {
         ]));
         orgUserStorage = orgUserStorage[0];
       }
+      console.log("orgUserStorage: ", orgUserStorage);
       const equipment = await DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id));
+      console.log("equipment: ", equipment);
       const equipmentData = processEquipmentData(equipment);
       if(swapId) setListTwo(equipmentData);
       else setListOne(equipmentData);
@@ -275,10 +318,6 @@ const styles = StyleSheet.create({
   },
   floatingItem: {
     position: 'absolute',
-    /*width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'skyblue', */
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100, // Make sure the floating item is rendered above everything else
