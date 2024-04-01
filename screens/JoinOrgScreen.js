@@ -28,7 +28,6 @@ function JoinOrgScreen({navigation}) {
 
   async function joinOrg(){
     try{
-      console.log("Joining Org");
       // Query for the org with the access code
       setIsLoading(true);
       const org = await DataStore.query(Organization, (c) => c.accessCode.eq(code.toUpperCase()));

@@ -31,9 +31,8 @@ function CreateAccScreen({navigation}) {
 
   async function handleSignUp({ username, password, email }) {
     try {
-      console.log(username, password, email);
       if(username === undefined || password === undefined || email === undefined) {
-        console.log('missing fields');
+        Alert.alert('Error', 'Please fill out all fields.', [{text: 'OK'}]);
         return;
       }
       setIsLoading(true);
@@ -45,7 +44,6 @@ function CreateAccScreen({navigation}) {
         }
       });
       const user = await Auth.signIn(email, password);
-      console.log(user);
       const newUser = await DataStore.save(
         new User({
           userId: user.attributes.sub,
@@ -53,6 +51,9 @@ function CreateAccScreen({navigation}) {
           email: user.attributes.email,
         })
       );
+      // update our context
+      const currentUser = await Auth.currentAuthenticatedUser();
+      setUser(currentUser);
       onChangeEmail('');
       onChangeFirst('');
       onChangeLast('');

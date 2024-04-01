@@ -10,7 +10,6 @@ const ManageEquipmentScreen = ({route, navigation}) => {
   const {setIsLoading} = useLoad();
 
   const handleCreate = () => {
-    console.log(isManager);
     if(isManager){
       navigation.navigate('CreateEquipment');
     }

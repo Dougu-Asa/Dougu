@@ -39,7 +39,6 @@ function InfoScreen({navigation}) {
     if(org == null){
       return;
     }
-    console.log('org: ', org);
     const orgJSON = JSON.parse(org);
     if(orgJSON.organizationManagerUserId == user.attributes.sub){
       setIsManager(true);

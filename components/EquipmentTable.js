@@ -4,7 +4,6 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { Auth, DataStore } from 'aws-amplify';
 import { Equipment, OrgUserStorage, User, Storage, Organization } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLoad } from './LoadingContext';
 
 export default class EquipmentTable extends Component {
   constructor(props) {

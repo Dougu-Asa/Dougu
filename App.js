@@ -25,7 +25,9 @@ function App() {
   return (
     <NavigationContainer>
         <LoadingProvider>
-          <AppContent />
+          <UserProvider>
+            <AppContent />
+          </UserProvider>
         </LoadingProvider>
     </NavigationContainer>
   );
@@ -35,6 +37,7 @@ export default App;
 function AppContent() {
   const {isLoading} = useLoad();
   const navigation = useNavigation();
+  const {setUser} = useUser();
 
   useEffect(() => {
     checkCurrentUser();
@@ -43,9 +46,10 @@ function AppContent() {
   const checkCurrentUser = async () => {
     // updateUserAuthentication updates AuthProvider context
     try {
-      await Auth.currentAuthenticatedUser();
+      const user = await Auth.currentAuthenticatedUser();
       // If this succeeds, there is a logged-in user
       console.log("User is logged in");
+      setUser(user);
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       // No current authenticated user

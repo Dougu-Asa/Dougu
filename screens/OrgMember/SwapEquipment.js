@@ -6,27 +6,28 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore, Auth } from 'aws-amplify';
-import { Equipment, OrgUserStorage, Organization, User } from '../../src/models';
+import { Equipment, OrgUserStorage, Organization, User, UserOrStorage } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import EquipmentItem from '../../components/EquipmentItem';
 import { useLoad } from '../../components/LoadingContext';
+import { useUser } from '../../components/UserContext';
 
 const SwapEquipmentScreen = () => {
   const {setIsLoading} = useLoad();
   const isFocused = useIsFocused();
+  const {user} = useUser();
 
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
 
   useEffect(() => {
     subscribeToChanges();
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
     if(isFocused){
-      getEquipment();
+      getEquipment(user.attributes.sub);
       if(swapUser.current != null) getEquipment(swapUser.current.id);
     }
   }, [isFocused]);
@@ -98,7 +99,6 @@ const SwapEquipmentScreen = () => {
       if(startPosition.current == 1) return; 
       // drag from bottom to top
       console.log('swap -> user')
-      const user = await Auth.currentAuthenticatedUser();
       reassignEquipment(item, user.attributes.sub);
     }
   };
@@ -107,26 +107,24 @@ const SwapEquipmentScreen = () => {
   async function reassignEquipment(item, assignedTo) {
     try {
       setIsLoading(true);
-      console.log("assignedTo: ", assignedTo);
-      const user = await Auth.currentAuthenticatedUser();
+      const toCurrentUser = (user.attributes.sub == assignedTo) ? true : false;
       const key = user.attributes.sub + ' currOrg';
       const org = await AsyncStorage.getItem(key);
       const orgJSON = JSON.parse(org);
       let orgUserStorage;
       // current user
-      if(assignedTo == null){
+      if(toCurrentUser){
         orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
           c.organization.name.eq(orgJSON.name),
-          c.user.userId.eq(assignedTo)
+          c.user.userId.eq(user.attributes.sub),
         ]));
         orgUserStorage = orgUserStorage[0];
       }
       else {
         orgUserStorage = await DataStore.query(OrgUserStorage, assignedTo);
       }
-      console.log("item: ", item);
       const equip = await DataStore.query(Equipment, item.id);
-      if(orgUserStorage == null || equip == null){
+      if(orgUserStorage == null || orgUserStorage == [] || equip == null){
         console.log("orgUserStorage: ", orgUserStorage);
         console.log("equip: ", equip);
         throw new Error("User or Equipment not found!");
@@ -142,7 +140,6 @@ const SwapEquipmentScreen = () => {
     }
     catch(e){
       console.log(e);
-      console.log("new Change!");
       setIsLoading(false);
       Alert.alert('Error!', e.message, [{text: 'OK'}]);
     }
@@ -154,51 +151,48 @@ const SwapEquipmentScreen = () => {
   }
 
   // get selected user equipment
-  const handleSet = (user) => {
-    if(!user || user==null) return;
-    swapUser.current = user;
-    console.log("swapUser: ", swapUser.current);
-    if(swapUser.current != null) getEquipment(swapUser.current.id);
+  const handleSet = (inputUser) => {
+    if(inputUser==null) return;
+    swapUser.current = inputUser;
+    getEquipment(swapUser.current.id);
   }
 
   async function subscribeToChanges() {
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
         console.log(`Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`);
-        console.log("swapUser!: ", swapUser.current);
-        getEquipment();
-        if(swapUser.current != null) getEquipment(swapUser.current.userId)
+        getEquipment(user.attributes.sub);
+        if(swapUser.current != null) getEquipment(swapUser.current.id)
     });
   }
     async function getEquipment(swapId) {
-      console.log("swapId: " + swapId);
-      const user = await Auth.currentAuthenticatedUser();
-      const key = user.attributes.sub + ' currOrg';
-      const org = await AsyncStorage.getItem(key);
-      if(org == null){
-          return;
-      };
-      const orgJSON = JSON.parse(org);
-      // passed in orgUserStorage
-      let orgUserStorage;
-      if(swapId){
-        orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
+      try{
+        const isCurrentUser = (user.attributes.sub == swapId) ? true : false;
+        const key = user.attributes.sub + ' currOrg';
+        const org = await AsyncStorage.getItem(key);
+        const orgJSON = JSON.parse(org);
+        // passed in orgUserStorage
+        let orgUserStorage;
+        if(isCurrentUser){
+          orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
+            c.organization.name.eq(orgJSON.name),
+            c.user.userId.eq(user.attributes.sub),
+            c.type.eq(UserOrStorage.USER)
+          ]));
+          orgUserStorage = orgUserStorage[0];
+        }
+        else{
+          orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
+        }
+        const equipment = await DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id));
+        const equipmentData = processEquipmentData(equipment);
+        if(isCurrentUser) setListOne(equipmentData);
+        else setListTwo(equipmentData);
       }
-      // no orgUserStorage (default user)
-      else {
-        orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-          c.organization.name.eq(orgJSON.name),
-          c.user.userId.eq(user.attributes.sub),
-          c.type.eq('USER'),
-        ]));
-        orgUserStorage = orgUserStorage[0];
+      catch(e){
+        console.log(e);
+        Alert.alert('Error!', e.message, [{text: 'OK'}]);
       }
-      console.log("orgUserStorage: ", orgUserStorage);
-      const equipment = await DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id));
-      console.log("equipment: ", equipment);
-      const equipmentData = processEquipmentData(equipment);
-      if(swapId) setListTwo(equipmentData);
-      else setListOne(equipmentData);
     }
 
     // get duplicates and merge their counts

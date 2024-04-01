@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { User, OrgUserStorage, Equipment, Organization } from '../../src/models';
+import { User, OrgUserStorage, Equipment, Organization, UserOrStorage } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLoad } from '../../components/LoadingContext';
@@ -29,11 +29,10 @@ export default function CreateStorageScreen({navigation}){
                 new OrgUserStorage({
                     name: name,
                     organization: dataOrg,
-                    type: 'STORAGE',
+                    type: UserOrStorage.STORAGE,
                     details: details,
                 })
             );
-            console.log('storage: ', storage);
             setIsLoading(false);
             Alert.alert('Storage Created Successfully!');
         }

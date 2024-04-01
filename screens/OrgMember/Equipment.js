@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { Equipment, OrgUserStorage } from '../../src/models';
+import { Equipment, OrgUserStorage, UserOrStorage } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import EquipmentItem from '../../components/EquipmentItem';
@@ -41,7 +41,7 @@ const EquipmentScreen = ({navigation}) => {
       const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
         c.organization.id.eq(orgJSON.id),
         c.user.userId.eq(user.attributes.sub),
-        c.type.eq('USER'),
+        c.type.eq(UserOrStorage.USER),
       ]));
       const equipment = await DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage[0].id));
       const equipmentData = processEquipmentData(equipment);

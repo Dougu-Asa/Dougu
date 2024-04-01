@@ -50,7 +50,6 @@ function CreateOrgScreen({navigation}) {
       }
       // query for the user that is the org manager
       const DBuser = await DataStore.query(User, user.attributes.sub);
-      console.log('DBuser: ', DBuser);
       if(DBuser == null) throw new Error("User not found in database.");
       // Add the org to the database
       const newOrg = await DataStore.save(
@@ -61,7 +60,6 @@ function CreateOrgScreen({navigation}) {
         })
       );
       if(newOrg == null) throw new Error("Organization not created successfully.");
-      console.log('newOrg: ', newOrg);
       // Add the OrgUserStorage to the DB
       const newOrgUserStorage = await DataStore.save(
         new OrgUserStorage({
@@ -73,7 +71,6 @@ function CreateOrgScreen({navigation}) {
       );
       // query current org to be saved in async storage
       const currOrg = await DataStore.query(Organization, newOrg.id);
-      console.log('newOrgUserStorage: ', newOrgUserStorage);
       // use a key to keep track of currentOrg per user
       const key = user.attributes.sub + ' currOrg';
       await AsyncStorage.setItem(key, JSON.stringify(currOrg));

@@ -8,7 +8,6 @@ import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLoad } from '../../components/LoadingContext';
 
-
 function CreateEquipmentScreen({navigation}){
     const [name, onChangeName] = useState('');
     const [quantity, onChangeQuantity] = useState('');
@@ -20,7 +19,6 @@ function CreateEquipmentScreen({navigation}){
     async function handleCreate(){
         try{
             let quantityCt = parseInt(quantity);
-            console.log('quantityCt: ', quantityCt);
             // check that quantity > 1
             if(quantityCt < 1 || isNaN(quantityCt)){
                 throw new Error("Quantity must be a number or greater than 0.");
@@ -36,7 +34,7 @@ function CreateEquipmentScreen({navigation}){
             setIsLoading(true);
             // create the equipment
             const user = await Auth.currentAuthenticatedUser();
-            let key = user.attributes.sub + ' currOrg';
+            const key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
             const dataOrg = await DataStore.query(Organization, orgJSON.id);

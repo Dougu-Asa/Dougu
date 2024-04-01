@@ -4,9 +4,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
 import {useLoad} from '../components/LoadingContext';
+import { useUser } from './UserContext';
 
 function LoginScreen({navigation}) {
   const {setIsLoading} = useLoad();
+  const {setUser} = useUser();
 
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
@@ -21,6 +23,8 @@ function LoginScreen({navigation}) {
       onChangePassword('');
       onChangeUsername('');
       setIsLoading(false);
+      const user = await Auth.currentAuthenticatedUser();
+      setUser(user);
       navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
     } catch (error) {
       setIsLoading(false);

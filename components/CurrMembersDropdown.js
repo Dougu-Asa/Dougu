@@ -8,18 +8,16 @@ import { OrgUserStorage, Organization, User } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 
-
 const CurrMembersDropdown = ({setUser, isCreate}) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [userNames, setUserNames] = useState([]);
+  const isFocused = useIsFocused(); 
 
   // useEffect 
   useEffect(() => {
     subscribeToChanges();
   }, []);
-
-
 
   async function subscribeToChanges() {
     // Query for the organizations that the user is a part of
