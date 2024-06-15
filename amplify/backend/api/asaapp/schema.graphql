@@ -54,3 +54,8 @@ type Equipment @model @auth(rules: [{ allow: public }]){
   parent: Container @belongsTo
   details: String
 }
+
+enum Change {
+  CHANGE
+  NOCHANGE
+}

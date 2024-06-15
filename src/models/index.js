@@ -7,6 +7,11 @@ const UserOrStorage = {
   "STORAGE": "STORAGE"
 };
 
+const Change = {
+  "CHANGE": "CHANGE",
+  "NOCHANGE": "NOCHANGE"
+};
+
 const { Organization, User, OrgUserStorage, Container, Equipment } = initSchema(schema);
 
 export {
@@ -15,5 +20,6 @@ export {
   OrgUserStorage,
   Container,
   Equipment,
-  UserOrStorage
+  UserOrStorage,
+  Change
 };

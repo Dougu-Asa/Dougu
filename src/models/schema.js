@@ -660,6 +660,13 @@ export const schema = {
                 "USER",
                 "STORAGE"
             ]
+        },
+        "Change": {
+            "name": "Change",
+            "values": [
+                "CHANGE",
+                "NOCHANGE"
+            ]
         }
     },
     "nonModels": {},

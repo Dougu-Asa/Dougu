@@ -7,6 +7,11 @@ export enum UserOrStorage {
   STORAGE = "STORAGE"
 }
 
+export enum Change {
+  CHANGE = "CHANGE",
+  NOCHANGE = "NOCHANGE"
+}
+
 
 
 type EagerOrganization = {
