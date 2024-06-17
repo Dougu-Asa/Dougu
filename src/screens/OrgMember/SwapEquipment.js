@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import { Dimensions } from 'react-native';
-import DraggableEquipment from '../../components/DraggableEquipment';
 import { useHeaderHeight } from '@react-navigation/elements';
-import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore, Auth } from 'aws-amplify';
-import { Equipment, OrgUserStorage, Organization, User, UserOrStorage } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+
+// project imports
+import { Equipment, OrgUserStorage, Organization, User, UserOrStorage } from '../../models';
 import EquipmentItem from '../../components/EquipmentItem';
 import { useLoad } from '../../components/LoadingContext';
 import { useUser } from '../../components/UserContext';
+import CurrMembersDropdown from '../../components/CurrMembersDropdown';
+import DraggableEquipment from '../../components/DraggableEquipment';
 
 const SwapEquipmentScreen = () => {
   const {setIsLoading} = useLoad();

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { Equipment, OrgUserStorage, UserOrStorage } from '../../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-import EquipmentItem from '../../components/EquipmentItem';
 import { ScrollView } from 'react-native-gesture-handler';
+
+// Project imports
+import { Equipment, OrgUserStorage, UserOrStorage } from '../../models';
+import EquipmentItem from '../../components/EquipmentItem';
 
 const EquipmentScreen = ({navigation}) => {
   const [equipment, setEquipment] = useState([]);

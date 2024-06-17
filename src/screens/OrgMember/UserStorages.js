@@ -4,11 +4,13 @@ import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LinearGradient} from 'expo-linear-gradient';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, User, Equipment } from '../../src/models';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+// project imports
+import { OrgUserStorage, User, Equipment } from '../../models';
 import { useLoad } from '../../components/LoadingContext';
 
 export default function UserStorages({route, navigation}) {

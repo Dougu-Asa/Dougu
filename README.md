@@ -2,9 +2,9 @@
 Dougu is an equipment management app that seeks to make tracking and transferring equipment as simple as possible through drag and drop features. This project was born out of a need to manage equipment quickly in offline scenarions for the Asayake Taiko organization at UC San Diego.
 
 <span >
-  <img src="./readme/douguswapgif.gif" width="30%" height="50%" />
-  <img src="./readme/equipmentList.jpg" width="30%" height="50%" />
-  <img src="./readme/orgInfoScreen.jpg" width="30%" height="50%" />
+  <img src="./documents/readme/douguswapgif.gif" width="30%" height="50%" />
+  <img src="./documents/readme/equipmentList.jpg" width="30%" height="50%" />
+  <img src="./documents/readme/orgInfoScreen.jpg" width="30%" height="50%" />
 </span>
   
 #### *Preview displaying drag and drop transfer of equipment, an equipment list for an organization, and an organization member information page*

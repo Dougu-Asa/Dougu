@@ -1,14 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import { Button, Text, View, TextInput, createJoinStylesheet, TouchableOpacity, Alert } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { BackHandler } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { Organization, User, OrgUserStorage, UserOrStorage } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Dimensions } from 'react-native'
+
 import createJoinStyles from '../styles/CreateJoinStyles';
 import { useLoad } from '../components/LoadingContext';
+import { Organization, User, OrgUserStorage, UserOrStorage } from '../models';
 
 function CreateOrgScreen({navigation}) {
   const {setIsLoading} = useLoad();

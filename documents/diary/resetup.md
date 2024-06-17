@@ -1,3 +1,4 @@
+# 6-13-24:
 ## Get App Working Again
 Today I managed to get `npx expo start` to run and open the app, however after logging in, I have been getting: 
 ```
@@ -14,3 +15,6 @@ When I swap, I get a warning.
 This appears to be an expired key error, but amplify had an issue where using an expired key made it impossible to push a new key. Luckily, making a schema change fixed this.
 Create and configure new API Key: [link](https://docs.amplify.aws/gen1/javascript/tools/cli-legacy/config-params/#createapikey)
 
+# 6-15-24:
+## Setup Amplify on New Laptop
+Today I setup amplify and the Dougu project on a new machine. Right now, i am setting up Amplify again using `amplify configure`. As such, I am also creating a new IAM user with permissions called good-laptop. Now `npx expo start` works!

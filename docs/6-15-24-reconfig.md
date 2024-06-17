@@ -1,2 +1,0 @@
-## Setup Amplify on New Laptop
-Today I setup amplify and the Dougu project on a new machine. Right now, i am setting up Amplify again using `amplify configure`. As such, I am also creating a new IAM user with permissions called good-laptop. Now `npx expo start` works!

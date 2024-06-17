@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, Organization, User } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+
+// project imports
+import { OrgUserStorage, Organization, User } from '../models';
 
 const CurrMembersDropdown = ({setUser, isCreate}) => {
   const [value, setValue] = useState(null);

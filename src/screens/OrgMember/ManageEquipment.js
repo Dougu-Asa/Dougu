@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Component } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+// project imports
 import EquipmentTable from '../../components/EquipmentTable';
-import { BackHandler } from 'react-native';
 import { useLoad } from '../../components/LoadingContext';
 
 const ManageEquipmentScreen = ({route, navigation}) => {

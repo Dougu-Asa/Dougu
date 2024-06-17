@@ -1,14 +1,15 @@
 {
   "expo": {
+    "entryPoint": "./src/App.js",
     "name": "Dougu",
     "scheme": "com.asa.app",
     "slug": "asa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/asayake.png",
+    "icon": "./src/assets/asayake.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.asa.app"

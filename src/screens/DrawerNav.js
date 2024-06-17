@@ -1,20 +1,22 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
 import { TouchableOpacity, Text, View, StyleSheet, Image, Alert} from 'react-native';
-import JoinOrgScreen from './JoinOrgScreen';
-import CreateOrgScreen from './CreateOrgScreen';
-import AccessCodeScreen from './AccessCodeScreen';
-import MyOrgsScreen from './MyOrgsScreen';
-import MemberTabs from './OrgMember/MemberTabs';
-import JoinOrCreateScreen from './JoinOrCreateScreen';
 import { BackHandler } from 'react-native';
 import { Auth } from 'aws-amplify';
 import React, { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-import { useLoad } from '../components/LoadingContext';
-import { OrgUserStorage } from '../src/models';
 import { DataStore } from '@aws-amplify/datastore';
+
+// project imports
+import JoinOrgScreen from './JoinOrgScreen';
+import CreateOrgScreen from './CreateOrgScreen';
+import AccessCodeScreen from './AccessCodeScreen';
+import MyOrgsScreen from './MyOrgsScreen';
+import MemberTabs from './OrgMember/MemberTabs';
+import JoinOrCreateScreen from './JoinOrCreateScreen';
+import { useLoad } from '../components/LoadingContext';
+import { OrgUserStorage } from '../models';
 
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();

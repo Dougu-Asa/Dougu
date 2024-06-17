@@ -1,10 +1,12 @@
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { User, OrgUserStorage, Equipment, Organization, UserOrStorage } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// project imports
 import { useLoad } from '../../components/LoadingContext';
+import { User, OrgUserStorage, Equipment, Organization, UserOrStorage } from '../../models';
 
 export default function CreateStorageScreen({navigation}){
     const [name, onChangeName] = useState('');

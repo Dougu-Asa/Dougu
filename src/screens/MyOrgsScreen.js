@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, Organization, User } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { OrgUserStorage, Organization, User } from '../models';
 
 const MyOrgsScreen = ({navigation}) => {
   const [orgNames, setOrgNames] = useState([]);

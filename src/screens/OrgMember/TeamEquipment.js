@@ -1,13 +1,15 @@
 import { Text, View } from 'react-native';
 import React, { useEffect } from 'react';
-import UserEquipment from '../../components/UserEquipment';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { DataStore } from '@aws-amplify/datastore';
-import { OrgUserStorage, Equipment } from '../../src/models';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
+
+// project imports
+import { OrgUserStorage, Equipment } from '../../models';
+import UserEquipment from '../../components/UserEquipment';
 
 function TeamEquipmentScreen(){
     const [orgEquipment, setOrgEquipment] = useState([]);

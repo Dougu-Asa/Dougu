@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button } from 'react-native';
+
 import MainStyle from '../styles/MainStyle';
 
 function MyOrgsScreen({navigation}) {

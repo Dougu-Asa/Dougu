@@ -1,11 +1,12 @@
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { BackHandler } from 'react-native';
-import CurrMembersDropdown from '../../components/CurrMembersDropdown';
-import { User, OrgUserStorage, Equipment, Organization } from '../../src/models';
 import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// my Code
+import CurrMembersDropdown from '../../components/CurrMembersDropdown';
+import { User, OrgUserStorage, Equipment, Organization } from '../../models';
 import { useLoad } from '../../components/LoadingContext';
 
 function CreateEquipmentScreen({navigation}){

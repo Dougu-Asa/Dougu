@@ -1,13 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Amplify, Auth } from 'aws-amplify';
-import amplifyconfig from './src/amplifyconfiguration.json';
+import amplifyconfig from './amplifyconfiguration.json';
 import React, { useEffect, useState, useRef } from 'react';
 import '@azure/core-asynciterator-polyfill';
 import { useNavigation } from '@react-navigation/native';
 import Indicator from './components/Indicator';
 import { LoadingProvider, useLoad } from './components/LoadingContext';
 import { UserProvider, useUser } from './components/UserContext';
+import { registerRootComponent } from 'expo';
 
 //screens
 import HomeScreen from './screens/HomeScreen';
@@ -32,7 +33,7 @@ function App() {
     </NavigationContainer>
   );
 }
-export default App;
+export default registerRootComponent(App);
 
 function AppContent() {
   const {isLoading} = useLoad();

@@ -2,15 +2,17 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useEffect, useState, useLayoutEffect} from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
-import EquipmentScreen from './Equipment';
-import SwapEquipmentScreen from './SwapEquipment';
-import TeamEquipmentScreen from './TeamEquipment';
 import FontAwesone5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// project imports
 import InfoScreen from './InfoScreen';
+import EquipmentScreen from './Equipment';
+import SwapEquipmentScreen from './SwapEquipment';
+import TeamEquipmentScreen from './TeamEquipment';
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();

@@ -5,7 +5,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
 import { DataStore } from '@aws-amplify/datastore';
-import { User } from '../src/models';
+
+// project imports
+import { User } from '../models';
 import { useLoad } from '../components/LoadingContext';
 
 function CreateAccScreen({navigation}) {

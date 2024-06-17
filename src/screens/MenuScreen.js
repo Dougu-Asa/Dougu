@@ -2,8 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
-import CurrOrgsDropdown from '../components/CurrOrgsDropown';
 import { Auth } from 'aws-amplify';
+
+// project imports
+import CurrOrgsDropdown from '../components/CurrOrgsDropown';
 
 function MenuScreen({navigation}) {
   // Custom so that a back button press goes to home

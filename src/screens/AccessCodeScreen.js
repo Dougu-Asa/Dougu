@@ -1,7 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
 import { Text, View, TouchableOpacity} from 'react-native';
 import React, {useEffect} from 'react';
 import { BackHandler } from 'react-native';
+
 import createJoinStyles from '../styles/CreateJoinStyles';
 
 function AccessCodeScreen({route, navigation}) {
