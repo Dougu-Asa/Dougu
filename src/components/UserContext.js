@@ -4,11 +4,13 @@ const UserContext = React.createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [org, setOrg] = useState(null);
+    const [userOrg, setUserOrg] = useState(null);
 
     return (
-    <UserContext.Provider value={{ user, setUser}}>
-        {children}
-    </UserContext.Provider>
+        <UserContext.Provider value={{ user, setUser, org, setOrg, userOrg, setUserOrg}}>
+            {children}
+        </UserContext.Provider>
     );
 };
 
