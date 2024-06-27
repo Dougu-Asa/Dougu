@@ -3,6 +3,7 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
+import * as Sentry from '@sentry/react-native';
 
 import {useLoad} from '../components/LoadingContext';
 
@@ -27,6 +28,7 @@ function LoginScreen({navigation}) {
     } catch (error) {
       setIsLoading(false);
       console.log('error signing in', error);
+      Sentry.captureException(error);
       Alert.alert('Login Error', error.message, [{text: 'OK'}]);
     }
   }

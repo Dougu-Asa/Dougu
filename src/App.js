@@ -17,6 +17,17 @@ import CreateEquipmentScreen from './screens/OrgMember/CreateEquipmentScreen';
 import ManageEquipmentScreen from './screens/OrgMember/ManageEquipment';
 import UserStorages from './screens/OrgMember/UserStorages';
 import CreateStorageScreen from './screens/OrgMember/CreateStorageScreen';
+import * as Sentry from '@sentry/react-native';
+
+// Use sentry to track and log errors throughout the app
+Sentry.init({
+  dsn: 'https://dc0105cfe4212e7f682ce47529bc0c51@o4507486458871808.ingest.us.sentry.io/4507486460051456',
+  tracesSampleRate: 1.0,
+  _experiments: {
+    profilesSampleRate: 1.0,
+  },
+});
+
 
 Amplify.configure(amplifyconfig);
 const Stack = createNativeStackNavigator();
@@ -33,7 +44,10 @@ function App() {
     </NavigationContainer>
   );
 }
-export default registerRootComponent(App);
+
+// Wrap sentry for features, export registerRootComponent for new App.js location
+const WrappedApp = Sentry.wrap(App);
+export default registerRootComponent(WrappedApp);
 
 function AppContent() {
   const {isLoading} = useLoad();
