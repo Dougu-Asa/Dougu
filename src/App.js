@@ -1,3 +1,5 @@
+
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Amplify, Auth } from 'aws-amplify';
@@ -13,10 +15,10 @@ import { registerRootComponent } from 'expo';
 //screens
 import HomeScreen from './screens/HomeScreen';
 import DrawerNav from './screens/DrawerNav';
-import CreateEquipmentScreen from './screens/OrgMember/CreateEquipmentScreen';
-import ManageEquipmentScreen from './screens/OrgMember/ManageEquipment';
-import UserStorages from './screens/OrgMember/UserStorages';
-import CreateStorageScreen from './screens/OrgMember/CreateStorageScreen';
+import CreateEquipmentScreen from './screens/Organization/CreateEquipmentScreen';
+import ManageEquipmentScreen from './screens/Organization/ManageEquipment';
+import UserStorages from './screens/Organization/UserStorages';
+import CreateStorageScreen from './screens/Organization/CreateStorageScreen';
 import * as Sentry from '@sentry/react-native';
 
 // Use sentry to track and log errors throughout the app

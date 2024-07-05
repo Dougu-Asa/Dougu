@@ -3,12 +3,13 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
-import * as Sentry from '@sentry/react-native';
 
 import {useLoad} from '../components/LoadingContext';
+import { useUser } from '../components/UserContext';
 
 function LoginScreen({navigation}) {
   const {setIsLoading} = useLoad();
+  const {setUser} = useUser();
 
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
@@ -24,11 +25,11 @@ function LoginScreen({navigation}) {
       onChangeUsername('');
       setIsLoading(false);
       const user = await Auth.currentAuthenticatedUser();
+      setUser(user);
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
       setIsLoading(false);
       console.log('error signing in', error);
-      Sentry.captureException(error);
       Alert.alert('Login Error', error.message, [{text: 'OK'}]);
     }
   }

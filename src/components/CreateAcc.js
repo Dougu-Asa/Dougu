@@ -9,9 +9,11 @@ import { DataStore } from '@aws-amplify/datastore';
 // project imports
 import { User } from '../models';
 import { useLoad } from '../components/LoadingContext';
+import { useUser } from '../components/UserContext';
 
 function CreateAccScreen({navigation}) {
   const {setIsLoading} = useLoad();
+  const {setUser} = useUser();
 
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
@@ -54,6 +56,7 @@ function CreateAccScreen({navigation}) {
           email: user.attributes.email,
         })
       );
+      setUser(user);
       onChangeEmail('');
       onChangeFirst('');
       onChangeLast('');

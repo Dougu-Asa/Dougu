@@ -1,5 +1,4 @@
 // This file is a class that handles the access, retrieval, and storage of data to AWS Datastore
-
   async function createOrg(){
     var randomstring = require("randomstring");
     try {

@@ -13,7 +13,7 @@ import JoinOrgScreen from './JoinOrgScreen';
 import CreateOrgScreen from './CreateOrgScreen';
 import AccessCodeScreen from './AccessCodeScreen';
 import MyOrgsScreen from './MyOrgsScreen';
-import MemberTabs from './OrgMember/MemberTabs';
+import MemberTabs from './Member/MemberTabs';
 import JoinOrCreateScreen from './JoinOrCreateScreen';
 import { useLoad } from '../components/LoadingContext';
 import { OrgUserStorage } from '../models';

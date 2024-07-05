@@ -162,9 +162,11 @@ const SwapEquipmentScreen = () => {
   }
 
   async function subscribeToChanges() {
+    console.log('Subscribing to Equipment changes...');
     DataStore.observeQuery(Equipment).subscribe(snapshot => {
         const { items, isSynced } = snapshot;
         console.log(`Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`);
+        console.log('user: ', user.attributes.sub);
         getEquipment(user.attributes.sub);
         if(swapUser.current != null) getEquipment(swapUser.current.id)
     });

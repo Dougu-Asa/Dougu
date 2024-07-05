@@ -23,3 +23,6 @@ I realized that before I create a userContext, I should first look at how I'm go
 # 6-27-24
 ## Adding Sentry
 Sentry has now been added to the application, such that any errors on devices can be sent to a more central location. Managing both Apple and Android can be tough, so I think this will be helpful when I release the app to others. Currently Sentry is only setup on login.js, as I need to have Sentry capture the exception too.
+
+# 7-5-24
+## Directory Structure Change
