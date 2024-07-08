@@ -24,5 +24,8 @@ I realized that before I create a userContext, I should first look at how I'm go
 ## Adding Sentry
 Sentry has now been added to the application, such that any errors on devices can be sent to a more central location. Managing both Apple and Android can be tough, so I think this will be helpful when I release the app to others. Currently Sentry is only setup on login.js, as I need to have Sentry capture the exception too.
 
-# 7-5-24
-## Directory Structure Change
+# 7-8-24
+## Directory and Context change
+First, I chose to try to simplify the directory structure of the application by grouping similar sections. I decided to group /Member as all MemberTabs screens pertaining to the individual, and /Organization for Organization information that is more geared towards the manager. This is part of my overall goal of a cleaner project structure. Future improvements are planned for the components directory.
+
+After contemplation, I decided to try using the UserContext idea I've already had. While I considered using Redux or events, I think the userContext only truly needs the 3 variables: user, org, userOrg, so it's best not to overcomplicate. Therefore, I got to work implementing it into Login.js, CreateAcc.js, DrawerNav.js, HomeScreen.js, and App.js.
