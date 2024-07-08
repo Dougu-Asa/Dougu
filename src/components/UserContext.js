@@ -1,5 +1,8 @@
 import React, { useState} from 'react';
 
+/* Context that distributes the user object, organization object, and the user's organization object
+    so that amplify datastore calls won't need to query for it */
+
 const UserContext = React.createContext();
 
 export const UserProvider = ({ children }) => {

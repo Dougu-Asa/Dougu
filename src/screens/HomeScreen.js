@@ -1,10 +1,35 @@
-import {Text, View, Button, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import React, {useEffect, useState, useRef} from 'react';
+import {Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useEffect} from 'react';
+import { Auth } from 'aws-amplify';
+
+// Project Files
+import { useUser } from '../components/UserContext';
 import LoginScreen from '../components/Login';
 import CreateAccScreen from '../components/CreateAcc';
 
+/* 
+  HomeScreen is the first screen that the user sees when they open the app. 
+  It allows the user to login or create an account. 
+*/
 export default function HomeScreen({navigation}) {
   const [login, setLogin] = React.useState(true);
+  const {setUser} = useUser();
+
+  useEffect(() => {
+    checkCurrentUser();
+  }, []);
+
+  // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
+  const checkCurrentUser = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      console.log("User is logged in");
+      setUser(user);
+      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
+    } catch (error) {
+      console.log("No user is logged in");
+    }
+  };
 
   return(
     <View style={styles.container}>

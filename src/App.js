@@ -1,25 +1,26 @@
-
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Amplify, Auth } from 'aws-amplify';
-import amplifyconfig from './amplifyconfiguration.json';
-import React, { useEffect, useState, useRef } from 'react';
+import { Amplify} from 'aws-amplify';
 import '@azure/core-asynciterator-polyfill';
-import { useNavigation } from '@react-navigation/native';
-import Indicator from './components/Indicator';
-import { LoadingProvider, useLoad } from './components/LoadingContext';
-import { UserProvider, useUser } from './components/UserContext';
 import { registerRootComponent } from 'expo';
+import * as Sentry from '@sentry/react-native';
 
-//screens
+// Project Files
 import HomeScreen from './screens/HomeScreen';
 import DrawerNav from './screens/DrawerNav';
 import CreateEquipmentScreen from './screens/Organization/CreateEquipmentScreen';
 import ManageEquipmentScreen from './screens/Organization/ManageEquipment';
 import UserStorages from './screens/Organization/UserStorages';
 import CreateStorageScreen from './screens/Organization/CreateStorageScreen';
-import * as Sentry from '@sentry/react-native';
+import Indicator from './components/Indicator';
+import { LoadingProvider, useLoad } from './components/LoadingContext';
+import { UserProvider } from './components/UserContext';
+import amplifyconfig from './amplifyconfiguration.json';
+
+/*
+  Entry point into the application, and attaches the necessary providers and navigators
+  to be used throughout the entire app 
+*/
 
 // Use sentry to track and log errors throughout the app
 Sentry.init({
@@ -30,12 +31,13 @@ Sentry.init({
   },
 });
 
-
+// Configure amplify, which connects our app to the backend
 Amplify.configure(amplifyconfig);
+
+// Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator();
 
 function App() {
-
   return (
     <NavigationContainer>
         <LoadingProvider>
@@ -52,31 +54,13 @@ const WrappedApp = Sentry.wrap(App);
 export default registerRootComponent(WrappedApp);
 
 function AppContent() {
+  // loading indicator covers the entire app, therefore isLoading is used to determine if it should be displayed
   const {isLoading} = useLoad();
-  const navigation = useNavigation();
-  const {setUser} = useUser();
-
-  useEffect(() => {
-    checkCurrentUser();
-  }, []);
-
-  const checkCurrentUser = async () => {
-    // updateUserAuthentication updates AuthProvider context
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      // If this succeeds, there is a logged-in user
-      console.log("User is logged in");
-      setUser(user);
-      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
-    } catch (error) {
-      // No current authenticated user
-      console.log("No user is logged in");
-    }
-  };
 
   return (
     <>
       <Stack.Navigator
+      initialRouteName="Home"
       screenOptions={{headerTitleAlign: 'center'}}
       >
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>

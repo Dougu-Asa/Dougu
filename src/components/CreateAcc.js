@@ -1,25 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { Alert, Modal, View, Button, TextInput, StyleSheet, Pressable, Text } from 'react-native';
+import { Alert, View, TextInput, StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify'
 import { DataStore } from '@aws-amplify/datastore';
 
-// project imports
+// Project Files
 import { User } from '../models';
 import { useLoad } from '../components/LoadingContext';
 import { useUser } from '../components/UserContext';
 
+/*
+  A component that allows the user to create an account
+  using their email and password. This is handled by
+  using Cognito from AWS Amplify. Users are also uploaded
+  to the database using Amplify Datastore.
+*/
 function CreateAccScreen({navigation}) {
   const {setIsLoading} = useLoad();
   const {setUser} = useUser();
-
-  // Function to toggle the password visibility state 
-  const [showPassword, setShowPassword] = useState(false); 
-  const toggleShowPassword = (num) => { 
-    setShowPassword(!showPassword);
-  }; 
 
   // for the form
   const [email, onChangeEmail] = React.useState('');
@@ -27,6 +26,12 @@ function CreateAccScreen({navigation}) {
   const [last, onChangeLast] = React.useState('');
   const [username, onChangeUsername] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+
+  // Function to toggle the password visibility state 
+  const [showPassword, setShowPassword] = useState(false); 
+  const toggleShowPassword = (num) => { 
+    setShowPassword(!showPassword);
+  }; 
 
   // username = first + ' ' + last
   useEffect(() => {
@@ -48,7 +53,6 @@ function CreateAccScreen({navigation}) {
         }
       });
       const user = await Auth.signIn(email, password);
-      console.log('user:', user);
       const newUser = await DataStore.save(
         new User({
           userId: user.attributes.sub,
@@ -57,16 +61,11 @@ function CreateAccScreen({navigation}) {
         })
       );
       setUser(user);
-      onChangeEmail('');
-      onChangeFirst('');
-      onChangeLast('');
-      onChangePassword('');
       setIsLoading(false);
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
       setIsLoading(false);
-      console.log('error signing up:', error);
-      Alert.alert('Create Error', error.message, [{text: 'OK'}]);
+      Alert.alert('Error Creating Account', error.message, [{text: 'OK'}]);
     }
   }
 

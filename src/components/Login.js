@@ -1,15 +1,24 @@
-import { View, Button, TextInput, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { useState } from 'react';
 import {Auth} from 'aws-amplify';
 
+// Project Files
 import {useLoad} from '../components/LoadingContext';
 import { useUser } from '../components/UserContext';
 
+/*
+  A component that allows the user to login to the app 
+  using their email and password. This is handled by 
+  using Cognito from AWS Amplify
+*/
 function LoginScreen({navigation}) {
   const {setIsLoading} = useLoad();
   const {setUser} = useUser();
+
+  const [username, onChangeUsername] = React.useState('');
+  const [password, onChangePassword] = React.useState('');
 
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
@@ -21,21 +30,15 @@ function LoginScreen({navigation}) {
     try {
       setIsLoading(true);
       await Auth.signIn(username, password);
-      onChangePassword('');
-      onChangeUsername('');
-      setIsLoading(false);
       const user = await Auth.currentAuthenticatedUser();
       setUser(user);
+      setIsLoading(false);
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
       setIsLoading(false);
-      console.log('error signing in', error);
       Alert.alert('Login Error', error.message, [{text: 'OK'}]);
     }
   }
-
-  const [username, onChangeUsername] = React.useState('');
-  const [password, onChangePassword] = React.useState('');
 
   return(
     <View style={styles.container}>
