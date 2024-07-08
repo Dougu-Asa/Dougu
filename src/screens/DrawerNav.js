@@ -1,8 +1,7 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
-import { TouchableOpacity, Text, View, StyleSheet, Image, Alert} from 'react-native';
-import { BackHandler } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Image, Alert, BackHandler} from 'react-native';
 import { Auth } from 'aws-amplify';
-import React, { useEffect} from 'react';
+import { useEffect, useState} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
@@ -17,21 +16,29 @@ import MemberTabs from './Member/MemberTabs';
 import JoinOrCreateScreen from './JoinOrCreateScreen';
 import { useLoad } from '../components/LoadingContext';
 import { OrgUserStorage } from '../models';
+import { useUser } from '../components/UserContext';
 
+/* 
+    DrawerNav is the main form of navigation for the app.
+    It separates the groupings of what a user can navigate
+    when logged in, and checks if the user is part of an org
+    to direct them to the correct screen.
+*/
 function DrawerNav({navigation}) {
     const Drawer = createDrawerNavigator();
     const insets = useSafeAreaInsets();
-    const [username, setUsername] = React.useState('');
-    const [hasOrg, setHasOrg] = React.useState(false);
     const isFocused = useIsFocused();
     const {setIsLoading} = useLoad();
+    const {user, org, setOrg, setUserOrg, resetContext} = useUser();
 
-    // custom android back button
+    // Override android backbutton by adding a listener
+    // This prevents returning to home without signing out
     useEffect(() => {
         async function backAction() {
-          await Auth.signOut();
-          navigation.navigate('Home');
-          return true;
+            await Auth.signOut();
+            navigation.navigate('Home');
+            resetContext();
+            return true;
         };
     
         // Add the backAction handler when the component mounts
@@ -46,38 +53,37 @@ function DrawerNav({navigation}) {
             checkUserOrg();
         }
       }, [isFocused]);
-      async function checkUserOrg() {
+
+    /* Helper function that checks if the user is part of an org
+    We do this so users can automatically be directed to their
+    organization if they have one */
+    async function checkUserOrg() {
         try {
-            const user = await Auth.currentAuthenticatedUser();
-            console.log('Drawer user: ', user.attributes);
-            setUsername(user.attributes.name);
             // check if there was a previous org session
             const key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
-            const orgUserStorages = await DataStore.query(OrgUserStorage, (c) => c.user.userId.eq(user.attributes.sub));
             if(org == null){
-                // check if the user is part of an org from a previous device
-                if(orgUserStorages.length <= 0){
-                    setHasOrg(false);
-                    navigation.navigate('JoinOrCreate');
-                    return;
-                }
-                setHasOrg(true);
-                navigation.navigate('MyOrgs');
+                navigation.navigate('JoinOrCreate');
             }
             else{
-                setHasOrg(true);
+                setOrg(orgJSON);
+                // also set the context's orgUserStorage
+                const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
+                    c.organization.name.eq(orgJSON.name),
+                    c.user.userId.eq(user.attributes.sub),
+                ]));
+                setUserOrg(orgUserStorage[0]);
                 navigation.navigate('MemberTabs', {currOrg: orgJSON});
             }
         } catch (error) {
-            console.log('error getting user: ', error);
+            console.log('Error checking user: ', error);
             Alert.alert('Drawer Error', error.message, [{text: 'OK'}]);
             navigation.navigate('Home');
         }
-      }
+    }
     
-    //Custom header logout button on the right
+    //Left profile icon
     const MyHeaderProfileButton = ({navigation}) => {
         return (
             <TouchableOpacity style={styles.profile} onPress={() => navigation.toggleDrawer()}>
@@ -86,19 +92,32 @@ function DrawerNav({navigation}) {
         );
     };
 
+    // Helper function that signs out the user
     async function signOut() {
         try {
             setIsLoading(true);
             await Auth.signOut();
             setIsLoading(false);
             navigation.navigate('Home'); // Navigate to the home screen
+            resetContext();
         } catch (error) {
             setIsLoading(false);
             console.log('error signing out: ', error);
-            Alert.alert('Sign Out Error!', 'Error signing out. Please try again.', [{text: 'OK'}]);
+            Alert.alert('Sign Out Error', 'Error signing out. Please try again.', [{text: 'OK'}]);
+        }
+    }
+    // Makesure the user has a current organziation before navigating to Current Org
+    function handleCurrOrgNav(){
+        if(org == null){
+            Alert.alert('No Current Organization', 'You must be part of an organization to view this.', [{text: 'OK'}]);
+        }
+        else{
+            navigation.navigate('MemberTabs');
         }
     }
       
+    // Create a custom drawer component to override default
+    // react navigation drawer
     function CustomDrawerContent({navigation, ...props}) {
     return (
         <View style={{
@@ -108,10 +127,10 @@ function DrawerNav({navigation}) {
             height: '100%',
           }}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>{username}</Text>
+                <Text style={styles.headerText}>{user.attributes.name}</Text>
             </View>
             <View style={styles.listContainer}>
-                {hasOrg ? <DrawerItem label="Curr Org" onPress={() => {navigation.navigate('MemberTabs')}}/> : null}
+                <DrawerItem label="Current Org" onPress={() => {handleCurrOrgNav()}}/>
                 <DrawerItem label="My Orgs" onPress={() => {navigation.navigate('MyOrgs')}}/>
                 <DrawerItem label="Join Org!" onPress={() => {navigation.navigate('JoinOrg')}}/>
                 <DrawerItem label="Create an Org!" onPress={() => {navigation.navigate('CreateOrg')}}/>

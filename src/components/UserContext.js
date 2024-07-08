@@ -10,8 +10,14 @@ export const UserProvider = ({ children }) => {
     const [org, setOrg] = useState(null);
     const [userOrg, setUserOrg] = useState(null);
 
+    const resetContext = () => {
+        setUser(null);
+        setOrg(null);
+        setUserOrg(null);
+    };
+
     return (
-        <UserContext.Provider value={{ user, setUser, org, setOrg, userOrg, setUserOrg}}>
+        <UserContext.Provider value={{ user, setUser, org, setOrg, userOrg, setUserOrg, resetContext}}>
             {children}
         </UserContext.Provider>
     );

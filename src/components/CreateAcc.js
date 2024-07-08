@@ -61,6 +61,11 @@ function CreateAccScreen({navigation}) {
         })
       );
       setUser(user);
+      onChangeEmail('');
+      onChangeFirst('');
+      onChangeLast('');
+      onChangePassword('');
+      onChangeUsername('');
       setIsLoading(false);
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {

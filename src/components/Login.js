@@ -33,6 +33,8 @@ function LoginScreen({navigation}) {
       const user = await Auth.currentAuthenticatedUser();
       setUser(user);
       setIsLoading(false);
+      onChangePassword('');
+      onChangeUsername('');
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
       setIsLoading(false);
