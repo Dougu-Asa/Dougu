@@ -8,13 +8,13 @@ import * as Sentry from '@sentry/react-native';
 // Project Files
 import HomeScreen from './screens/HomeScreen';
 import DrawerNav from './screens/DrawerNav';
-import CreateEquipmentScreen from './screens/Organization/CreateEquipmentScreen';
-import ManageEquipmentScreen from './screens/Organization/ManageEquipment';
-import UserStorages from './screens/Organization/UserStorages';
-import CreateStorageScreen from './screens/Organization/CreateStorageScreen';
+import CreateEquipmentScreen from './screens/organization/CreateEquipmentScreen';
+import ManageEquipmentScreen from './screens/organization/ManageEquipment';
+import UserStorages from './screens/organization/UserStorages';
+import CreateStorageScreen from './screens/organization/CreateStorageScreen';
 import Indicator from './components/Indicator';
-import { LoadingProvider, useLoad } from './components/LoadingContext';
-import { UserProvider } from './components/UserContext';
+import { LoadingProvider, useLoad } from './helper/LoadingContext';
+import { UserProvider } from './helper/UserContext';
 import amplifyconfig from './amplifyconfiguration.json';
 
 /*

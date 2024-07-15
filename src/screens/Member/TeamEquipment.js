@@ -9,7 +9,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 // project imports
 import { OrgUserStorage, Equipment } from '../../models';
-import UserEquipment from '../../components/UserEquipment';
+import UserEquipment from '../../components/member/UserEquipment';
 
 function TeamEquipmentScreen(){
     const [orgEquipment, setOrgEquipment] = useState([]);

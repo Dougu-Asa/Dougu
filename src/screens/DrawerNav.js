@@ -1,22 +1,23 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
 import { TouchableOpacity, Text, View, StyleSheet, Image, Alert, BackHandler} from 'react-native';
 import { Auth } from 'aws-amplify';
-import { useEffect, useState} from 'react';
+import { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore } from '@aws-amplify/datastore';
+import sentry_sdk from '@sentry/react-native';
 
 // project imports
 import JoinOrgScreen from './JoinOrgScreen';
 import CreateOrgScreen from './CreateOrgScreen';
 import AccessCodeScreen from './AccessCodeScreen';
 import MyOrgsScreen from './MyOrgsScreen';
-import MemberTabs from './Member/MemberTabs';
+import MemberTabs from './member/MemberTabs';
 import JoinOrCreateScreen from './JoinOrCreateScreen';
-import { useLoad } from '../components/LoadingContext';
+import { useLoad } from '../helper/LoadingContext';
 import { OrgUserStorage } from '../models';
-import { useUser } from '../components/UserContext';
+import { useUser } from '../helper/UserContext';
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -59,16 +60,13 @@ function DrawerNav({navigation}) {
     organization if they have one */
     async function checkUserOrg() {
         try {
-            // check if there was a previous org session
             const key = user.attributes.sub + ' currOrg';
             const org = await AsyncStorage.getItem(key);
             const orgJSON = JSON.parse(org);
-            if(org == null){
-                navigation.navigate('JoinOrCreate');
-            }
-            else{
+            const orgUserStorages = await DataStore.query(OrgUserStorage, (c) => c.user.userId.eq(user.attributes.sub));
+            // check if there was a previous org session
+            if(orgJSON != null){
                 setOrg(orgJSON);
-                // also set the context's orgUserStorage
                 const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
                     c.organization.name.eq(orgJSON.name),
                     c.user.userId.eq(user.attributes.sub),
@@ -76,7 +74,16 @@ function DrawerNav({navigation}) {
                 setUserOrg(orgUserStorage[0]);
                 navigation.navigate('MemberTabs', {currOrg: orgJSON});
             }
+            // check if user has an orgUserStorage (from previous devices)
+            else if(orgUserStorages != null && orgUserStorages.length > 0){
+                navigation.navigate('MyOrgs');
+            }
+            // user has no org and no previous org
+            else{
+                navigation.navigate('JoinOrCreate');   
+            }
         } catch (error) {
+            sentry_sdk.captureException(error);
             console.log('Error checking user: ', error);
             Alert.alert('Drawer Error', error.message, [{text: 'OK'}]);
             navigation.navigate('Home');
@@ -102,14 +109,16 @@ function DrawerNav({navigation}) {
             resetContext();
         } catch (error) {
             setIsLoading(false);
+            sentry_sdk.captureException(error);
             console.log('error signing out: ', error);
             Alert.alert('Sign Out Error', 'Error signing out. Please try again.', [{text: 'OK'}]);
         }
     }
-    // Makesure the user has a current organziation before navigating to Current Org
+
+    // Check if there is a current org when the user clicks on the current org button
     function handleCurrOrgNav(){
         if(org == null){
-            Alert.alert('No Current Organization', 'You must be part of an organization to view this.', [{text: 'OK'}]);
+            Alert.alert('No Current Organization', 'You must set an organization to view this.', [{text: 'OK'}]);
         }
         else{
             navigation.navigate('MemberTabs');
@@ -154,6 +163,7 @@ function DrawerNav({navigation}) {
             },
             headerTitle: 'Dougu',
         })}
+        initialRouteName="MyOrgs"
         drawerContent={(props) => <CustomDrawerContent {...props}/>}>
             <Drawer.Screen name="MemberTabs" component={MemberTabs}/>
             <Drawer.Screen name="JoinOrg" component={JoinOrgScreen}/>

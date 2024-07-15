@@ -9,7 +9,7 @@ import { Auth } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // project imports
-import InfoScreen from '../Organization/InfoScreen';
+import InfoScreen from '../organization/InfoScreen';
 import EquipmentScreen from './Equipment';
 import SwapEquipmentScreen from './SwapEquipment';
 import TeamEquipmentScreen from './TeamEquipment';

@@ -5,7 +5,7 @@ import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // project imports
-import { useLoad } from '../../components/LoadingContext';
+import { useLoad } from '../../helper/LoadingContext';
 import { User, OrgUserStorage, Equipment, Organization, UserOrStorage } from '../../models';
 
 export default function CreateStorageScreen({navigation}){

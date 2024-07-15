@@ -5,7 +5,7 @@ import { Auth, DataStore } from 'aws-amplify';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // project imports
-import { Equipment, OrgUserStorage, User, Storage, Organization } from '../models';
+import { Equipment, OrgUserStorage, User, Storage, Organization } from '../../models';
 
 export default class EquipmentTable extends Component {
   constructor(props) {

@@ -8,7 +8,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 // Project imports
 import { Equipment, OrgUserStorage, UserOrStorage } from '../../models';
-import EquipmentItem from '../../components/EquipmentItem';
+import EquipmentItem from '../../components/member/EquipmentItem';
 
 const EquipmentScreen = ({navigation}) => {
   const [equipment, setEquipment] = useState([]);

@@ -29,3 +29,15 @@ Sentry has now been added to the application, such that any errors on devices ca
 First, I chose to try to simplify the directory structure of the application by grouping similar sections. I decided to group /Member as all MemberTabs screens pertaining to the individual, and /Organization for Organization information that is more geared towards the manager. This is part of my overall goal of a cleaner project structure. Future improvements are planned for the components directory.
 
 After contemplation, I decided to try using the UserContext idea I've already had. While I considered using Redux or events, I think the userContext only truly needs the 3 variables: user, org, userOrg, so it's best not to overcomplicate. Therefore, I got to work implementing it into Login.js, CreateAcc.js, DrawerNav.js, HomeScreen.js, and App.js.
+
+# 7-15-24
+## Further Context Changes
+My guiding principle right now is to make it so that **any pages in /Member or /Organization should have user, org, and userOrg context updated**. They should not have to worry about setting or updating those values.
+
+Also, to organize the /components directory, I chose to have it mirror /screens in that there is also a /member and /organization where any components in /components/member are used in /screens/member. Any components not in these are global components.
+
+Note to self: After joining from a new device, currentorg always shows the alert that I need to join an org, even if I go to myOrgs and navigate to an org I am a part of. So 1. error that I have no orgs when I do on a new device, and 2. switching orgs isn't fixing the problem
+
+These links seem important for linking native nfc scanner with my app:
+[Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
+[Example](https://docs.expo.dev/modules/native-module-tutorial/)

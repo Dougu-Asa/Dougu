@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // my Code
 import CurrMembersDropdown from '../../components/CurrMembersDropdown';
 import { User, OrgUserStorage, Equipment, Organization } from '../../models';
-import { useLoad } from '../../components/LoadingContext';
+import { useLoad } from '../../helper/LoadingContext';
 
 function CreateEquipmentScreen({navigation}){
     const [name, onChangeName] = useState('');

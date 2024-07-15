@@ -6,7 +6,7 @@ import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import createJoinStyles from '../styles/CreateJoinStyles';
-import { useLoad } from '../components/LoadingContext';
+import { useLoad } from '../helper/LoadingContext';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../models';
 
 function CreateOrgScreen({navigation}) {

@@ -7,8 +7,8 @@ import { DataStore } from '@aws-amplify/datastore';
 
 // Project Files
 import { User } from '../models';
-import { useLoad } from '../components/LoadingContext';
-import { useUser } from '../components/UserContext';
+import { useLoad } from '../helper/LoadingContext';
+import { useUser } from '../helper/UserContext';
 
 /*
   A component that allows the user to create an account

@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import { Auth } from 'aws-amplify';
 
 // Project Files
-import { useUser } from '../components/UserContext';
+import { useUser } from '../helper/UserContext';
 import LoginScreen from '../components/Login';
 import CreateAccScreen from '../components/CreateAcc';
 
@@ -25,7 +25,7 @@ export default function HomeScreen({navigation}) {
       const user = await Auth.currentAuthenticatedUser();
       console.log("User is logged in");
       setUser(user);
-      navigation.navigate('DrawerNav' , {screen: 'MemberTabs', params: {screen: 'Equipment'}});
+      navigation.navigate('DrawerNav');
     } catch (error) {
       console.log("No user is logged in");
     }

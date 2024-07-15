@@ -11,7 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 // project imports
 import { OrgUserStorage, User, Equipment } from '../../models';
-import { useLoad } from '../../components/LoadingContext';
+import { useLoad } from '../../helper/LoadingContext';
 
 export default function UserStorages({route, navigation}) {
     const {tabParam} = route.params;

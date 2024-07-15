@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // project imports
-import EquipmentTable from '../../components/EquipmentTable';
-import { useLoad } from '../../components/LoadingContext';
+import EquipmentTable from '../../components/organization/EquipmentTable';
+import { useLoad } from '../../helper/LoadingContext';
 
 const ManageEquipmentScreen = ({route, navigation}) => {
   const { isManager } = route.params;

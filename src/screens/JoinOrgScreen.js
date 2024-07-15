@@ -9,7 +9,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // project imports
 import createJoinStyles from '../styles/CreateJoinStyles';
-import { useLoad } from '../components/LoadingContext';
+import { useLoad } from '../helper/LoadingContext';
 import { OrgUserStorage, Organization, User, UserOrStorage } from '../models';
 
 function JoinOrgScreen({navigation}) {
