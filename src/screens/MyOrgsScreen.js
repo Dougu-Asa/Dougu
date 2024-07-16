@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { OrgUserStorage, Organization, User } from '../models';
+import { useUser } from '../helper/UserContext';
 
+/*
+  This screen will display the organizations that the user is a part of.
+  The user can select an organization to open the MemberTabs for that organization.
+*/
 const MyOrgsScreen = ({navigation}) => {
   const [orgNames, setOrgNames] = useState([]);
+  const { user, setOrg} = useUser();
 
+  // useEffect to keep orgNames up to date
   useEffect(() => {
-    subscribeToChanges();
-  }, []);
-
-  async function subscribeToChanges() {
-    DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
+    const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(snapshot => {
       const { items, isSynced } = snapshot;
-      console.log(`OrgUserStorage [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+      console.log(`MyOrgsScreen OrgUserStorage item count: ${items.length}, isSynced: ${isSynced}`);
       getOrgs();
     });
-  }
 
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // get the organizations that the user is a part of
   async function getOrgs() {
-    const user = await Auth.currentAuthenticatedUser();
     let orgs = await DataStore.query(Organization, (c) => c.UserOrStorages.user.userId.eq(user.attributes.sub));
     const orgData = orgs.map((org, index) => ({
       label: org['name'],
@@ -31,17 +35,17 @@ const MyOrgsScreen = ({navigation}) => {
     setOrgNames(orgData);
   }
 
+  // set the current organization and navigate to the MemberTabs
   const setAndNavigate = async (orgName) => {
-    const user = await Auth.currentAuthenticatedUser();
     const org = await DataStore.query(Organization, (c) => c.name.eq(orgName));
-    // save into our current async storage
+    // AsyncStorage helps us keep track of previous sessions on the device
     const key = user.attributes.sub + ' currOrg';
     await AsyncStorage.setItem(key, JSON.stringify(org[0]));
-    console.log(key);
+    setOrg(org[0]);
     navigation.navigate('MemberTabs');
   }
 
-  const renderItem = ({ item }) => (
+  const orgItem = ({ item }) => (
     <TouchableOpacity onPress={() => setAndNavigate(item.label)} style={styles.orgContainer}>
       <Text>{item.label}</Text>
     </TouchableOpacity>
@@ -50,7 +54,7 @@ const MyOrgsScreen = ({navigation}) => {
   return (
     <FlatList
       data={orgNames}
-      renderItem={renderItem}
+      renderItem={orgItem}
       keyExtractor={item => item.value}
     />
   );

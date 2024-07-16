@@ -30,7 +30,7 @@ function DrawerNav({navigation}) {
     const insets = useSafeAreaInsets();
     const isFocused = useIsFocused();
     const {setIsLoading} = useLoad();
-    const {user, org, setOrg, setUserOrg, resetContext} = useUser();
+    const {user, org, setOrg, resetContext} = useUser();
 
     // Override android backbutton by adding a listener
     // This prevents returning to home without signing out
@@ -67,11 +67,6 @@ function DrawerNav({navigation}) {
             // check if there was a previous org session
             if(orgJSON != null){
                 setOrg(orgJSON);
-                const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-                    c.organization.name.eq(orgJSON.name),
-                    c.user.userId.eq(user.attributes.sub),
-                ]));
-                setUserOrg(orgUserStorage[0]);
                 navigation.navigate('MemberTabs', {currOrg: orgJSON});
             }
             // check if user has an orgUserStorage (from previous devices)
@@ -105,7 +100,7 @@ function DrawerNav({navigation}) {
             setIsLoading(true);
             await Auth.signOut();
             setIsLoading(false);
-            navigation.navigate('Home'); // Navigate to the home screen
+            navigation.navigate('Home');
             resetContext();
         } catch (error) {
             setIsLoading(false);

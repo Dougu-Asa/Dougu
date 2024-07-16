@@ -36,6 +36,10 @@ My guiding principle right now is to make it so that **any pages in /Member or /
 
 Also, to organize the /components directory, I chose to have it mirror /screens in that there is also a /member and /organization where any components in /components/member are used in /screens/member. Any components not in these are global components.
 
+# 7-16-24
+## Context and Pages
+I decided to have UserContext automatically handle updating the orgUserStorage on its own side, so that the context handles its own functionality.
+
 Note to self: After joining from a new device, currentorg always shows the alert that I need to join an org, even if I go to myOrgs and navigate to an org I am a part of. So 1. error that I have no orgs when I do on a new device, and 2. switching orgs isn't fixing the problem
 
 These links seem important for linking native nfc scanner with my app:
