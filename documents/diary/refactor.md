@@ -38,7 +38,9 @@ Also, to organize the /components directory, I chose to have it mirror /screens 
 
 # 7-16-24
 ## Context and Pages
-I decided to have UserContext automatically handle updating the orgUserStorage on its own side, so that the context handles its own functionality.
+- I decided to have UserContext automatically handle updating the orgUserStorage on its own side, so that the context handles its own functionality.
+- I created a custom error handler for greater clarity or error origin and avoiding redundancy
+- Broke down large functions into smaller chunks for JoinOrgScreen and CreateOrgScreen
 
 Note to self: After joining from a new device, currentorg always shows the alert that I need to join an org, even if I go to myOrgs and navigate to an org I am a part of. So 1. error that I have no orgs when I do on a new device, and 2. switching orgs isn't fixing the problem
 

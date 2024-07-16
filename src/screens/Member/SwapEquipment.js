@@ -17,7 +17,7 @@ import DraggableEquipment from '../../components/member/DraggableEquipment';
 const SwapEquipmentScreen = () => {
   const {setIsLoading} = useLoad();
   const isFocused = useIsFocused();
-  const {user} = useUser();
+  const {user, org} = useUser();
   const [reset, setReset] = useState(false);
 
   let [listOne, setListOne] = useState([]);
@@ -173,14 +173,14 @@ const SwapEquipmentScreen = () => {
     async function getEquipment(swapId) {
       try{
         const isCurrentUser = (user.attributes.sub == swapId) ? true : false;
-        const key = user.attributes.sub + ' currOrg';
+        /*const key = user.attributes.sub + ' currOrg';
         const org = await AsyncStorage.getItem(key);
-        const orgJSON = JSON.parse(org);
+        const orgJSON = JSON.parse(org); */
         // passed in orgUserStorage
         let orgUserStorage;
         if(isCurrentUser){
           orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-            c.organization.name.eq(orgJSON.name),
+            c.organization.name.eq(org.name),
             c.user.userId.eq(user.attributes.sub),
             c.type.eq(UserOrStorage.USER)
           ]));

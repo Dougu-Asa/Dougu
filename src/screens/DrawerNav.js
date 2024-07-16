@@ -1,12 +1,11 @@
 import { createDrawerNavigator, DrawerItem } from '@react-navigation/drawer';
-import { TouchableOpacity, Text, View, StyleSheet, Image, Alert, BackHandler} from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Image, Alert} from 'react-native';
 import { Auth } from 'aws-amplify';
 import { useEffect} from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { DataStore } from '@aws-amplify/datastore';
-import sentry_sdk from '@sentry/react-native';
 
 // project imports
 import JoinOrgScreen from './JoinOrgScreen';
@@ -18,6 +17,7 @@ import JoinOrCreateScreen from './JoinOrCreateScreen';
 import { useLoad } from '../helper/LoadingContext';
 import { OrgUserStorage } from '../models';
 import { useUser } from '../helper/UserContext';
+import { handleError } from '../helper/Error';
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -31,22 +31,6 @@ function DrawerNav({navigation}) {
     const isFocused = useIsFocused();
     const {setIsLoading} = useLoad();
     const {user, org, setOrg, resetContext} = useUser();
-
-    // Override android backbutton by adding a listener
-    // This prevents returning to home without signing out
-    useEffect(() => {
-        async function backAction() {
-            await Auth.signOut();
-            navigation.navigate('Home');
-            resetContext();
-            return true;
-        };
-    
-        // Add the backAction handler when the component mounts
-        BackHandler.addEventListener('hardwareBackPress', backAction);
-        // Remove the backAction handler when the component unmounts
-        return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
-    }, [navigation]);
 
     // because users are first directed here on sign in, we check if they are part of an org
     useEffect(() => {
@@ -78,10 +62,7 @@ function DrawerNav({navigation}) {
                 navigation.navigate('JoinOrCreate');   
             }
         } catch (error) {
-            sentry_sdk.captureException(error);
-            console.log('Error checking user: ', error);
-            Alert.alert('Drawer Error', error.message, [{text: 'OK'}]);
-            navigation.navigate('Home');
+            handleError("checkUserOrg", error);
         }
     }
     
@@ -103,10 +84,7 @@ function DrawerNav({navigation}) {
             navigation.navigate('Home');
             resetContext();
         } catch (error) {
-            setIsLoading(false);
-            sentry_sdk.captureException(error);
-            console.log('error signing out: ', error);
-            Alert.alert('Sign Out Error', 'Error signing out. Please try again.', [{text: 'OK'}]);
+            handleError("signOut", error, setIsLoading);
         }
     }
 

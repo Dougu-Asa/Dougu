@@ -22,18 +22,6 @@ function MemberTabs({navigation}) {
   const [isManager, setIsManager] = React.useState(false);
   const isFocused = useIsFocused();
 
-  // Custom so thata back button press goes to the menu
-  useEffect(() => {
-    const backAction = () => {
-      navigation.navigate('Menu');
-    };
-
-    // Add the backAction handler when the component mounts
-    BackHandler.addEventListener('hardwareBackPress', backAction);
-    // Remove the backAction handler when the component unmounts
-    return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
-  }, [navigation]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: currOrgName,

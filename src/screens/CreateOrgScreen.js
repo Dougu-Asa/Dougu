@@ -1,87 +1,89 @@
-import { Button, Text, View, TextInput, createJoinStylesheet, TouchableOpacity, Alert } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import { BackHandler } from 'react-native';
-import { Auth } from 'aws-amplify';
+import { Text, View, TextInput, TouchableOpacity} from 'react-native';
+import React from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// project imports
 import createJoinStyles from '../styles/CreateJoinStyles';
 import { useLoad } from '../helper/LoadingContext';
 import { Organization, User, OrgUserStorage, UserOrStorage } from '../models';
+import { useUser } from '../helper/UserContext';
+import { handleError } from '../helper/Error';
 
+/*
+  Screen for creating an organization, user enters the name of the org
+  and a random access code is generated. The user that creates the org is
+  automatically the manager of the org.
+*/
 function CreateOrgScreen({navigation}) {
   const {setIsLoading} = useLoad();
   const [name, onChangeName] = React.useState('');
-  // Custom so thata back button press goes to the menu
-  useEffect(() => {
-    const backAction = () => {
-      navigation.navigate('Menu');
-      return true;
-    };
-
-    // Add the backAction handler when the component mounts
-    BackHandler.addEventListener('hardwareBackPress', backAction);
-    // Remove the backAction handler when the component unmounts
-    return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
-  }, [navigation]);
-
+  const { user, setOrg } = useUser();
   var randomstring = require("randomstring");
-  async function createOrg(){
-    try {
-      setIsLoading(true);
-      const user = await Auth.currentAuthenticatedUser();
-      if(user == null){
-        throw new Error("User is not authenticated.");
-      }
+
+  // generate codes and check if they are unique. If not, generate another
+  async function generateCode(){
+    while(true){
       const code = randomstring.generate({
         length: 7,
         capitalization: 'uppercase',
       });
-      console.log("Org Code: " + code);
       // Check that access code and name are unique
       const orgs = await DataStore.query(Organization, (c) => c.or(c => [
         c.accessCode.eq(code),
         c.name.eq(name)
       ]));
-      console.log('orgs: ', orgs);
-      if(orgs && orgs.length > 0){
-        throw new Error("Organization name or access code is not unique.");
+      if(orgs == null || orgs.length == 0){
+        return code;
       }
-      // query for the user that is the org manager
-      const DBuser = await DataStore.query(User, user.attributes.sub);
-      if(DBuser == null) throw new Error("User not found in database.");
-      // Add the org to the database
-      const newOrg = await DataStore.save(
-        new Organization({
-          name: name,
-          accessCode: code,
-          manager: DBuser,
-        })
-      );
-      if(newOrg == null) throw new Error("Organization not created successfully.");
-      // Add the OrgUserStorage to the DB
-      const newOrgUserStorage = await DataStore.save(
-        new OrgUserStorage({
-          organization: newOrg,
-          type: UserOrStorage.USER,
-          user: DBuser,
-          name: DBuser.name,
-        })
-      );
-      // query current org to be saved in async storage
-      const currOrg = await DataStore.query(Organization, newOrg.id);
+    }
+  }
+
+  // create an org and orgUserStorage to add to the database
+  async function create(code){
+    // query for the user that will be the org manager
+    const DBuser = await DataStore.query(User, user.attributes.sub);
+    if(DBuser == null) throw new Error("User not found in database.");
+    // Add the org to the database
+    const newOrg = await DataStore.save(
+      new Organization({
+        name: name,
+        accessCode: code,
+        manager: DBuser,
+      })
+    );
+    if(newOrg == null) throw new Error("Organization not created successfully.");
+    // Add the OrgUserStorage to the DB
+    const newOrgUserStorage = await DataStore.save(
+      new OrgUserStorage({
+        organization: newOrg,
+        type: UserOrStorage.USER,
+        user: DBuser,
+        name: DBuser.name,
+      })
+    );
+    if(newOrgUserStorage == null) throw new Error("OrgUserStorage not created successfully.");
+    return newOrg;
+  }
+
+  // handle verification, creation, and navigation when creating a new Organization
+  async function handleCreate(){
+    try {
+      setIsLoading(true);
+      // Generate a random access code
+      const code = await generateCode();
+      // Create the org and orgUserStorage
+      const newOrg = await create(code);
       // use a key to keep track of currentOrg per user
       const key = user.attributes.sub + ' currOrg';
-      await AsyncStorage.setItem(key, JSON.stringify(currOrg));
+      await AsyncStorage.setItem(key, JSON.stringify(newOrg));
+      setOrg(newOrg);
       onChangeName('');
       setIsLoading(false);
       navigation.navigate('Access Code', {accessCode: code});
     }
-    catch (e) {
-      setIsLoading(false);
-      // setup popups
-      console.log(e);
-      Alert.alert('Create Org Error!', e.message, [{text: 'OK'}]);
+    catch (error) {
+      handleError("handleCreate", error, setIsLoading);
     }
   }
 
@@ -96,7 +98,7 @@ function CreateOrgScreen({navigation}) {
         placeholder="Ex. Asayake Taiko"
         keyboardType="default"
         />
-      <TouchableOpacity style={createJoinStyles.button} onPress={() => {createOrg()}}>
+      <TouchableOpacity style={createJoinStyles.button} onPress={() => {handleCreate()}}>
         <Text style={createJoinStyles.btnText}>Create Org</Text>
       </TouchableOpacity>
   </View>

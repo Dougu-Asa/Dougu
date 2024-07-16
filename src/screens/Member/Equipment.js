@@ -9,10 +9,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 // Project imports
 import { Equipment, OrgUserStorage, UserOrStorage } from '../../models';
 import EquipmentItem from '../../components/member/EquipmentItem';
+import { useUser } from '../../helper/UserContext';
 
 const EquipmentScreen = ({navigation}) => {
   const [equipment, setEquipment] = useState([]);
   const isFocused = useIsFocused();
+  const {user, org} = useUser();
 
   useEffect(() => {
     if(isFocused){
@@ -33,15 +35,8 @@ const EquipmentScreen = ({navigation}) => {
   }
 
     async function getEquipment() {
-      const user = await Auth.currentAuthenticatedUser();
-      const key = user.attributes.sub + ' currOrg';
-      const org = await AsyncStorage.getItem(key);
-      if(org == null){
-          return;
-      };
-      const orgJSON = JSON.parse(org);
       const orgUserStorage = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
-        c.organization.id.eq(orgJSON.id),
+        c.organization.id.eq(org.id),
         c.user.userId.eq(user.attributes.sub),
         c.type.eq(UserOrStorage.USER),
       ]));
