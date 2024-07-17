@@ -1,13 +1,13 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeScreen from './HomeScreen';
-import DrawerNav from './DrawerNav';
+import DrawerNav from './drawer/DrawerNav';
 import CreateEquipmentScreen from './organization/CreateEquipmentScreen';
 import ManageEquipmentScreen from './organization/ManageEquipment';
 import UserStorages from './organization/UserStorages';
 import CreateStorageScreen from './organization/CreateStorageScreen';
 import Indicator from '../components/Indicator';
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '../types/NavigationTypes';
 import { useLoad } from '../helper/LoadingContext';
 
 // Create a stack navigator to handle navigation throughout the app

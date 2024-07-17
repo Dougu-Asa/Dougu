@@ -4,11 +4,11 @@ import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // project imports
-import createJoinStyles from '../styles/CreateJoinStyles';
-import { useLoad } from '../helper/LoadingContext';
-import { Organization, User, OrgUserStorage, UserOrStorage } from '../models';
-import { useUser } from '../helper/UserContext';
-import { handleError } from '../helper/Error';
+import createJoinStyles from '../../styles/CreateJoinStyles';
+import { useLoad } from '../../helper/LoadingContext';
+import { Organization, User, OrgUserStorage, UserOrStorage } from '../../models';
+import { useUser } from '../../helper/UserContext';
+import { handleError } from '../../helper/Error';
 
 /*
   Screen for creating an organization, user enters the name of the org

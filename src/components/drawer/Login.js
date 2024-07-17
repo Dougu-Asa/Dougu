@@ -5,8 +5,8 @@ import { useState } from 'react';
 import {Auth} from 'aws-amplify';
 
 // Project Files
-import {useLoad} from '../helper/LoadingContext';
-import { useUser } from '../helper/UserContext';
+import {useLoad} from '../../helper/LoadingContext';
+import { useUser } from '../../helper/UserContext';
 
 /*
   A component that allows the user to login to the app 

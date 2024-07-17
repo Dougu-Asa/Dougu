@@ -6,12 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // project imports
-import createJoinStyles from '../styles/CreateJoinStyles';
-import { useLoad } from '../helper/LoadingContext';
-import { OrgUserStorage, Organization, User, UserOrStorage } from '../models';
-import { useUser } from '../helper/UserContext';
-import { handleError } from '../helper/Error';
-import { JoinOrgScreenProps } from '../types';
+import createJoinStyles from '../../styles/CreateJoinStyles';
+import { useLoad } from '../../helper/LoadingContext';
+import { OrgUserStorage, Organization, User, UserOrStorage } from '../../models';
+import { useUser } from '../../helper/UserContext';
+import { handleError } from '../../helper/Error';
+import { JoinOrgScreenProps } from '../../types/NavigationTypes';
 
 /*
   Screen for joining an organization, user enters the access code to join
@@ -20,13 +20,6 @@ function JoinOrgScreen({navigation}: JoinOrgScreenProps) {
   const {setIsLoading} = useLoad();
   const [code, onChangeCode] = React.useState('');
   const { user, setOrg } = useUser();
-
-  // ensure user isn't null
-  if(!user){
-    Alert.alert("Error", "User is null, please sign in again", [{ text: 'OK' }], { cancelable: false });
-    navigation.navigate('Home');
-    return null;
-  }
 
   // ensure the code given is valid and the user is not already part of the org
   async function checkCode(){

@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { OrgUserStorage, Organization, User } from '../models';
-import { useUser } from '../helper/UserContext';
+import { OrgUserStorage, Organization, User } from '../../models';
+import { useUser } from '../../helper/UserContext';
 
 /*
   This screen will display the organizations that the user is a part of.

@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext} from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 
 import { OrgUserStorage } from '../models';
-import { OrgType, UserType } from '../types';
-import { UserContextType } from '../types';
+import { OrgType, UserType, UserContextType } from '../types/ContextTypes';
 
 /* Context that distributes the user object, organization object, and the user's organization object
     so that amplify datastore calls won't need to query for it */

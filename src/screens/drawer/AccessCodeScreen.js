@@ -1,7 +1,7 @@
 import { Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 
-import createJoinStyles from '../styles/CreateJoinStyles';
+import createJoinStyles from '../../styles/CreateJoinStyles';
 
 /*
   Screen for displaying the access code to the manager after they create an organization

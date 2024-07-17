@@ -4,9 +4,9 @@ import { DrawerItem, DrawerContentComponentProps } from '@react-navigation/drawe
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Auth } from 'aws-amplify';
 
-import { useLoad } from '../helper/LoadingContext';
-import { useUser } from '../helper/UserContext';
-import { handleError } from '../helper/Error';
+import { useLoad } from '../../helper/LoadingContext';
+import { useUser } from '../../helper/UserContext';
+import { handleError } from '../../helper/Error';
 
 // Create a custom drawer component to override default
     // react navigation drawer

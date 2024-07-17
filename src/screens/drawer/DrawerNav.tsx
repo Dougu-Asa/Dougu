@@ -10,13 +10,13 @@ import JoinOrgScreen from './JoinOrgScreen';
 import CreateOrgScreen from './CreateOrgScreen';
 import AccessCodeScreen from './AccessCodeScreen';
 import MyOrgsScreen from './MyOrgsScreen';
-import MemberTabs from './member/MemberTabs';
+import MemberTabs from '../member/MemberTabs';
 import JoinOrCreateScreen from './JoinOrCreateScreen';
-import { OrgUserStorage } from '../models';
-import { useUser } from '../helper/UserContext';
-import { handleError } from '../helper/Error';
-import { DrawerNavProps, MyHeaderProfileButtonProps, DrawerParamList } from '../types';
-import { CustomDrawerContent } from '../components/CustomDrawerContent';
+import { OrgUserStorage } from '../../models';
+import { useUser } from '../../helper/UserContext';
+import { handleError } from '../../helper/Error';
+import { DrawerNavProps, MyHeaderProfileButtonProps, DrawerParamList } from '../../types/NavigationTypes';
+import { CustomDrawerContent } from '../../components/drawer/CustomDrawerContent';
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -80,7 +80,7 @@ function DrawerNav({navigation}: DrawerNavProps) {
     const MyHeaderProfileButton = ({navigation}: MyHeaderProfileButtonProps) => {
         return (
             <TouchableOpacity style={styles.profile} onPress={() => navigation.toggleDrawer()}>
-                <Image source={require('../assets/miku.jpg')} style={styles.circleImage}/>
+                <Image source={require('../../assets/miku.jpg')} style={styles.circleImage}/>
             </TouchableOpacity>
         );
     };

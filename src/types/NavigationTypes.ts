@@ -1,46 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import { CompositeScreenProps } from '@react-navigation/native';
-import { DrawerScreenProps, DrawerNavigationProp, DrawerContentComponentProps } from '@react-navigation/drawer';
-import { Dispatch, SetStateAction } from 'react';
-import { OrgUserStorage } from './models';
-
-/* 
-    This file defines the types used in the application.
-*/
-
-// userContext types
-export type OrgType = {
-    name: string;
-    id: string;
-    [key: string]: any; // Allows any other properties
-};
-
-export type UserType = {
-    attributes: {
-        sub: string;
-        name: string;
-        [key: string]: any; 
-    };
-    [key: string]: any; 
-};
-
-export type UserContextType = {
-    user: UserType | null;
-    setUser: Dispatch<SetStateAction<UserType | null>>;
-    org: OrgType | null;
-    setOrg: Dispatch<SetStateAction<OrgType | null>>;
-    orgUserStorage: OrgUserStorage | null;
-    resetContext: () => void;       // doesn't take a param, doesn't return anything
-};
-
-
-// loadingContext types
-export type LoadingContextType = {
-    isLoading: boolean;
-    setIsLoading: Dispatch<SetStateAction<boolean>>;
-};
-
+import { DrawerScreenProps, DrawerNavigationProp } from '@react-navigation/drawer';
 
 // Navigator types
 export type RootStackParamList = {

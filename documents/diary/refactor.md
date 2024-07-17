@@ -32,7 +32,7 @@ After contemplation, I decided to try using the UserContext idea I've already ha
 
 # 7-15-24
 ## Further Context Changes
-My guiding principle right now is to make it so that **any pages in /Member or /Organization should have user, org, and userOrg context updated**. They should not have to worry about setting or updating those values.
+My guiding principle right now is to make it so that **any screens in /Member or /Organization should have user, org, and userOrg context updated**. They should not have to worry about setting or updating those values. And **any screens in /drawer should have user updated, that the user should already be logged in**.
 
 Also, to organize the /components directory, I chose to have it mirror /screens in that there is also a /member and /organization where any components in /components/member are used in /screens/member. Any components not in these are global components.
 
