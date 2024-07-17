@@ -92,7 +92,7 @@ function MemberTabs({navigation}) {
             <FontAwesone5 name="users" color={'black'} size={19} />
           ),
         }}/>
-        <Tab.Screen name="Org Info" component={InfoScreen} 
+        <Tab.Screen name="OrgInfo" component={InfoScreen} 
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons name="crown" color={'black'} size={21} />

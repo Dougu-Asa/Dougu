@@ -1,27 +1,27 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 
 import { OrgUserStorage } from '../models';
+import { OrgType, UserType } from '../types';
+import { UserContextType } from '../types';
 
 /* Context that distributes the user object, organization object, and the user's organization object
     so that amplify datastore calls won't need to query for it */
+const UserContext = React.createContext<UserContextType | undefined>(undefined);
 
-const UserContext = React.createContext();
-
-export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [org, setOrg] = useState(null);
-    const [orgUserStorage, setOrgUserStorage] = useState(null);
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+    const [user, setUser] = useState<UserType | null>(null);
+    const [org, setOrg] = useState<OrgType | null>(null);
+    const [orgUserStorage, setOrgUserStorage] = useState<OrgUserStorage | null>(null);
 
     // When the user and org are set, get the user's organization object
     useEffect(() => {
-        if (user && org) {
-            getOrgUserStorage();
-        }
+        getOrgUserStorage();
     }, [user, org]);
 
     // uses datastore to query the orgUserStorage from org and user
     const getOrgUserStorage = async () => {
+        if(!org || !user) return;
         const orgUser = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
             c.organization.name.eq(org.name),
             c.user.userId.eq(user.attributes.sub),
@@ -43,4 +43,11 @@ export const UserProvider = ({ children }) => {
     );
 };
 
-export const useUser = () => React.useContext(UserContext);
+// ensure that UserContext isn't undefined in useUser
+export const useUser = (): UserContextType => {
+    const context = useContext(UserContext);
+    if (!context) {
+      throw new Error('useUser must be used within a UserProvider');
+    }
+    return context;
+}

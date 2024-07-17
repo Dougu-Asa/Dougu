@@ -42,7 +42,18 @@ Also, to organize the /components directory, I chose to have it mirror /screens 
 - I created a custom error handler for greater clarity or error origin and avoiding redundancy
 - Broke down large functions into smaller chunks for JoinOrgScreen and CreateOrgScreen
 
-Note to self: After joining from a new device, currentorg always shows the alert that I need to join an org, even if I go to myOrgs and navigate to an org I am a part of. So 1. error that I have no orgs when I do on a new device, and 2. switching orgs isn't fixing the problem
+Potential Future Things to Add:
+[Adding TypeScript](https://reactnative.dev/docs/typescript?package-manager=npm)
+[Adding ESLint](https://eslint.org/docs/latest/use/getting-started)
+[Testing](https://reactnative.dev/docs/testing-overview)
+
+# 7-17-24
+## TypeScript
+In order to remove ambiguity in objects, I decided to add TypeScript for the entire app. This initiated a couple of key changes, especially in defining types for navigators in react-native-navigation and for contexts (LoadingContext, UserContext). 
+
+When working on types for Contexts, I created custom ContextTypes with fields for each of the values they provide. Additionally, each context's use hook (useLoad, useUser) had a check to ensure a non-null context. By doing so, it ensured that the fields the contexts distributes are reliable.
+
+When working on Typing for react-native-navigation, I first had to create a custom type for each navigator. Then, each screen also contains a custom type that the navigator prop in the screen file imports. It makes `navigation.navigate()` a little more complex, but it is a good way to ensure all the paths are valid at compile-time.
 
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  

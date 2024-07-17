@@ -80,7 +80,7 @@ function CreateOrgScreen({navigation}) {
       setOrg(newOrg);
       onChangeName('');
       setIsLoading(false);
-      navigation.navigate('Access Code', {accessCode: code});
+      navigation.navigate('AccessCode', {accessCode: code});
     }
     catch (error) {
       handleError("handleCreate", error, setIsLoading);

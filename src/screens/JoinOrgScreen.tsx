@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, TextInput} from 'react-native';
+import { Text, View, TextInput, Alert} from 'react-native';
 import React from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,14 +11,22 @@ import { useLoad } from '../helper/LoadingContext';
 import { OrgUserStorage, Organization, User, UserOrStorage } from '../models';
 import { useUser } from '../helper/UserContext';
 import { handleError } from '../helper/Error';
+import { JoinOrgScreenProps } from '../types';
 
 /*
   Screen for joining an organization, user enters the access code to join
 */
-function JoinOrgScreen({navigation}) {
+function JoinOrgScreen({navigation}: JoinOrgScreenProps) {
   const {setIsLoading} = useLoad();
   const [code, onChangeCode] = React.useState('');
   const { user, setOrg } = useUser();
+
+  // ensure user isn't null
+  if(!user){
+    Alert.alert("Error", "User is null, please sign in again", [{ text: 'OK' }], { cancelable: false });
+    navigation.navigate('Home');
+    return null;
+  }
 
   // ensure the code given is valid and the user is not already part of the org
   async function checkCode(){
@@ -32,7 +40,7 @@ function JoinOrgScreen({navigation}) {
     // if the user is already part of that org, throw an error
     const exist = await DataStore.query(OrgUserStorage, (c) => c.and(c => [
       c.organization.id.eq(org[0].id),
-      c.user.userId.eq(user.attributes.sub)
+      c.user.userId.eq(user!.attributes.sub)
     ]));
     if(exist.length > 0){
       throw new Error("User is already part of this organization!");
@@ -41,8 +49,8 @@ function JoinOrgScreen({navigation}) {
   }
 
   // create an orgUserStorage object for the user and the org
-  async function createOrgUserStorage(org){
-    const DBuser = await DataStore.query(User, user.attributes.sub);
+  async function createOrgUserStorage(org: Organization){
+    const DBuser = await DataStore.query(User, user!.attributes.sub);
     if(DBuser == null) throw new Error("User does not exist!");
     const newOrgUserStorage = await DataStore.save(
       new OrgUserStorage({
@@ -62,15 +70,15 @@ function JoinOrgScreen({navigation}) {
       // Create an OrgUserStorage object for the user
       await createOrgUserStorage(org);
       // update context and async storage
-      const key = user.attributes.sub + ' currOrg';
+      const key = user!.attributes.sub + ' currOrg';
       await AsyncStorage.setItem(key, JSON.stringify(org));
       setOrg(org);
       setIsLoading(false);
       onChangeCode('');
-      navigation.navigate('DrawerNav', {screen: 'MemberTabs'});
+      navigation.navigate('MemberTabs', {screen: 'Equipment'});
     }
     catch(error){
-      handleError("joinOrg", error, setIsLoading);
+      handleError("joinOrg", error as Error, setIsLoading);
     }
   }
 
