@@ -19,12 +19,13 @@ import { handleError } from "../../helper/Error";
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
   const isFocused = useIsFocused();
-  const { user, org } = useUser();
+  const { user, orgUserStorage } = useUser();
   let swapUser = useRef(null);
 
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
 
+  // subscribe to changes in equipment
   useEffect(() => {
     const subscription = DataStore.observeQuery(Equipment).subscribe(
       (snapshot) => {
@@ -32,43 +33,36 @@ const SwapEquipmentScreen = () => {
         console.log(
           `Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`,
         );
-        getEquipment(user.attributes.sub);
-        if (swapUser.current != null) getEquipment(swapUser.current.id);
+        setEquipment();
       },
     );
 
     return () => subscription.unsubscribe();
-  }, [getEquipment, user, isFocused]);
+  }, [getEquipment, user, isFocused, orgUserStorage, setEquipment]);
 
-  const getEquipment = useCallback(
-    async (swapId) => {
-      try {
-        const isCurrentUser = user.attributes.sub == swapId ? true : false;
-        let orgUserStorage;
-        if (isCurrentUser) {
-          orgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
-            c.and((c) => [
-              c.organization.name.eq(org.name),
-              c.user.userId.eq(user.attributes.sub),
-              c.type.eq(UserOrStorage.USER),
-            ]),
-          );
-          orgUserStorage = orgUserStorage[0];
-        } else {
-          orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
-        }
-        const equipment = await DataStore.query(Equipment, (c) =>
-          c.assignedTo.id.eq(orgUserStorage.id),
-        );
-        const equipmentData = processEquipmentData(equipment);
-        if (isCurrentUser) setListOne(equipmentData);
-        else setListTwo(equipmentData);
-      } catch (e) {
-        handleError("GetEquipment", e, null);
-      }
-    },
-    [user, org],
-  );
+  // gets and sets the equipment for the current user and the swap user
+  const setEquipment = useCallback(async () => {
+    const equipmentOne = await getEquipment(orgUserStorage.id);
+    setListOne(equipmentOne);
+    if (swapUser.current != null) {
+      const equipmentTwo = await getEquipment(swapUser.current.id);
+      setListTwo(equipmentTwo);
+    }
+  }, [getEquipment, orgUserStorage]);
+
+  // get the equipment for a user by OrgUserStorage id
+  const getEquipment = useCallback(async (id) => {
+    try {
+      const orgUserStorage = await DataStore.query(OrgUserStorage, id);
+      const equipment = await DataStore.query(Equipment, (c) =>
+        c.assignedTo.id.eq(orgUserStorage.id),
+      );
+      const equipmentData = processEquipmentData(equipment);
+      return equipmentData;
+    } catch (e) {
+      handleError("GetEquipment", e, null);
+    }
+  }, []);
 
   // we build an absolute overlay to mirror the movements
   // of dragging because we can't drag between scroll views
@@ -199,7 +193,7 @@ const SwapEquipmentScreen = () => {
   const handleSet = (inputUser) => {
     if (inputUser == null) return;
     swapUser.current = inputUser;
-    getEquipment(swapUser.current.id);
+    setEquipment();
   };
 
   return (
