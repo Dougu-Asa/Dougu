@@ -4,14 +4,15 @@ import { Auth } from 'aws-amplify';
 
 // Project Files
 import { useUser } from '../helper/UserContext';
-import LoginScreen from '../components/drawer/Login';
-import CreateAccScreen from '../components/drawer/CreateAcc';
+import LoginScreen from '../components/Login';
+import CreateAccScreen from '../components/CreateAcc';
+import { HomeScreenProps } from '../types/NavigationTypes';
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
   It allows the user to login or create an account. 
 */
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({navigation}: HomeScreenProps) {
   const [login, setLogin] = React.useState(true);
   const {setUser} = useUser();
 
@@ -25,7 +26,7 @@ export default function HomeScreen({navigation}) {
       const user = await Auth.currentAuthenticatedUser();
       console.log("User is logged in");
       setUser(user);
-      navigation.navigate('DrawerNav');
+      navigation.navigate('DrawerNav', {'screen': 'MyOrgs'});
     } catch (error) {
       console.log("No user is logged in");
     }

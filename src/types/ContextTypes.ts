@@ -1,6 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { OrgUserStorage } from '../models';
 
+/*
+    Defines the types for the context objects used in the app.
+    Specifically for UserContext and LoadingContext
+*/
+
 // userContext types
 export type OrgType = {
     name: string;

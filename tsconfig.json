@@ -3,7 +3,7 @@
     "include": [
       "src/**/*.ts",
       "src/**/*.tsx"
-, "src/screens/HomeScreen.js"    ],
+, "src/screens/HomeScreen.tsx"],
     "exclude": [
       "node_modules",
       "babel.config.js",

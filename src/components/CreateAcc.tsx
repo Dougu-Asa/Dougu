@@ -6,9 +6,11 @@ import { Auth } from 'aws-amplify'
 import { DataStore } from '@aws-amplify/datastore';
 
 // Project Files
-import { User } from '../../models';
-import { useLoad } from '../../helper/LoadingContext';
-import { useUser } from '../../helper/UserContext';
+import { User } from '../models';
+import { useLoad } from '../helper/LoadingContext';
+import { useUser } from '../helper/UserContext';
+import { handleError } from '../helper/Error';
+import { NavigationOnlyProps } from '../types/NavigationTypes';
 
 /*
   A component that allows the user to create an account
@@ -16,7 +18,7 @@ import { useUser } from '../../helper/UserContext';
   using Cognito from AWS Amplify. Users are also uploaded
   to the database using Amplify Datastore.
 */
-function CreateAccScreen({navigation}) {
+function CreateAccScreen({navigation}: NavigationOnlyProps) {
   const {setIsLoading} = useLoad();
   const {setUser} = useUser();
 
@@ -29,7 +31,7 @@ function CreateAccScreen({navigation}) {
 
   // Function to toggle the password visibility state 
   const [showPassword, setShowPassword] = useState(false); 
-  const toggleShowPassword = (num) => { 
+  const toggleShowPassword = () => { 
     setShowPassword(!showPassword);
   }; 
 
@@ -38,13 +40,13 @@ function CreateAccScreen({navigation}) {
     onChangeUsername(first + ' ' + last);
   }, [first, last]);
 
-  async function handleSignUp({ username, password, email }) {
+  async function handleSignUp({ username, password, email } : { username: string, password: string, email: string }) {
     try {
+      setIsLoading(true);
       if(username === undefined || username == ' ' || password === undefined || email === undefined) {
         Alert.alert('Form Error', 'Please fill out all fields.', [{text: 'OK'}]);
         return;
       }
-      setIsLoading(true);
       await Auth.signUp({
         username: email,   // email is the username
         password: password,
@@ -69,8 +71,7 @@ function CreateAccScreen({navigation}) {
       setIsLoading(false);
       navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
     } catch (error) {
-      setIsLoading(false);
-      Alert.alert('Error Creating Account', error.message, [{text: 'OK'}]);
+      handleError("handleSignUp", error as Error, setIsLoading);
     }
   }
 

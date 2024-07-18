@@ -5,15 +5,17 @@ import { useState } from 'react';
 import {Auth} from 'aws-amplify';
 
 // Project Files
-import {useLoad} from '../../helper/LoadingContext';
-import { useUser } from '../../helper/UserContext';
+import {useLoad} from '../helper/LoadingContext';
+import { useUser } from '../helper/UserContext';
+import { NavigationOnlyProps } from '../types/NavigationTypes';
+import { handleError } from '../helper/Error';
 
 /*
   A component that allows the user to login to the app 
   using their email and password. This is handled by 
   using Cognito from AWS Amplify
 */
-function LoginScreen({navigation}) {
+function LoginScreen({navigation}: NavigationOnlyProps) {
   const {setIsLoading} = useLoad();
   const {setUser} = useUser();
 
@@ -26,7 +28,7 @@ function LoginScreen({navigation}) {
     setShowPassword(!showPassword); 
   }; 
 
-  async function signIn({username, password}) {
+  async function signIn({username, password}: {username: string, password: string}) {
     try {
       setIsLoading(true);
       await Auth.signIn(username, password);
@@ -35,10 +37,9 @@ function LoginScreen({navigation}) {
       setIsLoading(false);
       onChangePassword('');
       onChangeUsername('');
-      navigation.navigate('DrawerNav', {screen: 'JoinOrCreate'});
+      navigation.navigate('DrawerNav', {screen: 'MyOrgs'});
     } catch (error) {
-      setIsLoading(false);
-      Alert.alert('Login Error', error.message, [{text: 'OK'}]);
+      handleError("signIn", error as Error, setIsLoading);
     }
   }
 
@@ -65,7 +66,6 @@ function LoginScreen({navigation}) {
           name={showPassword ? 'eye-off' : 'eye'} 
           size={24} 
           color="#aaa"
-          style={styles.icon} 
           onPress={toggleShowPassword} 
         /> 
       </View>
