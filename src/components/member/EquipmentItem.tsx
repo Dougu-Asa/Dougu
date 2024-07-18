@@ -2,12 +2,19 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
+import { EquipmentObj } from "../../types/EquipmentTypes";
 
-export default function EquipmentItem({ item, count }) {
+export default function EquipmentItem({
+  item,
+  count,
+}: {
+  item: EquipmentObj;
+  count: number;
+}) {
   return (
     <View style={equipment.container}>
       <View style={equipment.equipment}>
-        <Entypo style={equipment.photo} name="camera" size={50} color="black" />
+        <Entypo name="camera" size={50} color="black" />
         <View style={equipment.circle}>
           <Text style={equipment.count}>{count ? count : item.count}</Text>
         </View>

@@ -78,6 +78,15 @@ As static checkers for code style and quality, I decided to add Eslint and Prett
 # Typescript
 I learned that composite screen props are necessary for nested navigators if you want to navigation.navigate to a screen only in the parent navigator not directly accessible from your current navigator. If you don't need to access the parent, don't use composite.
 
+I noticed that when querying for an OrgUserStorage, the requirements
+```
+c.and((c) => [
+          c.organization.name.eq(org.name),
+          c.user.userId.eq(user.attributes.sub),
+        ]),
+```
+isn't always enough, and that you may still need to specify USER or STORAGE as storages are created using the user's ID. I don't think this is the best approach, and a future refactor may be to change it from OrgUserStorage -> OrgUser and OrgStorage. I originally wanted to keep Users and Storages together to minimize API calls, but I think it would be cleaner overall to separate them, especially with the current confusion and the fact that user's of the app shouldn't be the same as a storage location anyway.
+
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
 [Example](https://docs.expo.dev/modules/native-module-tutorial/)
