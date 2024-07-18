@@ -28,6 +28,7 @@ export type UserContextType = {
   org: OrgType | null;
   setOrg: Dispatch<SetStateAction<OrgType | null>>;
   orgUserStorage: OrgUserStorage | null;
+  contextLoading: boolean;
   resetContext: () => void; // doesn't take a param, doesn't return anything
 };
 

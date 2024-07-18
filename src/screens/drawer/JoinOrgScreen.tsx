@@ -63,7 +63,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     );
   }
 
-  async function joinOrg() {
+  async function handleJoin() {
     try {
       // Query for the org with the access code
       setIsLoading(true);
@@ -98,7 +98,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       <TouchableOpacity
         style={createJoinStyles.button}
         onPress={() => {
-          joinOrg();
+          handleJoin();
         }}
       >
         <Text style={createJoinStyles.btnText}>Join My Org</Text>
