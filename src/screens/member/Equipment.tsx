@@ -7,7 +7,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Equipment } from "../../models";
 import EquipmentItem from "../../components/member/EquipmentItem";
 import { useUser } from "../../helper/UserContext";
-import type { EquipmentObj } from "../../types/EquipmentTypes";
+import type { EquipmentObj } from "../../types/ModelTypes";
+import { processEquipmentData } from "../../helper/ProcessEquipment";
 
 const EquipmentScreen = () => {
   const [equipment, setEquipment] = useState<EquipmentObj[][]>([[]]);
@@ -32,39 +33,9 @@ const EquipmentScreen = () => {
         getEquipment();
       },
     );
-    console.log("user: ", user);
-    console.log("org: ", org);
-    console.log("orgUserStorage: ", orgUserStorage);
 
     return () => subscription.unsubscribe();
   }, [org, orgUserStorage, user]);
-
-  // get duplicates and merge their counts
-  function processEquipmentData(equipment: Equipment[]) {
-    const equipmentMap = new Map<string, EquipmentObj>();
-
-    equipment.forEach((equip) => {
-      // duplicate
-      if (equipmentMap.has(equip.name)) {
-        const existingEquip = equipmentMap.get(equip.name);
-        existingEquip!.count += 1;
-        existingEquip!.data.push(equip.id);
-        equipmentMap.set(equip.name, existingEquip!);
-      } else {
-        // new equipment
-        equipmentMap.set(equip.name, {
-          id: equip.id,
-          label: equip.name,
-          count: 1,
-          data: [equip.id],
-        });
-      }
-    });
-
-    // Convert the Map back to an array
-    const processedEquipmentData = Array.from(equipmentMap.values());
-    return processedEquipmentData;
-  }
 
   // Function to chunk the equipment array into subarrays of size items each
   const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>

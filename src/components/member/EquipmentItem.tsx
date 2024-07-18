@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-import { EquipmentObj } from "../../types/EquipmentTypes";
+import { EquipmentObj } from "../../types/ModelTypes";
 
 export default function EquipmentItem({
   item,
