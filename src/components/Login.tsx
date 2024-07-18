@@ -13,7 +13,7 @@ import { Auth } from "aws-amplify";
 // Project Files
 import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
-import { NavigationOnlyProps } from "../types/NavigationTypes";
+import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { handleError } from "../helper/Error";
 
 /*

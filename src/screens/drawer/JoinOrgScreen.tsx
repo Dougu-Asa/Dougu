@@ -16,7 +16,7 @@ import {
 } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Error";
-import { JoinOrgScreenProps } from "../../types/NavigationTypes";
+import { JoinOrgScreenProps } from "../../types/ScreenTypes";
 
 /*
   Screen for joining an organization, user enters the access code to join

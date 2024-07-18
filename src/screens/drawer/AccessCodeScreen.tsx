@@ -2,11 +2,12 @@ import { Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 
 import createJoinStyles from "../../styles/CreateJoinStyles";
+import { AccessCodeScreenProps } from "../../types/ScreenTypes";
 
 /*
   Screen for displaying the access code to the manager after they create an organization
 */
-function AccessCodeScreen({ route, navigation }) {
+function AccessCodeScreen({ route, navigation }: AccessCodeScreenProps) {
   const { accessCode } = route.params;
 
   return (
@@ -18,7 +19,7 @@ function AccessCodeScreen({ route, navigation }) {
       </Text>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("DrawerNav", { screen: "MemberTabs" })
+          navigation.navigate("MemberTabs", { screen: "Equipment" })
         }
         style={createJoinStyles.button}
       >

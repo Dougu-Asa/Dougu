@@ -14,13 +14,14 @@ import {
 } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Error";
+import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 
 /*
   Screen for creating an organization, user enters the name of the org
   and a random access code is generated. The user that creates the org is
   automatically the manager of the org.
 */
-function CreateOrgScreen({ navigation }) {
+function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [name, onChangeName] = React.useState("");
   const { user, setOrg } = useUser();
@@ -37,16 +38,16 @@ function CreateOrgScreen({ navigation }) {
       const orgs = await DataStore.query(Organization, (c) =>
         c.or((c) => [c.accessCode.eq(code), c.name.eq(name)]),
       );
-      if (orgs == null || orgs.length == 0) {
+      if (orgs == null || orgs.length === 0) {
         return code;
       }
     }
   }
 
   // create an org and orgUserStorage to add to the database
-  async function create(code) {
+  async function create(code: string) {
     // query for the user that will be the org manager
-    const DBuser = await DataStore.query(User, user.attributes.sub);
+    const DBuser = await DataStore.query(User, user!.attributes.sub);
     if (DBuser == null) throw new Error("User not found in database.");
     // Add the org to the database
     const newOrg = await DataStore.save(
@@ -54,6 +55,7 @@ function CreateOrgScreen({ navigation }) {
         name: name,
         accessCode: code,
         manager: DBuser,
+        organizationManagerUserId: DBuser.userId,
       }),
     );
     if (newOrg == null)
@@ -81,14 +83,14 @@ function CreateOrgScreen({ navigation }) {
       // Create the org and orgUserStorage
       const newOrg = await create(code);
       // use a key to keep track of currentOrg per user
-      const key = user.attributes.sub + " currOrg";
+      const key = user!.attributes.sub + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(newOrg));
       setOrg(newOrg);
       onChangeName("");
       setIsLoading(false);
       navigation.navigate("AccessCode", { accessCode: code });
     } catch (error) {
-      handleError("handleCreate", error, setIsLoading);
+      handleError("handleCreate", error as Error, setIsLoading);
     }
   }
 

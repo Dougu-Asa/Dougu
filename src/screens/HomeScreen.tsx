@@ -6,7 +6,7 @@ import { Auth } from "aws-amplify";
 import { useUser } from "../helper/UserContext";
 import LoginScreen from "../components/Login";
 import CreateAccScreen from "../components/CreateAcc";
-import { HomeScreenProps } from "../types/NavigationTypes";
+import { HomeScreenProps } from "../types/ScreenTypes";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 

@@ -7,7 +7,7 @@ import ManageEquipmentScreen from "./organization/ManageEquipment";
 import UserStorages from "./organization/UserStorages";
 import CreateStorageScreen from "./organization/CreateStorageScreen";
 import Indicator from "../components/Indicator";
-import { RootStackParamList } from "../types/NavigationTypes";
+import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
 
 // Create a stack navigator to handle navigation throughout the app

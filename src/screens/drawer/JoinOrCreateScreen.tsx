@@ -2,8 +2,15 @@ import React from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import JoinOrgScreen from "./JoinOrgScreen";
 import CreateOrgScreen from "./CreateOrgScreen";
+import {
+  CreateOrgScreenProps,
+  JoinOrCreateScreenProps,
+  JoinOrgScreenProps,
+} from "../../types/ScreenTypes";
 
-function JoinOrCreateScreen({ navigation }) {
+function JoinOrCreateScreen({
+  navigation,
+}: JoinOrCreateScreenProps & JoinOrgScreenProps & CreateOrgScreenProps) {
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
       <View style={styles.mainContainer}>

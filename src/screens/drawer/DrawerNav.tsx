@@ -16,10 +16,10 @@ import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Error";
 import {
-  DrawerNavProps,
   MyHeaderProfileButtonProps,
   DrawerParamList,
-} from "../../types/NavigationTypes";
+} from "../../types/NavigatorTypes";
+import { DrawerNavProps } from "../../types/ScreenTypes";
 import { CustomDrawerContent } from "../../components/drawer/CustomDrawerContent";
 
 /* 

@@ -10,7 +10,7 @@ import { User } from "../models";
 import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
 import { handleError } from "../helper/Error";
-import { NavigationOnlyProps } from "../types/NavigationTypes";
+import { NavigationOnlyProps } from "../types/ScreenTypes";
 
 /*
   A component that allows the user to create an account

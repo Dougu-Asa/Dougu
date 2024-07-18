@@ -72,7 +72,11 @@ When working on types for Contexts, I created custom ContextTypes with fields fo
 When working on Typing for react-native-navigation, I first had to create a custom type for each navigator. Then, each screen also contains a custom type that the navigator prop in the screen file imports. It makes `navigation.navigate()` a little more complex, but it is a good way to ensure all the paths are valid at compile-time.
 
 ## EsLint and Prettier
-As static checkers for code style and quality, I decided to add Eslint and Prettier. This is starting to get complex, so I will try to slow down adding more, but I felt that it was worth it after seeing the recommendations they give. It also works conveniently well with expo go and VS Code. I followed this [procedure](https://docs.expo.dev/guides/using-eslint/). Things work pretty well, and to run from the command line, you can also just do `npx expo lint` and `npx prettier --write .` to run eslint and prettier, respectively. 
+As static checkers for code style and quality, I decided to add Eslint and Prettier. This is starting to get complex, so I will try to slow down adding more, but I felt that it was worth it after seeing the recommendations they give. It also works conveniently well with expo go and VS Code. I followed this [procedure](https://docs.expo.dev/guides/using-eslint/). Things work pretty well, and to run from the command line, you can also just do `npx expo lint` and `npx prettier --write .` to run eslint and prettier, respectively.
+
+# 7-18-24
+# Typescript
+I learned that composite screen props are necessary for nested navigators if you want to navigation.navigate to a screen only in the parent navigator not directly accessible from your current navigator. If you don't need to access the parent, don't use composite.
 
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
