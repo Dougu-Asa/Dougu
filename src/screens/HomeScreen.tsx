@@ -1,20 +1,20 @@
-import {Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, {useEffect} from 'react';
-import { Auth } from 'aws-amplify';
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import { Auth } from "aws-amplify";
 
 // Project Files
-import { useUser } from '../helper/UserContext';
-import LoginScreen from '../components/Login';
-import CreateAccScreen from '../components/CreateAcc';
-import { HomeScreenProps } from '../types/NavigationTypes';
+import { useUser } from "../helper/UserContext";
+import LoginScreen from "../components/Login";
+import CreateAccScreen from "../components/CreateAcc";
+import { HomeScreenProps } from "../types/NavigationTypes";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
   It allows the user to login or create an account. 
 */
-export default function HomeScreen({navigation}: HomeScreenProps) {
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [login, setLogin] = React.useState(true);
-  const {setUser} = useUser();
+  const { setUser } = useUser();
 
   useEffect(() => {
     checkCurrentUser();
@@ -26,13 +26,13 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
       const user = await Auth.currentAuthenticatedUser();
       console.log("User is logged in");
       setUser(user);
-      navigation.navigate('DrawerNav', {'screen': 'MyOrgs'});
+      navigation.navigate("DrawerNav", { screen: "MyOrgs" });
     } catch (error) {
       console.log("No user is logged in");
     }
   };
 
-  return(
+  return (
     <View style={styles.container}>
       <Text style={styles.title}>Dougu</Text>
       <View style={styles.loginCreateContainer}>
@@ -44,7 +44,11 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
             <Text>Create</Text>
           </TouchableOpacity>
         </View>
-        {login ? <LoginScreen navigation={navigation}/> : <CreateAccScreen navigation={navigation}/>}
+        {login ? (
+          <LoginScreen navigation={navigation} />
+        ) : (
+          <CreateAccScreen navigation={navigation} />
+        )}
       </View>
     </View>
   );
@@ -53,30 +57,30 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    width: '100%',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    width: "100%",
   },
   title: {
-    marginTop: '10%',
+    marginTop: "10%",
     fontSize: 40,
-    fontWeight: 'bold',
-    color: '#791111'
+    fontWeight: "bold",
+    color: "#791111",
   },
   loginCreateContainer: {
-    width: '80%',
-    height: '80%',
+    width: "80%",
+    height: "80%",
     borderWidth: 1,
     borderRadius: 20,
   },
   header: {
-    height: '10%',
-    width: '100%',
+    height: "10%",
+    width: "100%",
     borderWidth: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  }
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
 });

@@ -1,21 +1,21 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
-type Organization @model @auth(rules: [{ allow: public }]){
+type Organization @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   accessCode: String!
   equipment: [Equipment] @hasMany
   UserOrStorages: [OrgUserStorage] @hasMany
   containers: [Container] @hasMany
-  manager: User! @hasOne                # maybe user instead
+  manager: User! @hasOne # maybe user instead
 }
 
-type User @model @auth(rules: [{ allow: public }]){
-  userId: ID! @primaryKey                     # special bc of cognito
+type User @model @auth(rules: [{ allow: public }]) {
+  userId: ID! @primaryKey # special bc of cognito
   name: String!
   email: String!
-  organizations: [OrgUserStorage] @hasMany    # debatable
+  organizations: [OrgUserStorage] @hasMany # debatable
 }
 
 enum UserOrStorage {
@@ -24,7 +24,7 @@ enum UserOrStorage {
 }
 
 # organizations can have users or storage to hold equipment
-type OrgUserStorage @model @auth(rules: [{ allow: public }]){
+type OrgUserStorage @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
@@ -35,7 +35,7 @@ type OrgUserStorage @model @auth(rules: [{ allow: public }]){
   details: String
 }
 
-type Container @model @auth(rules: [{ allow: public }]){
+type Container @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
@@ -45,7 +45,7 @@ type Container @model @auth(rules: [{ allow: public }]){
   details: String
 }
 
-type Equipment @model @auth(rules: [{ allow: public }]){
+type Equipment @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo

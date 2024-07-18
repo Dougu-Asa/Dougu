@@ -1,23 +1,33 @@
-import React, { useState, useEffect, Component } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState, useEffect, Component } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 // project imports
-import EquipmentTable from '../../components/organization/EquipmentTable';
-import { useLoad } from '../../helper/LoadingContext';
+import EquipmentTable from "../../components/organization/EquipmentTable";
+import { useLoad } from "../../helper/LoadingContext";
 
-const ManageEquipmentScreen = ({route, navigation}) => {
+const ManageEquipmentScreen = ({ route, navigation }) => {
   const { isManager } = route.params;
-  const {setIsLoading} = useLoad();
+  const { setIsLoading } = useLoad();
 
   const handleCreate = () => {
-    if(isManager){
-      navigation.navigate('CreateEquipment');
+    if (isManager) {
+      navigation.navigate("CreateEquipment");
+    } else {
+      Alert.alert(
+        "Authorization Error",
+        "You do not have permission to create equipment",
+        [{ text: "OK" }],
+      );
     }
-    else {
-      Alert.alert('Authorization Error', 'You do not have permission to create equipment', [{text: 'OK'}]);
-    }
-  }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -28,7 +38,7 @@ const ManageEquipmentScreen = ({route, navigation}) => {
             <Ionicons name="add" size={40} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable setIsLoading={setIsLoading}/>
+        <EquipmentTable setIsLoading={setIsLoading} />
       </View>
     </View>
   );
@@ -37,29 +47,29 @@ export default ManageEquipmentScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#fff',
+    flexDirection: "column",
+    backgroundColor: "#fff",
     borderWidth: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   addIcon: {
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     borderRadius: 10,
     marginLeft: 30,
   },

@@ -1,14 +1,14 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { Amplify} from 'aws-amplify';
-import '@azure/core-asynciterator-polyfill';
-import { registerRootComponent } from 'expo';
-import * as Sentry from '@sentry/react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { Amplify } from "aws-amplify";
+import "@azure/core-asynciterator-polyfill";
+import { registerRootComponent } from "expo";
+import * as Sentry from "@sentry/react-native";
 
 // Project Files
-import { LoadingProvider } from './helper/LoadingContext';
-import { UserProvider } from './helper/UserContext';
-import amplifyconfig from './amplifyconfiguration.json';
-import { RootStackNavigator } from './screens/RootStackNavigator';
+import { LoadingProvider } from "./helper/LoadingContext";
+import { UserProvider } from "./helper/UserContext";
+import amplifyconfig from "./amplifyconfiguration.json";
+import { RootStackNavigator } from "./screens/RootStackNavigator";
 
 /*
   Entry point into the application, and attaches the necessary providers and navigators
@@ -17,7 +17,7 @@ import { RootStackNavigator } from './screens/RootStackNavigator';
 
 // Use sentry to track and log errors throughout the app
 Sentry.init({
-  dsn: 'https://dc0105cfe4212e7f682ce47529bc0c51@o4507486458871808.ingest.us.sentry.io/4507486460051456',
+  dsn: "https://dc0105cfe4212e7f682ce47529bc0c51@o4507486458871808.ingest.us.sentry.io/4507486460051456",
   tracesSampleRate: 1.0,
   _experiments: {
     profilesSampleRate: 1.0,
@@ -32,11 +32,11 @@ Amplify.configure(amplifyconfig);
 function App() {
   return (
     <NavigationContainer>
-        <LoadingProvider>
-          <UserProvider>
-            <RootStackNavigator />
-          </UserProvider>
-        </LoadingProvider>
+      <LoadingProvider>
+        <UserProvider>
+          <RootStackNavigator />
+        </UserProvider>
+      </LoadingProvider>
     </NavigationContainer>
   );
 }

@@ -1,65 +1,89 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo';
-import { Auth, DataStore } from 'aws-amplify';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { Component } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from "react-native";
+import Entypo from "react-native-vector-icons/Entypo";
+import { Auth, DataStore } from "aws-amplify";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // project imports
-import { Equipment, OrgUserStorage, User, Storage, Organization } from '../../models';
+import {
+  Equipment,
+  OrgUserStorage,
+  User,
+  Storage,
+  Organization,
+} from "../../models";
 
 export default class EquipmentTable extends Component {
   constructor(props) {
     super(props);
     this.subscribeToChanges();
     this.state = {
-      tableHead: ['Name', 'Assigned To', 'Quantity', ''],
+      tableHead: ["Name", "Assigned To", "Quantity", ""],
       tableData: [],
-    }
+    };
   }
 
   // subscribe to changes in equipment
   async subscribeToChanges() {
-    DataStore.observeQuery(Equipment).subscribe(snapshot => {
+    DataStore.observeQuery(Equipment).subscribe((snapshot) => {
       const { items, isSynced } = snapshot;
-      console.log(`table [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`);
+      console.log(
+        `table [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`,
+      );
       this.getEquipment().then((equipmentData) => {
         this.setState({
           tableData: equipmentData,
         });
       });
-    })};
+    });
+  }
 
   // get all the equipment that belongs to an org
   async getEquipment() {
     const user = await Auth.currentAuthenticatedUser();
-    const key = user.attributes.sub + ' currOrg';
+    const key = user.attributes.sub + " currOrg";
     const org = await AsyncStorage.getItem(key);
-    if(org == null){
-        return;
-    };
+    if (org == null) {
+      return;
+    }
     const orgJSON = JSON.parse(org);
     // check if the user is the manager
-    if(orgJSON.organizationManagerUserId == user.attributes.sub) this.isManager = true;
+    if (orgJSON.organizationManagerUserId == user.attributes.sub)
+      this.isManager = true;
     else this.isManager = false;
-    const equipment = await DataStore.query(Equipment, (c) => c.organization.id.eq(orgJSON.id));
-    const equipmentData = await Promise.all(equipment.map(async (equip) => {
-      let assignedTo = await DataStore.query(OrgUserStorage, (c) => c.equipment.id.eq(equip.id));
-      if(assignedTo.length == 0) assignedTo = [{id: "UNASSIGNED", name: "UNASSIGNED"}]; // should never happen... but it did :/
-      return {
-        id: equip.id,
-        name: equip.name,
-        quantity: 1,
-        assignedTo: assignedTo[0].id,
-        assignedToName: assignedTo[0].name,
-      };
-    }));
+    const equipment = await DataStore.query(Equipment, (c) =>
+      c.organization.id.eq(orgJSON.id),
+    );
+    const equipmentData = await Promise.all(
+      equipment.map(async (equip) => {
+        let assignedTo = await DataStore.query(OrgUserStorage, (c) =>
+          c.equipment.id.eq(equip.id),
+        );
+        if (assignedTo.length == 0)
+          assignedTo = [{ id: "UNASSIGNED", name: "UNASSIGNED" }]; // should never happen... but it did :/
+        return {
+          id: equip.id,
+          name: equip.name,
+          quantity: 1,
+          assignedTo: assignedTo[0].id,
+          assignedToName: assignedTo[0].name,
+        };
+      }),
+    );
     const processedEquipmentData = this.processData(equipmentData);
     return processedEquipmentData;
-  };
+  }
 
   processData(equipment) {
     const equipmentMap = new Map();
-  
+
     equipment.forEach((equip) => {
       let key = equip.name + equip.assignedTo;
       if (equipmentMap.has(key)) {
@@ -69,7 +93,7 @@ export default class EquipmentTable extends Component {
         equipmentMap.set(key, existingEquip); // Update the Map
       } else {
         equipmentMap.set(key, {
-          id: equip.id, 
+          id: equip.id,
           name: equip.name,
           quantity: 1,
           data: [equip.id],
@@ -78,7 +102,7 @@ export default class EquipmentTable extends Component {
         });
       }
     });
-  
+
     // Convert the Map back to an array
     const processedEquipmentData = Array.from(equipmentMap.values());
     return processedEquipmentData;
@@ -89,20 +113,19 @@ export default class EquipmentTable extends Component {
     try {
       this.props.setIsLoading(true);
       const equipment = await DataStore.query(Equipment, rowData.id);
-      if(equipment == null) throw new Error("Equipment not found");
+      if (equipment == null) throw new Error("Equipment not found");
       await DataStore.delete(equipment);
       this.props.setIsLoading(false);
       Alert.alert("Equipment Deleted Successfully!");
-    }
-    catch (error) {
+    } catch (error) {
       this.props.setIsLoading(false);
-      Alert.alert('Delete Error', error.message, [{text: 'OK'}]);
+      Alert.alert("Delete Error", error.message, [{ text: "OK" }]);
     }
-  }
+  };
 
   // make sure the owner wants to delete the equipment
   handleEdit = (rowData) => {
-    if(!this.isManager){
+    if (!this.isManager) {
       Alert.alert("You must be a manager to edit equipment");
       return;
     }
@@ -119,69 +142,78 @@ export default class EquipmentTable extends Component {
           text: "Cancel",
           style: "cancel",
         },
-      ]
+      ],
     );
-  }
+  };
 
   render() {
     return (
       <View style={styles.table}>
         <View style={styles.row}>
-          <Text style={[styles.headerText, {flex: 8}]}>{this.state.tableHead[0]}</Text>
-          <Text style={[styles.headerText, {flex: 10}]}>{this.state.tableHead[1]}</Text>
-          <Text style={[styles.headerText, {flex: 3}]}>{this.state.tableHead[2]}</Text>
-          <Text style={[styles.headerText, {flex: 1}]}>{this.state.tableHead[3]}</Text>
+          <Text style={[styles.headerText, { flex: 8 }]}>
+            {this.state.tableHead[0]}
+          </Text>
+          <Text style={[styles.headerText, { flex: 10 }]}>
+            {this.state.tableHead[1]}
+          </Text>
+          <Text style={[styles.headerText, { flex: 3 }]}>
+            {this.state.tableHead[2]}
+          </Text>
+          <Text style={[styles.headerText, { flex: 1 }]}>
+            {this.state.tableHead[3]}
+          </Text>
         </View>
         <ScrollView>
-        {
-          this.state.tableData.map((rowData, index) => (
+          {this.state.tableData.map((rowData, index) => (
             <View key={index} style={styles.row}>
-              <View style={[styles.cell, {flex: 8}]}>
+              <View style={[styles.cell, { flex: 8 }]}>
                 <Text>{rowData.name}</Text>
               </View>
-              <View style={[styles.cell, {flex: 10}]}>
+              <View style={[styles.cell, { flex: 10 }]}>
                 <Text>{rowData.assignedToName}</Text>
               </View>
-              <View style={[styles.cell, {flex: 3}]}>
+              <View style={[styles.cell, { flex: 3 }]}>
                 <Text>{rowData.quantity}</Text>
               </View>
-              <TouchableOpacity style={styles.icon} onPress={() => this.handleEdit(rowData)}>
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={() => this.handleEdit(rowData)}
+              >
                 <Entypo name="dots-three-vertical" size={20} />
               </TouchableOpacity>
             </View>
-          ))
-        }
+          ))}
         </ScrollView>
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   table: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
   },
   row: {
-    flexDirection: 'row',
-    width: '100%',
+    flexDirection: "row",
+    width: "100%",
     minHeight: 50,
     borderBottomWidth: 1,
-    borderBottomColor: 'gray',
+    borderBottomColor: "gray",
   },
   headerText: {
     padding: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 8,
-    color: 'gray',
-  }, 
+    color: "gray",
+  },
   cell: {
     marginLeft: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   icon: {
-    justifyContent: 'center',
+    justifyContent: "center",
     marginRight: 5,
-  }
+  },
 });

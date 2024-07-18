@@ -1,18 +1,19 @@
 // @ts-check
-import { initSchema } from '@aws-amplify/datastore';
-import { schema } from './schema';
+import { initSchema } from "@aws-amplify/datastore";
+import { schema } from "./schema";
 
 const UserOrStorage = {
-  "USER": "USER",
-  "STORAGE": "STORAGE"
+  USER: "USER",
+  STORAGE: "STORAGE",
 };
 
 const Change = {
-  "CHANGE": "CHANGE",
-  "NOCHANGE": "NOCHANGE"
+  CHANGE: "CHANGE",
+  NOCHANGE: "NOCHANGE",
 };
 
-const { Organization, User, OrgUserStorage, Container, Equipment } = initSchema(schema);
+const { Organization, User, OrgUserStorage, Container, Equipment } =
+  initSchema(schema);
 
 export {
   Organization,
@@ -21,5 +22,5 @@ export {
   Container,
   Equipment,
   UserOrStorage,
-  Change
+  Change,
 };
