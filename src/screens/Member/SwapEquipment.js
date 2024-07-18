@@ -1,52 +1,74 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { View, Text, ScrollView, Animated, StyleSheet } from "react-native";
 import { Dimensions, Alert } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useIsFocused } from "@react-navigation/native";
-import { DataStore, Auth } from "aws-amplify";
+import { DataStore } from "aws-amplify";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // project imports
-import {
-  Equipment,
-  OrgUserStorage,
-  Organization,
-  User,
-  UserOrStorage,
-} from "../../models";
+import { Equipment, OrgUserStorage, UserOrStorage } from "../../models";
 import EquipmentItem from "../../components/member/EquipmentItem";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
+import { processEquipmentData } from "../../helper/ProcessEquipment";
+import { handleError } from "../../helper/Error";
 
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
   const isFocused = useIsFocused();
   const { user, org } = useUser();
-  const [reset, setReset] = useState(false);
+  let swapUser = useRef(null);
 
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
 
   useEffect(() => {
-    subscribeToChanges();
-  }, []);
+    const subscription = DataStore.observeQuery(Equipment).subscribe(
+      (snapshot) => {
+        const { items, isSynced } = snapshot;
+        console.log(
+          `Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`,
+        );
+        getEquipment(user.attributes.sub);
+        if (swapUser.current != null) getEquipment(swapUser.current.id);
+      },
+    );
 
-  useEffect(() => {
-    if (isFocused) {
-      setReset(!reset);
-      getEquipment(user.attributes.sub);
-      if (swapUser.current != null) getEquipment(swapUser.current.id);
-    }
-  }, [isFocused]);
+    return () => subscription.unsubscribe();
+  }, [getEquipment, user, isFocused]);
+
+  const getEquipment = useCallback(
+    async (swapId) => {
+      try {
+        const isCurrentUser = user.attributes.sub == swapId ? true : false;
+        let orgUserStorage;
+        if (isCurrentUser) {
+          orgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
+            c.and((c) => [
+              c.organization.name.eq(org.name),
+              c.user.userId.eq(user.attributes.sub),
+              c.type.eq(UserOrStorage.USER),
+            ]),
+          );
+          orgUserStorage = orgUserStorage[0];
+        } else {
+          orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
+        }
+        const equipment = await DataStore.query(Equipment, (c) =>
+          c.assignedTo.id.eq(orgUserStorage.id),
+        );
+        const equipmentData = processEquipmentData(equipment);
+        if (isCurrentUser) setListOne(equipmentData);
+        else setListTwo(equipmentData);
+      } catch (e) {
+        handleError("GetEquipment", e, null);
+      }
+    },
+    [user, org],
+  );
 
   // we build an absolute overlay to mirror the movements
   // of dragging because we can't drag between scroll views
@@ -60,7 +82,6 @@ const SwapEquipmentScreen = () => {
   const [floatingPosition, setFloatingPosition] = useState({ top: 0, left: 0 });
   let scrollOffsetXTop = useRef(0);
   let scrollOffsetXBottom = useRef(0);
-  let swapUser = useRef(null);
 
   // we need to know the size of our container
   const onLayout = (event) => {
@@ -180,74 +201,6 @@ const SwapEquipmentScreen = () => {
     swapUser.current = inputUser;
     getEquipment(swapUser.current.id);
   };
-
-  async function subscribeToChanges() {
-    console.log("Subscribing to Equipment changes...");
-    DataStore.observeQuery(Equipment).subscribe((snapshot) => {
-      const { items, isSynced } = snapshot;
-      console.log(
-        `Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`,
-      );
-      console.log("user: ", user.attributes.sub);
-      getEquipment(user.attributes.sub);
-      if (swapUser.current != null) getEquipment(swapUser.current.id);
-    });
-  }
-  async function getEquipment(swapId) {
-    try {
-      const isCurrentUser = user.attributes.sub == swapId ? true : false;
-      /*const key = user.attributes.sub + ' currOrg';
-        const org = await AsyncStorage.getItem(key);
-        const orgJSON = JSON.parse(org); */
-      // passed in orgUserStorage
-      let orgUserStorage;
-      if (isCurrentUser) {
-        orgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
-          c.and((c) => [
-            c.organization.name.eq(org.name),
-            c.user.userId.eq(user.attributes.sub),
-            c.type.eq(UserOrStorage.USER),
-          ]),
-        );
-        orgUserStorage = orgUserStorage[0];
-      } else {
-        orgUserStorage = await DataStore.query(OrgUserStorage, swapId);
-      }
-      const equipment = await DataStore.query(Equipment, (c) =>
-        c.assignedTo.id.eq(orgUserStorage.id),
-      );
-      const equipmentData = processEquipmentData(equipment);
-      if (isCurrentUser) setListOne(equipmentData);
-      else setListTwo(equipmentData);
-    } catch (e) {
-      console.log(e);
-      Alert.alert("Swap Get Error!", e.message, [{ text: "OK" }]);
-    }
-  }
-
-  // get duplicates and merge their counts
-  function processEquipmentData(equipment) {
-    const equipmentMap = new Map();
-    equipment.forEach((equip) => {
-      if (equipmentMap.has(equip.name)) {
-        const existingEquip = equipmentMap.get(equip.name);
-        existingEquip.count += 1; // Increment the count
-        existingEquip.data.push(equip.id); // Add the equipment to the data array
-        equipmentMap.set(equip.name, existingEquip); // Update the Map
-      } else {
-        equipmentMap.set(equip.name, {
-          id: equip.id,
-          label: equip.name,
-          count: 1,
-          data: [equip.id],
-        });
-      }
-    });
-
-    // Convert the Map back to an array
-    const processedEquipmentData = Array.from(equipmentMap.values());
-    return processedEquipmentData;
-  }
 
   return (
     <View style={styles.scrollContainer}>

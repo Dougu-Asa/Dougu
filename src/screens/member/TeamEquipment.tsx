@@ -65,7 +65,7 @@ function TeamEquipmentScreen() {
           <UserEquipment
             key={index}
             list={equipmentRow}
-            name={orgUserStorages[index].name}
+            name={orgUserStorages[index]?.name}
           />
         ))}
       </ScrollView>
