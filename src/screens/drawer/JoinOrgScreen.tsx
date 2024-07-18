@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TextInput, Alert } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import React from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,9 +31,9 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     const org = await DataStore.query(Organization, (c) =>
       c.accessCode.eq(code.toUpperCase()),
     );
-    if (org.length == 0) {
+    if (org.length === 0) {
       throw new Error("Organization does not exist!");
-    } else if (org.length != 1) {
+    } else if (org.length !== 1) {
       throw new Error("Wrong Number of Organizations Found!");
     }
     // if the user is already part of that org, throw an error
@@ -53,7 +53,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   async function createOrgUserStorage(org: Organization) {
     const DBuser = await DataStore.query(User, user!.attributes.sub);
     if (DBuser == null) throw new Error("User does not exist!");
-    const newOrgUserStorage = await DataStore.save(
+    await DataStore.save(
       new OrgUserStorage({
         organization: org,
         type: UserOrStorage.USER,

@@ -53,7 +53,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       setIsLoading(true);
       if (
         username === undefined ||
-        username == " " ||
+        username === " " ||
         password === undefined ||
         email === undefined
       ) {
@@ -70,7 +70,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         },
       });
       const user = await Auth.signIn(email, password);
-      const newUser = await DataStore.save(
+      await DataStore.save(
         new User({
           userId: user.attributes.sub,
           name: user.attributes.name,

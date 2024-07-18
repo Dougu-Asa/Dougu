@@ -35,10 +35,43 @@ function DrawerNav({ navigation }: DrawerNavProps) {
 
   // because users are first directed here on sign in, we check if they are part of an org
   useEffect(() => {
+    // check if user is part of an org to automatically direct them to the correct screen
+    async function checkUserOrg() {
+      try {
+        const key = user!.attributes.sub + " currOrg";
+        const org = await AsyncStorage.getItem(key);
+        const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
+          c.user.userId.eq(user!.attributes.sub),
+        );
+        // check if there was a previous org session
+        if (org != null) {
+          const orgJSON = JSON.parse(org);
+          setOrg(orgJSON);
+          //navigation.navigate('MemberTabs');
+          navigation.navigate("DrawerNav", {
+            screen: "MemberTabs",
+            params: {
+              screen: "Equipment",
+            },
+          });
+        }
+        // check if user has an orgUserStorage (from previous devices)
+        else if (orgUserStorages != null && orgUserStorages.length > 0) {
+          navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+        }
+        // user has no org and no previous org
+        else {
+          navigation.navigate("DrawerNav", { screen: "JoinOrCreate" });
+        }
+      } catch (error) {
+        handleError("checkUserOrg", error as Error, null);
+      }
+    }
+
     if (isFocused) {
       checkUserOrg();
     }
-  }, [isFocused]);
+  }, [isFocused, navigation, setOrg, user]);
 
   // ensure user isn't null
   if (!user) {
@@ -50,41 +83,6 @@ function DrawerNav({ navigation }: DrawerNavProps) {
     );
     navigation.navigate("Home");
     return null;
-  }
-
-  /* Helper function that checks if the user is part of an org
-    We do this so users can automatically be directed to their
-    organization if they have one */
-  async function checkUserOrg() {
-    try {
-      const key = user!.attributes.sub + " currOrg";
-      const org = await AsyncStorage.getItem(key);
-      const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-        c.user.userId.eq(user!.attributes.sub),
-      );
-      // check if there was a previous org session
-      if (org != null) {
-        const orgJSON = JSON.parse(org);
-        setOrg(orgJSON);
-        //navigation.navigate('MemberTabs');
-        navigation.navigate("DrawerNav", {
-          screen: "MemberTabs",
-          params: {
-            screen: "Equipment",
-          },
-        });
-      }
-      // check if user has an orgUserStorage (from previous devices)
-      else if (orgUserStorages != null && orgUserStorages.length > 0) {
-        navigation.navigate("DrawerNav", { screen: "MyOrgs" });
-      }
-      // user has no org and no previous org
-      else {
-        navigation.navigate("DrawerNav", { screen: "JoinOrCreate" });
-      }
-    } catch (error) {
-      handleError("checkUserOrg", error as Error, null);
-    }
   }
 
   //Left profile icon

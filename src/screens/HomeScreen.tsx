@@ -17,20 +17,20 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { setUser } = useUser();
 
   useEffect(() => {
-    checkCurrentUser();
-  }, []);
+    // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
+    const checkCurrentUser = async () => {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        console.log("User is logged in");
+        setUser(user);
+        navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+      } catch {
+        console.log("No user is logged in");
+      }
+    };
 
-  // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
-  const checkCurrentUser = async () => {
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      console.log("User is logged in");
-      setUser(user);
-      navigation.navigate("DrawerNav", { screen: "MyOrgs" });
-    } catch (error) {
-      console.log("No user is logged in");
-    }
-  };
+    checkCurrentUser();
+  }, [navigation, setUser]);
 
   return (
     <View style={styles.container}>

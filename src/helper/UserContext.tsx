@@ -17,20 +17,20 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   // When the user and org are set, get the user's organization object
   useEffect(() => {
+    // uses datastore to query the orgUserStorage from org and user
+    const getOrgUserStorage = async () => {
+      if (!org || !user) return;
+      const orgUser = await DataStore.query(OrgUserStorage, (c) =>
+        c.and((c) => [
+          c.organization.name.eq(org.name),
+          c.user.userId.eq(user.attributes.sub),
+        ]),
+      );
+      setOrgUserStorage(orgUser[0]);
+    };
+
     getOrgUserStorage();
   }, [user, org]);
-
-  // uses datastore to query the orgUserStorage from org and user
-  const getOrgUserStorage = async () => {
-    if (!org || !user) return;
-    const orgUser = await DataStore.query(OrgUserStorage, (c) =>
-      c.and((c) => [
-        c.organization.name.eq(org.name),
-        c.user.userId.eq(user.attributes.sub),
-      ]),
-    );
-    setOrgUserStorage(orgUser[0]);
-  };
 
   // cleans up the context upon signing out
   const resetContext = () => {
