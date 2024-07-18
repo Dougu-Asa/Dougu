@@ -1,9 +1,17 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Dimensions } from "react-native";
 import EquipmentItem from "./EquipmentItem";
+import { EquipmentObj } from "../../types/ModelTypes";
 
-function UserEquipment({ list, name }) {
+/* 
+  Displays a user's equipment in a horizontal scroll view
+  this represents one row from TeamEquipment
+  @param list: list of equipment
+  @param name: name of the user
+  @returns a view with the user's equipment
+*/
+function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
   return (
     <View style={styles.userContainer}>
       <Text style={styles.scrollText}>{name}</Text>
@@ -14,8 +22,8 @@ function UserEquipment({ list, name }) {
       >
         <View style={styles.scrollRow}>
           <View style={styles.scrollTop}>
-            {list.map((item, index) => (
-              <EquipmentItem key={item.label} item={item} />
+            {list.map((item) => (
+              <EquipmentItem key={item.label} item={item} count={item.count} />
             ))}
           </View>
         </View>
@@ -46,7 +54,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     marginHorizontal: 20,
     minWidth: Dimensions.get("window").width,
-    borderWidthTop: 1,
   },
   scrollText: {
     height: 40,

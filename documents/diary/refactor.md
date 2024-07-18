@@ -87,6 +87,8 @@ c.and((c) => [
 ```
 isn't always enough, and that you may still need to specify USER or STORAGE as storages are created using the user's ID. I don't think this is the best approach, and a future refactor may be to change it from OrgUserStorage -> OrgUser and OrgStorage. I originally wanted to keep Users and Storages together to minimize API calls, but I think it would be cleaner overall to separate them, especially with the current confusion and the fact that user's of the app shouldn't be the same as a storage location anyway.
 
+Today if inished refactoring all screens in DrawerNav.
+
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
 [Example](https://docs.expo.dev/modules/native-module-tutorial/)

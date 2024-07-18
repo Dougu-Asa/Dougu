@@ -11,6 +11,10 @@ import { useUser } from "../../helper/UserContext";
 import { processEquipmentData } from "../../helper/ProcessEquipment";
 import type { EquipmentObj } from "../../types/ModelTypes";
 
+/*
+  Screen for viewing all equipment in the organization
+  Groups equipment by the orgUserStorage it is assigned to
+*/
 function TeamEquipmentScreen() {
   const [orgEquipment, setOrgEquipment] = useState<EquipmentObj[][]>([]);
   const [orgUserStorages, setOrgUserStorages] = useState<
@@ -29,6 +33,7 @@ function TeamEquipmentScreen() {
         name: orgUserStorage.name,
       }));
       setOrgUserStorages(orgUserStorageNames);
+      // for each orgUserStorage, get the equipment assigned to it
       let equipment = [];
       for (let i = 0; i < orgUserStorages.length; i++) {
         const userEquipment = await DataStore.query(Equipment, (c) =>
@@ -60,7 +65,7 @@ function TeamEquipmentScreen() {
           <UserEquipment
             key={index}
             list={equipmentRow}
-            name={orgUserStorages[index] ? orgUserStorages[index].name : null}
+            name={orgUserStorages[index].name}
           />
         ))}
       </ScrollView>
