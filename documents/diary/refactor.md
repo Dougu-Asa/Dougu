@@ -89,6 +89,8 @@ isn't always enough, and that you may still need to specify USER or STORAGE as s
 
 Today if inished refactoring all screens in DrawerNav.
 
+Currently working on an issue with CurrMembersDropdown and SwapEquipment, stemming from a problem with SwapUser.current reference. They seem to be misaligned, and the CurrMembersDropdown is unmounting at different times than SwapEquipment, leading to issues.
+
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
 [Example](https://docs.expo.dev/modules/native-module-tutorial/)

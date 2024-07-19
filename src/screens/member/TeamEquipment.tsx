@@ -8,7 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { OrgUserStorage, Equipment } from "../../models";
 import UserEquipment from "../../components/member/UserEquipment";
 import { useUser } from "../../helper/UserContext";
-import { processEquipmentData } from "../../helper/ProcessEquipment";
+import { getEquipment } from "../../helper/DataStoreUtils";
 import type { EquipmentObj } from "../../types/ModelTypes";
 
 /*
@@ -36,11 +36,8 @@ function TeamEquipmentScreen() {
       // for each orgUserStorage, get the equipment assigned to it
       let equipment = [];
       for (let i = 0; i < orgUserStorages.length; i++) {
-        const userEquipment = await DataStore.query(Equipment, (c) =>
-          c.assignedTo.id.eq(orgUserStorages[i].id),
-        );
-        const processedEquipment = processEquipmentData(userEquipment);
-        equipment.push(processedEquipment);
+        const processedEquipment = await getEquipment(orgUserStorages[i].id);
+        equipment.push(processedEquipment ? processedEquipment : []);
       }
       setOrgEquipment(equipment);
     }

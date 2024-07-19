@@ -2,25 +2,23 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, Animated, StyleSheet } from "react-native";
 import { Dimensions, Alert } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useIsFocused } from "@react-navigation/native";
 import { DataStore } from "aws-amplify";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // project imports
-import { Equipment, OrgUserStorage, UserOrStorage } from "../../models";
+import { Equipment, OrgUserStorage } from "../../models";
 import EquipmentItem from "../../components/member/EquipmentItem";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
-import { processEquipmentData } from "../../helper/ProcessEquipment";
-import { handleError } from "../../helper/Error";
+import { getEquipment } from "../../helper/DataStoreUtils";
 
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
-  const isFocused = useIsFocused();
   const { user, orgUserStorage } = useUser();
   let swapUser = useRef(null);
+  const [resetValue, setResetValue] = useState(false);
 
   let [listOne, setListOne] = useState([]);
   let [listTwo, setListTwo] = useState([]);
@@ -37,8 +35,13 @@ const SwapEquipmentScreen = () => {
       },
     );
 
-    return () => subscription.unsubscribe();
-  }, [getEquipment, user, isFocused, orgUserStorage, setEquipment]);
+    // on unmount clear the subscription, and clear the swap user and dropdown
+    return () => {
+      subscription.unsubscribe();
+      swapUser.current = null;
+      setResetValue(true);
+    };
+  }, [user, orgUserStorage, setEquipment]);
 
   // gets and sets the equipment for the current user and the swap user
   const setEquipment = useCallback(async () => {
@@ -47,22 +50,10 @@ const SwapEquipmentScreen = () => {
     if (swapUser.current != null) {
       const equipmentTwo = await getEquipment(swapUser.current.id);
       setListTwo(equipmentTwo);
+    } else {
+      setListTwo([]);
     }
-  }, [getEquipment, orgUserStorage]);
-
-  // get the equipment for a user by OrgUserStorage id
-  const getEquipment = useCallback(async (id) => {
-    try {
-      const orgUserStorage = await DataStore.query(OrgUserStorage, id);
-      const equipment = await DataStore.query(Equipment, (c) =>
-        c.assignedTo.id.eq(orgUserStorage.id),
-      );
-      const equipmentData = processEquipmentData(equipment);
-      return equipmentData;
-    } catch (e) {
-      handleError("GetEquipment", e, null);
-    }
-  }, []);
+  }, [orgUserStorage]);
 
   // we build an absolute overlay to mirror the movements
   // of dragging because we can't drag between scroll views
@@ -191,8 +182,8 @@ const SwapEquipmentScreen = () => {
 
   // get selected user equipment
   const handleSet = (inputUser) => {
-    if (inputUser == null) return;
     swapUser.current = inputUser;
+    setResetValue(false);
     setEquipment();
   };
 
@@ -226,7 +217,11 @@ const SwapEquipmentScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <CurrMembersDropdown setUser={handleSet} isCreate={false} />
+      <CurrMembersDropdown
+        setUser={handleSet}
+        isCreate={false}
+        resetValue={resetValue}
+      />
       <ScrollView
         horizontal={true}
         onScroll={handleScrollBottom}

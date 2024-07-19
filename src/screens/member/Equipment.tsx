@@ -8,41 +8,44 @@ import { Equipment } from "../../models";
 import EquipmentItem from "../../components/member/EquipmentItem";
 import { useUser } from "../../helper/UserContext";
 import type { EquipmentObj } from "../../types/ModelTypes";
-import { processEquipmentData } from "../../helper/ProcessEquipment";
+import { getEquipment } from "../../helper/DataStoreUtils";
 
+/*
+  Screen for viewing all equipment assigned to the current user
+*/
 const EquipmentScreen = () => {
   const [equipment, setEquipment] = useState<EquipmentObj[][]>([[]]);
   const { user, org, orgUserStorage } = useUser();
 
   useEffect(() => {
-    async function getEquipment() {
-      const equipment = await DataStore.query(Equipment, (c) =>
-        c.assignedTo.id.eq(orgUserStorage!.id),
+    // Function to chunk the equipment array into subarrays of size items each
+    const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
+      equipment.reduce(
+        (acc, _, i) =>
+          i % size ? acc : [...acc, equipment.slice(i, i + size)],
+        [] as EquipmentObj[][],
       );
-      const equipmentData = processEquipmentData(equipment);
-      const groupedEquipment = chunkedEquipment(equipmentData, 3);
-      setEquipment(groupedEquipment);
-    }
 
+    // Get the equipment assigned to the current user and set the state
+    const setEquipmentState = async () => {
+      const equipment = await getEquipment(orgUserStorage!.id);
+      if (!equipment) return;
+      setEquipment(chunkedEquipment(equipment, 3));
+    };
+
+    // Observe the Equipment table for changes and update the state
     const subscription = DataStore.observeQuery(Equipment).subscribe(
       (snapshot) => {
         const { items, isSynced } = snapshot;
         console.log(
           `myEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`,
         );
-        getEquipment();
+        setEquipmentState();
       },
     );
 
     return () => subscription.unsubscribe();
   }, [org, orgUserStorage, user]);
-
-  // Function to chunk the equipment array into subarrays of size items each
-  const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
-    equipment.reduce(
-      (acc, _, i) => (i % size ? acc : [...acc, equipment.slice(i, i + size)]),
-      [] as EquipmentObj[][],
-    );
 
   return (
     <View style={{ backgroundColor: "white", width: "100%", height: "100%" }}>
