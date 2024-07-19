@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, Animated, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { Dimensions, Alert } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { DataStore } from "aws-amplify";
@@ -7,12 +7,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // project imports
 import { Equipment, OrgUserStorage } from "../../models";
-import EquipmentItem from "../../components/member/EquipmentItem";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
 import { getEquipment } from "../../helper/DataStoreUtils";
+import DraggingOverlay from "../../components/member/DraggingOverlay";
 
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
@@ -55,22 +55,20 @@ const SwapEquipmentScreen = () => {
     }
   }, [orgUserStorage]);
 
+  const overlayRef = useRef();
   // we build an absolute overlay to mirror the movements
   // of dragging because we can't drag between scroll views
   const startPosition = useRef(null);
-  const [draggingItem, setDraggingItem] = useState(null);
-  const [draggingOffset, setDraggingOffset] = useState({ x: 0, y: 0 });
   const initialTouchPoint = useRef({ x: 0, y: 0 });
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
   let rowHeight = useRef(0);
-  const [floatingPosition, setFloatingPosition] = useState({ top: 0, left: 0 });
   let scrollOffsetXTop = useRef(0);
   let scrollOffsetXBottom = useRef(0);
 
   // we need to know the size of our container
   const onLayout = (event) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
+    const { height } = event.nativeEvent.layout;
     halfLine.current = height + 120 + headerHeight;
     rowHeight.current = height;
   };
@@ -87,8 +85,8 @@ const SwapEquipmentScreen = () => {
   // we need to know where the equipment we start dragging is located
   // and also calculate the offsets
   const handleStart = (item, gestureState, initialPosition) => {
-    setDraggingItem(item);
-    setDraggingOffset({ x: 0, y: 0 });
+    overlayRef.current.setDraggingItem(item);
+    overlayRef.current.setDraggingOffset({ x: 0, y: 0 });
     const topOrBottom = gestureState.y0 > halfLine.current ? 2 : 1;
     startPosition.current = topOrBottom;
     let posy =
@@ -100,7 +98,7 @@ const SwapEquipmentScreen = () => {
         ? initialPosition.x - scrollOffsetXBottom.current
         : initialPosition.x - scrollOffsetXTop.current;
     posx += 20; // due to margin offset
-    setFloatingPosition({ top: posy, left: posx });
+    overlayRef.current.setFloatingPosition({ top: posy, left: posx });
     initialTouchPoint.current = { x: gestureState.x0, y: gestureState.y0 };
   };
 
@@ -108,12 +106,12 @@ const SwapEquipmentScreen = () => {
   const handleMove = (gestureState) => {
     const dx = gestureState.moveX - initialTouchPoint.current.x;
     const dy = gestureState.moveY - initialTouchPoint.current.y;
-    setDraggingOffset({ x: dx, y: dy });
+    overlayRef.current.setDraggingOffset({ x: dx, y: dy });
   };
 
   // we need to know who we dropped the equipment to
   const handleDrop = async (item, dropPositionY) => {
-    setDraggingItem(null);
+    overlayRef.current.setDraggingItem(null);
     if (dropPositionY > halfLine.current) {
       if (startPosition.current == 2) return;
       // drag from top to bottom
@@ -177,7 +175,7 @@ const SwapEquipmentScreen = () => {
 
   // if the scrollbar interferes with drag
   const handleTerminate = () => {
-    setDraggingItem(null);
+    overlayRef.current.setDraggingItem(null);
   };
 
   // get selected user equipment
@@ -243,32 +241,7 @@ const SwapEquipmentScreen = () => {
           </View>
         </View>
       </ScrollView>
-      {draggingItem && (
-        <Animated.View
-          style={[
-            styles.floatingItem,
-            {
-              transform: [
-                { translateX: draggingOffset.x },
-                { translateY: draggingOffset.y },
-              ],
-            },
-            { top: floatingPosition.top, left: floatingPosition.left },
-          ]}
-        >
-          <EquipmentItem item={draggingItem} count={1} />
-        </Animated.View>
-      )}
-      {draggingItem != null && draggingItem.count > 1 ? (
-        <Animated.View
-          style={[
-            styles.floatingItem,
-            { top: floatingPosition.top, left: floatingPosition.left },
-          ]}
-        >
-          <EquipmentItem item={draggingItem} count={draggingItem.count - 1} />
-        </Animated.View>
-      ) : null}
+      <DraggingOverlay ref={overlayRef} />
     </View>
   );
 };
@@ -313,27 +286,5 @@ const styles = StyleSheet.create({
   scrollBottom: {
     flex: 1,
     flexDirection: "row",
-  },
-  floatingItem: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 100, // Make sure the floating item is rendered above everything else
-  },
-  circle: {
-    backgroundColor: "white",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    right: 5,
-    bottom: 5,
-    borderWidth: 1,
-  },
-  count: {
-    fontSize: 10,
-    fontWeight: "bold",
   },
 });
