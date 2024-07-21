@@ -47,7 +47,6 @@ function DrawerNav({ navigation }: DrawerNavProps) {
         if (org != null) {
           const orgJSON = JSON.parse(org);
           setOrg(orgJSON);
-          //navigation.navigate('MemberTabs');
           navigation.navigate("DrawerNav", {
             screen: "MemberTabs",
             params: {

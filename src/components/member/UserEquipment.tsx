@@ -1,9 +1,17 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Dimensions } from "react-native";
 import EquipmentItem from "./EquipmentItem";
+import { EquipmentObj } from "../../types/ModelTypes";
 
-function UserEquipment({ list, name }) {
+/* 
+  Displays a user's equipment in a horizontal scroll view
+  this represents one row from TeamEquipment
+  @param list: list of equipment
+  @param name: name of the user
+  @returns a view with the user's equipment
+*/
+function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
   return (
     <View style={styles.userContainer}>
       <Text style={styles.scrollText}>{name}</Text>
@@ -12,10 +20,16 @@ function UserEquipment({ list, name }) {
         decelerationRate={"normal"}
         showsHorizontalScrollIndicator={false}
       >
-        <View style={styles.scrollRow}>
-          <View style={styles.scrollTop}>
-            {list.map((item, index) => (
-              <EquipmentItem key={item.label} item={item} />
+        <View style={styles.scrollTable}>
+          <View style={styles.scrollRow}>
+            {list.map((item) => (
+              <View key={item.label} style={styles.equipmentWrapper}>
+                <EquipmentItem
+                  key={item.label}
+                  item={item}
+                  count={item.count}
+                />
+              </View>
             ))}
           </View>
         </View>
@@ -27,6 +41,9 @@ function UserEquipment({ list, name }) {
 export default UserEquipment;
 
 const styles = StyleSheet.create({
+  equipmentWrapper: {
+    marginHorizontal: 8,
+  },
   userContainer: {
     minHeight: 200,
     backgroundColor: "white",
@@ -43,10 +60,13 @@ const styles = StyleSheet.create({
   },
   scrollRow: {
     flex: 1,
+    flexDirection: "row",
+  },
+  scrollTable: {
+    flex: 1,
     flexDirection: "column",
     marginHorizontal: 20,
     minWidth: Dimensions.get("window").width,
-    borderWidthTop: 1,
   },
   scrollText: {
     height: 40,
@@ -55,9 +75,5 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderTopColor: "grey",
     borderTopWidth: 0.5,
-  },
-  scrollTop: {
-    flex: 1,
-    flexDirection: "row",
   },
 });

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
-import { OrgUserStorage } from "../models";
+import { OrgUserStorage, UserOrStorage } from "../models";
 import { OrgType, UserType, UserContextType } from "../types/ContextTypes";
 
 /* Context that distributes the user object, organization object, and the user's organization object
@@ -14,6 +14,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [orgUserStorage, setOrgUserStorage] = useState<OrgUserStorage | null>(
     null,
   );
+  const [contextLoading, setIsContextLoading] = useState<boolean>(true);
 
   // When the user and org are set, get the user's organization object
   useEffect(() => {
@@ -24,9 +25,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         c.and((c) => [
           c.organization.name.eq(org.name),
           c.user.userId.eq(user.attributes.sub),
+          c.type.eq(UserOrStorage.USER),
         ]),
       );
       setOrgUserStorage(orgUser[0]);
+      setIsContextLoading(false);
     };
 
     getOrgUserStorage();
@@ -37,11 +40,20 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setOrg(null);
     setOrgUserStorage(null);
+    setIsContextLoading(true);
   };
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, org, setOrg, orgUserStorage, resetContext }}
+      value={{
+        user,
+        setUser,
+        org,
+        setOrg,
+        orgUserStorage,
+        contextLoading,
+        resetContext,
+      }}
     >
       {children}
     </UserContext.Provider>

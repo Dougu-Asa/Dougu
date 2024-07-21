@@ -78,6 +78,26 @@ As static checkers for code style and quality, I decided to add Eslint and Prett
 # Typescript
 I learned that composite screen props are necessary for nested navigators if you want to navigation.navigate to a screen only in the parent navigator not directly accessible from your current navigator. If you don't need to access the parent, don't use composite.
 
+I noticed that when querying for an OrgUserStorage, the requirements
+```
+c.and((c) => [
+          c.organization.name.eq(org.name),
+          c.user.userId.eq(user.attributes.sub),
+        ]),
+```
+isn't always enough, and that you may still need to specify USER or STORAGE as storages are created using the user's ID. I don't think this is the best approach, and a future refactor may be to change it from OrgUserStorage -> OrgUser and OrgStorage. I originally wanted to keep Users and Storages together to minimize API calls, but I think it would be cleaner overall to separate them, especially with the current confusion and the fact that user's of the app shouldn't be the same as a storage location anyway.
+
+Today if inished refactoring all screens in DrawerNav.
+
+Currently working on an issue with CurrMembersDropdown and SwapEquipment, stemming from a problem with SwapUser.current reference. They seem to be misaligned, and the CurrMembersDropdown is unmounting at different times than SwapEquipment, leading to issues.
+
+# 7-19-24 to 7-21-24
+## Swap Equipment
+Swap Equipment is the most difficult screen to break down, simply because it relies on handling all the equipment and overlay calculations on the same screen. My main refactoring for now is just to setup a dragging overlay component and try to simplify the code, in the interest of not wasting all my time trying to find a perfect solution.
+
+After finally refactoring the code, I realized the previous problem I had with the equipment being dragged despite not being touched was that the AnimatedView was getting too large, so I had to hardcode some values. Additionally, I now believe it would be better to do dragging functionality by first having the user hold on a circle for 1-2 seconds before it is then dragged, similar to apps on a phone. That should make horizontal scrolling much smoother.
+
+
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
 [Example](https://docs.expo.dev/modules/native-module-tutorial/)

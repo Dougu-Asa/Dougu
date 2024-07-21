@@ -22,7 +22,7 @@ Sentry.init({
   _experiments: {
     profilesSampleRate: 1.0,
   },
-  // temporary disable for testing
+  // temporary disable for development
   enabled: false,
 });
 

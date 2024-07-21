@@ -1,10 +1,10 @@
 import type { NavigationProp } from "@react-navigation/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { CompositeScreenProps } from "@react-navigation/native";
 import {
   DrawerScreenProps,
   DrawerNavigationProp,
 } from "@react-navigation/drawer";
+import type { CompositeScreenProps } from "@react-navigation/native";
 
 import { RootStackParamList, DrawerParamList } from "./NavigatorTypes";
 
@@ -50,7 +50,7 @@ export type AccessCodeScreenProps = DrawerScreenProps<
 export type MyOrgsScreenProps = DrawerScreenProps<DrawerParamList, "MyOrgs">;
 
 // use compositeScreenProps if you need to access screens from multiple navigators
-/*export type JoinOrCreateScreenProps = CompositeScreenProps<
-  DrawerScreenProps<DrawerParamList, "JoinOrCreate">,
+export type MemberTabsScreenProps = CompositeScreenProps<
+  DrawerScreenProps<DrawerParamList, "MemberTabs">,
   NativeStackScreenProps<RootStackParamList>
->;*/
+>;

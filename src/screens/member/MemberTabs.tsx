@@ -1,27 +1,29 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { BackHandler } from "react-native";
 import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Auth } from "aws-amplify";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert, Text } from "react-native";
 
 // project imports
 import InfoScreen from "../organization/InfoScreen";
 import EquipmentScreen from "./Equipment";
 import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";
+import { useUser } from "../../helper/UserContext";
+import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
 
-function MemberTabs({ navigation }) {
-  const [currOrgName, setCurrOrgName] = React.useState("");
-  const [isManager, setIsManager] = React.useState(false);
+function MemberTabs({ navigation }: MemberTabsScreenProps) {
+  const [currOrgName, setCurrOrgName] = useState("");
+  const [isManager, setIsManager] = useState(false);
   const isFocused = useIsFocused();
+  const { user, org, orgUserStorage, contextLoading, resetContext } = useUser();
 
+  // set the header title and right icon, a crown is shown if the user is the manager
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: currOrgName,
@@ -35,32 +37,40 @@ function MemberTabs({ navigation }) {
               style={{ padding: 5 }}
             />
           );
-        } else return <></>;
+        } else return null;
       },
     });
   }, [navigation, currOrgName, isManager]);
 
+  // check if the user is the manager of the organization
+  // after verifying the user, org, and orgUserStorage are not null
   useEffect(() => {
-    if (isFocused) {
-      checkUserOrg();
+    async function checkUserOrg() {
+      if (!contextLoading && (!user || !org || !orgUserStorage)) {
+        Alert.alert("Error", "User, org, or orgUserStorage is null.");
+        navigation.navigate("Home");
+        resetContext();
+        return;
+      }
+      setCurrOrgName(org!.name);
+      if (org!.organizationManagerUserId === user!.attributes.sub) {
+        setIsManager(true);
+      }
     }
-  }, [isFocused]);
 
-  async function checkUserOrg() {
-    setIsManager(false);
-    const user = await Auth.currentAuthenticatedUser();
-    const key = user.attributes.sub + " currOrg";
-    const org = await AsyncStorage.getItem(key);
-    if (org == null) {
-      navigation.navigate("JoinOrCreate");
-      return;
-    }
-    const orgJSON = JSON.parse(org);
-    setCurrOrgName(orgJSON.name);
-    //organizationManagerUserId
-    if (orgJSON.organizationManagerUserId == user.attributes.sub) {
-      setIsManager(true);
-    }
+    if (isFocused) checkUserOrg();
+  }, [
+    org,
+    user,
+    isFocused,
+    orgUserStorage,
+    navigation,
+    resetContext,
+    contextLoading,
+  ]);
+
+  if (contextLoading) {
+    return <Text>Syncing Org and User...</Text>;
   }
 
   return (
