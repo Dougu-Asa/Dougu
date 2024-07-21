@@ -97,6 +97,9 @@ Swap Equipment is the most difficult screen to break down, simply because it rel
 
 After finally refactoring the code, I realized the previous problem I had with the equipment being dragged despite not being touched was that the AnimatedView was getting too large, so I had to hardcode some values. Additionally, I now believe it would be better to do dragging functionality by first having the user hold on a circle for 1-2 seconds before it is then dragged, similar to apps on a phone. That should make horizontal scrolling much smoother.
 
+## Indicator
+For fun, I changed the look of the loading indicator. I chose to use the design by Hiroto Kakitani on the old Asayake Taiko website, not big reason other than nostalgia and I liked the look of it.
+
 
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  

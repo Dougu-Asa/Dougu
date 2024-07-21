@@ -6,7 +6,7 @@ import CreateEquipmentScreen from "./organization/CreateEquipmentScreen";
 import ManageEquipmentScreen from "./organization/ManageEquipment";
 import UserStorages from "./organization/UserStorages";
 import CreateStorageScreen from "./organization/CreateStorageScreen";
-import Indicator from "../components/Indicator";
+import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
 
@@ -44,7 +44,7 @@ export function RootStackNavigator() {
         <Stack.Screen name="UserStorages" component={UserStorages} />
         <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
       </Stack.Navigator>
-      {isLoading ? <Indicator /> : null}
+      {isLoading ? <SpinningIndicator /> : null}
     </>
   );
 }
