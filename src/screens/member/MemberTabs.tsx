@@ -4,7 +4,7 @@ import { useIsFocused } from "@react-navigation/native";
 import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Alert, Text } from "react-native";
+import { Alert } from "react-native";
 
 // project imports
 import InfoScreen from "../organization/InfoScreen";
@@ -13,6 +13,7 @@ import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";
 import { useUser } from "../../helper/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
+import SpinningIndicator from "../../components/SpinningIndicator";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator();
@@ -70,7 +71,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
   ]);
 
   if (contextLoading) {
-    return <Text>Syncing Org and User...</Text>;
+    return <SpinningIndicator />;
   }
 
   return (
