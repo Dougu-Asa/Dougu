@@ -1,6 +1,7 @@
+import { DataStore } from "@aws-amplify/datastore";
+
 import { Equipment } from "../models";
 import { EquipmentObj } from "../types/ModelTypes";
-import { DataStore } from "@aws-amplify/datastore";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Error";
 
@@ -8,7 +9,9 @@ import { handleError } from "./Error";
   get the equipment for a user by OrgUserStorage id
   returns an array of processed equipment objects
 */
-export const getEquipment = async (id: string) => {
+export const getEquipment = async (
+  id: string,
+): Promise<EquipmentObj[] | undefined> => {
   try {
     const orgUserStorage = await DataStore.query(OrgUserStorage, id);
     if (!orgUserStorage) throw new Error("OrgUserStorage does not exist!");
@@ -26,7 +29,7 @@ export const getEquipment = async (id: string) => {
   get duplicates and merge their counts
   using a map to count duplicates and converting to an array
 */
-export function processEquipmentData(equipment: Equipment[]) {
+export function processEquipmentData(equipment: Equipment[]): EquipmentObj[] {
   const equipmentMap = new Map<string, EquipmentObj>();
 
   equipment.forEach((equip) => {

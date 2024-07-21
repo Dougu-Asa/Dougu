@@ -73,7 +73,7 @@ const CurrMembersDropdown = ({
     }
   }, [resetValue, setUser]);
 
-  async function handleChangeUser(value: OrgUserStorage | null) {
+  async function handleChangeUser(value: OrgUserStorage) {
     setUser(value);
   }
 

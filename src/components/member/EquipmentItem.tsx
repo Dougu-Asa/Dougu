@@ -1,9 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import { EquipmentObj } from "../../types/ModelTypes";
 
+/*
+  EquipmentItem is a component that displays an equipment object with a label and
+  a count. It is used in the DraggableEquipment component to display the equipment
+  objects that can be dragged around the screen.
+*/
 export default function EquipmentItem({
   item,
   count,
@@ -27,8 +31,7 @@ export default function EquipmentItem({
 const equipment = StyleSheet.create({
   container: {
     alignItems: "center",
-    maxWidth: Dimensions.get("window").width / 4,
-    marginHorizontal: 8,
+    maxWidth: 100,
   },
   equipment: {
     backgroundColor: "skyblue",

@@ -1,9 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  PanResponderGestureState,
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
 import { Dimensions, Alert } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { DataStore } from "aws-amplify";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 // project imports
 import { Equipment, OrgUserStorage } from "../../models";
@@ -13,15 +21,37 @@ import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
 import { getEquipment } from "../../helper/DataStoreUtils";
 import DraggingOverlay from "../../components/member/DraggingOverlay";
+import { handleError } from "../../helper/Error";
+import {
+  EquipmentObj,
+  DraggingOverlayHandle,
+  Position,
+  TopOrBottom,
+} from "../../types/ModelTypes";
 
+/*
+  Screen for swapping equipment between the current user and another user
+*/
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
   const { user, orgUserStorage } = useUser();
-  let swapUser = useRef(null);
+  let swapUser = useRef<OrgUserStorage | null>(null);
   const [resetValue, setResetValue] = useState(false);
+  const overlayRef = useRef<DraggingOverlayHandle>(null);
+  let [listOne, setListOne] = useState<EquipmentObj[]>([]);
+  let [listTwo, setListTwo] = useState<EquipmentObj[]>([]);
 
-  let [listOne, setListOne] = useState([]);
-  let [listTwo, setListTwo] = useState([]);
+  // gets and sets the equipment for the current user and the swap user
+  const setEquipment = useCallback(async () => {
+    const equipmentOne = await getEquipment(orgUserStorage!.id);
+    setListOne(equipmentOne ? equipmentOne : []);
+    if (swapUser.current != null) {
+      const equipmentTwo = await getEquipment(swapUser.current.id);
+      setListTwo(equipmentTwo ? equipmentTwo : []);
+    } else {
+      setListTwo([]);
+    }
+  }, [orgUserStorage]);
 
   // subscribe to changes in equipment
   useEffect(() => {
@@ -43,22 +73,43 @@ const SwapEquipmentScreen = () => {
     };
   }, [user, orgUserStorage, setEquipment]);
 
-  // gets and sets the equipment for the current user and the swap user
-  const setEquipment = useCallback(async () => {
-    const equipmentOne = await getEquipment(orgUserStorage.id);
-    setListOne(equipmentOne);
-    if (swapUser.current != null) {
-      const equipmentTwo = await getEquipment(swapUser.current.id);
-      setListTwo(equipmentTwo);
-    } else {
-      setListTwo([]);
+  // reassign the equipment to the new OrgUserStorage by the id passed in
+  async function reassignEquipment(item: EquipmentObj, assignedTo: string) {
+    try {
+      setIsLoading(true);
+      const swapOrgUserStorage = await DataStore.query(
+        OrgUserStorage,
+        assignedTo,
+      );
+      const equip = await DataStore.query(Equipment, item.id);
+      if (!swapOrgUserStorage)
+        throw new Error("OrgUserStorage does not exist!");
+      if (!equip) throw new Error("Equipment does not exist!");
+      await DataStore.save(
+        Equipment.copyOf(equip, (updated) => {
+          updated.assignedTo = swapOrgUserStorage;
+          updated.lastUpdatedDate = new Date().toISOString();
+        }),
+      );
+      setIsLoading(false);
+      Alert.alert("Swap Successful!");
+    } catch (e) {
+      handleError("Swap Equipment", e as Error, setIsLoading);
     }
-  }, [orgUserStorage]);
+  }
 
-  const overlayRef = useRef();
-  // we build an absolute overlay to mirror the movements
-  // of dragging because we can't drag between scroll views
-  const startPosition = useRef(null);
+  // get selected user equipment
+  const handleSet = (inputUser: OrgUserStorage | null) => {
+    swapUser.current = inputUser;
+    setResetValue(false);
+    setEquipment();
+  };
+
+  /*
+    this section focuses on handling draggin and dropping equipment
+    as well as the overlay calculations
+  */
+  const startPosition = useRef<TopOrBottom | null>(null);
   const initialTouchPoint = useRef({ x: 0, y: 0 });
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
@@ -67,124 +118,71 @@ const SwapEquipmentScreen = () => {
   let scrollOffsetXBottom = useRef(0);
 
   // we need to know the size of our container
-  const onLayout = (event) => {
+  const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
     halfLine.current = height + 120 + headerHeight;
     rowHeight.current = height;
   };
 
   // these account for the scroll view's offset
-  const handleScrollTop = (event) => {
+  const handleScrollTop = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollOffsetXTop.current = event.nativeEvent.contentOffset.x;
   };
 
-  const handleScrollBottom = (event) => {
+  const handleScrollBottom = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
     scrollOffsetXBottom.current = event.nativeEvent.contentOffset.x;
   };
 
   // we need to know where the equipment we start dragging is located
-  // and also calculate the offsets
-  const handleStart = (item, gestureState, initialPosition) => {
-    overlayRef.current.setDraggingItem(item);
-    overlayRef.current.setDraggingOffset({ x: 0, y: 0 });
-    const topOrBottom = gestureState.y0 > halfLine.current ? 2 : 1;
+  // and also calculate the offsets of the dragging equipment
+  const handleStart = (
+    item: EquipmentObj,
+    gestureState: PanResponderGestureState,
+    initialPosition: Position | null,
+  ) => {
+    overlayRef.current!.setDraggingItem(item);
+    overlayRef.current!.setDraggingOffset({ dx: 0, dy: 0 });
+    const topOrBottom = gestureState.y0 > halfLine.current ? "bottom" : "top";
     startPosition.current = topOrBottom;
+    const infoAndHeader = 120; // 80 for info, 40 for header
     let posy =
-      topOrBottom == 2
-        ? initialPosition.y + rowHeight.current + 160
-        : initialPosition.y + 120; // due to header offset
+      topOrBottom === "top"
+        ? initialPosition!.y + infoAndHeader // due to header offset
+        : initialPosition!.y + rowHeight.current + infoAndHeader + 40; // 40 for dropdown
     let posx =
-      topOrBottom == 2
-        ? initialPosition.x - scrollOffsetXBottom.current
-        : initialPosition.x - scrollOffsetXTop.current;
+      topOrBottom === "top"
+        ? initialPosition!.x - scrollOffsetXTop.current
+        : initialPosition!.x - scrollOffsetXBottom.current;
     posx += 20; // due to margin offset
-    overlayRef.current.setFloatingPosition({ top: posy, left: posx });
+    overlayRef.current!.setStartPosition({ top: posy, left: posx });
     initialTouchPoint.current = { x: gestureState.x0, y: gestureState.y0 };
   };
 
   // we need to know how much the equipment has been moved
-  const handleMove = (gestureState) => {
+  const handleMove = (gestureState: PanResponderGestureState) => {
     const dx = gestureState.moveX - initialTouchPoint.current.x;
     const dy = gestureState.moveY - initialTouchPoint.current.y;
-    overlayRef.current.setDraggingOffset({ x: dx, y: dy });
+    overlayRef.current!.setDraggingOffset({ dx: dx, dy: dy });
   };
 
   // we need to know who we dropped the equipment to
-  const handleDrop = async (item, dropPositionY) => {
-    overlayRef.current.setDraggingItem(null);
-    if (dropPositionY > halfLine.current) {
-      if (startPosition.current == 2) return;
-      // drag from top to bottom
-      console.log("user -> swap");
-      if (swapUser.current == null) {
-        Alert.alert("Please select a user to swap equipment with!", [
-          { text: "OK" },
-        ]);
-        return;
-      }
-      reassignEquipment(item, swapUser.current.id);
-    } else {
-      if (startPosition.current == 1) return;
-      // drag from bottom to top
-      console.log("swap -> user");
-      reassignEquipment(item, user.attributes.sub);
-    }
+  const handleDrop = async (item: EquipmentObj, dropPositionY: number) => {
+    overlayRef.current!.setDraggingItem(null);
+    const assignedTo = dropPositionY > halfLine.current ? "bottom" : "top";
+    if (swapUser.current == null) return;
+    // if the equipment is dropped in the same position
+    if (assignedTo === startPosition.current) return;
+    const swapId =
+      assignedTo === "bottom" ? swapUser.current.id : orgUserStorage!.id;
+    reassignEquipment(item, swapId);
   };
-
-  // reassign the equipment
-  async function reassignEquipment(item, assignedTo) {
-    try {
-      setIsLoading(true);
-      const toCurrentUser = user.attributes.sub == assignedTo ? true : false;
-      const key = user.attributes.sub + " currOrg";
-      const org = await AsyncStorage.getItem(key);
-      const orgJSON = JSON.parse(org);
-      let orgUserStorage;
-      // current user
-      if (toCurrentUser) {
-        orgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
-          c.and((c) => [
-            c.organization.name.eq(orgJSON.name),
-            c.user.userId.eq(user.attributes.sub),
-          ]),
-        );
-        orgUserStorage = orgUserStorage[0];
-      } else {
-        orgUserStorage = await DataStore.query(OrgUserStorage, assignedTo);
-      }
-      const equip = await DataStore.query(Equipment, item.id);
-      if (orgUserStorage == null || orgUserStorage == [] || equip == null) {
-        console.log("orgUserStorage: ", orgUserStorage);
-        console.log("equip: ", equip);
-        throw new Error("User or Equipment not found!");
-      }
-      const newEquip = await DataStore.save(
-        Equipment.copyOf(equip, (updated) => {
-          updated.assignedTo = orgUserStorage;
-          updated.lastUpdatedDate = new Date().toISOString();
-        }),
-      );
-      setIsLoading(false);
-      Alert.alert("Equipment swapped!");
-    } catch (e) {
-      console.log(e);
-      setIsLoading(false);
-      Alert.alert("Swap Error!", e.message, [{ text: "OK" }]);
-    }
-  }
 
   // if the scrollbar interferes with drag
   const handleTerminate = () => {
-    overlayRef.current.setDraggingItem(null);
+    overlayRef.current!.setDraggingItem(null);
   };
-
-  // get selected user equipment
-  const handleSet = (inputUser) => {
-    swapUser.current = inputUser;
-    setResetValue(false);
-    setEquipment();
-  };
-
   return (
     <View style={styles.scrollContainer}>
       <View style={styles.info}>
@@ -201,7 +199,7 @@ const SwapEquipmentScreen = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View style={styles.scrollRow} onLayout={onLayout}>
-          <View style={styles.scrollTop}>
+          <View style={styles.scroll}>
             {listOne.map((item) => (
               <DraggableEquipment
                 key={item.id}
@@ -227,7 +225,7 @@ const SwapEquipmentScreen = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View style={styles.scrollRow}>
-          <View style={styles.scrollBottom}>
+          <View style={styles.scroll}>
             {listTwo.map((item) => (
               <DraggableEquipment
                 key={item.id}
@@ -269,7 +267,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     marginHorizontal: 20,
     minWidth: Dimensions.get("window").width,
-    borderWidthTop: 1,
   },
   scrollText: {
     height: 40,
@@ -279,12 +276,11 @@ const styles = StyleSheet.create({
     borderTopColor: "grey",
     borderTopWidth: 0.5,
   },
-  scrollTop: {
+  scroll: {
     flex: 1,
     flexDirection: "row",
   },
-  scrollBottom: {
-    flex: 1,
-    flexDirection: "row",
+  item: {
+    margin: 5,
   },
 });

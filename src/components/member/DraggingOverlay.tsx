@@ -2,17 +2,35 @@ import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { Animated, StyleSheet } from "react-native";
 
 import EquipmentItem from "./EquipmentItem";
+import {
+  DraggingOffset,
+  DraggingOverlayHandle,
+  EquipmentObj,
+  StartPosition,
+} from "../../types/ModelTypes";
 
-const DraggingOverlay = forwardRef((props, ref) => {
+/*
+  DraggingOverlay is a component that displays the equipment object being dragged
+  around the screen. It uses the Animated API to move the equipment object.
+  It is used in the SwapEquipment screen to overlay the dragged equipment, since
+  the equipment object gets clipped when dragged outside the ScrollView.
+*/
+const DraggingOverlay = forwardRef<DraggingOverlayHandle>((props, ref) => {
   DraggingOverlay.displayName = "DraggingOverlay";
-  const [draggingItem, setDraggingItem] = useState(null);
-  const [draggingOffset, setDraggingOffset] = useState({ x: 0, y: 0 });
-  const [floatingPosition, setFloatingPosition] = useState({ top: 0, left: 0 });
+  const [draggingItem, setDraggingItem] = useState<EquipmentObj | null>(null);
+  const [draggingOffset, setDraggingOffset] = useState<DraggingOffset>({
+    dx: 0,
+    dy: 0,
+  });
+  const [startPosition, setStartPosition] = useState<StartPosition>({
+    top: 0,
+    left: 0,
+  });
 
   useImperativeHandle(ref, () => ({
     setDraggingItem,
     setDraggingOffset,
-    setFloatingPosition,
+    setStartPosition,
   }));
 
   return (
@@ -23,11 +41,11 @@ const DraggingOverlay = forwardRef((props, ref) => {
             styles.floatingItem,
             {
               transform: [
-                { translateX: draggingOffset.x },
-                { translateY: draggingOffset.y },
+                { translateX: draggingOffset.dx },
+                { translateY: draggingOffset.dy },
               ],
             },
-            { top: floatingPosition.top, left: floatingPosition.left },
+            { top: startPosition.top, left: startPosition.left },
           ]}
         >
           <EquipmentItem item={draggingItem} count={1} />
@@ -37,7 +55,7 @@ const DraggingOverlay = forwardRef((props, ref) => {
         <Animated.View
           style={[
             styles.floatingItem,
-            { top: floatingPosition.top, left: floatingPosition.left },
+            { top: startPosition.top, left: startPosition.left },
           ]}
         >
           <EquipmentItem item={draggingItem} count={draggingItem.count - 1} />

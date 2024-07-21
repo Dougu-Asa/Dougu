@@ -91,6 +91,13 @@ Today if inished refactoring all screens in DrawerNav.
 
 Currently working on an issue with CurrMembersDropdown and SwapEquipment, stemming from a problem with SwapUser.current reference. They seem to be misaligned, and the CurrMembersDropdown is unmounting at different times than SwapEquipment, leading to issues.
 
+# 7-19-24 to 7-21-24
+## Swap Equipment
+Swap Equipment is the most difficult screen to break down, simply because it relies on handling all the equipment and overlay calculations on the same screen. My main refactoring for now is just to setup a dragging overlay component and try to simplify the code, in the interest of not wasting all my time trying to find a perfect solution.
+
+After finally refactoring the code, I realized the previous problem I had with the equipment being dragged despite not being touched was that the AnimatedView was getting too large, so I had to hardcode some values. Additionally, I now believe it would be better to do dragging functionality by first having the user hold on a circle for 1-2 seconds before it is then dragged, similar to apps on a phone. That should make horizontal scrolling much smoother.
+
+
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  
 [Example](https://docs.expo.dev/modules/native-module-tutorial/)
