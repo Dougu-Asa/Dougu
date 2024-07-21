@@ -20,10 +20,16 @@ function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
         decelerationRate={"normal"}
         showsHorizontalScrollIndicator={false}
       >
-        <View style={styles.scrollRow}>
-          <View style={styles.scrollTop}>
+        <View style={styles.scrollTable}>
+          <View style={styles.scrollRow}>
             {list.map((item) => (
-              <EquipmentItem key={item.label} item={item} count={item.count} />
+              <View key={item.label} style={styles.equipmentWrapper}>
+                <EquipmentItem
+                  key={item.label}
+                  item={item}
+                  count={item.count}
+                />
+              </View>
             ))}
           </View>
         </View>
@@ -35,6 +41,9 @@ function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
 export default UserEquipment;
 
 const styles = StyleSheet.create({
+  equipmentWrapper: {
+    marginHorizontal: 8,
+  },
   userContainer: {
     minHeight: 200,
     backgroundColor: "white",
@@ -51,6 +60,10 @@ const styles = StyleSheet.create({
   },
   scrollRow: {
     flex: 1,
+    flexDirection: "row",
+  },
+  scrollTable: {
+    flex: 1,
     flexDirection: "column",
     marginHorizontal: 20,
     minWidth: Dimensions.get("window").width,
@@ -62,9 +75,5 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderTopColor: "grey",
     borderTopWidth: 0.5,
-  },
-  scrollTop: {
-    flex: 1,
-    flexDirection: "row",
   },
 });

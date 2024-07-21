@@ -55,15 +55,9 @@ const SwapEquipmentScreen = () => {
 
   // subscribe to changes in equipment
   useEffect(() => {
-    const subscription = DataStore.observeQuery(Equipment).subscribe(
-      (snapshot) => {
-        const { items, isSynced } = snapshot;
-        console.log(
-          `Swap Equipment item count: ${items.length}, isSynced: ${isSynced}`,
-        );
-        setEquipment();
-      },
-    );
+    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
+      setEquipment();
+    });
 
     // on unmount clear the subscription, and clear the swap user and dropdown
     return () => {

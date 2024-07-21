@@ -34,32 +34,28 @@ const EquipmentScreen = () => {
     };
 
     // Observe the Equipment table for changes and update the state
-    const subscription = DataStore.observeQuery(Equipment).subscribe(
-      (snapshot) => {
-        const { items, isSynced } = snapshot;
-        console.log(
-          `myEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`,
-        );
-        setEquipmentState();
-      },
-    );
+    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
+      setEquipmentState();
+    });
 
     return () => subscription.unsubscribe();
   }, [org, orgUserStorage, user]);
 
   return (
-    <View style={{ backgroundColor: "white", width: "100%", height: "100%" }}>
+    <View style={styles.background}>
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.title}>My Equipment</Text>
           {equipment.map((group, index) => (
             <View key={index} style={styles.equipmentRow}>
               {group.map((equip) => (
-                <EquipmentItem
-                  key={equip.id}
-                  item={equip}
-                  count={equip.count}
-                />
+                <View key={equip.id} style={styles.equipmentItemContainer}>
+                  <EquipmentItem
+                    key={equip.id}
+                    item={equip}
+                    count={equip.count}
+                  />
+                </View>
               ))}
             </View>
           ))}
@@ -72,6 +68,11 @@ const EquipmentScreen = () => {
 export default EquipmentScreen;
 
 const styles = StyleSheet.create({
+  background: {
+    backgroundColor: "#fff",
+    height: "100%",
+    width: "100%",
+  },
   container: {
     width: "100%",
     height: "100%",
@@ -88,7 +89,11 @@ const styles = StyleSheet.create({
   equipmentRow: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    width: "90%", // Adjust width as needed
-    marginBottom: 20, // Adjust spacing between rows as needed
+    width: "90%",
+    marginBottom: 20,
+  },
+  equipmentItemContainer: {
+    flexBasis: "30%",
+    alignItems: "center",
   },
 });

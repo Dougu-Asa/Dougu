@@ -42,15 +42,9 @@ function TeamEquipmentScreen() {
       setOrgEquipment(equipment);
     }
 
-    const subscription = DataStore.observeQuery(Equipment).subscribe(
-      (snapshot) => {
-        const { items, isSynced } = snapshot;
-        console.log(
-          `teamEquipment [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`,
-        );
-        getOrgEquipment();
-      },
-    );
+    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
+      getOrgEquipment();
+    });
 
     return () => subscription.unsubscribe();
   }, [org]);

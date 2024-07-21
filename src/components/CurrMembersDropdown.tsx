@@ -55,11 +55,7 @@ const CurrMembersDropdown = ({
     }
 
     const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
-      (snapshot) => {
-        const { items, isSynced } = snapshot;
-        console.log(
-          `OrgUserStorage Dropdown [Snapshot] item count: ${items.length}, isSynced: ${isSynced}`,
-        );
+      () => {
         getMembers();
       },
     );
