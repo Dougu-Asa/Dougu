@@ -8,15 +8,11 @@ import { InfoScreenProps } from "../../types/ScreenTypes";
 function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgName, setOrgName] = useState("");
   const [accessCode, setAccessCode] = useState("");
-  const [isManager, setIsManager] = useState(false);
   const { user, org } = useUser();
 
   // get the accesscode, orgName, and check if the user is the manager
   useEffect(() => {
     async function getOrgInfo() {
-      if (org!.organizationManagerUserId === user!.attributes.sub) {
-        setIsManager(true);
-      }
       setOrgName(org!.name);
       setAccessCode(org!.accessCode);
     }
@@ -64,9 +60,7 @@ function InfoScreen({ navigation }: InfoScreenProps) {
       </View>
       <TouchableOpacity
         style={styles.equipmentBtn}
-        onPress={() =>
-          navigation.navigate("ManageEquipment", { isManager: isManager })
-        }
+        onPress={() => navigation.navigate("ManageEquipment")}
       >
         <Text style={styles.eBtnText}>Equipment List</Text>
       </TouchableOpacity>

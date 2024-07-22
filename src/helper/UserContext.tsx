@@ -4,8 +4,10 @@ import { DataStore } from "@aws-amplify/datastore";
 import { Organization, OrgUserStorage, UserOrStorage } from "../models";
 import { UserType, UserContextType } from "../types/ContextTypes";
 
-/* Context that distributes the user object, organization object, and the user's organization object
-    so that amplify datastore calls won't need to query for it */
+/* 
+  Context that distributes the user object, organization object, and the user's organization object
+  so that amplify datastore calls won't need to query for it 
+*/
 const UserContext = React.createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {

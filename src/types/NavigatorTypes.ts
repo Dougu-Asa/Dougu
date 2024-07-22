@@ -9,7 +9,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 export type RootStackParamList = {
   Home: undefined;
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
-  ManageEquipment: { isManager: boolean };
+  ManageEquipment: undefined;
   CreateEquipment: undefined;
   UserStorages: { tabParam: string };
   CreateStorage: undefined;

@@ -5,15 +5,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
 import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
+import { useUser } from "../../helper/UserContext";
 
-const ManageEquipmentScreen = ({
-  route,
-  navigation,
-}: ManageEquipmentScreenProps) => {
-  const { isManager } = route.params;
+const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
+  const { user, org } = useUser();
 
   const handleCreate = () => {
-    if (isManager) {
+    if (org!.organizationManagerUserId === user!.attributes.sub) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(

@@ -5,29 +5,27 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { OrgUserStorage, User } from "../../models";
+import { OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Error";
+import { useUser } from "../../helper/UserContext";
 
 function MemberRow({
   item,
   isManager,
 }: {
-  item: User | OrgUserStorage | null;
+  item: OrgUserStorage | null;
   isManager: boolean;
 }) {
   const { setIsLoading } = useLoad();
+  const { user, org } = useUser();
 
   const handleDelete = async () => {
     // delete
     try {
       setIsLoading(true);
       if (item == null) throw new Error("User/Storage not found");
-      // FIX IN FUTURE: MANAGER SHOULD BE AN ORGUSERSTORAGE
-      const orgUserStorage = await DataStore.query(
-        OrgUserStorage,
-        (item! as OrgUserStorage).id,
-      );
+      const orgUserStorage = await DataStore.query(OrgUserStorage, item.id);
       if (orgUserStorage == null) throw new Error("User/Storage not found");
       await DataStore.delete(orgUserStorage);
       setIsLoading(false);
@@ -39,7 +37,7 @@ function MemberRow({
 
   // make sure the owner wants to delete the equipment
   const handleEdit = () => {
-    if (!isManager) {
+    if (org!.organizationManagerUserId !== user!.attributes.sub) {
       Alert.alert("You must be a manager to edit users/storages");
       return;
     }
