@@ -17,6 +17,10 @@ import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Error";
 
+/*
+  Create equipment screen allows a manager to create equipment
+  and assign it to a user/storage.
+*/
 function CreateEquipmentScreen() {
   const [name, onChangeName] = useState("");
   const [quantity, onChangeQuantity] = useState<string>("");
@@ -26,29 +30,36 @@ function CreateEquipmentScreen() {
   const { setIsLoading } = useLoad();
   const { org } = useUser();
 
+  // ensure all input values are valid
+  function verifyValues() {
+    // check that quantity > 1
+    const quantityCount = parseInt(quantity);
+    if (quantityCount < 1 || isNaN(quantityCount) || quantityCount > 50) {
+      throw new Error(
+        "Quantity must be a number or greater than 0 and less than 50.",
+      );
+    }
+    // check that selected user isn't null
+    if (assignUser == null) {
+      throw new Error("User must be selected.");
+    }
+    // check that name isn't empty
+    if (name === "") {
+      throw new Error("Name must not be empty.");
+    }
+    return quantityCount;
+  }
+
+  // Create a new equipment and assign it to a user
   async function handleCreate() {
     try {
-      // check that quantity > 1
-      const quantityCount = parseInt(quantity);
-      if (quantityCount < 1 || isNaN(quantityCount) || quantityCount > 50) {
-        throw new Error(
-          "Quantity must be a number or greater than 0 and less than 50.",
-        );
-      }
-      // check that selected user isn't null
-      if (assignUser == null) {
-        throw new Error("User must be selected.");
-      }
-      // check that name isn't empty
-      if (name === "") {
-        throw new Error("Name must not be empty.");
-      }
+      const quantityCount = verifyValues();
       setIsLoading(true);
       // create the equipment
       const dataOrg = await DataStore.query(Organization, org!.id);
       const orgUserStorage = await DataStore.query(
         OrgUserStorage,
-        assignUser.id,
+        assignUser!.id,
       );
       if (dataOrg == null || orgUserStorage == null) {
         throw new Error("Organization or User not found.");
@@ -72,11 +83,12 @@ function CreateEquipmentScreen() {
     }
   }
 
-  // ensure the quantity is only a numeric value
+  // update the quantity of equipment
   const handleNumberChange = (text: string) => {
     onChangeQuantity(text);
   };
 
+  // update the user to assign the equipment to
   const handleUserChange = (user: OrgUserStorage | null) => {
     setAssignUser(user);
   };

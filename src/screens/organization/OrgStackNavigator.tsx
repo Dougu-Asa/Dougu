@@ -11,11 +11,16 @@ import InfoScreen from "./InfoScreen";
 import { OrgStackParamList } from "../../types/NavigatorTypes";
 import { OrgStackScreenProps } from "../../types/ScreenTypes";
 
+/*
+    Stack navigator for the organization screens.
+    It contains all the methods for managing an organization.
+*/
 function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
   // Create a stack navigator to handle navigation throughout the app
   const Stack = createNativeStackNavigator<OrgStackParamList>();
   const isFocused = useIsFocused();
 
+  // prevent double headers by removing the parent header on focus
   useLayoutEffect(() => {
     if (isFocused) {
       navigation.getParent()?.setOptions({

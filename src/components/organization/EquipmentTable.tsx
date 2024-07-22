@@ -17,6 +17,10 @@ import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Error";
 import { TableEquipmentObj, TableEquipmentData } from "../../types/ModelTypes";
 
+/*
+  Component for displaying all equipment in the organization
+  in a table format
+*/
 export default function EquipmentTable() {
   const tableHead = ["Name", "Assigned To", "Quantity", ""];
   const [tableData, setTableData] = useState<TableEquipmentData[]>([]);
@@ -24,8 +28,8 @@ export default function EquipmentTable() {
   const { user, org } = useUser();
   const { setIsLoading } = useLoad();
 
+  // subscribe to and get all equipment in the organization
   useEffect(() => {
-    // get all the equipment that belongs to an org
     async function getEquipment() {
       // check if the user is the manager
       isManager.current =
@@ -87,8 +91,8 @@ export default function EquipmentTable() {
     return processedEquipmentData;
   }
 
+  // delete equipment from the organization
   const handleDelete = async (rowData: TableEquipmentData) => {
-    // delete equipment
     try {
       setIsLoading(true);
       const equipment = await DataStore.query(Equipment, rowData.id);

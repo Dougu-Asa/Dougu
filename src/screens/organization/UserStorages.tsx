@@ -18,6 +18,11 @@ import { useUser } from "../../helper/UserContext";
 import MemberRow from "../../components/organization/MemberRow";
 import { UserStoragesScreenProps } from "../../types/ScreenTypes";
 
+/*
+  Screen for viewing all members and storages in an organization
+  It has two tabs: Members and Storages, where each tab displays
+  its respective data
+*/
 export default function UserStorages({
   route,
   navigation,
@@ -66,9 +71,9 @@ export default function UserStorages({
     }
 
     setOrgName(org!.name);
+    getManager();
     const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
       () => {
-        getManager();
         getData();
       },
     );
@@ -76,8 +81,8 @@ export default function UserStorages({
     return () => subscription.unsubscribe();
   }, [org, tab, user]);
 
+  // create a storage, only managers can create storages
   const handleCreate = async () => {
-    // only managers can create storages
     if (org!.organizationManagerUserId !== user!.attributes.sub)
       Alert.alert("You need to be a manager to create a storage!");
     else navigation.navigate("CreateStorage");

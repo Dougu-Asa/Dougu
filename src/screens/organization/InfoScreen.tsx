@@ -4,6 +4,11 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
 
+/*
+  InfoScreen displays the organization's name, access code, and offers
+  navigation to view more information about the organization's members,
+  storages, and equipment.
+*/
 function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgName, setOrgName] = useState("");
   const [accessCode, setAccessCode] = useState("");

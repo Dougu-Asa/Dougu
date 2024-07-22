@@ -10,6 +10,10 @@ import { OrgUserStorage } from "../models";
 import { useUser } from "../helper/UserContext";
 import { UserNames } from "../types/ModelTypes";
 
+/*
+  Dropdown component for selecting the current members
+  (OrgUserStorages) of the organization
+*/
 const CurrMembersDropdown = ({
   setUser,
   isCreate,

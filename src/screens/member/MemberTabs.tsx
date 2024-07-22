@@ -19,6 +19,10 @@ import OrgStackNavigator from "../organization/OrgStackNavigator";
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
 
+/*
+  MemberTabs is the tab navigator for a user. It holds all the screens
+  that a user can navigate to while they are a member of an organization.
+*/
 function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);

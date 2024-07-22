@@ -10,6 +10,10 @@ import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Error";
 import { useUser } from "../../helper/UserContext";
 
+/* 
+    Single row from the UserStorages list. Each 
+    row contains the user's name and a delete button
+*/
 function MemberRow({
   item,
   isManager,
@@ -20,8 +24,9 @@ function MemberRow({
   const { setIsLoading } = useLoad();
   const { user, org } = useUser();
 
+  // delete an orgUserStorage associated with the user
+  // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
   const handleDelete = async () => {
-    // delete
     try {
       setIsLoading(true);
       if (item == null) throw new Error("User/Storage not found");

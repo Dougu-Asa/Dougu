@@ -7,6 +7,10 @@ import EquipmentTable from "../../components/organization/EquipmentTable";
 import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
 import { useUser } from "../../helper/UserContext";
 
+/*
+  The screen that displays a list of equipment in the organization.
+  A manager can navigate to creating from here, and also delete equipment.
+*/
 const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
   const { user, org } = useUser();
 

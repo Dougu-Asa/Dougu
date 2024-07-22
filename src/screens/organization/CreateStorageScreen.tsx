@@ -16,12 +16,17 @@ import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Error";
 
+/*
+  Create storage screen allows a manager to create storage.
+  A storage is a non-user entity where equipment can be assigned.
+*/
 export default function CreateStorageScreen() {
   const [name, onChangeName] = useState("");
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
   const { org } = useUser();
 
+  // Create a new storage
   async function handleCreate() {
     try {
       // check that name isn't empty
