@@ -15,6 +15,7 @@ import { useUser } from "../../helper/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
 import { TabParamList } from "../../types/NavigatorTypes";
+import OrgStackNavigator from "../organization/OrgStackNavigator";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -122,7 +123,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
       />
       <Tab.Screen
         name="OrgInfo"
-        component={InfoScreen}
+        component={OrgStackNavigator}
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons name="crown" color={"black"} size={21} />

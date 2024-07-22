@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -28,12 +28,6 @@ export default function UserStorages({
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
   const { user, org } = useUser();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: "Members and Storages",
-    });
-  }, [navigation]);
 
   // update our data everytime the tab or data changes
   useEffect(() => {

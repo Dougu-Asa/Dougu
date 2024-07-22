@@ -2,10 +2,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
-import CreateEquipmentScreen from "./organization/CreateEquipmentScreen";
-import ManageEquipmentScreen from "./organization/ManageEquipment";
-import UserStorages from "./organization/UserStorages";
-import CreateStorageScreen from "./organization/CreateStorageScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
@@ -33,18 +29,6 @@ export function RootStackNavigator() {
           component={DrawerNav}
           options={{ headerShown: false }}
         />
-        <Stack.Group>
-          <Stack.Screen
-            name="ManageEquipment"
-            component={ManageEquipmentScreen}
-          />
-          <Stack.Screen
-            name="CreateEquipment"
-            component={CreateEquipmentScreen}
-          />
-          <Stack.Screen name="UserStorages" component={UserStorages} />
-          <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
-        </Stack.Group>
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>

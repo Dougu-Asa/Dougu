@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-
 import { useUser } from "../../helper/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
 
