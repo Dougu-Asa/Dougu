@@ -100,6 +100,11 @@ After finally refactoring the code, I realized the previous problem I had with t
 ## Indicator
 For fun, I changed the look of the loading indicator. I chose to use the design by Hiroto Kakitani on the old Asayake Taiko website, not big reason other than nostalgia and I liked the look of it.
 
+## Organization Directory
+The organizations directory was very simple and didn't take too long to refactor. One thing I realized during an attempt to refactor the organizations into another nested stack navigator was that it really wasn't necessary, as there would be overlapping headers and unnecessary nesting. I am not completely done with this directory though, as:
+
+- EquipmentTable.tsx still has redundant functions
+- Comments/documentation explanations still need to be added
 
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  

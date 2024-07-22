@@ -4,7 +4,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
-import { useLoad } from "../../helper/LoadingContext";
 import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
 
 const ManageEquipmentScreen = ({
@@ -12,7 +11,6 @@ const ManageEquipmentScreen = ({
   navigation,
 }: ManageEquipmentScreenProps) => {
   const { isManager } = route.params;
-  const { setIsLoading } = useLoad();
 
   const handleCreate = () => {
     if (isManager) {
@@ -35,7 +33,7 @@ const ManageEquipmentScreen = ({
             <Ionicons name="add" size={40} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable setIsLoading={setIsLoading} />
+        <EquipmentTable />
       </View>
     </View>
   );

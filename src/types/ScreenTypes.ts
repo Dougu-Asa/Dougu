@@ -74,3 +74,8 @@ export type ManageEquipmentScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "ManageEquipment"
 >;
+
+export type UserStoragesScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "UserStorages"
+>;
