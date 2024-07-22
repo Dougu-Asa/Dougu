@@ -7,7 +7,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Alert } from "react-native";
 
 // project imports
-import InfoScreen from "../organization/InfoScreen";
 import EquipmentScreen from "./Equipment";
 import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";

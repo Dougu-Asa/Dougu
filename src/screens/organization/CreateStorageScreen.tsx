@@ -7,40 +7,32 @@ import {
   Alert,
 } from "react-native";
 import React from "react";
-import { useEffect, useState } from "react";
-import { Auth, DataStore } from "aws-amplify";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import { DataStore } from "aws-amplify";
 
 // project imports
 import { useLoad } from "../../helper/LoadingContext";
-import {
-  User,
-  OrgUserStorage,
-  Equipment,
-  Organization,
-  UserOrStorage,
-} from "../../models";
+import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
+import { useUser } from "../../helper/UserContext";
+import { handleError } from "../../helper/Error";
 
-export default function CreateStorageScreen({ navigation }) {
+export default function CreateStorageScreen() {
   const [name, onChangeName] = useState("");
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
+  const { org } = useUser();
 
   async function handleCreate() {
     try {
       // check that name isn't empty
-      if (name == "") {
+      if (name === "") {
         throw new Error("Name must not be empty.");
       }
       setIsLoading(true);
       // create the storage
-      const user = await Auth.currentAuthenticatedUser();
-      let key = user.attributes.sub + " currOrg";
-      const org = await AsyncStorage.getItem(key);
-      const orgJSON = JSON.parse(org);
-      const dataOrg = await DataStore.query(Organization, orgJSON.id);
+      const dataOrg = await DataStore.query(Organization, org!.id);
       if (dataOrg == null) throw new Error("Organization not found.");
-      const storage = await DataStore.save(
+      await DataStore.save(
         new OrgUserStorage({
           name: name,
           organization: dataOrg,
@@ -51,8 +43,7 @@ export default function CreateStorageScreen({ navigation }) {
       setIsLoading(false);
       Alert.alert("Storage Created Successfully!");
     } catch (error) {
-      setIsLoading(false);
-      Alert.alert("Create Storage Error!", error.toString());
+      handleError("handleCreate", error as Error, setIsLoading);
     }
   }
   return (
