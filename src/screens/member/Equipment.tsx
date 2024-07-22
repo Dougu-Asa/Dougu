@@ -91,9 +91,11 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     width: "90%",
     marginBottom: 20,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   equipmentItemContainer: {
-    flexBasis: "30%",
+    flexBasis: "33.33%",
     alignItems: "center",
   },
 });

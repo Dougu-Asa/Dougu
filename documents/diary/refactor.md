@@ -100,6 +100,17 @@ After finally refactoring the code, I realized the previous problem I had with t
 ## Indicator
 For fun, I changed the look of the loading indicator. I chose to use the design by Hiroto Kakitani on the old Asayake Taiko website, not big reason other than nostalgia and I liked the look of it.
 
+## Organization Directory
+The organizations directory was very simple and didn't take too long to refactor. One thing I realized during an attempt to refactor the organizations into another nested stack navigator was that it really wasn't necessary, as there would be overlapping headers and unnecessary nesting. I am not completely done with this directory though, as:
+
+# 7-22-2924
+## Refactor Organizations Directory
+After a lot of debate with myself, I decided to add another nested stack navigator inside of membersTabs for the OrgInfo section. The reasoning for this was that if the orgInfo screens were part of the RootStackNavigator, then popping from OrgInfo always brings you back to MembersTabs: Equipment, since the parent navigator handles it so a custom back button can't be used. It also makes more sense to me in terms of the flow of the app, though now the app is a little more nested than I would like: rootStack -> drawer -> materialTopTabs -> orgStack.
+
+Other than that, I refactored the organizations directory. Even though I didn't change it too much, it is nice to implement static checking and simplify the code. 
+
+## Conclusion
+Overall, this concludes the refactoring of the code for now. While there are mroe simplifications or better logic I'm sure that could be made, my main focus for now will be adding testing, more features, and  fixing up the graphQL schema.
 
 These links seem important for linking native nfc scanner with my app:
 [Custom Native Code](https://docs.expo.dev/workflow/customizing/)  

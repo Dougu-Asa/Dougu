@@ -7,17 +7,22 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Alert } from "react-native";
 
 // project imports
-import InfoScreen from "../organization/InfoScreen";
 import EquipmentScreen from "./Equipment";
 import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";
 import { useUser } from "../../helper/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
+import { TabParamList } from "../../types/NavigatorTypes";
+import OrgStackNavigator from "../organization/OrgStackNavigator";
 
 // The navigator for a logged in member of an organization
-const Tab = createMaterialTopTabNavigator();
+const Tab = createMaterialTopTabNavigator<TabParamList>();
 
+/*
+  MemberTabs is the tab navigator for a user. It holds all the screens
+  that a user can navigate to while they are a member of an organization.
+*/
 function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);
@@ -78,6 +83,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
     // tab navigator has the tab bar at the bottom of the screen
     <Tab.Navigator
       tabBarPosition="bottom"
+      initialRouteName="OrgInfo"
       screenOptions={{
         tabBarLabelStyle: {
           fontSize: 9,
@@ -120,7 +126,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
       />
       <Tab.Screen
         name="OrgInfo"
-        component={InfoScreen}
+        component={OrgStackNavigator}
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons name="crown" color={"black"} size={21} />

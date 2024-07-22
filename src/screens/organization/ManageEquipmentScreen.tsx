@@ -1,24 +1,21 @@
-import React, { useState, useEffect, Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
-import { useLoad } from "../../helper/LoadingContext";
+import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
+import { useUser } from "../../helper/UserContext";
 
-const ManageEquipmentScreen = ({ route, navigation }) => {
-  const { isManager } = route.params;
-  const { setIsLoading } = useLoad();
+/*
+  The screen that displays a list of equipment in the organization.
+  A manager can navigate to creating from here, and also delete equipment.
+*/
+const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
+  const { user, org } = useUser();
 
   const handleCreate = () => {
-    if (isManager) {
+    if (org!.organizationManagerUserId === user!.attributes.sub) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(
@@ -38,7 +35,7 @@ const ManageEquipmentScreen = ({ route, navigation }) => {
             <Ionicons name="add" size={40} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable setIsLoading={setIsLoading} />
+        <EquipmentTable />
       </View>
     </View>
   );

@@ -7,55 +7,66 @@ import {
   Alert,
 } from "react-native";
 import React from "react";
-import { useEffect, useState } from "react";
-import { Auth, DataStore } from "aws-amplify";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import { DataStore } from "aws-amplify";
 
-// my Code
+// project imports
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
-import { User, OrgUserStorage, Equipment, Organization } from "../../models";
+import { OrgUserStorage, Equipment, Organization } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
+import { useUser } from "../../helper/UserContext";
+import { handleError } from "../../helper/Error";
 
-function CreateEquipmentScreen({ navigation }) {
+/*
+  Create equipment screen allows a manager to create equipment
+  and assign it to a user/storage.
+*/
+function CreateEquipmentScreen() {
   const [name, onChangeName] = useState("");
-  const [quantity, onChangeQuantity] = useState("");
-  const [assignUser, setAssignUser] = useState(null);
+  const [quantity, onChangeQuantity] = useState<string>("");
+  const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
   const [selected, setSelected] = useState("equip");
   const { setIsLoading } = useLoad();
+  const { org } = useUser();
 
+  // ensure all input values are valid
+  function verifyValues() {
+    // check that quantity > 1
+    const quantityCount = parseInt(quantity);
+    if (quantityCount < 1 || isNaN(quantityCount) || quantityCount > 50) {
+      throw new Error(
+        "Quantity must be a number or greater than 0 and less than 50.",
+      );
+    }
+    // check that selected user isn't null
+    if (assignUser == null) {
+      throw new Error("User must be selected.");
+    }
+    // check that name isn't empty
+    if (name === "") {
+      throw new Error("Name must not be empty.");
+    }
+    return quantityCount;
+  }
+
+  // Create a new equipment and assign it to a user
   async function handleCreate() {
     try {
-      let quantityCt = parseInt(quantity);
-      // check that quantity > 1
-      if (quantityCt < 1 || isNaN(quantityCt)) {
-        throw new Error("Quantity must be a number or greater than 0.");
-      }
-      // check that selected user isn't null
-      if (assignUser == null) {
-        throw new Error("User must be selected.");
-      }
-      // check that name isn't empty
-      if (name == "") {
-        throw new Error("Name must not be empty.");
-      }
+      const quantityCount = verifyValues();
       setIsLoading(true);
       // create the equipment
-      const user = await Auth.currentAuthenticatedUser();
-      const key = user.attributes.sub + " currOrg";
-      const org = await AsyncStorage.getItem(key);
-      const orgJSON = JSON.parse(org);
-      const dataOrg = await DataStore.query(Organization, orgJSON.id);
+      const dataOrg = await DataStore.query(Organization, org!.id);
       const orgUserStorage = await DataStore.query(
         OrgUserStorage,
-        assignUser.id,
+        assignUser!.id,
       );
       if (dataOrg == null || orgUserStorage == null) {
         throw new Error("Organization or User not found.");
       }
       // create however many equipment specified by quantity
-      for (let i = 0; i < quantityCt; i++) {
-        const newEquipment = await DataStore.save(
+      for (let i = 0; i < quantityCount; i++) {
+        await DataStore.save(
           new Equipment({
             name: name,
             organization: dataOrg,
@@ -68,18 +79,17 @@ function CreateEquipmentScreen({ navigation }) {
       setIsLoading(false);
       Alert.alert("Equipment created successfully!");
     } catch (error) {
-      Alert.alert("Create Equipment Error", error.message, [{ text: "OK" }]);
+      handleError("CreateEquipment", error as Error, setIsLoading);
     }
   }
 
-  // ensure the quantity is only a numeric value
-  const handleNumberChange = (text) => {
-    if (!isNaN(text)) {
-      onChangeQuantity(text);
-    }
+  // update the quantity of equipment
+  const handleNumberChange = (text: string) => {
+    onChangeQuantity(text);
   };
 
-  const handleUserChange = (user) => {
+  // update the user to assign the equipment to
+  const handleUserChange = (user: OrgUserStorage | null) => {
     setAssignUser(user);
   };
 
@@ -112,12 +122,7 @@ function CreateEquipmentScreen({ navigation }) {
               ]}
               onPress={() => setSelected("equip")}
             >
-              <Text
-                style={[
-                  styles.buttonText,
-                  selected === "equip" ? styles.selectedText : null,
-                ]}
-              >
+              <Text style={[selected === "equip" ? styles.selectedText : null]}>
                 Equip
               </Text>
             </TouchableOpacity>
@@ -129,10 +134,7 @@ function CreateEquipmentScreen({ navigation }) {
               onPress={() => setSelected("container")}
             >
               <Text
-                style={[
-                  styles.buttonText,
-                  selected === "container" ? styles.selectedText : null,
-                ]}
+                style={[selected === "container" ? styles.selectedText : null]}
               >
                 Container
               </Text>
@@ -148,7 +150,7 @@ function CreateEquipmentScreen({ navigation }) {
           <TextInput
             style={styles.input}
             onChangeText={handleNumberChange}
-            value={quantity}
+            value={quantity.toString()}
             placeholder="quantity"
             keyboardType="numeric"
           />
@@ -169,7 +171,11 @@ function CreateEquipmentScreen({ navigation }) {
           />
         </View>
       </View>
-      <CurrMembersDropdown setUser={handleUserChange} isCreate={true} />
+      <CurrMembersDropdown
+        setUser={handleUserChange}
+        isCreate={true}
+        resetValue={false}
+      />
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>

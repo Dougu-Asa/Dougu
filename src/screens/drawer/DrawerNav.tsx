@@ -1,9 +1,16 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { TouchableOpacity, Image, Alert, StyleSheet } from "react-native";
+import {
+  TouchableOpacity,
+  Image,
+  Alert,
+  StyleSheet,
+  BackHandler,
+} from "react-native";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { DataStore } from "@aws-amplify/datastore";
+import { Auth } from "aws-amplify";
 
 // project imports
 import JoinOrgScreen from "./JoinOrgScreen";
@@ -31,7 +38,22 @@ import { CustomDrawerContent } from "../../components/drawer/CustomDrawerContent
 function DrawerNav({ navigation }: DrawerNavProps) {
   const Drawer = createDrawerNavigator<DrawerParamList>();
   const isFocused = useIsFocused();
-  const { user, setOrg } = useUser();
+  const { user, setOrg, resetContext } = useUser();
+
+  // Override android backbutton by adding a listener
+  // This prevents returning to home without signing out
+  useEffect(() => {
+    function backAction(): boolean {
+      Auth.signOut();
+      navigation.navigate("Home");
+      resetContext();
+      return true;
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, [navigation, resetContext]);
 
   // because users are first directed here on sign in, we check if they are part of an org
   useEffect(() => {

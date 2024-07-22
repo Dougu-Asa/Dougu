@@ -41,3 +41,20 @@ export interface DraggingOverlayHandle {
 }
 
 export type TopOrBottom = "top" | "bottom";
+
+export type TableEquipmentObj = {
+  id: string;
+  name: string;
+  quantity: number;
+  assignedTo: string;
+  assignedToName: string;
+};
+
+export type TableEquipmentData = {
+  id: string;
+  name: string;
+  data: string[];
+  quantity: number;
+  assignedTo: string;
+  assignedToName: string;
+};

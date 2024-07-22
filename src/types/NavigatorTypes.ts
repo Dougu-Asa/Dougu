@@ -9,10 +9,6 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 export type RootStackParamList = {
   Home: undefined;
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
-  ManageEquipment: { isManager: boolean };
-  CreateEquipment: undefined;
-  UserStorages: { tabParam: string };
-  CreateStorage: undefined;
 };
 
 export type DrawerParamList = {
@@ -28,7 +24,15 @@ export type TabParamList = {
   Equipment: undefined;
   Swap: undefined;
   Team: undefined;
-  OrgInfo: undefined;
+  OrgInfo: NavigatorScreenParams<OrgStackParamList>;
+};
+
+export type OrgStackParamList = {
+  InfoScreen: undefined;
+  ManageEquipment: undefined;
+  CreateEquipment: undefined;
+  UserStorages: { tabParam: string };
+  CreateStorage: undefined;
 };
 
 export interface MyHeaderProfileButtonProps {

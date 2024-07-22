@@ -5,8 +5,14 @@ import {
   DrawerNavigationProp,
 } from "@react-navigation/drawer";
 import type { CompositeScreenProps } from "@react-navigation/native";
+import type { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 
-import { RootStackParamList, DrawerParamList } from "./NavigatorTypes";
+import {
+  RootStackParamList,
+  DrawerParamList,
+  OrgStackParamList,
+  TabParamList,
+} from "./NavigatorTypes";
 
 /*
     Defines the types for the screen props used in the app.
@@ -29,6 +35,7 @@ export type NavigationOnlyProps = {
   navigation: NavigationProp<RootStackParamList>;
 };
 
+// drawer screen types
 export type JoinOrgScreenProps = {
   navigation: DrawerNavigationProp<DrawerParamList, "JoinOrg">;
 };
@@ -53,4 +60,28 @@ export type MyOrgsScreenProps = DrawerScreenProps<DrawerParamList, "MyOrgs">;
 export type MemberTabsScreenProps = CompositeScreenProps<
   DrawerScreenProps<DrawerParamList, "MemberTabs">,
   NativeStackScreenProps<RootStackParamList>
+>;
+
+// OrgStackScreen types
+export type OrgStackScreenProps = CompositeScreenProps<
+  MaterialTopTabScreenProps<TabParamList, "OrgInfo">,
+  CompositeScreenProps<
+    DrawerScreenProps<DrawerParamList>,
+    NativeStackScreenProps<RootStackParamList>
+  >
+>;
+
+export type InfoScreenProps = NativeStackScreenProps<
+  OrgStackParamList,
+  "InfoScreen"
+>;
+
+export type ManageEquipmentScreenProps = NativeStackScreenProps<
+  OrgStackParamList,
+  "ManageEquipment"
+>;
+
+export type UserStoragesScreenProps = NativeStackScreenProps<
+  OrgStackParamList,
+  "UserStorages"
 >;

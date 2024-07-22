@@ -118,7 +118,7 @@ const SwapEquipmentScreen = () => {
     rowHeight.current = height;
   };
 
-  // these account for the scroll view's offset
+  // these account for the scroll view's horizontal offset
   const handleScrollTop = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollOffsetXTop.current = event.nativeEvent.contentOffset.x;
   };
@@ -177,6 +177,7 @@ const SwapEquipmentScreen = () => {
   const handleTerminate = () => {
     overlayRef.current!.setDraggingItem(null);
   };
+
   return (
     <View style={styles.scrollContainer}>
       <View style={styles.info}>
