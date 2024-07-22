@@ -33,16 +33,18 @@ export function RootStackNavigator() {
           component={DrawerNav}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="ManageEquipment"
-          component={ManageEquipmentScreen}
-        />
-        <Stack.Screen
-          name="CreateEquipment"
-          component={CreateEquipmentScreen}
-        />
-        <Stack.Screen name="UserStorages" component={UserStorages} />
-        <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
+        <Stack.Group>
+          <Stack.Screen
+            name="ManageEquipment"
+            component={ManageEquipmentScreen}
+          />
+          <Stack.Screen
+            name="CreateEquipment"
+            component={CreateEquipmentScreen}
+          />
+          <Stack.Screen name="UserStorages" component={UserStorages} />
+          <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
+        </Stack.Group>
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>

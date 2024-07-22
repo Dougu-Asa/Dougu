@@ -1,51 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Auth } from "aws-amplify";
-import { BackHandler } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
 
-function InfoScreen({ navigation }) {
+import { useUser } from "../../helper/UserContext";
+import { InfoScreenProps } from "../../types/ScreenTypes";
+
+function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgName, setOrgName] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [isManager, setIsManager] = useState(false);
-  const isFocused = useIsFocused();
+  const { user, org } = useUser();
 
-  // get the accesscode and orgName
+  // get the accesscode, orgName, and check if the user is the manager
   useEffect(() => {
-    if (isFocused) {
-      getOrgInfo();
+    async function getOrgInfo() {
+      if (org!.organizationManagerUserId === user!.attributes.sub) {
+        setIsManager(true);
+      }
+      setOrgName(org!.name);
+      setAccessCode(org!.accessCode);
     }
-  }, [isFocused]);
 
-  // Custom so thata back button press goes to the menu
-  useEffect(() => {
-    const backAction = () => {
-      navigation.navigate("MemberTabs");
-      return true;
-    };
-    // Add the backAction handler when the component mounts
-    BackHandler.addEventListener("hardwareBackPress", backAction);
-    // Remove the backAction handler when the component unmounts
-    return () =>
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }, [navigation]);
-
-  async function getOrgInfo() {
-    const user = await Auth.currentAuthenticatedUser();
-    const key = user.attributes.sub + " currOrg";
-    const org = await AsyncStorage.getItem(key);
-    if (org == null) {
-      return;
-    }
-    const orgJSON = JSON.parse(org);
-    if (orgJSON.organizationManagerUserId == user.attributes.sub) {
-      setIsManager(true);
-    }
-    setOrgName(orgJSON.name);
-    setAccessCode(orgJSON.accessCode);
-  }
+    getOrgInfo();
+  }, [org, user]);
 
   return (
     <View style={styles.container}>

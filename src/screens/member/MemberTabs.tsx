@@ -14,9 +14,10 @@ import TeamEquipmentScreen from "./TeamEquipment";
 import { useUser } from "../../helper/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
+import { TabParamList } from "../../types/NavigatorTypes";
 
 // The navigator for a logged in member of an organization
-const Tab = createMaterialTopTabNavigator();
+const Tab = createMaterialTopTabNavigator<TabParamList>();
 
 function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
@@ -78,6 +79,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
     // tab navigator has the tab bar at the bottom of the screen
     <Tab.Navigator
       tabBarPosition="bottom"
+      initialRouteName="OrgInfo"
       screenOptions={{
         tabBarLabelStyle: {
           fontSize: 9,

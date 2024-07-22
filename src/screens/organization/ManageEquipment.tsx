@@ -1,19 +1,16 @@
-import React, { useState, useEffect, Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
 import { useLoad } from "../../helper/LoadingContext";
+import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
 
-const ManageEquipmentScreen = ({ route, navigation }) => {
+const ManageEquipmentScreen = ({
+  route,
+  navigation,
+}: ManageEquipmentScreenProps) => {
   const { isManager } = route.params;
   const { setIsLoading } = useLoad();
 

@@ -32,11 +32,7 @@ const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
     }
 
     const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
-      (snapshot) => {
-        const { items, isSynced } = snapshot;
-        console.log(
-          `MyOrgsScreen OrgUserStorage item count: ${items.length}, isSynced: ${isSynced}`,
-        );
+      () => {
         getOrgs();
       },
     );

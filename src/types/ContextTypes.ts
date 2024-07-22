@@ -1,17 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { OrgUserStorage } from "../models";
+import { OrgUserStorage, Organization } from "../models";
 
 /*
     Defines the types for the context objects used in the app.
     Specifically for UserContext and LoadingContext
 */
-
-// userContext types
-export type OrgType = {
-  name: string;
-  id: string;
-  [key: string]: any; // Allows any other properties
-};
 
 export type UserType = {
   attributes: {
@@ -25,8 +18,8 @@ export type UserType = {
 export type UserContextType = {
   user: UserType | null;
   setUser: Dispatch<SetStateAction<UserType | null>>;
-  org: OrgType | null;
-  setOrg: Dispatch<SetStateAction<OrgType | null>>;
+  org: Organization | null;
+  setOrg: Dispatch<SetStateAction<Organization | null>>;
   orgUserStorage: OrgUserStorage | null;
   contextLoading: boolean;
   resetContext: () => void; // doesn't take a param, doesn't return anything
