@@ -28,7 +28,7 @@ const EquipmentScreen = () => {
 
     // Get the equipment assigned to the current user and set the state
     const setEquipmentState = async () => {
-      const equipment = await getEquipment(orgUserStorage!.id);
+      const equipment = await getEquipment(orgUserStorage!);
       if (!equipment) return;
       setEquipment(chunkedEquipment(equipment, 3));
     };

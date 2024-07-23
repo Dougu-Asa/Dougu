@@ -1,5 +1,6 @@
 import { OrgUserStorage } from "../models";
 
+// how equipment data is stored in the app
 export type EquipmentObj = {
   id: string;
   label: string;
@@ -14,6 +15,7 @@ export type OrgEquipmentObj = {
   equipment: EquipmentObj[];
 };
 
+// for current members dropdown
 export type UserNames = {
   label: string;
   value: string;
@@ -48,20 +50,3 @@ export interface DraggingOverlayHandle {
 }
 
 export type TopOrBottom = "top" | "bottom";
-
-export type TableEquipmentObj = {
-  id: string;
-  name: string;
-  quantity: number;
-  assignedTo: string;
-  assignedToName: string;
-};
-
-export type TableEquipmentData = {
-  id: string;
-  name: string;
-  data: string[];
-  quantity: number;
-  assignedTo: string;
-  assignedToName: string;
-};
