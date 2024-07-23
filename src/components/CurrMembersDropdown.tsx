@@ -9,6 +9,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { OrgUserStorage } from "../models";
 import { useUser } from "../helper/UserContext";
 import { UserNames } from "../types/ModelTypes";
+import { sortOrgUserStorages } from "../helper/DataStoreUtils";
 
 /*
   Dropdown component for selecting the current members
@@ -50,6 +51,7 @@ const CurrMembersDropdown = ({
           ]),
         );
       }
+      data = sortOrgUserStorages(data);
       const userNames = data.map((user) => ({
         label: user["name"],
         value: user["name"],

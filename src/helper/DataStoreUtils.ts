@@ -12,6 +12,17 @@ const collator = new Intl.Collator("en", {
 });
 
 /* 
+  sort the orgUserStorages by name
+  and disregards upper/lower case
+  returns the sorted array
+*/
+export function sortOrgUserStorages(
+  orgUserStorages: OrgUserStorage[],
+): OrgUserStorage[] {
+  return orgUserStorages.sort((a, b) => collator.compare(a.name, b.name));
+}
+
+/* 
   get the equipment for a user by OrgUserStorage id
   returns an array of processed equipment objects
 */
@@ -39,9 +50,7 @@ export async function getOrgEquipment(
     c.organization.id.eq(orgId),
   );
   // sort orgUserStorages by name
-  const sortedMembers = orgUserStorages.sort((a, b) =>
-    collator.compare(a.name, b.name),
-  );
+  const sortedMembers = sortOrgUserStorages(orgUserStorages);
   // for each orgUserStorage, get the equipment assigned to it
   // distinguish between orgUserStorages with equipment and without
   let orgEquipmentWithContent = [];
