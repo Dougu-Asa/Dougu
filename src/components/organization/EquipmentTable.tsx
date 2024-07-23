@@ -11,11 +11,12 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { DataStore } from "aws-amplify";
 
 // project imports
-import { Equipment, OrgUserStorage } from "../../models";
+import { Equipment } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Error";
-import { TableEquipmentObj, TableEquipmentData } from "../../types/ModelTypes";
+import { EquipmentObj } from "../../types/ModelTypes";
+import { getOrgEquipment } from "../../helper/DataStoreUtils";
 
 /*
   Component for displaying all equipment in the organization
@@ -23,81 +24,41 @@ import { TableEquipmentObj, TableEquipmentData } from "../../types/ModelTypes";
 */
 export default function EquipmentTable() {
   const tableHead = ["Name", "Assigned To", "Quantity", ""];
-  const [tableData, setTableData] = useState<TableEquipmentData[]>([]);
+  const [tableData, setTableData] = useState<EquipmentObj[]>([]);
   const isManager = useRef<boolean>(false);
   const { user, org } = useUser();
   const { setIsLoading } = useLoad();
 
   // subscribe to and get all equipment in the organization
   useEffect(() => {
-    async function getEquipment() {
-      // check if the user is the manager
-      const equipment = await DataStore.query(Equipment, (c) =>
-        c.organization.id.eq(org!.id),
-      );
-      const equipmentData = await Promise.all(
-        equipment.map(async (equip) => {
-          let assignedTo = await DataStore.query(OrgUserStorage, (c) =>
-            c.equipment.id.eq(equip.id),
-          );
-          return {
-            id: equip.id,
-            name: equip.name,
-            quantity: 1,
-            assignedTo: assignedTo[0] ? assignedTo[0].id : "UNASSIGNED",
-            assignedToName: assignedTo[0] ? assignedTo[0].name : "UNASSIGNED",
-          };
-        }),
-      );
-      const processedEquipmentData = processData(equipmentData);
-      return processedEquipmentData;
+    // get all equipment in the organization by concating all equipment arrays
+    // from each of the assigned users/storages
+    async function handleGetEquipment() {
+      const equipmentData = await getOrgEquipment(org!.id);
+      let tableData: EquipmentObj[] = [];
+      // Iterate over equipmentData and concatenate the equipment arrays
+      equipmentData.forEach((assignedEquipment) => {
+        tableData = tableData.concat(assignedEquipment.equipment);
+      });
+      setTableData(tableData);
     }
 
     isManager.current =
       org!.organizationManagerUserId === user!.attributes.sub ? true : false;
     const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      getEquipment().then((equipmentData) => {
-        setTableData(equipmentData);
-      });
+      handleGetEquipment();
     });
 
     return () => subscription.unsubscribe();
   }, [org, user]);
 
-  function processData(equipment: TableEquipmentObj[]) {
-    const equipmentMap = new Map();
-
-    equipment.forEach((equip) => {
-      let key = equip.name + equip.assignedTo;
-      if (equipmentMap.has(key)) {
-        const existingEquip = equipmentMap.get(key);
-        existingEquip.quantity += 1;
-        existingEquip.data.push(equip.id);
-        equipmentMap.set(key, existingEquip);
-      } else {
-        equipmentMap.set(key, {
-          id: equip.id,
-          name: equip.name,
-          quantity: 1,
-          data: [equip.id],
-          assignedTo: equip.assignedTo,
-          assignedToName: equip.assignedToName,
-        });
-      }
-    });
-
-    // Convert the Map back to an array
-    const processedEquipmentData = Array.from(equipmentMap.values());
-    return processedEquipmentData;
-  }
-
   // delete equipment from the organization
-  const handleDelete = async (rowData: TableEquipmentData) => {
+  const handleDelete = async (equipment: EquipmentObj) => {
     try {
       setIsLoading(true);
-      const equipment = await DataStore.query(Equipment, rowData.id);
-      if (equipment == null) throw new Error("Equipment not found");
-      await DataStore.delete(equipment);
+      const datastoreEquipment = await DataStore.query(Equipment, equipment.id);
+      if (datastoreEquipment == null) throw new Error("Equipment not found");
+      await DataStore.delete(datastoreEquipment);
       setIsLoading(false);
       Alert.alert("Equipment Deleted Successfully!");
     } catch (error) {
@@ -106,7 +67,7 @@ export default function EquipmentTable() {
   };
 
   // make sure the owner wants to delete the equipment
-  const handleEdit = (rowData: TableEquipmentData) => {
+  const handleEdit = (equipment: EquipmentObj) => {
     if (!isManager.current) {
       Alert.alert("You must be a manager to edit equipment");
       return;
@@ -117,7 +78,7 @@ export default function EquipmentTable() {
       [
         {
           text: "Delete",
-          onPress: () => handleDelete(rowData),
+          onPress: () => handleDelete(equipment),
           style: "destructive",
         },
         {
@@ -137,20 +98,20 @@ export default function EquipmentTable() {
         <Text style={[styles.headerText, { flex: 1 }]}>{tableHead[3]}</Text>
       </View>
       <ScrollView>
-        {tableData.map((rowData, index) => (
+        {tableData.map((equipment, index) => (
           <View key={index} style={styles.row}>
             <View style={[styles.cell, { flex: 8 }]}>
-              <Text>{rowData.name}</Text>
+              <Text>{equipment.label}</Text>
             </View>
             <View style={[styles.cell, { flex: 10 }]}>
-              <Text>{rowData.assignedToName}</Text>
+              <Text>{equipment.assignedToName}</Text>
             </View>
             <View style={[styles.cell, { flex: 3 }]}>
-              <Text>{rowData.quantity}</Text>
+              <Text>{equipment.count}</Text>
             </View>
             <TouchableOpacity
               style={styles.icon}
-              onPress={() => handleEdit(rowData)}
+              onPress={() => handleEdit(equipment)}
             >
               <Entypo name="dots-three-vertical" size={20} />
             </TouchableOpacity>

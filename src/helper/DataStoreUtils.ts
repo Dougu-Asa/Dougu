@@ -50,6 +50,7 @@ export function processEquipmentData(
         count: 1,
         data: [equip.id],
         assignedTo: orgUserStorage.id,
+        assignedToName: orgUserStorage.name,
       });
     }
   });

@@ -6,6 +6,7 @@ export type EquipmentObj = {
   count: number;
   data: string[];
   assignedTo: string;
+  assignedToName: string;
 };
 
 export type OrgEquipmentObj = {
