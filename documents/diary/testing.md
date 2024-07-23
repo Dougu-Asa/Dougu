@@ -6,5 +6,7 @@ Since I am not very familiar with testing, my idea is to build from the ground u
 
 As part of search and sorting, I decided to add react-native-elements for the searchbar. I also believe that it will be valuable in setting upt he overall theming and styles of the project as a whole, since my current CSS is a bit of a mess.
 
+Ultimately, I implemented searching in TeamEquipment.js only, and sorted any members or equipment lists in alphabetical order (ignore upper/lower case). It should also be able to handle special characters.
+
 ### Refactoring GraphQL Schema
 Similar to how I wanted to implemented searching and sorting, I also came to realize that since I may change the graphQl schema, it may change DataStoreUtils and therefore I should update the schema and fianlize how I want it to work. My current concerns are breaking down OrgUserStorage, handling containers, and implementing custom images.
