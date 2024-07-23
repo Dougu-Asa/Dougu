@@ -1,7 +1,7 @@
 import { DataStore } from "@aws-amplify/datastore";
 
 import { Equipment } from "../models";
-import { EquipmentObj } from "../types/ModelTypes";
+import { EquipmentObj, OrgEquipmentObj } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Error";
 
@@ -18,7 +18,7 @@ export const getEquipment = async (
     const equipment = await DataStore.query(Equipment, (c) =>
       c.assignedTo.id.eq(orgUserStorage.id),
     );
-    const equipmentData = processEquipmentData(equipment);
+    const equipmentData = processEquipmentData(equipment, orgUserStorage);
     return equipmentData;
   } catch (error) {
     handleError("GetEquipment", error as Error, null);
@@ -29,7 +29,10 @@ export const getEquipment = async (
   get duplicates and merge their counts
   using a map to count duplicates and converting to an array
 */
-export function processEquipmentData(equipment: Equipment[]): EquipmentObj[] {
+export function processEquipmentData(
+  equipment: Equipment[],
+  orgUserStorage: OrgUserStorage,
+): EquipmentObj[] {
   const equipmentMap = new Map<string, EquipmentObj>();
 
   equipment.forEach((equip) => {
@@ -46,6 +49,7 @@ export function processEquipmentData(equipment: Equipment[]): EquipmentObj[] {
         label: equip.name,
         count: 1,
         data: [equip.id],
+        assignedTo: orgUserStorage.id,
       });
     }
   });
@@ -53,4 +57,25 @@ export function processEquipmentData(equipment: Equipment[]): EquipmentObj[] {
   // Convert the Map back to an array
   const processedEquipmentData = Array.from(equipmentMap.values());
   return processedEquipmentData;
+}
+
+/* getEquipment but for every OrgUserStorage in the organization */
+export async function getOrgEquipment(
+  orgId: string,
+): Promise<OrgEquipmentObj[]> {
+  const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
+    c.organization.id.eq(orgId),
+  );
+  // for each orgUserStorage, get the equipment assigned to it
+  let equipment = [];
+  for (let i = 0; i < orgUserStorages.length; i++) {
+    const processedEquipment = await getEquipment(orgUserStorages[i].id);
+    equipment.push(processedEquipment ? processedEquipment : []);
+  }
+  // return both orgUserStorages and equipment as one object
+  const orgEquipment = orgUserStorages.map((orgUserStorage, index) => ({
+    assignedToName: orgUserStorage.name,
+    equipment: equipment[index],
+  }));
+  return orgEquipment;
 }

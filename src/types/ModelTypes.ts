@@ -5,6 +5,12 @@ export type EquipmentObj = {
   label: string;
   count: number;
   data: string[];
+  assignedTo: string;
+};
+
+export type OrgEquipmentObj = {
+  assignedToName: string;
+  equipment: EquipmentObj[];
 };
 
 export type UserNames = {

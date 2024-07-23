@@ -32,8 +32,6 @@ export default function EquipmentTable() {
   useEffect(() => {
     async function getEquipment() {
       // check if the user is the manager
-      isManager.current =
-        org!.organizationManagerUserId === user!.attributes.sub ? true : false;
       const equipment = await DataStore.query(Equipment, (c) =>
         c.organization.id.eq(org!.id),
       );
@@ -55,6 +53,8 @@ export default function EquipmentTable() {
       return processedEquipmentData;
     }
 
+    isManager.current =
+      org!.organizationManagerUserId === user!.attributes.sub ? true : false;
     const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
       getEquipment().then((equipmentData) => {
         setTableData(equipmentData);
