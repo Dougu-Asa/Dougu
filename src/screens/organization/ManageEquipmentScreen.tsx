@@ -50,7 +50,7 @@ const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
             <Ionicons name="add" size={50} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable />
+        <EquipmentTable searchFilter={search} />
       </View>
     </View>
   );
