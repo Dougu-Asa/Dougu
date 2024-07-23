@@ -8,3 +8,4 @@
 - Added Prettier for cleaner syntax that is easily configured
 - Added TypeScript due to type ambiguity, especially during DataStore calls. Since this is a relatively large-scale app, I decided TypeScript's reliability would be beneficial.
 - Jest is an important tool for unit and integrated tests. Testing is very important to ensure code quality.
+- For my UI components and themes, I have decided to use react-native-elements. It appears to have the best documentation and overall look to the components I need. And I want to use its theming feature as my current CSS is hard-coded and disorganized.
