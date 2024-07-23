@@ -5,15 +5,31 @@ import { EquipmentObj, OrgEquipmentObj } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Error";
 
+// speed up localCompare sorting by using a collator
+const collator = new Intl.Collator("en", {
+  numeric: true,
+  sensitivity: "base",
+});
+
+/* 
+  sort the orgUserStorages by name
+  and disregards upper/lower case
+  returns the sorted array
+*/
+export function sortOrgUserStorages(
+  orgUserStorages: OrgUserStorage[],
+): OrgUserStorage[] {
+  return orgUserStorages.sort((a, b) => collator.compare(a.name, b.name));
+}
+
 /* 
   get the equipment for a user by OrgUserStorage id
   returns an array of processed equipment objects
 */
 export const getEquipment = async (
-  id: string,
+  orgUserStorage: OrgUserStorage,
 ): Promise<EquipmentObj[] | undefined> => {
   try {
-    const orgUserStorage = await DataStore.query(OrgUserStorage, id);
     if (!orgUserStorage) throw new Error("OrgUserStorage does not exist!");
     const equipment = await DataStore.query(Equipment, (c) =>
       c.assignedTo.id.eq(orgUserStorage.id),
@@ -22,8 +38,44 @@ export const getEquipment = async (
     return equipmentData;
   } catch (error) {
     handleError("GetEquipment", error as Error, null);
+    return undefined;
   }
 };
+
+/* getEquipment but for every OrgUserStorage in the organization */
+export async function getOrgEquipment(
+  orgId: string,
+): Promise<OrgEquipmentObj[]> {
+  const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
+    c.organization.id.eq(orgId),
+  );
+  // sort orgUserStorages by name
+  const sortedMembers = sortOrgUserStorages(orgUserStorages);
+  // for each orgUserStorage, get the equipment assigned to it
+  // distinguish between orgUserStorages with equipment and without
+  let orgEquipmentWithContent = [];
+  let orgEquipmentWithoutContent = [];
+  for (let i = 0; i < sortedMembers.length; i++) {
+    const processedEquipment = await getEquipment(sortedMembers[i]);
+    const length = processedEquipment ? processedEquipment.length : 0;
+    if (length > 0) {
+      orgEquipmentWithContent.push({
+        assignedToName: sortedMembers[i].name,
+        equipment: processedEquipment!,
+      });
+    } else {
+      orgEquipmentWithoutContent.push({
+        assignedToName: sortedMembers[i].name,
+        equipment: [],
+      });
+    }
+  }
+  // return orgEquipment with those that have equipment first
+  const orgEquipment = orgEquipmentWithContent.concat(
+    orgEquipmentWithoutContent,
+  );
+  return orgEquipment;
+}
 
 /*
   get duplicates and merge their counts
@@ -55,28 +107,11 @@ export function processEquipmentData(
     }
   });
 
-  // Convert the Map back to an array
-  const processedEquipmentData = Array.from(equipmentMap.values());
-  return processedEquipmentData;
-}
-
-/* getEquipment but for every OrgUserStorage in the organization */
-export async function getOrgEquipment(
-  orgId: string,
-): Promise<OrgEquipmentObj[]> {
-  const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-    c.organization.id.eq(orgId),
+  // Sort map by the keys so equipment names are in alphabetical order
+  const sortedMap = new Map(
+    [...equipmentMap.entries()].sort((a, b) => collator.compare(a[0], b[0])),
   );
-  // for each orgUserStorage, get the equipment assigned to it
-  let equipment = [];
-  for (let i = 0; i < orgUserStorages.length; i++) {
-    const processedEquipment = await getEquipment(orgUserStorages[i].id);
-    equipment.push(processedEquipment ? processedEquipment : []);
-  }
-  // return both orgUserStorages and equipment as one object
-  const orgEquipment = orgUserStorages.map((orgUserStorage, index) => ({
-    assignedToName: orgUserStorage.name,
-    equipment: equipment[index],
-  }));
-  return orgEquipment;
+  // Convert the Map back to an array
+  const processedEquipmentData = Array.from(sortedMap.values());
+  return processedEquipmentData;
 }

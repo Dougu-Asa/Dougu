@@ -1,6 +1,7 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { SearchBar } from "@rneui/themed";
 
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
@@ -13,6 +14,11 @@ import { useUser } from "../../helper/UserContext";
 */
 const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
   const { user, org } = useUser();
+  const [search, setSearch] = useState("");
+
+  const updateSearch = (search: string) => {
+    setSearch(search);
+  };
 
   const handleCreate = () => {
     if (org!.organizationManagerUserId === user!.attributes.sub) {
@@ -30,12 +36,21 @@ const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Manage Equipment</Text>
+          <View style={styles.searchBar}>
+            <SearchBar
+              placeholder="Search"
+              onChangeText={updateSearch}
+              value={search}
+              platform="android"
+              containerStyle={{ height: 30 }}
+              inputContainerStyle={{ height: 10 }}
+            />
+          </View>
           <TouchableOpacity onPress={handleCreate}>
-            <Ionicons name="add" size={40} style={styles.addIcon} />
+            <Ionicons name="add" size={50} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
-        <EquipmentTable />
+        <EquipmentTable searchFilter={search} />
       </View>
     </View>
   );
@@ -60,14 +75,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
+    width: "100%",
   },
   addIcon: {
     backgroundColor: "#f4f4f4",
     borderRadius: 10,
-    marginLeft: 30,
+    marginLeft: 20,
+  },
+  searchBar: {
+    width: "80%",
+    borderWidth: 4,
+    borderRadius: 10,
+    borderColor: "#f4f4f4",
+    height: 50,
+    justifyContent: "center",
   },
 });

@@ -4,7 +4,7 @@ import { useIsFocused } from "@react-navigation/native";
 import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Alert } from "react-native";
+import { Alert, Keyboard } from "react-native";
 
 // project imports
 import EquipmentScreen from "./Equipment";
@@ -26,6 +26,7 @@ const Tab = createMaterialTopTabNavigator<TabParamList>();
 function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const isFocused = useIsFocused();
   const { user, org, orgUserStorage, contextLoading, resetContext } = useUser();
 
@@ -47,6 +48,27 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
       },
     });
   }, [navigation, currOrgName, isManager]);
+
+  // listen for keyboard events and hide the tab bar when the keyboard is visible
+  useLayoutEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   // check if the user is the manager of the organization
   // after verifying the user, org, and orgUserStorage are not null
@@ -89,8 +111,8 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
           fontSize: 9,
         },
         tabBarStyle: {
-          height: 70,
-          paddingTop: 5,
+          height: keyboardVisible ? 0 : 70,
+          paddingTop: keyboardVisible ? 0 : 5,
         },
         tabBarIconStyle: {
           marginTop: -5,

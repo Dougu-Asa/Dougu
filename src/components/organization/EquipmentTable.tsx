@@ -22,9 +22,16 @@ import { getOrgEquipment } from "../../helper/DataStoreUtils";
   Component for displaying all equipment in the organization
   in a table format
 */
-export default function EquipmentTable() {
+export default function EquipmentTable({
+  searchFilter,
+}: {
+  searchFilter: string;
+}) {
   const tableHead = ["Name", "Assigned To", "Quantity", ""];
+  // table data is the equipment in the organization
   const [tableData, setTableData] = useState<EquipmentObj[]>([]);
+  // filtered data is the equipment that matches the search filter
+  const [filteredData, setFilteredData] = useState<EquipmentObj[]>([]);
   const isManager = useRef<boolean>(false);
   const { user, org } = useUser();
   const { setIsLoading } = useLoad();
@@ -41,6 +48,7 @@ export default function EquipmentTable() {
         tableData = tableData.concat(assignedEquipment.equipment);
       });
       setTableData(tableData);
+      setFilteredData(tableData);
     }
 
     isManager.current =
@@ -51,6 +59,24 @@ export default function EquipmentTable() {
 
     return () => subscription.unsubscribe();
   }, [org, user]);
+
+  // listen for changes in the search bar
+  useEffect(() => {
+    /*filter the equipment based on the search filter,
+    where the equipment label or assigned to name includes the search filter */
+    if (searchFilter.length > 0) {
+      const filteredData = tableData.filter(
+        (equipment) =>
+          equipment.label.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          equipment.assignedToName
+            .toLowerCase()
+            .includes(searchFilter.toLowerCase()),
+      );
+      setFilteredData(filteredData);
+    } else {
+      setFilteredData(tableData);
+    }
+  }, [searchFilter, tableData]);
 
   // delete equipment from the organization
   const handleDelete = async (equipment: EquipmentObj) => {
@@ -98,7 +124,7 @@ export default function EquipmentTable() {
         <Text style={[styles.headerText, { flex: 1 }]}>{tableHead[3]}</Text>
       </View>
       <ScrollView>
-        {tableData.map((equipment, index) => (
+        {filteredData.map((equipment, index) => (
           <View key={index} style={styles.row}>
             <View style={[styles.cell, { flex: 8 }]}>
               <Text>{equipment.label}</Text>

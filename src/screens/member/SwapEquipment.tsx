@@ -43,10 +43,10 @@ const SwapEquipmentScreen = () => {
 
   // gets and sets the equipment for the current user and the swap user
   const setEquipment = useCallback(async () => {
-    const equipmentOne = await getEquipment(orgUserStorage!.id);
+    const equipmentOne = await getEquipment(orgUserStorage!);
     setListOne(equipmentOne ? equipmentOne : []);
     if (swapUser.current != null) {
-      const equipmentTwo = await getEquipment(swapUser.current.id);
+      const equipmentTwo = await getEquipment(swapUser.current);
       setListTwo(equipmentTwo ? equipmentTwo : []);
     } else {
       setListTwo([]);
