@@ -21,6 +21,7 @@ export const handleError = (
   return error;
 };
 
+// function to sign out the user and clear everything
 export const signOut = async (
   setIsLoading: Dispatch<SetStateAction<boolean>>,
   // use any type because multiple navigation types are used
@@ -30,11 +31,12 @@ export const signOut = async (
   try {
     setIsLoading(true);
     await Auth.signOut();
-    setIsLoading(false);
     navigation.navigate("Home");
     resetContext();
-    DataStore.clear();
+    await DataStore.clear();
+    setIsLoading(false);
   } catch (error) {
+    setIsLoading(false);
     handleError("handleSignOut", error as Error, setIsLoading);
   }
 };

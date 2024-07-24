@@ -25,8 +25,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (!org || !user) return;
       const orgUser = await DataStore.query(OrgUserStorage, (c) =>
         c.and((c) => [
-          c.organization.name.eq(org.name),
-          c.user.userId.eq(user.attributes.sub),
+          c.organizationUserOrStoragesId.eq(org.id),
+          c.userOrganizationsUserId.eq(user.attributes.sub),
           c.type.eq(UserOrStorage.USER),
         ]),
       );
