@@ -9,7 +9,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import { User } from "../models";
 import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
-import { handleError } from "../helper/Error";
+import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 
 /*
@@ -75,6 +75,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           userId: user.attributes.sub,
           name: user.attributes.name,
           email: user.attributes.email,
+          image: "default",
         }),
       );
       setUser(user);

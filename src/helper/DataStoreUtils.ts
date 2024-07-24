@@ -3,7 +3,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import { Equipment } from "../models";
 import { EquipmentObj, OrgEquipmentObj } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
-import { handleError } from "./Error";
+import { handleError } from "./Utils";
 
 // speed up localCompare sorting by using a collator
 const collator = new Intl.Collator("en", {

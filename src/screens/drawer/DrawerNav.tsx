@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { DataStore } from "@aws-amplify/datastore";
-import { Auth } from "aws-amplify";
 
 // project imports
 import JoinOrgScreen from "./JoinOrgScreen";
@@ -21,13 +20,15 @@ import MemberTabs from "../member/MemberTabs";
 import JoinOrCreateScreen from "./JoinOrCreateScreen";
 import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import {
   MyHeaderProfileButtonProps,
   DrawerParamList,
 } from "../../types/NavigatorTypes";
 import { DrawerNavProps } from "../../types/ScreenTypes";
 import { CustomDrawerContent } from "../../components/drawer/CustomDrawerContent";
+import { signOut } from "../../helper/Utils";
+import { useLoad } from "../../helper/LoadingContext";
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -39,21 +40,20 @@ function DrawerNav({ navigation }: DrawerNavProps) {
   const Drawer = createDrawerNavigator<DrawerParamList>();
   const isFocused = useIsFocused();
   const { user, setOrg, resetContext } = useUser();
+  const { setIsLoading } = useLoad();
 
   // Override android backbutton by adding a listener
   // This prevents returning to home without signing out
   useEffect(() => {
     function backAction(): boolean {
-      Auth.signOut();
-      navigation.navigate("Home");
-      resetContext();
+      signOut(setIsLoading, navigation, resetContext);
       return true;
     }
 
     BackHandler.addEventListener("hardwareBackPress", backAction);
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }, [navigation, resetContext]);
+  }, [navigation, resetContext, setIsLoading]);
 
   // because users are first directed here on sign in, we check if they are part of an org
   useEffect(() => {

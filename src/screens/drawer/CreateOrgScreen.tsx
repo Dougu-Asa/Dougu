@@ -13,7 +13,7 @@ import {
   UserOrStorage,
 } from "../../models";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 
 /*
@@ -56,6 +56,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         accessCode: code,
         manager: DBuser,
         organizationManagerUserId: DBuser.userId,
+        image: "default",
       }),
     );
     if (newOrg == null)
@@ -67,6 +68,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         type: UserOrStorage.USER,
         user: DBuser,
         name: DBuser.name,
+        image: "default",
       }),
     );
     if (newOrgUserStorage == null)

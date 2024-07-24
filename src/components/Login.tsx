@@ -14,7 +14,7 @@ import { Auth } from "aws-amplify";
 import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
-import { handleError } from "../helper/Error";
+import { handleError } from "../helper/Utils";
 
 /*
   A component that allows the user to login to the app 

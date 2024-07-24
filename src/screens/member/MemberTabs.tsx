@@ -15,6 +15,8 @@ import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
 import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
+import { signOut } from "../../helper/Utils";
+import { useLoad } from "../../helper/LoadingContext";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -29,6 +31,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const isFocused = useIsFocused();
   const { user, org, orgUserStorage, contextLoading, resetContext } = useUser();
+  const { setIsLoading } = useLoad();
 
   // set the header title and right icon, a crown is shown if the user is the manager
   useLayoutEffect(() => {
@@ -76,8 +79,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
     async function checkUserOrg() {
       if (!contextLoading && (!user || !org || !orgUserStorage)) {
         Alert.alert("Error", "User, org, or orgUserStorage is null.");
-        navigation.navigate("Home");
-        resetContext();
+        await signOut(setIsLoading, navigation, resetContext);
         return;
       }
       setCurrOrgName(org!.name);
@@ -95,6 +97,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
     navigation,
     resetContext,
     contextLoading,
+    setIsLoading,
   ]);
 
   if (contextLoading) {

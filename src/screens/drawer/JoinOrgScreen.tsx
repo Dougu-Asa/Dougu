@@ -15,7 +15,7 @@ import {
   UserOrStorage,
 } from "../../models";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
 
 /*
@@ -59,6 +59,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
         type: UserOrStorage.USER,
         user: DBuser,
         name: DBuser.name,
+        image: "default",
       }),
     );
   }

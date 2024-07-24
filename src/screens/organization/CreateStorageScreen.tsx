@@ -14,7 +14,7 @@ import { DataStore } from "aws-amplify";
 import { useLoad } from "../../helper/LoadingContext";
 import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 
 /*
   Create storage screen allows a manager to create storage.
@@ -43,6 +43,7 @@ export default function CreateStorageScreen() {
           organization: dataOrg,
           type: UserOrStorage.STORAGE,
           details: details,
+          image: "default",
         }),
       );
       setIsLoading(false);

@@ -21,7 +21,7 @@ import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
 import { getEquipment } from "../../helper/DataStoreUtils";
 import DraggingOverlay from "../../components/member/DraggingOverlay";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import {
   EquipmentObj,
   DraggingOverlayHandle,

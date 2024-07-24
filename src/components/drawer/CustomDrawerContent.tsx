@@ -5,11 +5,10 @@ import {
   DrawerContentComponentProps,
 } from "@react-navigation/drawer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Auth } from "aws-amplify";
 
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { signOut } from "../../helper/Utils";
 
 // Create a custom drawer component to override default
 // react navigation drawer
@@ -20,17 +19,8 @@ export function CustomDrawerContent({
   const { setIsLoading } = useLoad();
   const { user, org, resetContext } = useUser();
 
-  // Helper function that signs out the user
-  async function signOut() {
-    try {
-      setIsLoading(true);
-      await Auth.signOut();
-      setIsLoading(false);
-      navigation.navigate("Home");
-      resetContext();
-    } catch (error) {
-      handleError("signOut", error as Error, setIsLoading);
-    }
+  async function handleSignOut() {
+    await signOut(setIsLoading, navigation, resetContext);
   }
 
   // Check if there is a current org when the user clicks on the current org button
@@ -90,7 +80,12 @@ export function CustomDrawerContent({
         />
       </View>
       <View style={styles.footer}>
-        <DrawerItem label="Logout" onPress={signOut} />
+        <DrawerItem
+          label="Logout"
+          onPress={() => {
+            handleSignOut();
+          }}
+        />
       </View>
     </View>
   );

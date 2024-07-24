@@ -15,7 +15,7 @@ import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import { OrgUserStorage, Equipment, Organization } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 
 /*
   Create equipment screen allows a manager to create equipment
@@ -73,6 +73,7 @@ function CreateEquipmentScreen() {
             lastUpdatedDate: new Date().toISOString(),
             assignedTo: orgUserStorage,
             details: details,
+            image: "default",
           }),
         );
       }

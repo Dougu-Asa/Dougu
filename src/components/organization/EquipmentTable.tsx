@@ -14,7 +14,7 @@ import { DataStore } from "aws-amplify";
 import { Equipment } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { useLoad } from "../../helper/LoadingContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { getOrgEquipment } from "../../helper/DataStoreUtils";
 

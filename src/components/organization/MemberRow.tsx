@@ -7,7 +7,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 import { OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
-import { handleError } from "../../helper/Error";
+import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/UserContext";
 
 /* 

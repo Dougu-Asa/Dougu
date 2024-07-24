@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
-import { Auth } from "aws-amplify";
+import { Auth, DataStore } from "aws-amplify";
 
 // Project Files
 import { useUser } from "../helper/UserContext";
