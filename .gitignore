@@ -62,3 +62,5 @@ amplifytools.xcconfig
 #expo ios and android builds
 ios/
 android/
+
+secret.json

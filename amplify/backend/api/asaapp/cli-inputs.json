@@ -4,16 +4,21 @@
     "apiName": "asaapp",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "API_KEY",
-      "expirationTime": 365,
-      "apiKeyExpirationDate": "2025-06-13T21:41:09.552Z",
-      "keyDescription": "Dougu-Key"
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authasaappddd920b5"
     },
     "conflictResolution": {
       "defaultResolutionStrategy": {
         "type": "AUTOMERGE"
       }
     },
-    "additionalAuthTypes": []
+    "additionalAuthTypes": [
+      {
+        "mode": "API_KEY",
+        "expirationTime": 365,
+        "apiKeyExpirationDate": "2025-07-24T03:27:38.061Z",
+        "keyDescription": "dougu-key"
+      }
+    ]
   }
 }

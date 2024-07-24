@@ -1,20 +1,22 @@
-# This "input" configures a global authorization rule to enable public access to
+# This "input" configures a global authorization rule to enable private access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
-type Organization @model @auth(rules: [{ allow: public }]) {
+type Organization @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   accessCode: String!
+  image: String!
   equipment: [Equipment] @hasMany
   UserOrStorages: [OrgUserStorage] @hasMany
   containers: [Container] @hasMany
   manager: User! @hasOne # maybe user instead
 }
 
-type User @model @auth(rules: [{ allow: public }]) {
+type User @model @auth(rules: [{ allow: private }]) {
   userId: ID! @primaryKey # special bc of cognito
   name: String!
   email: String!
+  image: String!
   organizations: [OrgUserStorage] @hasMany # debatable
 }
 
@@ -24,38 +26,48 @@ enum UserOrStorage {
 }
 
 # organizations can have users or storage to hold equipment
-type OrgUserStorage @model @auth(rules: [{ allow: public }]) {
+type OrgUserStorage @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
   type: UserOrStorage!
+  image: String!
   user: User @belongsTo
   equipment: [Equipment] @hasMany
   containers: [Container] @hasMany
   details: String
 }
 
-type Container @model @auth(rules: [{ allow: public }]) {
+type Container @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
-  lastUpdatedDate: String!
+  lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
+  image: String!
   equipment: [Equipment] @hasMany
   details: String
 }
 
-type Equipment @model @auth(rules: [{ allow: public }]) {
+type Equipment @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
-  lastUpdatedDate: String!
+  lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
+  image: String!
   parent: Container @belongsTo
   details: String
 }
 
-enum Change {
-  CHANGE
-  NOCHANGE
+# Keep track of all changes to the data
+type AuditLog @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  orgUser: String!
+  organization: String!
+  operation: String!
+  entity: String!
+  entityId: String!
+  timestamp: AWSDateTime!
+  details: String
 }
