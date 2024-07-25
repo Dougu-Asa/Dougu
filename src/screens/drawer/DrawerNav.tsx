@@ -62,13 +62,11 @@ function DrawerNav({ navigation }: DrawerNavProps) {
       try {
         await DataStore.start();
         const key = user!.attributes.sub + " currOrg";
-        console.log("user", user?.attributes.name);
         const org = await AsyncStorage.getItem(key);
         // check if user has an orgUserStorage (from previous devices)
         const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
           c.userOrganizationsUserId.eq(user!.attributes.sub),
         );
-        console.log("orgUserStorages", orgUserStorages);
         // check if there was a previous org session
         if (org != null) {
           const orgJSON = await JSON.parse(org);
