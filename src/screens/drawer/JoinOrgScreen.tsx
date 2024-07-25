@@ -39,8 +39,8 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     // if the user is already part of that org, throw an error
     const exist = await DataStore.query(OrgUserStorage, (c) =>
       c.and((c) => [
-        c.organization.id.eq(org[0].id),
-        c.user.userId.eq(user!.attributes.sub),
+        c.organizationUserOrStoragesId.eq(org[0].id),
+        c.userOrganizationsUserId.eq(user!.attributes.sub),
       ]),
     );
     if (exist.length > 0) {

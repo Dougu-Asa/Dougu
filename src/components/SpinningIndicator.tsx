@@ -1,5 +1,11 @@
 import React from "react";
-import { View, StyleSheet, Animated, Easing } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Animated,
+  Easing,
+  TouchableOpacity,
+} from "react-native";
 
 /*
   Displays a spinning indicator that is used to show that the app is loading
@@ -24,9 +30,11 @@ const SpinningIndicator = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View
-        style={[styles.circle, { transform: [{ rotateY: spin }] }]}
-      />
+      <TouchableOpacity activeOpacity={1} onPress={() => {}}>
+        <Animated.View
+          style={[styles.circle, { transform: [{ rotateY: spin }] }]}
+        />
+      </TouchableOpacity>
     </View>
   );
 };

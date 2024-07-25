@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Animated,
   LayoutChangeEvent,
@@ -36,6 +36,12 @@ const DraggableEquipment = ({
   const pan = useRef(new Animated.ValueXY()).current;
   let dimensions = useRef<DimensionsType | null>(null);
   let position = useRef<Position | null>(null);
+  const itemRef = useRef(item); // avoid stale item state
+
+  // update the itemRef when the item changes to avoid stale state
+  useEffect(() => {
+    itemRef.current = item;
+  }, [item]);
 
   // we need to know where the equipment we start dragging is located
   // get the position and dimensions of the equipment object
@@ -74,8 +80,8 @@ const DraggableEquipment = ({
       // called when the pan responder is granted/starts moving
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt, gestureState) => {
-        console.log(item);
-        onStart(item, gestureState, position.current); // Pass the item and its start position
+        console.log(itemRef.current);
+        onStart(itemRef.current, gestureState, position.current); // Pass the item and its start position
       },
       // called when the pan responder is moving
       onPanResponderMove: (event, gestureState) => {
@@ -86,7 +92,7 @@ const DraggableEquipment = ({
       },
       // called when the pan responder is released
       onPanResponderRelease: (e, gesture) => {
-        onDrop(item, gesture.moveY); // Pass the item and its drop position
+        onDrop(itemRef.current, gesture.moveY); // Pass the item and its drop position
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
@@ -109,7 +115,7 @@ const DraggableEquipment = ({
       style={[pan.getLayout(), styles.container]}
       {...panResponder.panHandlers}
     >
-      <EquipmentItem item={item} count={item.count} />
+      <EquipmentItem item={itemRef.current} count={itemRef.current.count} />
     </Animated.View>
   );
 };

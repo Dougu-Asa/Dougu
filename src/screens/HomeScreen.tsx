@@ -1,12 +1,14 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React, { useEffect } from "react";
-import { Auth, DataStore } from "aws-amplify";
+import { Auth } from "aws-amplify";
 
 // Project Files
 import { useUser } from "../helper/UserContext";
 import LoginScreen from "../components/Login";
 import CreateAccScreen from "../components/CreateAcc";
 import { HomeScreenProps } from "../types/ScreenTypes";
+import { useLoad } from "../helper/LoadingContext";
+import LoadingPage from "../components/LoadingPage";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
@@ -15,6 +17,7 @@ import { HomeScreenProps } from "../types/ScreenTypes";
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [login, setLogin] = React.useState(true);
   const { setUser } = useUser();
+  const { setIsLoading, dataStoreReady } = useLoad();
 
   useEffect(() => {
     // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
@@ -30,28 +33,32 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     };
 
     checkCurrentUser();
-  }, [navigation, setUser]);
+  }, [navigation, setIsLoading, setUser]);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Dougu</Text>
-      <View style={styles.loginCreateContainer}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => setLogin(true)}>
-            <Text>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setLogin(false)}>
-            <Text>Create</Text>
-          </TouchableOpacity>
+  if (dataStoreReady) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Dougu</Text>
+        <View style={styles.loginCreateContainer}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => setLogin(true)}>
+              <Text>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setLogin(false)}>
+              <Text>Create</Text>
+            </TouchableOpacity>
+          </View>
+          {login ? (
+            <LoginScreen navigation={navigation} />
+          ) : (
+            <CreateAccScreen navigation={navigation} />
+          )}
         </View>
-        {login ? (
-          <LoginScreen navigation={navigation} />
-        ) : (
-          <CreateAccScreen navigation={navigation} />
-        )}
       </View>
-    </View>
-  );
+    );
+  } else {
+    return <LoadingPage />;
+  }
 }
 
 const styles = StyleSheet.create({

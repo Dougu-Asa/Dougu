@@ -52,10 +52,10 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     try {
       setIsLoading(true);
       if (
-        username === undefined ||
-        username === " " ||
-        password === undefined ||
-        email === undefined
+        username === "" ||
+        username === "" ||
+        password === "" ||
+        email === ""
       ) {
         Alert.alert("Form Error", "Please fill out all fields.", [
           { text: "OK" },

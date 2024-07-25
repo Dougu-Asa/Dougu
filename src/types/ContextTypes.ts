@@ -29,4 +29,5 @@ export type UserContextType = {
 export type LoadingContextType = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  dataStoreReady: boolean;
 };

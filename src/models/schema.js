@@ -135,9 +135,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }
@@ -232,9 +238,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }
@@ -390,9 +402,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }
@@ -530,9 +548,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }
@@ -676,9 +700,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }
@@ -777,9 +807,15 @@ export const schema = {
                             {
                                 "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "allow": "public",
+                                "operations": [
                                     "read"
                                 ]
                             }

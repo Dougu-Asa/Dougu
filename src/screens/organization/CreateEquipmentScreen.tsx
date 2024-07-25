@@ -27,6 +27,7 @@ function CreateEquipmentScreen() {
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
   const [selected, setSelected] = useState("equip");
+  const [resetValue, setResetValue] = useState(false);
   const { setIsLoading } = useLoad();
   const { org } = useUser();
 
@@ -77,6 +78,11 @@ function CreateEquipmentScreen() {
           }),
         );
       }
+      onChangeName("");
+      onChangeQuantity("");
+      onChangeDetails("");
+      setAssignUser(null);
+      setResetValue(true);
       setIsLoading(false);
       Alert.alert("Equipment created successfully!");
     } catch (error) {
@@ -92,6 +98,7 @@ function CreateEquipmentScreen() {
   // update the user to assign the equipment to
   const handleUserChange = (user: OrgUserStorage | null) => {
     setAssignUser(user);
+    setResetValue(false);
   };
 
   return (
@@ -175,7 +182,7 @@ function CreateEquipmentScreen() {
       <CurrMembersDropdown
         setUser={handleUserChange}
         isCreate={true}
-        resetValue={false}
+        resetValue={resetValue}
       />
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>

@@ -1,5 +1,5 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { Amplify } from "aws-amplify";
+import { Amplify, AuthModeStrategyType } from "aws-amplify";
 import "@azure/core-asynciterator-polyfill";
 import { registerRootComponent } from "expo";
 import * as Sentry from "@sentry/react-native";
@@ -27,7 +27,12 @@ Sentry.init({
 });
 
 // Configure amplify, which connects our app to the backend
-Amplify.configure(amplifyconfig);
+Amplify.configure({
+  ...amplifyconfig,
+  DataStore: {
+    authModeStrategyType: AuthModeStrategyType.MULTI_AUTH,
+  },
+});
 
 function App() {
   return (

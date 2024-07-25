@@ -47,6 +47,8 @@ export default function CreateStorageScreen() {
         }),
       );
       setIsLoading(false);
+      onChangeName("");
+      onChangeDetails("");
       Alert.alert("Storage Created Successfully!");
     } catch (error) {
       handleError("handleCreate", error as Error, setIsLoading);

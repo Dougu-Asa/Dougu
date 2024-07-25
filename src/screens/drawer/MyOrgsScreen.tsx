@@ -22,7 +22,7 @@ const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
     // get the organizations that the user is a part of
     async function getOrgs() {
       let orgs = await DataStore.query(Organization, (c) =>
-        c.UserOrStorages.user.userId.eq(user!.attributes.sub),
+        c.UserOrStorages.userOrganizationsUserId.eq(user!.attributes.sub),
       );
       const orgData = orgs.map((org, index) => ({
         label: org["name"],

@@ -1,0 +1,631 @@
+/* eslint-disable */
+// this is an auto generated file. This will be overwritten
+
+export const getOrganization = /* GraphQL */ `
+  query GetOrganization($id: ID!) {
+    getOrganization(id: $id) {
+      id
+      name
+      accessCode
+      image
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      UserOrStorages {
+        nextToken
+        startedAt
+        __typename
+      }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
+      manager {
+        userId
+        name
+        email
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationManagerUserId
+      __typename
+    }
+  }
+`;
+export const listOrganizations = /* GraphQL */ `
+  query ListOrganizations(
+    $filter: ModelOrganizationFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listOrganizations(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        accessCode
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncOrganizations = /* GraphQL */ `
+  query SyncOrganizations(
+    $filter: ModelOrganizationFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncOrganizations(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        accessCode
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getUser = /* GraphQL */ `
+  query GetUser($userId: ID!) {
+    getUser(userId: $userId) {
+      userId
+      name
+      email
+      image
+      organizations {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const listUsers = /* GraphQL */ `
+  query ListUsers(
+    $userId: ID
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+    $sortDirection: ModelSortDirection
+  ) {
+    listUsers(
+      userId: $userId
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
+      items {
+        userId
+        name
+        email
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncUsers = /* GraphQL */ `
+  query SyncUsers(
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncUsers(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        userId
+        name
+        email
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getOrgUserStorage = /* GraphQL */ `
+  query GetOrgUserStorage($id: ID!) {
+    getOrgUserStorage(id: $id) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      type
+      image
+      user {
+        userId
+        name
+        email
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      containers {
+        nextToken
+        startedAt
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationUserOrStoragesId
+      userOrganizationsUserId
+      __typename
+    }
+  }
+`;
+export const listOrgUserStorages = /* GraphQL */ `
+  query ListOrgUserStorages(
+    $filter: ModelOrgUserStorageFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listOrgUserStorages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        type
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncOrgUserStorages = /* GraphQL */ `
+  query SyncOrgUserStorages(
+    $filter: ModelOrgUserStorageFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncOrgUserStorages(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        type
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getContainer = /* GraphQL */ `
+  query GetContainer($id: ID!) {
+    getContainer(id: $id) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      lastUpdatedDate
+      assignedTo {
+        id
+        name
+        type
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      image
+      equipment {
+        nextToken
+        startedAt
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationContainersId
+      orgUserStorageContainersId
+      __typename
+    }
+  }
+`;
+export const listContainers = /* GraphQL */ `
+  query ListContainers(
+    $filter: ModelContainerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listContainers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        lastUpdatedDate
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationContainersId
+        orgUserStorageContainersId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncContainers = /* GraphQL */ `
+  query SyncContainers(
+    $filter: ModelContainerFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncContainers(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        lastUpdatedDate
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationContainersId
+        orgUserStorageContainersId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getEquipment = /* GraphQL */ `
+  query GetEquipment($id: ID!) {
+    getEquipment(id: $id) {
+      id
+      name
+      organization {
+        id
+        name
+        accessCode
+        image
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationManagerUserId
+        __typename
+      }
+      lastUpdatedDate
+      assignedTo {
+        id
+        name
+        type
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationUserOrStoragesId
+        userOrganizationsUserId
+        __typename
+      }
+      image
+      parent {
+        id
+        name
+        lastUpdatedDate
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationContainersId
+        orgUserStorageContainersId
+        __typename
+      }
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      organizationEquipmentId
+      orgUserStorageEquipmentId
+      containerEquipmentId
+      __typename
+    }
+  }
+`;
+export const listEquipment = /* GraphQL */ `
+  query ListEquipment(
+    $filter: ModelEquipmentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listEquipment(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        lastUpdatedDate
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationEquipmentId
+        orgUserStorageEquipmentId
+        containerEquipmentId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncEquipment = /* GraphQL */ `
+  query SyncEquipment(
+    $filter: ModelEquipmentFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncEquipment(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        lastUpdatedDate
+        image
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        organizationEquipmentId
+        orgUserStorageEquipmentId
+        containerEquipmentId
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getAuditLog = /* GraphQL */ `
+  query GetAuditLog($id: ID!) {
+    getAuditLog(id: $id) {
+      id
+      orgUser
+      organization
+      operation
+      entity
+      entityId
+      timestamp
+      details
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const listAuditLogs = /* GraphQL */ `
+  query ListAuditLogs(
+    $filter: ModelAuditLogFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAuditLogs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        orgUser
+        organization
+        operation
+        entity
+        entityId
+        timestamp
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncAuditLogs = /* GraphQL */ `
+  query SyncAuditLogs(
+    $filter: ModelAuditLogFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncAuditLogs(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        orgUser
+        organization
+        operation
+        entity
+        entityId
+        timestamp
+        details
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;

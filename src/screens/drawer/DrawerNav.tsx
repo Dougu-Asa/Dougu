@@ -18,7 +18,7 @@ import AccessCodeScreen from "./AccessCodeScreen";
 import MyOrgsScreen from "./MyOrgsScreen";
 import MemberTabs from "../member/MemberTabs";
 import JoinOrCreateScreen from "./JoinOrCreateScreen";
-import { OrgUserStorage } from "../../models";
+import { OrgUserStorage, Organization } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import {
@@ -60,28 +60,33 @@ function DrawerNav({ navigation }: DrawerNavProps) {
     // check if user is part of an org to automatically direct them to the correct screen
     async function checkUserOrg() {
       try {
+        await DataStore.start();
         const key = user!.attributes.sub + " currOrg";
+        console.log("user", user?.attributes.name);
         const org = await AsyncStorage.getItem(key);
+        // check if user has an orgUserStorage (from previous devices)
         const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-          c.user.userId.eq(user!.attributes.sub),
+          c.userOrganizationsUserId.eq(user!.attributes.sub),
         );
+        console.log("orgUserStorages", orgUserStorages);
         // check if there was a previous org session
         if (org != null) {
-          const orgJSON = JSON.parse(org);
-          setOrg(orgJSON);
+          const orgJSON = await JSON.parse(org);
+          const orgData = await DataStore.query(Organization, orgJSON.id);
+          if (orgData == null) {
+            throw new Error("Organization not found");
+          }
+          setOrg(orgData);
           navigation.navigate("DrawerNav", {
             screen: "MemberTabs",
             params: {
               screen: "Equipment",
             },
           });
-        }
-        // check if user has an orgUserStorage (from previous devices)
-        else if (orgUserStorages != null && orgUserStorages.length > 0) {
+        } else if (orgUserStorages != null && orgUserStorages.length > 0) {
           navigation.navigate("DrawerNav", { screen: "MyOrgs" });
-        }
-        // user has no org and no previous org
-        else {
+        } else {
+          // user has no org and no previous org
           navigation.navigate("DrawerNav", { screen: "JoinOrCreate" });
         }
       } catch (error) {

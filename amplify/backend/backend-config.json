@@ -15,7 +15,7 @@
           "additionalAuthenticationProviders": [
             {
               "apiKeyConfig": {
-                "apiKeyExpirationDate": "2025-07-24T03:27:38.061Z",
+                "apiKeyExpirationDate": "2025-07-24T22:22:15.717Z",
                 "apiKeyExpirationDays": 365,
                 "description": "dougu-key"
               },

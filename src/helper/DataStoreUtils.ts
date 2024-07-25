@@ -47,7 +47,7 @@ export async function getOrgEquipment(
   orgId: string,
 ): Promise<OrgEquipmentObj[]> {
   const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-    c.organization.id.eq(orgId),
+    c.organizationUserOrStoragesId.eq(orgId),
   );
   // sort orgUserStorages by name
   const sortedMembers = sortOrgUserStorages(orgUserStorages);
