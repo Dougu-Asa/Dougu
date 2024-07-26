@@ -18,6 +18,7 @@ import AccessCodeScreen from "./AccessCodeScreen";
 import MyOrgsScreen from "./MyOrgsScreen";
 import MemberTabs from "../member/MemberTabs";
 import JoinOrCreateScreen from "./JoinOrCreateScreen";
+import ProfileScreen from "./ProfileScreen";
 import { OrgUserStorage, Organization } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
@@ -65,7 +66,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
         const org = await AsyncStorage.getItem(key);
         // check if user has an orgUserStorage (from previous devices)
         const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-          c.userOrganizationsUserId.eq(user!.attributes.sub),
+          c.user.eq(user!.attributes.sub),
         );
         // check if there was a previous org session
         if (org != null) {
@@ -147,6 +148,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
       <Drawer.Screen name="AccessCode" component={AccessCodeScreen} />
       <Drawer.Screen name="MyOrgs" component={MyOrgsScreen} />
       <Drawer.Screen name="JoinOrCreate" component={JoinOrCreateScreen} />
+      <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>
   );
 }

@@ -75,6 +75,7 @@ function CreateEquipmentScreen() {
             assignedTo: orgUserStorage,
             details: details,
             image: "default",
+            group: org!.name,
           }),
         );
       }

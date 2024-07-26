@@ -1,10 +1,24 @@
 import { Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+import { useUser } from "../../helper/UserContext";
 
 function ProfileScreen() {
+  const { user } = useUser();
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <View>
-      <Text>Profile!</Text>
+      <TouchableOpacity onPress={() => console.log("create group")}>
+        <Text>Create Group</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log("Join Group")}>
+        <Text>Join Group</Text>
+      </TouchableOpacity>
     </View>
   );
 }

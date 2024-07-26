@@ -3,10 +3,8 @@ import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
-import { DataStore } from "@aws-amplify/datastore";
 
 // Project Files
-import { User } from "../models";
 import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
 import { handleError } from "../helper/Utils";
@@ -67,17 +65,10 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         password: password,
         attributes: {
           name: username,
+          profile: "default",
         },
       });
       const user = await Auth.signIn(email, password);
-      await DataStore.save(
-        new User({
-          userId: user.attributes.sub,
-          name: user.attributes.name,
-          email: user.attributes.email,
-          image: "default",
-        }),
-      );
       setUser(user);
       onChangeEmail("");
       onChangeFirst("");

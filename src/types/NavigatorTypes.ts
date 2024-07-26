@@ -18,6 +18,7 @@ export type DrawerParamList = {
   AccessCode: { accessCode: string };
   MyOrgs: undefined;
   JoinOrCreate: undefined;
+  Profile: undefined;
 };
 
 export type TabParamList = {

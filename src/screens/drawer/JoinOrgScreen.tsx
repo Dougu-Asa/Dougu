@@ -8,12 +8,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 // project imports
 import createJoinStyles from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/LoadingContext";
-import {
-  OrgUserStorage,
-  Organization,
-  User,
-  UserOrStorage,
-} from "../../models";
+import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
@@ -40,7 +35,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     const exist = await DataStore.query(OrgUserStorage, (c) =>
       c.and((c) => [
         c.organizationUserOrStoragesId.eq(org[0].id),
-        c.userOrganizationsUserId.eq(user!.attributes.sub),
+        c.user.eq(user!.attributes.sub),
       ]),
     );
     if (exist.length > 0) {
@@ -51,15 +46,14 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
 
   // create an orgUserStorage object for the user and the org
   async function createOrgUserStorage(org: Organization) {
-    const DBuser = await DataStore.query(User, user!.attributes.sub);
-    if (DBuser == null) throw new Error("User does not exist!");
     await DataStore.save(
       new OrgUserStorage({
         organization: org,
         type: UserOrStorage.USER,
-        user: DBuser,
-        name: DBuser.name,
+        name: user!.attributes.name,
         image: "default",
+        group: org.name,
+        user: user!.attributes.sub,
       }),
     );
   }

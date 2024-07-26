@@ -11,6 +11,7 @@ export const createOrganization = /* GraphQL */ `
       name
       accessCode
       image
+      manager
       equipment {
         nextToken
         startedAt
@@ -26,24 +27,11 @@ export const createOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
-      manager {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-      organizationManagerUserId
       __typename
     }
   }
@@ -58,6 +46,7 @@ export const updateOrganization = /* GraphQL */ `
       name
       accessCode
       image
+      manager
       equipment {
         nextToken
         startedAt
@@ -73,24 +62,11 @@ export const updateOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
-      manager {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-      organizationManagerUserId
       __typename
     }
   }
@@ -105,6 +81,7 @@ export const deleteOrganization = /* GraphQL */ `
       name
       accessCode
       image
+      manager
       equipment {
         nextToken
         startedAt
@@ -116,91 +93,6 @@ export const deleteOrganization = /* GraphQL */ `
         __typename
       }
       containers {
-        nextToken
-        startedAt
-        __typename
-      }
-      manager {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      organizationManagerUserId
-      __typename
-    }
-  }
-`;
-export const createUser = /* GraphQL */ `
-  mutation CreateUser(
-    $input: CreateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    createUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      image
-      organizations {
-        nextToken
-        startedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const updateUser = /* GraphQL */ `
-  mutation UpdateUser(
-    $input: UpdateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    updateUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      image
-      organizations {
-        nextToken
-        startedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const deleteUser = /* GraphQL */ `
-  mutation DeleteUser(
-    $input: DeleteUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    deleteUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      image
-      organizations {
         nextToken
         startedAt
         __typename
@@ -227,28 +119,18 @@ export const createOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
       image
-      user {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -266,7 +148,6 @@ export const createOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -284,28 +165,18 @@ export const updateOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
       image
-      user {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -323,7 +194,6 @@ export const updateOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -341,28 +211,18 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
       image
-      user {
-        userId
-        name
-        email
-        image
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -380,7 +240,6 @@ export const deleteOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -398,12 +257,12 @@ export const createContainer = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -412,6 +271,8 @@ export const createContainer = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -419,10 +280,10 @@ export const createContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      image
+      color
+      group
       equipment {
         nextToken
         startedAt
@@ -453,12 +314,12 @@ export const updateContainer = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -467,6 +328,8 @@ export const updateContainer = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -474,10 +337,10 @@ export const updateContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      image
+      color
+      group
       equipment {
         nextToken
         startedAt
@@ -508,12 +371,12 @@ export const deleteContainer = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -522,6 +385,8 @@ export const deleteContainer = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -529,10 +394,10 @@ export const deleteContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      image
+      color
+      group
       equipment {
         nextToken
         startedAt
@@ -563,12 +428,12 @@ export const createEquipment = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -577,6 +442,8 @@ export const createEquipment = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -584,15 +451,16 @@ export const createEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
       image
+      group
       parent {
         id
         name
         lastUpdatedDate
-        image
+        color
+        group
         details
         createdAt
         updatedAt
@@ -629,12 +497,12 @@ export const updateEquipment = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -643,6 +511,8 @@ export const updateEquipment = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -650,15 +520,16 @@ export const updateEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
       image
+      group
       parent {
         id
         name
         lastUpdatedDate
-        image
+        color
+        group
         details
         createdAt
         updatedAt
@@ -695,12 +566,12 @@ export const deleteEquipment = /* GraphQL */ `
         name
         accessCode
         image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -709,6 +580,8 @@ export const deleteEquipment = /* GraphQL */ `
         name
         type
         image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -716,15 +589,16 @@ export const deleteEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
       image
+      group
       parent {
         id
         name
         lastUpdatedDate
-        image
+        color
+        group
         details
         createdAt
         updatedAt
@@ -744,75 +618,6 @@ export const deleteEquipment = /* GraphQL */ `
       organizationEquipmentId
       orgUserStorageEquipmentId
       containerEquipmentId
-      __typename
-    }
-  }
-`;
-export const createAuditLog = /* GraphQL */ `
-  mutation CreateAuditLog(
-    $input: CreateAuditLogInput!
-    $condition: ModelAuditLogConditionInput
-  ) {
-    createAuditLog(input: $input, condition: $condition) {
-      id
-      orgUser
-      organization
-      operation
-      entity
-      entityId
-      timestamp
-      details
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const updateAuditLog = /* GraphQL */ `
-  mutation UpdateAuditLog(
-    $input: UpdateAuditLogInput!
-    $condition: ModelAuditLogConditionInput
-  ) {
-    updateAuditLog(input: $input, condition: $condition) {
-      id
-      orgUser
-      organization
-      operation
-      entity
-      entityId
-      timestamp
-      details
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const deleteAuditLog = /* GraphQL */ `
-  mutation DeleteAuditLog(
-    $input: DeleteAuditLogInput!
-    $condition: ModelAuditLogConditionInput
-  ) {
-    deleteAuditLog(input: $input, condition: $condition) {
-      id
-      orgUser
-      organization
-      operation
-      entity
-      entityId
-      timestamp
-      details
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
       __typename
     }
   }

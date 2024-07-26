@@ -26,8 +26,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const orgUser = await DataStore.query(OrgUserStorage, (c) =>
         c.and((c) => [
           c.organizationUserOrStoragesId.eq(org.id),
-          c.userOrganizationsUserId.eq(user.attributes.sub),
-          c.type.eq(UserOrStorage.USER),
+          c.user.eq(user.attributes.sub),
         ]),
       );
       setOrgUserStorage(orgUser[0]);

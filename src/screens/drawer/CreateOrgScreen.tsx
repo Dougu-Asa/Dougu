@@ -6,12 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // project imports
 import createJoinStyles from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/LoadingContext";
-import {
-  Organization,
-  User,
-  OrgUserStorage,
-  UserOrStorage,
-} from "../../models";
+import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
@@ -46,16 +41,12 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
 
   // create an org and orgUserStorage to add to the database
   async function create(code: string) {
-    // query for the user that will be the org manager
-    const DBuser = await DataStore.query(User, user!.attributes.sub);
-    if (DBuser == null) throw new Error("User not found in database.");
     // Add the org to the database
     const newOrg = await DataStore.save(
       new Organization({
         name: name,
         accessCode: code,
-        manager: DBuser,
-        organizationManagerUserId: DBuser.userId,
+        manager: user!.attributes.sub,
         image: "default",
       }),
     );
@@ -66,9 +57,10 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       new OrgUserStorage({
         organization: newOrg,
         type: UserOrStorage.USER,
-        user: DBuser,
-        name: DBuser.name,
+        user: user!.attributes.sub,
+        name: user!.attributes.name,
         image: "default",
+        group: name,
       }),
     );
     if (newOrgUserStorage == null)
