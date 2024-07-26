@@ -3,7 +3,7 @@
 
 type Organization @model @auth(rules: [
   { allow: groups, groupsField: "name" }
-  { allow: private, operations: [read, create] }
+  { allow: private, operations: [create] }
   ]) {
   id: ID!
   name: String!
@@ -23,7 +23,7 @@ enum UserOrStorage {
 # organizations can have users or storage to hold equipment
 type OrgUserStorage @model  @auth(rules: [
   { allow: groups, groupsField: "group" }
-  { allow: private, operations: [read, create] }
+  { allow: private, operations: [create] }
   ]) {
   id: ID!
   name: String!
@@ -37,7 +37,10 @@ type OrgUserStorage @model  @auth(rules: [
   details: String
 }
 
-type Container @model  @auth(rules: [{ allow: groups, groupsField: "group" }]) {
+type Container @model  @auth(rules: [
+  { allow: groups, groupsField: "group" }
+  { allow: private, operations: [create] }
+  ]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
@@ -49,7 +52,10 @@ type Container @model  @auth(rules: [{ allow: groups, groupsField: "group" }]) {
   details: String
 }
 
-type Equipment @model @auth(rules: [{ allow: groups, groupsField: "group" }]) {
+type Equipment @model @auth(rules: [
+  { allow: groups, groupsField: "group" }
+  { allow: private, operations: [create] }
+  ]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo

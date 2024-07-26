@@ -49,7 +49,8 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
       setIsLoading(false);
       onChangePassword("");
       onChangeUsername("");
-      navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+      //navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+      navigation.navigate("Temp");
     } catch (error) {
       handleError("signIn", error as Error, setIsLoading);
     }

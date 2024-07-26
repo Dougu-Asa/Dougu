@@ -5,6 +5,7 @@ import DrawerNav from "./drawer/DrawerNav";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
+import Temp from "./temp";
 
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +30,7 @@ export function RootStackNavigator() {
           component={DrawerNav}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="Temp" component={Temp} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>
