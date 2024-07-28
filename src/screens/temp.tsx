@@ -2,6 +2,7 @@ import { DataStore } from "aws-amplify";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Auth } from "aws-amplify";
 
 import { useLoad } from "../helper/LoadingContext";
 import LoadingPage from "../components/LoadingPage";
@@ -18,15 +19,27 @@ import { signOut } from "../helper/Utils";
 import { addUserToGroup, createUserGroup } from "../helper/UserGroups";
 
 function Temp({ navigation }) {
-  const { dataStoreReady, setIsLoading } = useLoad();
-  const { user, setOrg, org, orgUserStorage, resetContext } = useUser();
+  const { dataStoreReady, setIsLoading, setDataStoreReady } = useLoad();
+  const { user, setUser, setOrg, org, orgUserStorage, resetContext } =
+    useUser();
   const name = "Temp2";
-  const userGroupName = "DUUUUCKKK";
+  const userGroupName = "Temp2";
 
   useEffect(() => {
     DataStore.start();
     console.log("user: ", user);
   }, [user]);
+
+  const refresh = async () => {
+    console.log("Refreshing...");
+    await Auth.currentSession();
+    const user = await Auth.currentAuthenticatedUser();
+    setUser(user);
+    await DataStore.clear();
+    setDataStoreReady(false);
+    await DataStore.start();
+    console.log("Refreshed!");
+  };
 
   const createOrganization = async () => {
     const newOrg = await DataStore.save(
@@ -100,6 +113,7 @@ function Temp({ navigation }) {
   }
   return (
     <View>
+      <Button onPress={() => refresh}>Refresh Datastore</Button>
       <Button onPress={createOrganization}>Create Organization!</Button>
       <Button onPress={CreateEquipment}>Create Equipment!</Button>
       <Button onPress={() => handleGet()}>Get Async Org</Button>

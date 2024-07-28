@@ -42,7 +42,7 @@ export const LoadingProvider = ({
 
   return (
     <LoadingContext.Provider
-      value={{ isLoading, setIsLoading, dataStoreReady }}
+      value={{ isLoading, setIsLoading, dataStoreReady, setDataStoreReady }}
     >
       {children}
     </LoadingContext.Provider>

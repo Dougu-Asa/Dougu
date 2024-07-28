@@ -17,3 +17,5 @@ Ultimately, I ended up creating an API Gateway on AWS that calls a lambda functi
 Reminders:
 - OrgName must satisfy regular expression pattern: [\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+"
 - Reminder: Keep users to less than 5 user groups!
+- figure out refreshing user session
+- check internet connection/sync for userGroup management
