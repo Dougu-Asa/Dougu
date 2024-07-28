@@ -1,5 +1,5 @@
 import { DataStore } from "aws-amplify";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,15 +15,18 @@ import {
 } from "../models";
 import { useUser } from "../helper/UserContext";
 import { signOut } from "../helper/Utils";
+import { addUserToGroup, createUserGroup } from "../helper/UserGroups";
 
-function Temp({navigation}) {
+function Temp({ navigation }) {
   const { dataStoreReady, setIsLoading } = useLoad();
   const { user, setOrg, org, orgUserStorage, resetContext } = useUser();
   const name = "Temp2";
+  const userGroupName = "DUUUUCKKK";
 
   useEffect(() => {
     DataStore.start();
-  }, []);
+    console.log("user: ", user);
+  }, [user]);
 
   const createOrganization = async () => {
     const newOrg = await DataStore.save(
@@ -100,6 +103,27 @@ function Temp({navigation}) {
       <Button onPress={createOrganization}>Create Organization!</Button>
       <Button onPress={CreateEquipment}>Create Equipment!</Button>
       <Button onPress={() => handleGet()}>Get Async Org</Button>
+      <Button
+        onPress={() =>
+          createUserGroup(
+            user!.signInUserSession.idToken.jwtToken,
+            userGroupName,
+          )
+        }
+      >
+        Create Usergroup
+      </Button>
+      <Button
+        onPress={() =>
+          addUserToGroup(
+            user!.signInUserSession.idToken.jwtToken,
+            userGroupName,
+            user!.attributes.sub,
+          )
+        }
+      >
+        Add User to Group
+      </Button>
       <Button onPress={queryOrganizations}>Query Organizations!</Button>
       <Button onPress={queryOrgUserStorage}>Query OrgUserStorage!</Button>
       <Button onPress={queryEquipment}>Query Equipment!</Button>
