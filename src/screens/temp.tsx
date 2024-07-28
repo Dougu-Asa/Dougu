@@ -16,7 +16,7 @@ import {
 } from "../models";
 import { useUser } from "../helper/UserContext";
 import { signOut } from "../helper/Utils";
-import { addUserToGroup, createUserGroup } from "../helper/UserGroups";
+import { addUserToGroup, createUserGroup } from "../helper/AWS";
 
 function Temp({ navigation }) {
   const { dataStoreReady, setIsLoading, setDataStoreReady } = useLoad();
@@ -27,18 +27,23 @@ function Temp({ navigation }) {
 
   useEffect(() => {
     DataStore.start();
+  }, []);
+
+  useEffect(() => {
     console.log("user: ", user);
   }, [user]);
 
   const refresh = async () => {
     console.log("Refreshing...");
-    await Auth.currentSession();
-    const user = await Auth.currentAuthenticatedUser();
-    setUser(user);
     await DataStore.clear();
     setDataStoreReady(false);
-    await DataStore.start();
-    console.log("Refreshed!");
+    await Auth.updateUserAttributes(user!, {
+      name: user!.attributes.name,
+    });
+    setTimeout(async () => {
+      await DataStore.start();
+      console.log("Refreshed!");
+    }, 2000);
   };
 
   const createOrganization = async () => {
@@ -113,7 +118,7 @@ function Temp({ navigation }) {
   }
   return (
     <View>
-      <Button onPress={() => refresh}>Refresh Datastore</Button>
+      <Button onPress={() => refresh()}>Refresh</Button>
       <Button onPress={createOrganization}>Create Organization!</Button>
       <Button onPress={CreateEquipment}>Create Equipment!</Button>
       <Button onPress={() => handleGet()}>Get Async Org</Button>
