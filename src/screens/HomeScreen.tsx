@@ -8,7 +8,6 @@ import LoginScreen from "../components/Login";
 import CreateAccScreen from "../components/CreateAcc";
 import { HomeScreenProps } from "../types/ScreenTypes";
 import { useLoad } from "../helper/LoadingContext";
-import LoadingPage from "../components/LoadingPage";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
@@ -17,7 +16,7 @@ import LoadingPage from "../components/LoadingPage";
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [login, setLogin] = React.useState(true);
   const { setUser } = useUser();
-  const { setIsLoading, dataStoreReady } = useLoad();
+  const { setIsLoading } = useLoad();
 
   useEffect(() => {
     // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
@@ -35,30 +34,26 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     checkCurrentUser();
   }, [navigation, setIsLoading, setUser]);
 
-  if (dataStoreReady) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Dougu</Text>
-        <View style={styles.loginCreateContainer}>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => setLogin(true)}>
-              <Text>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setLogin(false)}>
-              <Text>Create</Text>
-            </TouchableOpacity>
-          </View>
-          {login ? (
-            <LoginScreen navigation={navigation} />
-          ) : (
-            <CreateAccScreen navigation={navigation} />
-          )}
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Dougu</Text>
+      <View style={styles.loginCreateContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setLogin(true)}>
+            <Text>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setLogin(false)}>
+            <Text>Create</Text>
+          </TouchableOpacity>
         </View>
+        {login ? (
+          <LoginScreen navigation={navigation} />
+        ) : (
+          <CreateAccScreen navigation={navigation} />
+        )}
       </View>
-    );
-  } else {
-    return <LoadingPage />;
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

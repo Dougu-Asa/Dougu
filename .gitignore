@@ -63,4 +63,6 @@ amplifytools.xcconfig
 ios/
 android/
 
+# managing aws secrets
 secret.json
+.env

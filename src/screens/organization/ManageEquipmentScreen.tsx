@@ -21,7 +21,7 @@ const ManageEquipmentScreen = ({ navigation }: ManageEquipmentScreenProps) => {
   };
 
   const handleCreate = () => {
-    if (org!.organizationManagerUserId === user!.attributes.sub) {
+    if (org!.manager === user!.attributes.sub) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(

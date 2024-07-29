@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
+import SyncScreen from "./SyncScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
@@ -27,6 +28,11 @@ export function RootStackNavigator() {
         <Stack.Screen
           name="DrawerNav"
           component={DrawerNav}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SyncScreen"
+          component={SyncScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -55,6 +55,12 @@ export function CustomDrawerContent({
       </View>
       <View style={styles.listContainer}>
         <DrawerItem
+          label="Profile"
+          onPress={() => {
+            navigation.navigate("Profile");
+          }}
+        />
+        <DrawerItem
           label="Current Org"
           onPress={() => {
             handleCurrOrgNav();

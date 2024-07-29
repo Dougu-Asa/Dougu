@@ -83,7 +83,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
         return;
       }
       setCurrOrgName(org!.name);
-      if (org!.organizationManagerUserId === user!.attributes.sub) {
+      if (org!.manager === user!.attributes.sub) {
         setIsManager(true);
       }
     }

@@ -8,6 +8,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 // Navigator types
 export type RootStackParamList = {
   Home: undefined;
+  SyncScreen: { syncType: "START" | "CREATE" | "JOIN"; accessCode?: string };
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
 };
 
@@ -18,6 +19,7 @@ export type DrawerParamList = {
   AccessCode: { accessCode: string };
   MyOrgs: undefined;
   JoinOrCreate: undefined;
+  Profile: undefined;
 };
 
 export type TabParamList = {

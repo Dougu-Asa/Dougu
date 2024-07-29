@@ -2,28 +2,17 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
 type Organization @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
+  { allow: groups, groupsField: "name" }
+  { allow: private, operations: [create, read] }
   ]) {
   id: ID!
   name: String!
   accessCode: String!
   image: String!
+  manager: String!
   equipment: [Equipment] @hasMany
   UserOrStorages: [OrgUserStorage] @hasMany
   containers: [Container] @hasMany
-  manager: User! @hasOne # maybe user instead
-}
-
-type User @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
-  ]) {
-  userId: ID! @primaryKey # special bc of cognito
-  name: String!
-  email: String!
-  image: String!
-  organizations: [OrgUserStorage] @hasMany # debatable
 }
 
 enum UserOrStorage {
@@ -32,38 +21,40 @@ enum UserOrStorage {
 }
 
 # organizations can have users or storage to hold equipment
-type OrgUserStorage @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
+type OrgUserStorage @model  @auth(rules: [
+  { allow: groups, groupsField: "group" }
+  { allow: private, operations: [create] }
   ]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
   type: UserOrStorage!
   image: String!
-  user: User @belongsTo
+  group: String!
+  user: String
   equipment: [Equipment] @hasMany
   containers: [Container] @hasMany
   details: String
 }
 
-type Container @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
+type Container @model  @auth(rules: [
+  { allow: groups, groupsField: "group" }
+  { allow: private, operations: [create] }
   ]) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
   lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
-  image: String!
+  color: String!
+  group: String!
   equipment: [Equipment] @hasMany
   details: String
 }
 
 type Equipment @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
+  { allow: groups, groupsField: "group" }
+  { allow: private, operations: [create] }
   ]) {
   id: ID!
   name: String!
@@ -71,21 +62,7 @@ type Equipment @model @auth(rules: [
   lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
   image: String!
+  group: String!
   parent: Container @belongsTo
-  details: String
-}
-
-# Keep track of all changes to the data
-type AuditLog @model @auth(rules: [
-  { allow: private, operations: [read, create, update, delete] }
-  { allow: public, operations: [read]} 
-  ]) {
-  id: ID!
-  orgUser: String!
-  organization: String!
-  operation: String!
-  entity: String!
-  entityId: String!
-  timestamp: AWSDateTime!
   details: String
 }

@@ -40,7 +40,7 @@ export default function UserStorages({
     async function getManager() {
       const managerOrgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
         c.and((c) => [
-          c.user.userId.eq(org!.organizationManagerUserId),
+          c.user.eq(org!.manager),
           c.organization.name.eq(org!.name),
           c.type.eq(UserOrStorage.USER),
         ]),
@@ -56,7 +56,7 @@ export default function UserStorages({
         data = await DataStore.query(OrgUserStorage, (c) =>
           c.and((c) => [
             c.organization.name.eq(org!.name),
-            c.user.userId.ne(org!.organizationManagerUserId),
+            c.user.ne(org!.manager),
             c.type.eq("USER"),
           ]),
         );
@@ -85,7 +85,7 @@ export default function UserStorages({
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {
-    if (org!.organizationManagerUserId !== user!.attributes.sub)
+    if (org!.manager !== user!.attributes.sub)
       Alert.alert("You need to be a manager to create a storage!");
     else navigation.navigate("CreateStorage");
   };

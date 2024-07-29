@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { LoadingContextType } from "../types/ContextTypes";
-import { DataStore, Hub } from "aws-amplify";
 
 const LoadingContext = React.createContext<LoadingContextType | undefined>(
   undefined,
@@ -17,38 +16,9 @@ export const LoadingProvider = ({
   children: React.ReactNode;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [dataStoreReady, setDataStoreReady] = useState(false);
-
-  // start DataStore and listen for DataStore ready event
-  useEffect(() => {
-    DataStore.start();
-    const listener = Hub.listen("datastore", async (hubData) => {
-      const { event } = hubData.payload;
-      if (event === "ready") {
-        setDataStoreReady(true);
-      }
-    });
-    // listen for signout because datastore.clear() is called
-    const authListener = Hub.listen("auth", (data) => {
-      if (data.payload.event === "signOut") {
-        setDataStoreReady(false);
-        // wait 2 seconds for DataStore to clear fully
-        setTimeout(() => {
-          DataStore.start();
-        }, 2000);
-      }
-    });
-
-    return () => {
-      listener();
-      authListener();
-    };
-  }, []);
 
   return (
-    <LoadingContext.Provider
-      value={{ isLoading, setIsLoading, dataStoreReady }}
-    >
+    <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
       {children}
     </LoadingContext.Provider>
   );

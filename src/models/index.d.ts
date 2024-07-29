@@ -1,4 +1,4 @@
-import { ModelInit, MutableModel, __modelMeta__, ManagedIdentifier, CustomIdentifier } from "@aws-amplify/datastore";
+import { ModelInit, MutableModel, __modelMeta__, ManagedIdentifier } from "@aws-amplify/datastore";
 // @ts-ignore
 import { LazyLoading, LazyLoadingDisabled, AsyncCollection, AsyncItem } from "@aws-amplify/datastore";
 
@@ -18,13 +18,12 @@ type EagerOrganization = {
   readonly name: string;
   readonly accessCode: string;
   readonly image: string;
+  readonly manager: string;
   readonly equipment?: (Equipment | null)[] | null;
   readonly UserOrStorages?: (OrgUserStorage | null)[] | null;
   readonly containers?: (Container | null)[] | null;
-  readonly manager: User;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
-  readonly organizationManagerUserId: string;
 }
 
 type LazyOrganization = {
@@ -36,53 +35,18 @@ type LazyOrganization = {
   readonly name: string;
   readonly accessCode: string;
   readonly image: string;
+  readonly manager: string;
   readonly equipment: AsyncCollection<Equipment>;
   readonly UserOrStorages: AsyncCollection<OrgUserStorage>;
   readonly containers: AsyncCollection<Container>;
-  readonly manager: AsyncItem<User>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
-  readonly organizationManagerUserId: string;
 }
 
 export declare type Organization = LazyLoading extends LazyLoadingDisabled ? EagerOrganization : LazyOrganization
 
 export declare const Organization: (new (init: ModelInit<Organization>) => Organization) & {
   copyOf(source: Organization, mutator: (draft: MutableModel<Organization>) => MutableModel<Organization> | void): Organization;
-}
-
-type EagerUser = {
-  readonly [__modelMeta__]: {
-    identifier: CustomIdentifier<User, 'userId'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly userId: string;
-  readonly name: string;
-  readonly email: string;
-  readonly image: string;
-  readonly organizations?: (OrgUserStorage | null)[] | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-type LazyUser = {
-  readonly [__modelMeta__]: {
-    identifier: CustomIdentifier<User, 'userId'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly userId: string;
-  readonly name: string;
-  readonly email: string;
-  readonly image: string;
-  readonly organizations: AsyncCollection<OrgUserStorage>;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-export declare type User = LazyLoading extends LazyLoadingDisabled ? EagerUser : LazyUser
-
-export declare const User: (new (init: ModelInit<User>) => User) & {
-  copyOf(source: User, mutator: (draft: MutableModel<User>) => MutableModel<User> | void): User;
 }
 
 type EagerOrgUserStorage = {
@@ -95,14 +59,14 @@ type EagerOrgUserStorage = {
   readonly organization: Organization;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly image: string;
-  readonly user?: User | null;
+  readonly group: string;
+  readonly user?: string | null;
   readonly equipment?: (Equipment | null)[] | null;
   readonly containers?: (Container | null)[] | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationUserOrStoragesId?: string | null;
-  readonly userOrganizationsUserId?: string | null;
 }
 
 type LazyOrgUserStorage = {
@@ -115,14 +79,14 @@ type LazyOrgUserStorage = {
   readonly organization: AsyncItem<Organization>;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly image: string;
-  readonly user: AsyncItem<User | undefined>;
+  readonly group: string;
+  readonly user?: string | null;
   readonly equipment: AsyncCollection<Equipment>;
   readonly containers: AsyncCollection<Container>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationUserOrStoragesId?: string | null;
-  readonly userOrganizationsUserId?: string | null;
 }
 
 export declare type OrgUserStorage = LazyLoading extends LazyLoadingDisabled ? EagerOrgUserStorage : LazyOrgUserStorage
@@ -141,7 +105,8 @@ type EagerContainer = {
   readonly organization: Organization;
   readonly lastUpdatedDate: string;
   readonly assignedTo: OrgUserStorage;
-  readonly image: string;
+  readonly color: string;
+  readonly group: string;
   readonly equipment?: (Equipment | null)[] | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
@@ -160,7 +125,8 @@ type LazyContainer = {
   readonly organization: AsyncItem<Organization>;
   readonly lastUpdatedDate: string;
   readonly assignedTo: AsyncItem<OrgUserStorage>;
-  readonly image: string;
+  readonly color: string;
+  readonly group: string;
   readonly equipment: AsyncCollection<Equipment>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
@@ -186,6 +152,7 @@ type EagerEquipment = {
   readonly lastUpdatedDate: string;
   readonly assignedTo: OrgUserStorage;
   readonly image: string;
+  readonly group: string;
   readonly parent?: Container | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
@@ -206,6 +173,7 @@ type LazyEquipment = {
   readonly lastUpdatedDate: string;
   readonly assignedTo: AsyncItem<OrgUserStorage>;
   readonly image: string;
+  readonly group: string;
   readonly parent: AsyncItem<Container | undefined>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
@@ -219,44 +187,4 @@ export declare type Equipment = LazyLoading extends LazyLoadingDisabled ? EagerE
 
 export declare const Equipment: (new (init: ModelInit<Equipment>) => Equipment) & {
   copyOf(source: Equipment, mutator: (draft: MutableModel<Equipment>) => MutableModel<Equipment> | void): Equipment;
-}
-
-type EagerAuditLog = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<AuditLog, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly orgUser: string;
-  readonly organization: string;
-  readonly operation: string;
-  readonly entity: string;
-  readonly entityId: string;
-  readonly timestamp: string;
-  readonly details?: string | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-type LazyAuditLog = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<AuditLog, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly orgUser: string;
-  readonly organization: string;
-  readonly operation: string;
-  readonly entity: string;
-  readonly entityId: string;
-  readonly timestamp: string;
-  readonly details?: string | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-export declare type AuditLog = LazyLoading extends LazyLoadingDisabled ? EagerAuditLog : LazyAuditLog
-
-export declare const AuditLog: (new (init: ModelInit<AuditLog>) => AuditLog) & {
-  copyOf(source: AuditLog, mutator: (draft: MutableModel<AuditLog>) => MutableModel<AuditLog> | void): AuditLog;
 }

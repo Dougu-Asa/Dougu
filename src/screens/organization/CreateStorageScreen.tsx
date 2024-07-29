@@ -44,6 +44,7 @@ export default function CreateStorageScreen() {
           type: UserOrStorage.STORAGE,
           details: details,
           image: "default",
+          group: org!.name,
         }),
       );
       setIsLoading(false);
