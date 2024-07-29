@@ -57,6 +57,16 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     return org[0];
   }
 
+  // if a user is part of more than 5 orgs, datastore begins to error
+  async function validate() {
+    const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
+      c.user.eq(user!.attributes.sub),
+    );
+    if (userOrgs.length >= 5) {
+      throw new Error("User cannot be part of more than 5 organizations!");
+    }
+  }
+
   // create an orgUserStorage object for the user and the org
   async function createOrgUserStorage(org: Organization) {
     await DataStore.save(
@@ -78,6 +88,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       // Query for the org with the access code
       setIsLoading(true);
       const org = await checkCode();
+      await validate();
       // Create an OrgUserStorage object for the user
       await createOrgUserStorage(org);
       // update context and async storage

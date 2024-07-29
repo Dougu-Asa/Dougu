@@ -54,6 +54,20 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     }
   }
 
+  // if a user is part of more than 5 orgs, datastore begins to error
+  async function validate() {
+    const regEx = /[\p{L}\p{M}\p{S}\p{N}\p{P}]+/u;
+    if (!regEx.test(name)) {
+      throw new Error("Invalid orgName! Must contain at least one character and no spaces"); 
+    }
+    const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
+      c.user.eq(user!.attributes.sub),
+    );
+    if(userOrgs.length >= 5) {
+      throw new Error("User cannot be part of more than 5 organizations");
+    }
+  }
+
   // create an org and orgUserStorage to add to the database
   async function createOrg(code: string): Promise<Organization> {
     // Add the org to the database
@@ -96,6 +110,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       setIsLoading(true);
       // Generate a random access code
       const code = await generateCode();
+      await validate();
       // Create the org and orgUserStorage
       const newOrg = await createOrg(code);
       await createOrgUserStorage(newOrg);

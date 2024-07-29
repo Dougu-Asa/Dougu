@@ -6,7 +6,7 @@ One issue I realized when working on `DataStore.start()` is that it would automa
 
 After creating a testing screen, i was able to verify that using user groups works as intended, and helps to create a more selective syncing while still allowing users to access all the data they need. My current plan for this setup is to have users automatically create a user group whenever an organization is created and to add users to a user group whenever an orgUserStorage is created. This would need to make use of lambda functions, as I learned that it's unsafe to create an IAM user and put their access keys into the app bundle. (Even though Amplify does something similar, I'm not sure how to restrict the permissions of my IAM to the least like Amplify does, and I think ti's important to practice lambda functions for google sheets integration). 
 
-# 7-26-2024 - 7-28-2024
+# 7-26-2024 - 7-29-2024
 ## CreateUserGroup, AddUserToGroup
 I tried to setup a multiple methods to createUserGruops and add users to groups in AWS Cognito from my app, here are the methods that didn't work:
 - **DynamoDB triggers lambda function**: In this strategy, I planned to have a trigger that listens to when the Organizations or OrgUserStorage table is changed in order to activate a lambda function. While I got a working function, I came to realize that my app wouldn't get a response from the triggers and potentially have stale user data, as well as strange latency bugs.
@@ -16,9 +16,3 @@ Ultimately, I ended up creating an API Gateway on AWS that calls a lambda functi
 
 ## Refreshing
 One problem I had after adding a user to a userGroup was that the changes wouldn't be reflected in Datastore. After multiple attempts trying to use Auth.getCurrentSession(), clearing the datastore, and even setting up an API gateway to refresh the user's token, I came to realize the solution was easier than I though. Just call `await Auth.updateUserAttributes()` and reupdate with the user's own values so that the new Auth user is updated, for Datastore to properly access when it is refreshed.
-
-Reminders:
-- OrgName must satisfy regular expression pattern: [\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+"
-- Reminder: Keep users to less than 5 user groups!
-- check internet connection/sync for userGroup management
-- strange no organization found bug

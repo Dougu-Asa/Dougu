@@ -59,7 +59,9 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
     const listener = Hub.listen("datastore", async (hubData) => {
       const { event } = hubData.payload;
       if (event === "ready") {
-        handleNavigation();
+        setTimeout(() => {
+          handleNavigation();
+        }, 1000);
       }
     });
 
