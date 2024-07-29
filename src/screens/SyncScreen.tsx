@@ -31,7 +31,7 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
     };
 
     // depending on where the user is coming from, navigate to the correct screen
-    const handleNavigation = async (event: string) => {
+    const handleNavigation = async () => {
       switch (syncType) {
         case "START":
           navigation.navigate("DrawerNav", { screen: "MyOrgs" });
@@ -57,7 +57,7 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
     const listener = Hub.listen("datastore", async (hubData) => {
       const { event } = hubData.payload;
       if (event === "ready") {
-        handleNavigation(event);
+        handleNavigation();
       }
     });
 

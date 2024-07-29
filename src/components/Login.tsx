@@ -64,6 +64,7 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
         value={username}
         placeholder="email"
         keyboardType="email-address"
+        testID="emailInput"
       />
       <View style={styles.password}>
         <TextInput
@@ -73,6 +74,7 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
           value={password}
           placeholder="password"
           keyboardType="default"
+          testID="passwordInput"
         />
         <MaterialCommunityIcons
           name={showPassword ? "eye-off" : "eye"}
@@ -84,6 +86,7 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => signIn({ username, password })}
+        testID="signInButton"
       >
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
