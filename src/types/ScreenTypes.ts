@@ -30,6 +30,11 @@ export type HomeScreenProps = NativeStackScreenProps<
   "Home"
 >;
 
+export type SyncScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "SyncScreen"
+>;
+
 // for CreateAcc and Login screens
 export type NavigationOnlyProps = {
   navigation: NavigationProp<RootStackParamList>;

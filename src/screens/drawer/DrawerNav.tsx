@@ -61,7 +61,6 @@ function DrawerNav({ navigation }: DrawerNavProps) {
     // check if user is part of an org to automatically direct them to the correct screen
     async function checkUserOrg() {
       try {
-        await DataStore.start();
         const key = user!.attributes.sub + " currOrg";
         const org = await AsyncStorage.getItem(key);
         // check if user has an orgUserStorage (from previous devices)

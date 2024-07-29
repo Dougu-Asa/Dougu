@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Auth } from "aws-amplify";
 
 import { useLoad } from "../helper/LoadingContext";
-import LoadingPage from "../components/LoadingPage";
+import LoadingPage from "./SyncScreen";
 import { Button } from "@rneui/base";
 import {
   Organization,

@@ -76,8 +76,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       onChangePassword("");
       onChangeUsername("");
       setIsLoading(false);
-      //navigation.navigate("DrawerNav", { screen: "JoinOrCreate" });
-      navigation.navigate("Temp");
+      navigation.navigate("SyncScreen");
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }

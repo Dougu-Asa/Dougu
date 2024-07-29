@@ -8,6 +8,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 // Navigator types
 export type RootStackParamList = {
   Home: undefined;
+  SyncScreen: undefined;
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
 };
 

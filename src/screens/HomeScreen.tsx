@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       }
     };
 
-    //checkCurrentUser();
+    checkCurrentUser();
   }, [navigation, setIsLoading, setUser]);
 
   return (
