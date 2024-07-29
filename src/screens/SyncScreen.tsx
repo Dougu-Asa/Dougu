@@ -25,9 +25,11 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
           await Auth.updateUserAttributes(user!, {
             name: user!.attributes.name,
           });
+          await DataStore.start();
         }, 2000);
+      } else {
+        await DataStore.start();
       }
-      await DataStore.start();
     };
 
     // depending on where the user is coming from, navigate to the correct screen

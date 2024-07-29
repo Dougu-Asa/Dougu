@@ -3,7 +3,7 @@
 
 type Organization @model @auth(rules: [
   { allow: groups, groupsField: "name" }
-  { allow: private, operations: [create] }
+  { allow: private, operations: [create, read] }
   ]) {
   id: ID!
   name: String!

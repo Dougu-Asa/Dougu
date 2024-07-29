@@ -9,7 +9,6 @@ export const createUserGroup = async (
   jwtToken: string,
   userGroupName: string,
 ) => {
-  console.log("url: ", userGroupUrl);
   const response = await fetch(userGroupUrl, {
     method: "POST",
     headers: {
@@ -20,7 +19,6 @@ export const createUserGroup = async (
       name: userGroupName,
     }),
   });
-  console.log(response);
   return await response.json();
 };
 
@@ -41,6 +39,5 @@ export const addUserToGroup = async (
       userId: userId,
     }),
   });
-  console.log(response);
   return await response.json();
 };
