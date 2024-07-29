@@ -10,6 +10,7 @@ import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
+import { createUserGroup, addUserToGroup } from "../../helper/AWS";
 
 /*
   Screen for creating an organization, user enters the name of the org
@@ -20,6 +21,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [name, onChangeName] = React.useState("");
   const { user, setOrg } = useUser();
+  const token = user!.signInUserSession.idToken.jwtToken;
   var randomstring = require("randomstring");
 
   // generate codes and check if they are unique. If not, generate another
@@ -40,7 +42,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   }
 
   // create an org and orgUserStorage to add to the database
-  async function create(code: string) {
+  async function createOrg(code: string): Promise<Organization> {
     // Add the org to the database
     const newOrg = await DataStore.save(
       new Organization({
@@ -52,10 +54,16 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     );
     if (newOrg == null)
       throw new Error("Organization not created successfully.");
+    // create a user group for the org
+    await createUserGroup(token, name);
+    return newOrg;
+  }
+
+  async function createOrgUserStorage(org: Organization) {
     // Add the OrgUserStorage to the DB
     const newOrgUserStorage = await DataStore.save(
       new OrgUserStorage({
-        organization: newOrg,
+        organization: org,
         type: UserOrStorage.USER,
         user: user!.attributes.sub,
         name: user!.attributes.name,
@@ -65,7 +73,8 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     );
     if (newOrgUserStorage == null)
       throw new Error("OrgUserStorage not created successfully.");
-    return newOrg;
+    // add user to the user group
+    await addUserToGroup(token, name, user!.attributes.sub);
   }
 
   // handle verification, creation, and navigation when creating a new Organization
@@ -75,14 +84,18 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       // Generate a random access code
       const code = await generateCode();
       // Create the org and orgUserStorage
-      const newOrg = await create(code);
+      const newOrg = await createOrg(code);
+      await createOrgUserStorage(newOrg);
       // use a key to keep track of currentOrg per user
       const key = user!.attributes.sub + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(newOrg));
       setOrg(newOrg);
       onChangeName("");
       setIsLoading(false);
-      navigation.navigate("AccessCode", { accessCode: code });
+      navigation.navigate("SyncScreen", {
+        syncType: "CREATE",
+        accessCode: code,
+      });
     } catch (error) {
       handleError("handleCreate", error as Error, setIsLoading);
     }

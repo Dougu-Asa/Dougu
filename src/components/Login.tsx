@@ -49,7 +49,7 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
       setIsLoading(false);
       onChangePassword("");
       onChangeUsername("");
-      navigation.navigate("SyncScreen");
+      navigation.navigate("SyncScreen", { syncType: "START" });
     } catch (error) {
       handleError("signIn", error as Error, setIsLoading);
     }

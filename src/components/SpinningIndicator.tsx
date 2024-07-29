@@ -30,7 +30,7 @@ const SpinningIndicator = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity activeOpacity={1} onPress={() => {}}>
+      <TouchableOpacity onPress={() => {}}>
         <Animated.View
           style={[styles.circle, { transform: [{ rotateY: spin }] }]}
         />
@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "transparent",
   },
   circle: {
     width: 150,

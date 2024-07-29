@@ -12,6 +12,7 @@ import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
+import { addUserToGroup } from "../../helper/AWS";
 
 /*
   Screen for joining an organization, user enters the access code to join
@@ -20,6 +21,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [code, onChangeCode] = React.useState("");
   const { user, setOrg } = useUser();
+  const token = user!.signInUserSession.idToken.jwtToken;
 
   // ensure the code given is valid and the user is not already part of the org
   async function checkCode() {
@@ -56,6 +58,8 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
         user: user!.attributes.sub,
       }),
     );
+    // add the user to the user group
+    await addUserToGroup(token, org.name, user!.attributes.sub);
   }
 
   async function handleJoin() {
@@ -71,7 +75,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       setOrg(org);
       setIsLoading(false);
       onChangeCode("");
-      navigation.navigate("MemberTabs", { screen: "Equipment" });
+      navigation.navigate("SyncScreen", { syncType: "JOIN" });
     } catch (error) {
       handleError("joinOrg", error as Error, setIsLoading);
     }

@@ -1,10 +1,16 @@
 import type { NavigationProp } from "@react-navigation/core";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import {
   DrawerScreenProps,
   DrawerNavigationProp,
 } from "@react-navigation/drawer";
-import type { CompositeScreenProps } from "@react-navigation/native";
+import type {
+  CompositeScreenProps,
+  CompositeNavigationProp,
+} from "@react-navigation/native";
 import type { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 
 import {
@@ -41,12 +47,22 @@ export type NavigationOnlyProps = {
 };
 
 // drawer screen types
+type JoinOrgNavigation = CompositeNavigationProp<
+  DrawerNavigationProp<DrawerParamList, "JoinOrg">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 export type JoinOrgScreenProps = {
-  navigation: DrawerNavigationProp<DrawerParamList, "JoinOrg">;
+  navigation: JoinOrgNavigation;
 };
 
+type CreateOrgNavigation = CompositeNavigationProp<
+  DrawerNavigationProp<DrawerParamList, "CreateOrg">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 export type CreateOrgScreenProps = {
-  navigation: DrawerNavigationProp<DrawerParamList, "CreateOrg">;
+  navigation: CreateOrgNavigation;
 };
 
 export type JoinOrCreateScreenProps = DrawerScreenProps<

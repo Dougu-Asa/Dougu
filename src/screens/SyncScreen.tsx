@@ -1,28 +1,70 @@
 import React, { useEffect } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { Hub, DataStore } from "aws-amplify";
+import { Hub, DataStore, Auth } from "aws-amplify";
 
 import { SyncScreenProps } from "../types/ScreenTypes";
+import { useUser } from "../helper/UserContext";
 
 /*
   after a user logs in, this screen is displayed while the app
   syncs datastore with the backend
 */
-function SyncScreen({ navigation }: SyncScreenProps) {
+function SyncScreen({ route, navigation }: SyncScreenProps) {
+  const { syncType } = route.params;
+  const { accessCode } = route.params;
+  const { user } = useUser();
+
   // start DataStore and listen for DataStore ready event
   useEffect(() => {
-    DataStore.start();
+    const handleDataStore = async () => {
+      if (syncType !== "START") {
+        await DataStore.clear();
+        // wait for DataStore to clear (2 seconds)
+        setTimeout(async () => {
+          // this updates Auth to trigger a refresh of the user
+          await Auth.updateUserAttributes(user!, {
+            name: user!.attributes.name,
+          });
+        }, 2000);
+      }
+      await DataStore.start();
+    };
+
+    // depending on where the user is coming from, navigate to the correct screen
+    const handleNavigation = async (event: string) => {
+      switch (syncType) {
+        case "START":
+          navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+          break;
+        case "CREATE":
+          navigation.navigate("DrawerNav", {
+            screen: "AccessCode",
+            params: { accessCode: accessCode ? accessCode : "ERROR" },
+          });
+          break;
+        case "JOIN":
+          navigation.navigate("DrawerNav", {
+            screen: "MemberTabs",
+            params: {
+              screen: "Equipment",
+            },
+          });
+          break;
+      }
+    };
+
+    handleDataStore();
     const listener = Hub.listen("datastore", async (hubData) => {
       const { event } = hubData.payload;
       if (event === "ready") {
-        navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+        handleNavigation(event);
       }
     });
 
     return () => {
       listener();
     };
-  }, [navigation]);
+  }, [accessCode, navigation, syncType, user]);
 
   return (
     <View style={styles.container}>

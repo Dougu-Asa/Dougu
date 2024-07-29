@@ -76,7 +76,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       onChangePassword("");
       onChangeUsername("");
       setIsLoading(false);
-      navigation.navigate("SyncScreen");
+      navigation.navigate("SyncScreen", { syncType: "START" });
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }
