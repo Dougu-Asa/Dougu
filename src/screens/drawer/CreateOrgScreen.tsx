@@ -1,7 +1,8 @@
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 // project imports
 import createJoinStyles from "../../styles/CreateJoinStyles";
@@ -23,6 +24,18 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { user, setOrg } = useUser();
   const token = user!.signInUserSession.idToken.jwtToken;
   var randomstring = require("randomstring");
+  const [hasConnection, setHasConnection] = React.useState(false);
+
+  // ensure network connection since api calls are made
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setHasConnection(state.isConnected!);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   // generate codes and check if they are unique. If not, generate another
   async function generateCode() {
@@ -103,23 +116,37 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
 
   return (
     <View style={createJoinStyles.mainContainer}>
-      <Text style={createJoinStyles.title}>Create Org</Text>
-      <Text style={createJoinStyles.subtitle}>Create a name for your org</Text>
-      <TextInput
-        style={createJoinStyles.input}
-        onChangeText={onChangeName}
-        value={name}
-        placeholder="Ex. Asayake Taiko"
-        keyboardType="default"
-      />
-      <TouchableOpacity
-        style={createJoinStyles.button}
-        onPress={() => {
-          handleCreate();
-        }}
-      >
-        <Text style={createJoinStyles.btnText}>Create Org</Text>
-      </TouchableOpacity>
+      {hasConnection ? (
+        <>
+          <Text style={createJoinStyles.title}>Create Org</Text>
+          <Text style={createJoinStyles.subtitle}>
+            Create a name for your org
+          </Text>
+          <TextInput
+            style={createJoinStyles.input}
+            onChangeText={onChangeName}
+            value={name}
+            placeholder="Ex. Asayake Taiko"
+            keyboardType="default"
+          />
+          <TouchableOpacity
+            style={createJoinStyles.button}
+            onPress={() => {
+              handleCreate();
+            }}
+          >
+            <Text style={createJoinStyles.btnText}>Create Org</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <Text style={createJoinStyles.title}>No Connection</Text>
+          <Text style={createJoinStyles.subtitle}>
+            A connection is needed to Create an Org! Please check your internet
+            connection and try again
+          </Text>
+        </>
+      )}
     </View>
   );
 }

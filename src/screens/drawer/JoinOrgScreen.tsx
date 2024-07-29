@@ -1,9 +1,9 @@
-import { StatusBar } from "expo-status-bar";
 import { Text, View, TextInput } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import NetInfo from "@react-native-community/netinfo";
 
 // project imports
 import createJoinStyles from "../../styles/CreateJoinStyles";
@@ -13,7 +13,6 @@ import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
 import { addUserToGroup } from "../../helper/AWS";
-
 /*
   Screen for joining an organization, user enters the access code to join
 */
@@ -22,6 +21,18 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const [code, onChangeCode] = React.useState("");
   const { user, setOrg } = useUser();
   const token = user!.signInUserSession.idToken.jwtToken;
+  const [hasConnection, setHasConnection] = React.useState(false);
+
+  // ensure network connection since api calls are made
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setHasConnection(state.isConnected!);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   // ensure the code given is valid and the user is not already part of the org
   async function checkCode() {
@@ -83,26 +94,35 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
 
   return (
     <View style={createJoinStyles.mainContainer}>
-      <Text style={createJoinStyles.title}>Join Org</Text>
-      <Text style={createJoinStyles.subtitle}>
-        Enter the access code provided by the organization manager
-      </Text>
-      <TextInput
-        style={createJoinStyles.input}
-        onChangeText={onChangeCode}
-        value={code}
-        placeholder="Ex. ABC1234"
-        keyboardType="default"
-      />
-      <TouchableOpacity
-        style={createJoinStyles.button}
-        onPress={() => {
-          handleJoin();
-        }}
-      >
-        <Text style={createJoinStyles.btnText}>Join My Org</Text>
-      </TouchableOpacity>
-      <StatusBar style="auto" />
+      {hasConnection ? (
+        <>
+          <Text style={createJoinStyles.title}>Join Org</Text>
+          <Text style={createJoinStyles.subtitle}>
+            Enter the access code provided by the organization manager
+          </Text>
+          <TextInput
+            style={createJoinStyles.input}
+            onChangeText={onChangeCode}
+            value={code}
+            placeholder="Ex. ABC1234"
+            keyboardType="default"
+          />
+          <TouchableOpacity
+            style={createJoinStyles.button}
+            onPress={handleJoin}
+          >
+            <Text style={createJoinStyles.btnText}>Join My Org</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <Text style={createJoinStyles.title}>No Connection</Text>
+          <Text style={createJoinStyles.subtitle}>
+            A connection is needed to join an Org! Please check your internet
+            connection and try again
+          </Text>
+        </>
+      )}
     </View>
   );
 }
