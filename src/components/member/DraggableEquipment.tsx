@@ -36,6 +36,7 @@ const DraggableEquipment = ({
   const pan = useRef(new Animated.ValueXY()).current;
   let dimensions = useRef<DimensionsType | null>(null);
   let position = useRef<Position | null>(null);
+  let isDragging = useRef(false);
   const itemRef = useRef(item); // avoid stale item state
 
   // update the itemRef when the item changes to avoid stale state
@@ -51,40 +52,27 @@ const DraggableEquipment = ({
     dimensions.current = { width, height };
   };
 
-  // Check if the touch is within the bounds of the equipment
-  const isWithinBounds = (gestureState: PanResponderGestureState) => {
-    if (!position.current || !dimensions.current) return false;
-    const { x0, y0 } = gestureState;
-    console.log("current position: ", position.current.x, position.current.y);
-    console.log(
-      "current dimensions: ",
-      dimensions.current.width,
-      dimensions.current.height,
-    );
-    console.log("current touch: ", x0, y0);
-    const withinXBounds =
-      x0 >= position.current.x &&
-      x0 <= position.current.x + dimensions.current.width / 2;
-    const withinYBounds =
-      y0 >= position.current.y &&
-      y0 <= position.current.y + dimensions.current.height / 2;
-    console.log("within bounds: ", withinXBounds, withinYBounds);
-    return withinXBounds && withinYBounds;
-  };
+
 
   const panResponder = useRef(
     PanResponder.create({
-      // determine whether or not to start the pan responder
-      /*onStartShouldSetPanResponder: (evt, gestureState) =>
-        isWithinBounds(gestureState), */
-      // called when the pan responder is granted/starts moving
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (evt, gestureState) => {
-        console.log(itemRef.current);
-        onStart(itemRef.current, gestureState, position.current); // Pass the item and its start position
+      // on first touch, determine whether or not to start the pan responder
+      onStartShouldSetPanResponder: () => {
+        console.log("start!");
+        return true;
+      },
+      onPanResponderGrant: (e, gestureState) => {
+        console.log("grant!");
+        onStart(itemRef.current, gestureState, position.current);
+        setTimeout(() => {
+          isDragging.current = true;
+        }, 1500);
       },
       // called when the pan responder is moving
       onPanResponderMove: (event, gestureState) => {
+        console.log("isDragging: ", isDragging.current);
+        if(!isDragging.current) return;
+        console.log("moving!");
         onMove(gestureState); // Pass the gesture state
         Animated.event([null, { dx: pan.x, dy: pan.y }], {
           useNativeDriver: false,
@@ -92,19 +80,23 @@ const DraggableEquipment = ({
       },
       // called when the pan responder is released
       onPanResponderRelease: (e, gesture) => {
+        console.log("release!");
         onDrop(itemRef.current, gesture.moveY); // Pass the item and its drop position
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
         }).start();
+        isDragging.current = false;
       },
       // called when the pan responder is terminated
       onPanResponderTerminate: () => {
+        console.log("terminate!");
         onTerminate();
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
         }).start();
+        isDragging.current = false;
       },
     }),
   ).current;
@@ -122,8 +114,8 @@ const DraggableEquipment = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get("window").width / 4,
-    height: Dimensions.get("window").width / 4,
+    width: Dimensions.get("window").width / 5,
+    height: Dimensions.get("window").width / 5,
     marginHorizontal: 8,
   },
 });
