@@ -1,0 +1,2 @@
+# 7-30-24
+Previously, I had a setup where the equipment items would automatically begin dragging everytime a gesture was put over it. However, this would lead to problems with swiping across the scrollview. Especially as I want to add tap functionality and make the equipment items function similar to android or ios apps, I tried to use longPresses and a modified panResponder to get the job done. Unfortunately, panResponder isn't very flexible with layered responders, and therefore I am going to try react-native-gesture-handler.
