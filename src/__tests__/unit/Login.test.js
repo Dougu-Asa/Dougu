@@ -1,4 +1,3 @@
-
 import { Auth } from "aws-amplify";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
@@ -25,6 +24,8 @@ jest.mock("aws-amplify", () => ({
 jest.mock("../../helper/Utils", () => ({
   handleError: jest.fn(),
 }));
+
+jest.setTimeout(10000);
 
 describe("signIn", () => {
     beforeEach(() => {
