@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import { EquipmentObj } from "../../types/ModelTypes";
 
@@ -15,6 +15,10 @@ export default function EquipmentItem({
   item: EquipmentObj;
   count: number;
 }) {
+  const handlePress = () => {
+    console.log("Equipment item pressed!");
+  };
+
   return (
     <View style={equipment.container}>
       <View style={equipment.equipment}>
@@ -28,10 +32,22 @@ export default function EquipmentItem({
   );
 }
 
+/*
+<Pressable
+      onPress={handlePress}
+      style={({ pressed }) => [
+        equipment.container,
+        pressed && equipment.containerPressed,
+      ]}
+    > */
+
 const equipment = StyleSheet.create({
   container: {
     alignItems: "center",
     maxWidth: 100,
+  },
+  containerPressed: {
+    opacity: 0.75,
   },
   equipment: {
     backgroundColor: "skyblue",
@@ -40,6 +56,9 @@ const equipment = StyleSheet.create({
     borderRadius: Dimensions.get("window").width / 14,
     justifyContent: "center",
     alignItems: "center",
+  },
+  equipmentPressed: {
+    backgroundColor: "red",
   },
   circle: {
     backgroundColor: "white",

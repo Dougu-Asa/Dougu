@@ -137,6 +137,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
           color: "#791111",
         },
         headerTitle: "Dougu",
+        swipeEnabled: false,
       })}
       initialRouteName="MyOrgs"
       drawerContent={(props) => <CustomDrawerContent {...props} />}

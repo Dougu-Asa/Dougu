@@ -6,6 +6,7 @@ import {
   PanResponderGestureState,
   StyleSheet,
   Dimensions,
+  Pressable,
 } from "react-native";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";
@@ -36,8 +37,9 @@ const DraggableEquipment = ({
   const pan = useRef(new Animated.ValueXY()).current;
   let dimensions = useRef<DimensionsType | null>(null);
   let position = useRef<Position | null>(null);
-  let isDragging = useRef(false);
   const itemRef = useRef(item); // avoid stale item state
+  let dragEnabledRef = useRef(false);
+  let timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // update the itemRef when the item changes to avoid stale state
   useEffect(() => {
@@ -52,63 +54,63 @@ const DraggableEquipment = ({
     dimensions.current = { width, height };
   };
 
-
-
   const panResponder = useRef(
     PanResponder.create({
-      // on first touch, determine whether or not to start the pan responder
-      onStartShouldSetPanResponder: () => {
-        console.log("start!");
-        return true;
+      // prioritize panResponder over pressable in equipmentItem
+      onMoveShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => false,
+      onPanResponderGrant: () => {
+        console.log("Start Timer!");
+        timeoutRef.current = setTimeout(() => {
+          dragEnabledRef.current = true;
+          console.log("ref Enabled!");
+        }, 800);
       },
-      onPanResponderGrant: (e, gestureState) => {
-        console.log("grant!");
-        onStart(itemRef.current, gestureState, position.current);
-        setTimeout(() => {
-          isDragging.current = true;
-        }, 1500);
-      },
-      // called when the pan responder is moving
       onPanResponderMove: (event, gestureState) => {
-        console.log("isDragging: ", isDragging.current);
-        if(!isDragging.current) return;
-        console.log("moving!");
-        onMove(gestureState); // Pass the gesture state
-        Animated.event([null, { dx: pan.x, dy: pan.y }], {
-          useNativeDriver: false,
-        })(event, gestureState);
+        console.log("dragRefEnabled: ", dragEnabledRef.current);
+        if (dragEnabledRef.current) {
+          Animated.event([null, { dx: pan.x, dy: pan.y }], {
+            useNativeDriver: false,
+          })(event, gestureState);
+        }
       },
-      // called when the pan responder is released
       onPanResponderRelease: (e, gesture) => {
         console.log("release!");
-        onDrop(itemRef.current, gesture.moveY); // Pass the item and its drop position
+        //onDrop(itemRef.current, gesture.moveY);
+        clearTimeout(timeoutRef.current!);
+        dragEnabledRef.current = false;
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
         }).start();
-        isDragging.current = false;
       },
-      // called when the pan responder is terminated
       onPanResponderTerminate: () => {
         console.log("terminate!");
-        onTerminate();
+        clearTimeout(timeoutRef.current!);
+        dragEnabledRef.current = false;
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
         }).start();
-        isDragging.current = false;
       },
     }),
   ).current;
 
+  const handlePress = () => {
+    console.log("press!");
+  };
+
   return (
-    <Animated.View
-      onLayout={onLayout}
-      style={[pan.getLayout(), styles.container]}
-      {...panResponder.panHandlers}
-    >
-      <EquipmentItem item={itemRef.current} count={itemRef.current.count} />
-    </Animated.View>
+    <Pressable onLayout={onLayout}>
+      <Animated.View
+        style={[pan.getLayout(), styles.container]}
+        {...panResponder.panHandlers}
+      >
+        <EquipmentItem item={itemRef.current} count={itemRef.current.count} />
+      </Animated.View>
+    </Pressable>
   );
 };
 
