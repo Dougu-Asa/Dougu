@@ -17,7 +17,6 @@ import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
-import SwapTest from "./SwapTest";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -153,15 +152,6 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
       <Tab.Screen
         name="OrgInfo"
         component={OrgStackNavigator}
-        options={{
-          tabBarIcon: () => (
-            <MaterialCommunityIcons name="crown" color={"black"} size={21} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="SwapTest"
-        component={SwapTest}
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons name="crown" color={"black"} size={21} />

@@ -1,16 +1,23 @@
 import React, { useRef, useEffect } from "react";
 import {
-  Animated,
   LayoutChangeEvent,
-  PanResponder,
   PanResponderGestureState,
   StyleSheet,
   Dimensions,
-  Pressable,
 } from "react-native";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";
 import type { DimensionsType, Position } from "../../types/ModelTypes";
+import {
+  GestureDetector,
+  Gesture,
+  ScrollView,
+} from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
 
 /*
   Draggable Equipment is a component that allows the user to drag equipment objects
@@ -23,6 +30,7 @@ const DraggableEquipment = ({
   onStart,
   onMove,
   onTerminate,
+  scrollViewRef,
 }: {
   item: EquipmentObj;
   onDrop: (item: EquipmentObj, dropPositionY: number) => void;
@@ -31,15 +39,14 @@ const DraggableEquipment = ({
     gestureState: PanResponderGestureState,
     position: Position | null,
   ) => void;
-  onMove: (gestureState: PanResponderGestureState) => void;
+  onMove: (gestureState) => void;
   onTerminate: () => void;
+  scrollViewRef: React.RefObject<ScrollView>;
 }) => {
-  const pan = useRef(new Animated.ValueXY()).current;
+  //const pan = useRef(new Animated.ValueXY()).current;
   let dimensions = useRef<DimensionsType | null>(null);
   let position = useRef<Position | null>(null);
   const itemRef = useRef(item); // avoid stale item state
-  let dragEnabledRef = useRef(false);
-  let timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // update the itemRef when the item changes to avoid stale state
   useEffect(() => {
@@ -54,63 +61,60 @@ const DraggableEquipment = ({
     dimensions.current = { width, height };
   };
 
-  const panResponder = useRef(
-    PanResponder.create({
-      // prioritize panResponder over pressable in equipmentItem
-      onMoveShouldSetPanResponder: () => false,
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => false,
-      onPanResponderGrant: () => {
-        console.log("Start Timer!");
-        timeoutRef.current = setTimeout(() => {
-          dragEnabledRef.current = true;
-          console.log("ref Enabled!");
-        }, 800);
-      },
-      onPanResponderMove: (event, gestureState) => {
-        console.log("dragRefEnabled: ", dragEnabledRef.current);
-        if (dragEnabledRef.current) {
-          Animated.event([null, { dx: pan.x, dy: pan.y }], {
-            useNativeDriver: false,
-          })(event, gestureState);
-        }
-      },
-      onPanResponderRelease: (e, gesture) => {
-        console.log("release!");
-        //onDrop(itemRef.current, gesture.moveY);
-        clearTimeout(timeoutRef.current!);
-        dragEnabledRef.current = false;
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-      onPanResponderTerminate: () => {
-        console.log("terminate!");
-        clearTimeout(timeoutRef.current!);
-        dragEnabledRef.current = false;
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-    }),
-  ).current;
+  const offset = useSharedValue({ x: 0, y: 0 });
+  let isDragging = useSharedValue(false);
+  let isPressed = useSharedValue(false);
 
-  const handlePress = () => {
-    console.log("press!");
-  };
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+        { scale: withSpring(isPressed.value ? 1.2 : 1) },
+      ],
+      zIndex: isDragging.value ? 100 : 0,
+    };
+  });
+
+  const panGesture = Gesture.Pan()
+    .onChange((e) => {
+      "worklet";
+      if (!isDragging.value) return;
+      offset.value = {
+        x: e.changeX + offset.value.x,
+        y: e.changeY + offset.value.y,
+      };
+      try {
+        onMove(e);
+      } catch (error) {
+        console.error("Error in onMove:", error);
+      }
+    })
+    .onFinalize(() => {
+      "worklet";
+      isDragging.value = false;
+      isPressed.value = false;
+      offset.value = withSpring({ x: 0, y: 0 });
+    })
+    .requireExternalGestureToFail(scrollViewRef);
+
+  const longPressGesture = Gesture.LongPress().onStart(() => {
+    "worklet";
+    isDragging.value = true;
+    isPressed.value = true;
+  });
+
+  const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
 
   return (
-    <Pressable onLayout={onLayout}>
+    <GestureDetector gesture={panPressGesture}>
       <Animated.View
-        style={[pan.getLayout(), styles.container]}
-        {...panResponder.panHandlers}
+        onLayout={onLayout}
+        style={[styles.container, animatedStyles]}
       >
         <EquipmentItem item={itemRef.current} count={itemRef.current.count} />
       </Animated.View>
-    </Pressable>
+    </GestureDetector>
   );
 };
 

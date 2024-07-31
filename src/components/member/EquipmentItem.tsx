@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import { EquipmentObj } from "../../types/ModelTypes";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -15,31 +16,25 @@ export default function EquipmentItem({
   item: EquipmentObj;
   count: number;
 }) {
-  const handlePress = () => {
-    console.log("Equipment item pressed!");
-  };
+  const tapGesture = Gesture.Tap().onEnd(() => {
+    "worklet";
+    console.log("Tapped");
+  });
 
   return (
-    <View style={equipment.container}>
-      <View style={equipment.equipment}>
-        <Entypo name="camera" size={50} color="black" />
-        <View style={equipment.circle}>
-          <Text style={equipment.count}>{count ? count : item.count}</Text>
+    <GestureDetector gesture={tapGesture}>
+      <View style={equipment.container}>
+        <View style={equipment.equipment}>
+          <Entypo name="camera" size={50} color="black" />
+          <View style={equipment.circle}>
+            <Text style={equipment.count}>{count ? count : item.count}</Text>
+          </View>
         </View>
+        <Text style={{ fontSize: 12 }}>{item.label}</Text>
       </View>
-      <Text style={{ fontSize: 12 }}>{item.label}</Text>
-    </View>
+    </GestureDetector>
   );
 }
-
-/*
-<Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [
-        equipment.container,
-        pressed && equipment.containerPressed,
-      ]}
-    > */
 
 const equipment = StyleSheet.create({
   container: {

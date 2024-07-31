@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
   PanResponderGestureState,
   LayoutChangeEvent,
@@ -12,6 +11,10 @@ import {
 import { Dimensions, Alert } from "react-native";
 import { DataStore } from "aws-amplify";
 import { useHeaderHeight } from "@react-navigation/elements";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 
 // project imports
 import { Equipment, OrgUserStorage } from "../../models";
@@ -155,10 +158,14 @@ const SwapEquipmentScreen = () => {
   };
 
   // we need to know how much the equipment has been moved
-  const handleMove = (gestureState: PanResponderGestureState) => {
-    const dx = gestureState.moveX - initialTouchPoint.current.x;
-    const dy = gestureState.moveY - initialTouchPoint.current.y;
-    overlayRef.current!.setDraggingOffset({ dx: dx, dy: dy });
+  const handleMove = (gestureState) => {
+    "worklet";
+    //const dx = gestureState.moveX - initialTouchPoint.current.x;
+    //const dy = gestureState.moveY - initialTouchPoint.current.y;
+    const dx = gestureState.absoluteX - initialTouchPoint.current.x;
+    const dy = gestureState.absoluteY - initialTouchPoint.current.y;
+    //overlayRef.current!.setDraggingOffset({ dx: dx, dy: dy });
+    console.log("gestureState: ", gestureState);
   };
 
   // we need to know who we dropped the equipment to
@@ -178,8 +185,11 @@ const SwapEquipmentScreen = () => {
     overlayRef.current!.setDraggingItem(null);
   };
 
+  const topScrollViewRef = useRef<ScrollView>(null);
+  const bottomScrollViewRef = useRef<ScrollView>(null);
+
   return (
-    <View style={styles.scrollContainer}>
+    <GestureHandlerRootView style={styles.scrollContainer}>
       <View style={styles.info}>
         <Text style={styles.infoTxt}>
           To swap equipment, drag-and-drop your equipment with a team member!
@@ -192,6 +202,7 @@ const SwapEquipmentScreen = () => {
         scrollEventThrottle={10}
         decelerationRate={"normal"}
         showsHorizontalScrollIndicator={false}
+        ref={topScrollViewRef}
       >
         <View style={styles.scrollRow} onLayout={onLayout}>
           <View style={styles.scroll}>
@@ -203,6 +214,7 @@ const SwapEquipmentScreen = () => {
                 onStart={handleStart}
                 onMove={handleMove}
                 onTerminate={handleTerminate}
+                scrollViewRef={topScrollViewRef}
               />
             ))}
           </View>
@@ -218,6 +230,7 @@ const SwapEquipmentScreen = () => {
         onScroll={handleScrollBottom}
         scrollEventThrottle={10}
         showsHorizontalScrollIndicator={false}
+        ref={bottomScrollViewRef}
       >
         <View style={styles.scrollRow}>
           <View style={styles.scroll}>
@@ -229,13 +242,14 @@ const SwapEquipmentScreen = () => {
                 onStart={handleStart}
                 onMove={handleMove}
                 onTerminate={handleTerminate}
+                scrollViewRef={bottomScrollViewRef}
               />
             ))}
           </View>
         </View>
       </ScrollView>
       <DraggingOverlay ref={overlayRef} />
-    </View>
+    </GestureHandlerRootView>
   );
 };
 
