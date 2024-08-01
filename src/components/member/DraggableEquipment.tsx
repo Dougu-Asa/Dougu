@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, Dimensions } from "react-native";
 import EquipmentItem from "./EquipmentItem";
 import {

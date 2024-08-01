@@ -138,6 +138,7 @@ const SwapEquipmentScreen = () => {
     halfLine.current = height + 120 + headerHeight;
   };
 
+  // set the equipment item to be dragged through the JS thread
   const handleSetItem = (
     item: EquipmentObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
@@ -188,6 +189,7 @@ const SwapEquipmentScreen = () => {
     });
   };
 
+  // decide where to reassign the equipment (this runs on the JS thread)
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
@@ -215,7 +217,6 @@ const SwapEquipmentScreen = () => {
       <Text style={styles.scrollText}>My Equipment</Text>
       <ScrollView
         horizontal={true}
-        scrollEventThrottle={10}
         decelerationRate={"normal"}
         showsHorizontalScrollIndicator={false}
         ref={topScrollViewRef}
@@ -244,7 +245,6 @@ const SwapEquipmentScreen = () => {
       />
       <ScrollView
         horizontal={true}
-        scrollEventThrottle={10}
         showsHorizontalScrollIndicator={false}
         ref={bottomScrollViewRef}
       >
