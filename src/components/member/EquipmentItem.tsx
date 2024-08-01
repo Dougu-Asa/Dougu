@@ -13,7 +13,7 @@ export default function EquipmentItem({
   item,
   count,
 }: {
-  item: EquipmentObj;
+  item: EquipmentObj | null;
   count: number;
 }) {
   const tapGesture = Gesture.Tap().onEnd(() => {
@@ -22,17 +22,21 @@ export default function EquipmentItem({
   });
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={equipment.container}>
-        <View style={equipment.equipment}>
-          <Entypo name="camera" size={50} color="black" />
-          <View style={equipment.circle}>
-            <Text style={equipment.count}>{count ? count : item.count}</Text>
+    <>
+      {item && count > 0 && (
+        <GestureDetector gesture={tapGesture}>
+          <View style={equipment.container}>
+            <View style={equipment.equipment}>
+              <Entypo name="camera" size={50} color="black" />
+              <View style={equipment.circle}>
+                <Text style={equipment.count}>{count}</Text>
+              </View>
+            </View>
+            <Text style={{ fontSize: 12 }}>{item.label}</Text>
           </View>
-        </View>
-        <Text style={{ fontSize: 12 }}>{item.label}</Text>
-      </View>
-    </GestureDetector>
+        </GestureDetector>
+      )}
+    </>
   );
 }
 

@@ -1,20 +1,24 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  PanResponderGestureState,
-  LayoutChangeEvent,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from "react-native";
+import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
 import { Dimensions, Alert } from "react-native";
 import { DataStore } from "aws-amplify";
 import { useHeaderHeight } from "@react-navigation/elements";
 import {
   GestureHandlerRootView,
   ScrollView,
+  GestureStateChangeEvent,
+  PanGestureHandlerEventPayload,
+  GestureUpdateEvent,
+  PanGestureChangeEventPayload,
+  LongPressGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  runOnJS,
+  withTiming,
+} from "react-native-reanimated";
 
 // project imports
 import { Equipment, OrgUserStorage } from "../../models";
@@ -23,14 +27,9 @@ import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
 import { getEquipment } from "../../helper/DataStoreUtils";
-import DraggingOverlay from "../../components/member/DraggingOverlay";
 import { handleError } from "../../helper/Utils";
-import {
-  EquipmentObj,
-  DraggingOverlayHandle,
-  Position,
-  TopOrBottom,
-} from "../../types/ModelTypes";
+import { EquipmentObj, Position, TopOrBottom } from "../../types/ModelTypes";
+import EquipmentItem from "../../components/member/EquipmentItem";
 
 /*
   Screen for swapping equipment between the current user and another user
@@ -40,7 +39,6 @@ const SwapEquipmentScreen = () => {
   const { user, orgUserStorage } = useUser();
   let swapUser = useRef<OrgUserStorage | null>(null);
   const [resetValue, setResetValue] = useState(false);
-  const overlayRef = useRef<DraggingOverlayHandle>(null);
   let [listOne, setListOne] = useState<EquipmentObj[]>([]);
   let [listTwo, setListTwo] = useState<EquipmentObj[]>([]);
 
@@ -48,6 +46,7 @@ const SwapEquipmentScreen = () => {
   const setEquipment = useCallback(async () => {
     const equipmentOne = await getEquipment(orgUserStorage!);
     setListOne(equipmentOne ? equipmentOne : []);
+    console.log("swapUser.current:", swapUser.current);
     if (swapUser.current != null) {
       const equipmentTwo = await getEquipment(swapUser.current);
       setListTwo(equipmentTwo ? equipmentTwo : []);
@@ -97,6 +96,8 @@ const SwapEquipmentScreen = () => {
 
   // get selected user equipment
   const handleSet = (inputUser: OrgUserStorage | null) => {
+    console.log("inputUser:", inputUser);
+    console.log("swapUser.current:", swapUser.current);
     swapUser.current = inputUser;
     setResetValue(false);
     setEquipment();
@@ -106,87 +107,90 @@ const SwapEquipmentScreen = () => {
     this section focuses on handling draggin and dropping equipment
     as well as the overlay calculations
   */
-  const startPosition = useRef<TopOrBottom | null>(null);
-  const initialTouchPoint = useRef({ x: 0, y: 0 });
+  const topOrBottom = useRef<TopOrBottom | null>(null);
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
-  let rowHeight = useRef(0);
-  let scrollOffsetXTop = useRef(0);
-  let scrollOffsetXBottom = useRef(0);
+  // this is half the width of the equipment item (for centering)
+  const halfEquipment = Dimensions.get("window").width / 10;
+  // these are for handling dragging overlay animation
+  const [draggingItem, setDraggingItem] = useState<EquipmentObj | null>(null);
+  const draggingOffset = useSharedValue<Position>({
+    x: 0,
+    y: 0,
+  });
+  const size = useSharedValue(1);
+  const startPosition = useSharedValue<Position>({ x: 0, y: 0 });
+  const movingStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: draggingOffset.value.x },
+        { translateY: draggingOffset.value.y },
+        { scale: size.value },
+      ],
+    };
+  });
+
+  // this is for the scrollview to take priority in scrolling
+  const topScrollViewRef = useRef<ScrollView>(null);
+  const bottomScrollViewRef = useRef<ScrollView>(null);
 
   // we need to know the size of our container
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
     halfLine.current = height + 120 + headerHeight;
-    rowHeight.current = height;
-  };
-
-  // these account for the scroll view's horizontal offset
-  const handleScrollTop = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    scrollOffsetXTop.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const handleScrollBottom = (
-    event: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => {
-    scrollOffsetXBottom.current = event.nativeEvent.contentOffset.x;
   };
 
   // we need to know where the equipment we start dragging is located
   // and also calculate the offsets of the dragging equipment
   const handleStart = (
-    item: EquipmentObj,
-    gestureState: PanResponderGestureState,
-    initialPosition: Position | null,
+    gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
   ) => {
-    overlayRef.current!.setDraggingItem(item);
-    overlayRef.current!.setDraggingOffset({ dx: 0, dy: 0 });
-    const topOrBottom = gestureState.y0 > halfLine.current ? "bottom" : "top";
-    startPosition.current = topOrBottom;
-    const infoAndHeader = 120; // 80 for info, 40 for header
-    let posy =
-      topOrBottom === "top"
-        ? initialPosition!.y + infoAndHeader // due to header offset
-        : initialPosition!.y + rowHeight.current + infoAndHeader + 40; // 40 for dropdown
-    let posx =
-      topOrBottom === "top"
-        ? initialPosition!.x - scrollOffsetXTop.current
-        : initialPosition!.x - scrollOffsetXBottom.current;
-    posx += 20; // due to margin offset
-    overlayRef.current!.setStartPosition({ top: posy, left: posx });
-    initialTouchPoint.current = { x: gestureState.x0, y: gestureState.y0 };
+    "worklet";
+    size.value = withSpring(1.2);
+    topOrBottom.current =
+      gestureState.absoluteY > halfLine.current ? "bottom" : "top";
+    draggingOffset.value = {
+      x: gestureState.absoluteX - halfEquipment,
+      y: gestureState.absoluteY - headerHeight - 40,
+    };
+    // save the start position so we can snap back to it at the end
+    startPosition.value = {
+      x: gestureState.absoluteX - halfEquipment,
+      y: gestureState.absoluteY - headerHeight - 40,
+    };
   };
 
   // we need to know how much the equipment has been moved
-  const handleMove = (gestureState) => {
+  const handleMove = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
     "worklet";
-    //const dx = gestureState.moveX - initialTouchPoint.current.x;
-    //const dy = gestureState.moveY - initialTouchPoint.current.y;
-    const dx = gestureState.absoluteX - initialTouchPoint.current.x;
-    const dy = gestureState.absoluteY - initialTouchPoint.current.y;
-    //overlayRef.current!.setDraggingOffset({ dx: dx, dy: dy });
-    console.log("gestureState: ", gestureState);
+    draggingOffset.value = {
+      x: gestureState.changeX + draggingOffset.value.x,
+      y: gestureState.changeY + draggingOffset.value.y,
+    };
   };
 
-  // we need to know who we dropped the equipment to
-  const handleDrop = async (item: EquipmentObj, dropPositionY: number) => {
-    overlayRef.current!.setDraggingItem(null);
-    const assignedTo = dropPositionY > halfLine.current ? "bottom" : "top";
-    if (swapUser.current == null) return;
-    // if the equipment is dropped in the same position
-    if (assignedTo === startPosition.current) return;
+  // handle swapping the equipment
+  const handleFinalize = (
+    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    "worklet";
+    size.value = withTiming(0, undefined, (isFinished) => {
+      if (isFinished) {
+        runOnJS(setDraggingItem)(null);
+      }
+    });
+    const assignedTo =
+      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+    // check that we swap to a different userreturn;
+    if (swapUser.current == null || assignedTo === topOrBottom.current) return;
     const swapId =
       assignedTo === "bottom" ? swapUser.current.id : orgUserStorage!.id;
-    reassignEquipment(item, swapId);
+    runOnJS(reassignEquipment)(draggingItem!, swapId);
   };
-
-  // if the scrollbar interferes with drag
-  const handleTerminate = () => {
-    overlayRef.current!.setDraggingItem(null);
-  };
-
-  const topScrollViewRef = useRef<ScrollView>(null);
-  const bottomScrollViewRef = useRef<ScrollView>(null);
 
   return (
     <GestureHandlerRootView style={styles.scrollContainer}>
@@ -198,7 +202,6 @@ const SwapEquipmentScreen = () => {
       <Text style={styles.scrollText}>My Equipment</Text>
       <ScrollView
         horizontal={true}
-        onScroll={handleScrollTop}
         scrollEventThrottle={10}
         decelerationRate={"normal"}
         showsHorizontalScrollIndicator={false}
@@ -210,11 +213,11 @@ const SwapEquipmentScreen = () => {
               <DraggableEquipment
                 key={item.id}
                 item={item}
-                onDrop={handleDrop}
+                scrollViewRef={topScrollViewRef}
+                setItem={setDraggingItem}
                 onStart={handleStart}
                 onMove={handleMove}
-                onTerminate={handleTerminate}
-                scrollViewRef={topScrollViewRef}
+                onFinalize={handleFinalize}
               />
             ))}
           </View>
@@ -227,7 +230,6 @@ const SwapEquipmentScreen = () => {
       />
       <ScrollView
         horizontal={true}
-        onScroll={handleScrollBottom}
         scrollEventThrottle={10}
         showsHorizontalScrollIndicator={false}
         ref={bottomScrollViewRef}
@@ -238,17 +240,19 @@ const SwapEquipmentScreen = () => {
               <DraggableEquipment
                 key={item.id}
                 item={item}
-                onDrop={handleDrop}
+                scrollViewRef={bottomScrollViewRef}
+                setItem={setDraggingItem}
                 onStart={handleStart}
                 onMove={handleMove}
-                onTerminate={handleTerminate}
-                scrollViewRef={bottomScrollViewRef}
+                onFinalize={handleFinalize}
               />
             ))}
           </View>
         </View>
       </ScrollView>
-      <DraggingOverlay ref={overlayRef} />
+      <Animated.View style={[styles.floatingItem, movingStyles]}>
+        <EquipmentItem item={draggingItem} count={1} />
+      </Animated.View>
     </GestureHandlerRootView>
   );
 };
@@ -256,6 +260,12 @@ const SwapEquipmentScreen = () => {
 export default SwapEquipmentScreen;
 
 const styles = StyleSheet.create({
+  floatingItem: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 100,
+  },
   scrollContainer: {
     height: "100%",
     flexDirection: "column",

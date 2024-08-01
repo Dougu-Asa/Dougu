@@ -28,25 +28,4 @@ export type Position = {
   y: number;
 };
 
-export type DimensionsType = {
-  width: number;
-  height: number;
-};
-
-export type DraggingOffset = {
-  dx: number;
-  dy: number;
-};
-
-export type StartPosition = {
-  left: number;
-  top: number;
-};
-
-export interface DraggingOverlayHandle {
-  setDraggingItem: React.Dispatch<React.SetStateAction<EquipmentObj | null>>;
-  setDraggingOffset: React.Dispatch<React.SetStateAction<DraggingOffset>>;
-  setStartPosition: React.Dispatch<React.SetStateAction<StartPosition>>;
-}
-
 export type TopOrBottom = "top" | "bottom";
