@@ -27,10 +27,14 @@ const DraggableEquipment = ({
   onStart,
   onMove,
   onFinalize,
+  onReassign,
 }: {
   item: EquipmentObj;
   scrollViewRef: React.RefObject<ScrollView>;
-  setItem: (item: EquipmentObj) => void;
+  setItem: (
+    item: EquipmentObj,
+    gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
+  ) => void;
   onStart: (
     e: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
   ) => void;
@@ -39,18 +43,11 @@ const DraggableEquipment = ({
       PanGestureHandlerEventPayload & PanGestureChangeEventPayload
     >,
   ) => void;
-  onFinalize: (
+  onFinalize: () => void;
+  onReassign: (
     e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => void;
 }) => {
-  // avoid stale item state
-  const itemRef = useRef(item);
-
-  // update the itemRef when the item changes to avoid stale state
-  useEffect(() => {
-    itemRef.current = item;
-  }, [item]);
-
   let isDragging = useSharedValue(false);
   const [stateDragging, setStateDragging] = useState(false);
 
@@ -58,20 +55,13 @@ const DraggableEquipment = ({
     .onChange((e) => {
       "worklet";
       if (!isDragging.value) return;
-      try {
-        onMove(e);
-      } catch (e) {
-        console.error("Error moving equipment: ", e);
-      }
+      onMove(e);
     })
     .onFinalize((e) => {
       "worklet";
       isDragging.value = false;
-      try {
-        onFinalize(e);
-      } catch (e) {
-        console.error("Error dropping equipment: ", e);
-      }
+      onFinalize();
+      runOnJS(onReassign)(e);
       // looks weird if the item immediately reappears
       runOnJS(setStateDragging)(false);
     })
@@ -80,9 +70,9 @@ const DraggableEquipment = ({
   const longPressGesture = Gesture.LongPress().onStart((e) => {
     "worklet";
     isDragging.value = true;
-    runOnJS(setItem)(itemRef.current);
-    runOnJS(setStateDragging)(true);
     onStart(e);
+    runOnJS(setItem)(item, e);
+    runOnJS(setStateDragging)(true);
   });
 
   const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
@@ -91,10 +81,8 @@ const DraggableEquipment = ({
     <GestureDetector gesture={panPressGesture}>
       <Animated.View style={styles.container}>
         <EquipmentItem
-          item={itemRef.current}
-          count={
-            stateDragging ? itemRef.current.count - 1 : itemRef.current.count
-          }
+          item={item}
+          count={stateDragging ? item.count - 1 : item.count}
         />
       </Animated.View>
     </GestureDetector>

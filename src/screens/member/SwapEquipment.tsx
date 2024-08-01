@@ -46,7 +46,6 @@ const SwapEquipmentScreen = () => {
   const setEquipment = useCallback(async () => {
     const equipmentOne = await getEquipment(orgUserStorage!);
     setListOne(equipmentOne ? equipmentOne : []);
-    console.log("swapUser.current:", swapUser.current);
     if (swapUser.current != null) {
       const equipmentTwo = await getEquipment(swapUser.current);
       setListTwo(equipmentTwo ? equipmentTwo : []);
@@ -58,6 +57,7 @@ const SwapEquipmentScreen = () => {
   // subscribe to changes in equipment
   useEffect(() => {
     const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
+      console.log("Equipment updated");
       setEquipment();
     });
 
@@ -96,8 +96,6 @@ const SwapEquipmentScreen = () => {
 
   // get selected user equipment
   const handleSet = (inputUser: OrgUserStorage | null) => {
-    console.log("inputUser:", inputUser);
-    console.log("swapUser.current:", swapUser.current);
     swapUser.current = inputUser;
     setResetValue(false);
     setEquipment();
@@ -107,7 +105,7 @@ const SwapEquipmentScreen = () => {
     this section focuses on handling draggin and dropping equipment
     as well as the overlay calculations
   */
-  const topOrBottom = useRef<TopOrBottom | null>(null);
+  const start = useRef<TopOrBottom | null>(null);
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
   // this is half the width of the equipment item (for centering)
@@ -140,6 +138,15 @@ const SwapEquipmentScreen = () => {
     halfLine.current = height + 120 + headerHeight;
   };
 
+  const handleSetItem = (
+    item: EquipmentObj,
+    gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
+  ) => {
+    setDraggingItem(item);
+    start.current =
+      gestureState.absoluteY > halfLine.current ? "bottom" : "top";
+  };
+
   // we need to know where the equipment we start dragging is located
   // and also calculate the offsets of the dragging equipment
   const handleStart = (
@@ -147,8 +154,6 @@ const SwapEquipmentScreen = () => {
   ) => {
     "worklet";
     size.value = withSpring(1.2);
-    topOrBottom.current =
-      gestureState.absoluteY > halfLine.current ? "bottom" : "top";
     draggingOffset.value = {
       x: gestureState.absoluteX - halfEquipment,
       y: gestureState.absoluteY - headerHeight - 40,
@@ -173,23 +178,31 @@ const SwapEquipmentScreen = () => {
     };
   };
 
-  // handle swapping the equipment
-  const handleFinalize = (
-    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
+  // handle finalizing the drag and drop animation
+  const handleFinalize = () => {
     "worklet";
     size.value = withTiming(0, undefined, (isFinished) => {
       if (isFinished) {
         runOnJS(setDraggingItem)(null);
       }
     });
+  };
+
+  const handleReassign = async (
+    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
     const assignedTo =
       gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
-    // check that we swap to a different userreturn;
-    if (swapUser.current == null || assignedTo === topOrBottom.current) return;
+    if (
+      swapUser.current == null ||
+      assignedTo === start.current ||
+      draggingItem == null
+    )
+      return;
     const swapId =
       assignedTo === "bottom" ? swapUser.current.id : orgUserStorage!.id;
     runOnJS(reassignEquipment)(draggingItem!, swapId);
+    setDraggingItem(null);
   };
 
   return (
@@ -214,10 +227,11 @@ const SwapEquipmentScreen = () => {
                 key={item.id}
                 item={item}
                 scrollViewRef={topScrollViewRef}
-                setItem={setDraggingItem}
+                setItem={handleSetItem}
                 onStart={handleStart}
                 onMove={handleMove}
                 onFinalize={handleFinalize}
+                onReassign={handleReassign}
               />
             ))}
           </View>
@@ -241,10 +255,11 @@ const SwapEquipmentScreen = () => {
                 key={item.id}
                 item={item}
                 scrollViewRef={bottomScrollViewRef}
-                setItem={setDraggingItem}
+                setItem={handleSetItem}
                 onStart={handleStart}
                 onMove={handleMove}
                 onFinalize={handleFinalize}
+                onReassign={handleReassign}
               />
             ))}
           </View>
