@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { Auth } from "aws-amplify";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
