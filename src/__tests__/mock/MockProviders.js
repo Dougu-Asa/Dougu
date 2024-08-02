@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { LoadingProvider } from "../../helper/LoadingContext";
-import { UserProvider } from "../../helper/UserContext";
+import LoadingProvider from "../../helper/LoadingContext";
+import UserProvider from "../../helper/UserContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 /* eslint-disable no-undef */
 
@@ -64,6 +64,7 @@ const MockUserProvider = ({
 };
 
 const Stack = createNativeStackNavigator();
+
 const MockedNavigator = ({ children }) => {
   return (
     <NavigationContainer>
@@ -74,6 +75,4 @@ const MockedNavigator = ({ children }) => {
   );
 };
 
-export default MockedNavigator;
-
-export { MockLoadingProvider, MockUserProvider };
+export { MockLoadingProvider, MockUserProvider, MockedNavigator };
