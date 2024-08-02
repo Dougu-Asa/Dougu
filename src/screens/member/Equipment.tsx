@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -12,7 +12,6 @@ import { useEquipment } from "../../helper/EquipmentContext";
   Screen for viewing all equipment assigned to the current user
 */
 const EquipmentScreen = () => {
-  //const [equipment, setEquipment] = useState<EquipmentObj[][]>([[]]);
   const { orgUserStorage } = useUser();
   const { equipmentData } = useEquipment();
   const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
@@ -50,28 +49,6 @@ const EquipmentScreen = () => {
   );
 };
 
-/*
-<View style={styles.background}>
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={styles.title}>My Equipment</Text>
-          {equipment.map((group, index) => (
-            <View key={index} style={styles.equipmentRow}>
-              {group.map((equip) => (
-                <View key={equip.id} style={styles.equipmentItemContainer}>
-                  <EquipmentItem
-                    key={equip.id}
-                    item={equip}
-                    count={equip.count}
-                  />
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
-    */
 export default EquipmentScreen;
 
 const styles = StyleSheet.create({

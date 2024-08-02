@@ -9,7 +9,9 @@ import { getOrgEquipment } from "./DataStoreUtils";
 
 /* 
   Context only available within MemberTabs that distributes the equipment
-  item and whether it's data is visible
+  item and whether it's data is visible. By allowing all membertabs screens
+  to share equipmentData, we ensure consistency and also custom selection of 
+  which equipment id you'd like to swap
 */
 const EquipmentContext = React.createContext<EquipmentContextType | undefined>(
   undefined,
@@ -27,6 +29,7 @@ export const EquipmentProvider = ({
   const [visible, setVisible] = useState<boolean>(false);
   const { org } = useUser();
 
+  // subscribe to and get all equipment in the organization
   useEffect(() => {
     async function handleGetEquipment() {
       const equipment = await getOrgEquipment(org!.id);
@@ -40,6 +43,7 @@ export const EquipmentProvider = ({
     return () => subscription.unsubscribe();
   }, [org]);
 
+  // select a new default id for the equipment item passed in
   const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
     // find the equipment object in the equipmentData map
     const equipment = equipmentData.get(item.assignedTo);
