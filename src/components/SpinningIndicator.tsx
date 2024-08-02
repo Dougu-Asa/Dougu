@@ -11,7 +11,7 @@ import {
   Displays a spinning indicator that is used to show that the app is loading
   Thanks to https://github.com/HirotoKakitani/Asayake-website#deploying-the-website for the inspiration
 */
-const SpinningIndicator = () => {
+export default function SpinningIndicator() {
   const spinValue = new Animated.Value(0);
 
   Animated.loop(
@@ -37,7 +37,7 @@ const SpinningIndicator = () => {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -55,5 +55,3 @@ const styles = StyleSheet.create({
     backgroundColor: "#791111",
   },
 });
-
-export default SpinningIndicator;

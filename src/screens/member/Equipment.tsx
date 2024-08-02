@@ -11,7 +11,7 @@ import { useEquipment } from "../../helper/EquipmentContext";
 /*
   Screen for viewing all equipment assigned to the current user
 */
-const EquipmentScreen = () => {
+export default function EquipmentScreen() {
   const { orgUserStorage } = useUser();
   const { equipmentData } = useEquipment();
   const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
@@ -47,9 +47,7 @@ const EquipmentScreen = () => {
       </ScrollView>
     </View>
   );
-};
-
-export default EquipmentScreen;
+}
 
 const styles = StyleSheet.create({
   background: {

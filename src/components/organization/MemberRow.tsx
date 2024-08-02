@@ -14,7 +14,7 @@ import { useUser } from "../../helper/UserContext";
     Single row from the UserStorages list. Each 
     row contains the user's name and a delete button
 */
-function MemberRow({
+export default function MemberRow({
   item,
   isManager,
 }: {
@@ -122,5 +122,3 @@ const userStorage = StyleSheet.create({
     padding: 5,
   },
 });
-
-export default MemberRow;

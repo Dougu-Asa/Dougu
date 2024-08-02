@@ -21,7 +21,7 @@ import { handleError } from "../../helper/Utils";
   Create equipment screen allows a manager to create equipment
   and assign it to a user/storage.
 */
-function CreateEquipmentScreen() {
+export default function CreateEquipmentScreen() {
   const [name, onChangeName] = useState("");
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
@@ -32,7 +32,7 @@ function CreateEquipmentScreen() {
   const { org } = useUser();
 
   // ensure all input values are valid
-  function verifyValues() {
+  const verifyValues = () => {
     // check that quantity > 1
     const quantityCount = parseInt(quantity);
     if (quantityCount < 1 || isNaN(quantityCount) || quantityCount > 50) {
@@ -49,10 +49,10 @@ function CreateEquipmentScreen() {
       throw new Error("Name must not be empty.");
     }
     return quantityCount;
-  }
+  };
 
   // Create a new equipment and assign it to a user
-  async function handleCreate() {
+  const handleCreate = async () => {
     try {
       const quantityCount = verifyValues();
       setIsLoading(true);
@@ -89,7 +89,7 @@ function CreateEquipmentScreen() {
     } catch (error) {
       handleError("CreateEquipment", error as Error, setIsLoading);
     }
-  }
+  };
 
   // update the quantity of equipment
   const handleNumberChange = (text: string) => {
@@ -191,8 +191,6 @@ function CreateEquipmentScreen() {
     </View>
   );
 }
-
-export default CreateEquipmentScreen;
 
 const styles = StyleSheet.create({
   container: {

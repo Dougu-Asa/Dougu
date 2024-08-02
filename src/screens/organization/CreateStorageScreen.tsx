@@ -27,7 +27,7 @@ export default function CreateStorageScreen() {
   const { org } = useUser();
 
   // Create a new storage
-  async function handleCreate() {
+  const handleCreate = async () => {
     try {
       // check that name isn't empty
       if (name === "") {
@@ -54,7 +54,8 @@ export default function CreateStorageScreen() {
     } catch (error) {
       handleError("handleCreate", error as Error, setIsLoading);
     }
-  }
+  };
+
   return (
     <View style={styles.container}>
       <View style={[styles.rowContainer, { marginTop: 20 }]}>

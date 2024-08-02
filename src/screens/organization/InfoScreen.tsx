@@ -9,17 +9,17 @@ import { InfoScreenProps } from "../../types/ScreenTypes";
   navigation to view more information about the organization's members,
   storages, and equipment.
 */
-function InfoScreen({ navigation }: InfoScreenProps) {
+export default function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgName, setOrgName] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const { user, org } = useUser();
 
   // get the accesscode, orgName, and check if the user is the manager
   useEffect(() => {
-    async function getOrgInfo() {
+    const getOrgInfo = async () => {
       setOrgName(org!.name);
       setAccessCode(org!.accessCode);
-    }
+    };
 
     getOrgInfo();
   }, [org, user]);
@@ -71,8 +71,6 @@ function InfoScreen({ navigation }: InfoScreenProps) {
     </View>
   );
 }
-
-export default InfoScreen;
 
 const styles = StyleSheet.create({
   container: {

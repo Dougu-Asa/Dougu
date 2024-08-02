@@ -32,7 +32,7 @@ import EquipmentItem from "../../components/member/EquipmentItem";
     as well as the overlay calculations. It is intended to handle 
     all the gesture functionality and logic
   */
-const SwapGestures = ({
+export default function SwapGestures({
   listOne,
   listTwo,
   handleSet,
@@ -46,7 +46,7 @@ const SwapGestures = ({
   resetValue: boolean;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
   reassignEquipment: (equipment: EquipmentObj, swapId: string) => void;
-}) => {
+}) {
   const { orgUserStorage } = useUser();
   const start = useRef<TopOrBottom | null>(null);
   const headerHeight = useHeaderHeight();
@@ -213,9 +213,7 @@ const SwapGestures = ({
       </Animated.View>
     </GestureHandlerRootView>
   );
-};
-
-export default SwapGestures;
+}
 
 const styles = StyleSheet.create({
   floatingItem: {

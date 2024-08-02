@@ -42,7 +42,7 @@ export default function EquipmentTable({
   useEffect(() => {
     // get all equipment in the organization by concating all equipment arrays
     // from each of the assigned users/storages
-    async function handleGetEquipment() {
+    const handleGetEquipment = () => {
       const data = sortOrgEquipment(equipmentData);
       let tableData: EquipmentObj[] = [];
       // Iterate over equipmentData and concatenate the equipment arrays
@@ -51,7 +51,7 @@ export default function EquipmentTable({
       });
       setTableData(tableData);
       setFilteredData(tableData);
-    }
+    };
 
     isManager.current = org!.manager === user!.attributes.sub ? true : false;
     handleGetEquipment();

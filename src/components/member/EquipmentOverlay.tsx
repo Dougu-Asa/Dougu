@@ -11,7 +11,7 @@ import { ScrollView } from "react-native-gesture-handler";
     on an equipment item. It displays the equipment item's 
     stats, counts, and grouped equipment items.
 */
-const EquipmentOverlay = () => {
+export default function EquipmentOverlay() {
   const { visible, setVisible, equipmentItem, modifyEquipmentItem } =
     useEquipment();
 
@@ -52,7 +52,7 @@ const EquipmentOverlay = () => {
       </Button>
     </Overlay>
   );
-};
+}
 
 const styles = StyleSheet.create({
   highlighted: {
@@ -71,5 +71,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-export default EquipmentOverlay;

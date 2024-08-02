@@ -5,7 +5,7 @@ import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Alert, Keyboard } from "react-native";
-import { EquipmentProvider } from "../../helper/EquipmentContext";
+import EquipmentProvider from "../../helper/EquipmentContext";
 
 // project imports
 import EquipmentScreen from "./Equipment";
@@ -27,7 +27,7 @@ const Tab = createMaterialTopTabNavigator<TabParamList>();
   MemberTabs is the tab navigator for a user. It holds all the screens
   that a user can navigate to while they are a member of an organization.
 */
-function MemberTabs({ navigation }: MemberTabsScreenProps) {
+export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -78,7 +78,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
   // check if the user is the manager of the organization
   // after verifying the user, org, and orgUserStorage are not null
   useEffect(() => {
-    async function checkUserOrg() {
+    const checkUserOrg = async () => {
       if (!contextLoading && (!user || !org || !orgUserStorage)) {
         Alert.alert("Error", "User, org, or orgUserStorage is null.");
         await signOut(setIsLoading, navigation, resetContext);
@@ -88,7 +88,7 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
       if (org!.manager === user!.attributes.sub) {
         setIsManager(true);
       }
-    }
+    };
 
     if (isFocused) checkUserOrg();
   }, [
@@ -165,5 +165,3 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
     </EquipmentProvider>
   );
 }
-
-export default MemberTabs;

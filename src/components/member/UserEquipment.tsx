@@ -11,7 +11,13 @@ import { EquipmentObj } from "../../types/ModelTypes";
   @param name: name of the user
   @returns a view with the user's equipment
 */
-function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
+export default function UserEquipment({
+  list,
+  name,
+}: {
+  list: EquipmentObj[];
+  name: string;
+}) {
   return (
     <View style={styles.userContainer}>
       <Text style={styles.scrollText}>{name}</Text>
@@ -37,8 +43,6 @@ function UserEquipment({ list, name }: { list: EquipmentObj[]; name: string }) {
     </View>
   );
 }
-
-export default UserEquipment;
 
 const styles = StyleSheet.create({
   equipmentWrapper: {

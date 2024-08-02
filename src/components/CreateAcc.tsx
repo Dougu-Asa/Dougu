@@ -16,7 +16,7 @@ import { NavigationOnlyProps } from "../types/ScreenTypes";
   using Cognito from AWS Amplify. Users are also uploaded
   to the database using Amplify Datastore.
 */
-function CreateAccScreen({ navigation }: NavigationOnlyProps) {
+export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const { setIsLoading } = useLoad();
   const { setUser } = useUser();
 
@@ -38,7 +38,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     onChangeUsername(first + " " + last);
   }, [first, last]);
 
-  async function handleSignUp({
+  const handleSignUp = async ({
     username,
     password,
     email,
@@ -46,7 +46,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     username: string;
     password: string;
     email: string;
-  }) {
+  }) => {
     try {
       setIsLoading(true);
       if (
@@ -80,7 +80,7 @@ function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -199,5 +199,3 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-
-export default CreateAccScreen;

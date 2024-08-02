@@ -14,16 +14,16 @@ import { useEquipment } from "../../helper/EquipmentContext";
   Screen for viewing all equipment in the organization
   Groups equipment by the orgUserStorage it is assigned to
 */
-function TeamEquipmentScreen() {
+export default function TeamEquipmentScreen() {
   const [orgEquipment, setOrgEquipment] = useState<OrgEquipmentObj[]>([]);
   const { org } = useUser();
   const { equipmentData } = useEquipment();
 
   useEffect(() => {
-    async function handleGetEquipment() {
+    const handleGetEquipment = async () => {
       const equipment = sortOrgEquipment(equipmentData);
       setOrgEquipment(equipment);
-    }
+    };
 
     handleGetEquipment();
   }, [equipmentData, org]);
@@ -42,5 +42,3 @@ function TeamEquipmentScreen() {
     </View>
   );
 }
-
-export default TeamEquipmentScreen;

@@ -12,19 +12,19 @@ import { signOut } from "../../helper/Utils";
 
 // Create a custom drawer component to override default
 // react navigation drawer
-export function CustomDrawerContent({
+export default function CustomDrawerContent({
   navigation,
 }: DrawerContentComponentProps) {
   const insets = useSafeAreaInsets();
   const { setIsLoading } = useLoad();
   const { user, org, resetContext } = useUser();
 
-  async function handleSignOut() {
+  const handleSignOut = async () => {
     await signOut(setIsLoading, navigation, resetContext);
-  }
+  };
 
   // Check if there is a current org when the user clicks on the current org button
-  function handleCurrOrgNav() {
+  const handleCurrOrgNav = () => {
     if (org == null) {
       Alert.alert(
         "No Current Organization",
@@ -39,7 +39,7 @@ export function CustomDrawerContent({
         },
       });
     }
-  }
+  };
 
   return (
     <View

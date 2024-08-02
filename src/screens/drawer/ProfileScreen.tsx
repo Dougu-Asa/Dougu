@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { useUser } from "../../helper/UserContext";
 
-function ProfileScreen() {
+export default function ProfileScreen() {
   const { user } = useUser();
 
   useEffect(() => {
@@ -22,5 +22,3 @@ function ProfileScreen() {
     </View>
   );
 }
-
-export default ProfileScreen;

@@ -10,7 +10,7 @@ import { UserType, UserContextType } from "../types/ContextTypes";
 */
 const UserContext = React.createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
   const [org, setOrg] = useState<Organization | null>(null);
   const [orgUserStorage, setOrgUserStorage] = useState<OrgUserStorage | null>(

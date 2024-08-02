@@ -7,7 +7,10 @@ import { AccessCodeScreenProps } from "../../types/ScreenTypes";
 /*
   Screen for displaying the access code to the manager after they create an organization
 */
-function AccessCodeScreen({ route, navigation }: AccessCodeScreenProps) {
+export default function AccessCodeScreen({
+  route,
+  navigation,
+}: AccessCodeScreenProps) {
   const { accessCode } = route.params;
 
   return (
@@ -28,5 +31,3 @@ function AccessCodeScreen({ route, navigation }: AccessCodeScreenProps) {
     </View>
   );
 }
-
-export default AccessCodeScreen;

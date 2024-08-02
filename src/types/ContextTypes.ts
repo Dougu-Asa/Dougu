@@ -6,7 +6,6 @@ import { EquipmentObj, OrgEquipmentObj } from "./ModelTypes";
     Defines the types for the context objects used in the app.
     Specifically for UserContext and LoadingContext
 */
-
 export type UserType = {
   attributes: {
     sub: string;
@@ -26,7 +25,6 @@ export type UserContextType = {
   resetContext: () => void; // doesn't take a param, doesn't return anything
 };
 
-// loadingContext types
 export type LoadingContextType = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;

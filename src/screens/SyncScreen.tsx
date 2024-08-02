@@ -9,7 +9,7 @@ import { useUser } from "../helper/UserContext";
   after a user logs in, this screen is displayed while the app
   syncs datastore with the backend
 */
-function SyncScreen({ route, navigation }: SyncScreenProps) {
+export default function SyncScreen({ route, navigation }: SyncScreenProps) {
   const { syncType } = route.params;
   const { accessCode } = route.params;
   const { newOrg } = route.params;
@@ -98,5 +98,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
-export default SyncScreen;

@@ -65,11 +65,6 @@ export type CreateOrgScreenProps = {
   navigation: CreateOrgNavigation;
 };
 
-export type JoinOrCreateScreenProps = DrawerScreenProps<
-  DrawerParamList,
-  "JoinOrCreate"
->;
-
 export type AccessCodeScreenProps = DrawerScreenProps<
   DrawerParamList,
   "AccessCode"

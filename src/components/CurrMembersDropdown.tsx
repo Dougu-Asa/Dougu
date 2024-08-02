@@ -15,7 +15,7 @@ import { sortOrgUserStorages } from "../helper/DataStoreUtils";
   Dropdown component for selecting the current members
   (OrgUserStorages) of the organization
 */
-const CurrMembersDropdown = ({
+export default function CurrMembersDropdown({
   setUser,
   isCreate,
   resetValue,
@@ -23,7 +23,7 @@ const CurrMembersDropdown = ({
   setUser: (inputUser: OrgUserStorage | null) => void;
   isCreate: boolean;
   resetValue: boolean;
-}) => {
+}) {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
   const [userNames, setUserNames] = useState<UserNames[]>([]);
@@ -32,7 +32,7 @@ const CurrMembersDropdown = ({
 
   // useEffect
   useEffect(() => {
-    async function getMembers() {
+    const getMembers = async () => {
       let data;
       if (isCreate) {
         // when creating equipment, you want to be able to assign it to anyone
@@ -58,7 +58,7 @@ const CurrMembersDropdown = ({
         data: user,
       }));
       setUserNames(userNames);
-    }
+    };
 
     const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
       () => {
@@ -75,9 +75,9 @@ const CurrMembersDropdown = ({
     }
   }, [resetValue, setUser]);
 
-  async function handleChangeUser(value: OrgUserStorage) {
+  const handleChangeUser = (value: OrgUserStorage) => {
     setUser(value);
-  }
+  };
 
   return (
     <Dropdown
@@ -99,9 +99,7 @@ const CurrMembersDropdown = ({
       autoScroll={false}
     />
   );
-};
-
-export default CurrMembersDropdown;
+}
 
 const styles = StyleSheet.create({
   dropdown: {

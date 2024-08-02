@@ -20,7 +20,7 @@ import { EquipmentObj } from "../../types/ModelTypes";
   around the screen. It uses the PanResponder API to handle touch events and the
   Animated API to move the equipment objects.
 */
-const DraggableEquipment = ({
+export default function DraggableEquipment({
   item,
   scrollViewRef,
   setItem,
@@ -47,7 +47,7 @@ const DraggableEquipment = ({
   onReassign: (
     e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => void;
-}) => {
+}) {
   let isDragging = useSharedValue(false);
   const [stateDragging, setStateDragging] = useState(false);
 
@@ -87,7 +87,7 @@ const DraggableEquipment = ({
       </Animated.View>
     </GestureDetector>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -96,5 +96,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
-
-export default DraggableEquipment;

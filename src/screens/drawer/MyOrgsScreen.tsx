@@ -11,7 +11,7 @@ import { MyOrgsScreenProps } from "../../types/ScreenTypes";
   This screen will display the organizations that the user is a part of.
   The user can select an organization to open the MemberTabs for that organization.
 */
-const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
+export default function MyOrgsScreen({ navigation }: MyOrgsScreenProps) {
   const [orgNames, setOrgNames] = useState<{ label: string; value: number }[]>(
     [],
   );
@@ -20,7 +20,7 @@ const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
   // useEffect to keep orgNames up to date
   useEffect(() => {
     // get the organizations that the user is a part of
-    async function getOrgs() {
+    const getOrgs = async () => {
       let orgs = await DataStore.query(Organization, (c) =>
         c.UserOrStorages.user.eq(user!.attributes.sub),
       );
@@ -29,7 +29,7 @@ const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
         value: index,
       }));
       setOrgNames(orgData);
-    }
+    };
 
     const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
       () => {
@@ -66,9 +66,7 @@ const MyOrgsScreen = ({ navigation }: MyOrgsScreenProps) => {
       keyExtractor={(item) => item.value.toString()}
     />
   );
-};
-
-export default MyOrgsScreen;
+}
 
 const styles = StyleSheet.create({
   orgContainer: {

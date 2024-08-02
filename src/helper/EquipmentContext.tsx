@@ -17,11 +17,11 @@ const EquipmentContext = React.createContext<EquipmentContextType | undefined>(
   undefined,
 );
 
-export const EquipmentProvider = ({
+export default function EquipmentProvider({
   children,
 }: {
   children: React.ReactNode;
-}) => {
+}) {
   const [equipmentData, setEquipmentData] = useState<
     Map<string, OrgEquipmentObj>
   >(new Map());
@@ -31,10 +31,10 @@ export const EquipmentProvider = ({
 
   // subscribe to and get all equipment in the organization
   useEffect(() => {
-    async function handleGetEquipment() {
+    const handleGetEquipment = async () => {
       const equipment = await getOrgEquipment(org!.id);
       setEquipmentData(equipment);
-    }
+    };
 
     const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
       handleGetEquipment();
@@ -73,7 +73,7 @@ export const EquipmentProvider = ({
       {children}
     </EquipmentContext.Provider>
   );
-};
+}
 
 // ensure that UserContext isn't undefined in useUser
 export const useEquipment = (): EquipmentContextType => {

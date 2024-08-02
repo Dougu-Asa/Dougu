@@ -19,7 +19,7 @@ import { validateRequirements } from "../../helper/drawer/CreateOrgUtils";
   and a random access code is generated. The user that creates the org is
   automatically the manager of the org.
 */
-function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
+export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [name, onChangeName] = React.useState("");
   const { user } = useUser();
@@ -39,7 +39,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   }, []);
 
   // generate codes and check if they are unique. If not, generate another
-  async function generateCode() {
+  const generateCode = async () => {
     while (true) {
       const code = randomstring.generate({
         length: 7,
@@ -55,10 +55,10 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         console.log("Code already exists, generating another...");
       }
     }
-  }
+  };
 
   // create an org and orgUserStorage to add to the database
-  async function createOrg(code: string): Promise<Organization> {
+  const createOrg = async (code: string): Promise<Organization> => {
     // Add the org to the database
     const newOrg = await DataStore.save(
       new Organization({
@@ -73,9 +73,9 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     // create a user group for the org
     await createUserGroup(token, name);
     return newOrg;
-  }
+  };
 
-  async function createOrgUserStorage(org: Organization) {
+  const createOrgUserStorage = async (org: Organization): Promise<boolean> => {
     // Add the OrgUserStorage to the DB
     const newOrgUserStorage = await DataStore.save(
       new OrgUserStorage({
@@ -91,10 +91,10 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       throw new Error("OrgUserStorage not created successfully.");
     // add user to the user group
     return await addUserToGroup(token, name, user!.attributes.sub);
-  }
+  };
 
   // handle verification, creation, and navigation when creating a new Organization
-  async function handleCreate() {
+  const handleCreate = async () => {
     try {
       setIsLoading(true);
       // Generate a random access code
@@ -123,7 +123,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     } catch (error) {
       handleError("handleCreate", error as Error, setIsLoading);
     }
-  }
+  };
 
   return (
     <View style={createJoinStyles.mainContainer}>
@@ -164,5 +164,3 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     </View>
   );
 }
-
-export default CreateOrgScreen;

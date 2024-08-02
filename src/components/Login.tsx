@@ -21,7 +21,7 @@ import { handleError } from "../helper/Utils";
   using their email and password. This is handled by 
   using Cognito from AWS Amplify
 */
-function LoginScreen({ navigation }: NavigationOnlyProps) {
+export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   const { setIsLoading } = useLoad();
   const { setUser } = useUser();
 
@@ -34,13 +34,13 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
     setShowPassword(!showPassword);
   };
 
-  async function signIn({
+  const signIn = async ({
     username,
     password,
   }: {
     username: string;
     password: string;
-  }) {
+  }) => {
     try {
       setIsLoading(true);
       await Auth.signIn(username, password);
@@ -53,7 +53,7 @@ function LoginScreen({ navigation }: NavigationOnlyProps) {
     } catch (error) {
       handleError("signIn", error as Error, setIsLoading);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -140,5 +140,3 @@ const styles = StyleSheet.create({
     marginTop: "8%",
   },
 });
-
-export default LoginScreen;

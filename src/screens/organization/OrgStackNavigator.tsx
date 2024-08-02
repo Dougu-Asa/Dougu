@@ -15,7 +15,7 @@ import { OrgStackScreenProps } from "../../types/ScreenTypes";
     Stack navigator for the organization screens.
     It contains all the methods for managing an organization.
 */
-function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
+export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
   // Create a stack navigator to handle navigation throughout the app
   const Stack = createNativeStackNavigator<OrgStackParamList>();
   const isFocused = useIsFocused();
@@ -52,5 +52,3 @@ function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
     </Stack.Navigator>
   );
 }
-
-export default OrgStackNavigator;

@@ -37,7 +37,7 @@ export default function UserStorages({
 
   // update our data everytime the tab or data changes
   useEffect(() => {
-    async function getManager() {
+    const getManager = async () => {
       const managerOrgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
         c.and((c) => [
           c.user.eq(org!.manager),
@@ -48,9 +48,9 @@ export default function UserStorages({
       if (managerOrgUserStorage.length <= 0)
         throw new Error("Manager not found");
       setManager(managerOrgUserStorage[0]);
-    }
+    };
 
-    async function getData() {
+    const getData = async () => {
       let data;
       if (tab === "Members") {
         data = await DataStore.query(OrgUserStorage, (c) =>
@@ -70,7 +70,7 @@ export default function UserStorages({
       }
       data = sortOrgUserStorages(data);
       setCurrData(data);
-    }
+    };
 
     setOrgName(org!.name);
     getManager();

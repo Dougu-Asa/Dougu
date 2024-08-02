@@ -17,9 +17,9 @@ const collator = new Intl.Collator("en", {
   returns the sorted array 
   USED ONLY IN USERSTORAGES
 */
-export function sortOrgUserStorages(
+export const sortOrgUserStorages = (
   orgUserStorages: OrgUserStorage[],
-): OrgUserStorage[] {
+): OrgUserStorage[] => {
   return orgUserStorages.sort((a, b) => collator.compare(a.name, b.name));
 }
 
@@ -44,9 +44,9 @@ export const getEquipment = async (
 };
 
 /* getEquipment but for every OrgUserStorage in the organization */
-export async function getOrgEquipment(
+export const getOrgEquipment = async (
   orgId: string,
-): Promise<Map<string, OrgEquipmentObj>> {
+): Promise<Map<string, OrgEquipmentObj>> => {
   let orgEquipment = new Map<string, OrgEquipmentObj>();
   const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
     c.organizationUserOrStoragesId.eq(orgId),
@@ -64,9 +64,9 @@ export async function getOrgEquipment(
 }
 
 // sort orgEquipmentObj map by assignedToName, and having those with equipment first
-export function sortOrgEquipment(
+export const sortOrgEquipment = (
   orgEquipment: Map<string, OrgEquipmentObj>,
-): OrgEquipmentObj[] {
+): OrgEquipmentObj[] => {
   let orgEquipmentWithContent: OrgEquipmentObj[] = [];
   let orgEquipmentWithoutContent: OrgEquipmentObj[] = [];
   orgEquipment.forEach((value) => {
@@ -92,10 +92,10 @@ export function sortOrgEquipment(
   get duplicates and merge their counts
   using a map to count duplicates and converting to an array
 */
-export function processEquipmentData(
+export const processEquipmentData = (
   equipment: Equipment[],
   orgUserStorage: OrgUserStorage,
-): EquipmentObj[] {
+): EquipmentObj[] => {
   const equipmentMap = new Map<string, EquipmentObj>();
 
   equipment.forEach((equip) => {

@@ -10,11 +10,11 @@ const LoadingContext = React.createContext<LoadingContextType | undefined>(
     if loading, the app will display a loading indicator
     if !dataStoreReady, a loading page will be displayed
 */
-export const LoadingProvider = ({
+export default function LoadingProvider({
   children,
 }: {
   children: React.ReactNode;
-}) => {
+}) {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -22,7 +22,7 @@ export const LoadingProvider = ({
       {children}
     </LoadingContext.Provider>
   );
-};
+}
 
 // ensure that LoadingContext isn't undefined in useLoad
 export const useLoad = (): LoadingContextType => {

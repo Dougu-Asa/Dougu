@@ -16,7 +16,7 @@ import { addUserToGroup } from "../../helper/AWS";
 /*
   Screen for joining an organization, user enters the access code to join
 */
-function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
+export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [code, onChangeCode] = React.useState("");
   const { user } = useUser();
@@ -35,7 +35,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   }, []);
 
   // ensure the code given is valid and the user is not already part of the org
-  async function checkCode() {
+  const checkCode = async () => {
     const org = await DataStore.query(Organization, (c) =>
       c.accessCode.eq(code.toUpperCase()),
     );
@@ -55,20 +55,20 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       throw new Error("User is already part of this organization!");
     }
     return org[0];
-  }
+  };
 
   // if a user is part of more than 5 orgs, datastore begins to error
-  async function validate() {
+  const validate = async () => {
     const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
       c.user.eq(user!.attributes.sub),
     );
     if (userOrgs.length >= 5) {
       throw new Error("User cannot be part of more than 5 organizations!");
     }
-  }
+  };
 
   // create an orgUserStorage object for the user and the org
-  async function createOrgUserStorage(org: Organization) {
+  const createOrgUserStorage = async (org: Organization) => {
     await DataStore.save(
       new OrgUserStorage({
         organization: org,
@@ -81,9 +81,9 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     );
     // add the user to the user group
     await addUserToGroup(token, org.name, user!.attributes.sub);
-  }
+  };
 
-  async function handleJoin() {
+  const handleJoin = async () => {
     try {
       // Query for the org with the access code
       setIsLoading(true);
@@ -100,7 +100,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     } catch (error) {
       handleError("joinOrg", error as Error, setIsLoading);
     }
-  }
+  };
 
   return (
     <View style={createJoinStyles.mainContainer}>
@@ -136,5 +136,3 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     </View>
   );
 }
-
-export default JoinOrgScreen;

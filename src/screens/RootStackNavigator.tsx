@@ -10,7 +10,7 @@ import { useLoad } from "../helper/LoadingContext";
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export function RootStackNavigator() {
+export default function RootStackNavigator() {
   // loading indicator covers the entire app, therefore isLoading is used to determine if it should be displayed
   const { isLoading } = useLoad();
 

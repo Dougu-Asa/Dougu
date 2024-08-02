@@ -15,7 +15,7 @@ import { useEquipment } from "../../helper/EquipmentContext";
   Screen for swapping equipment between the current user and another user.
   This section mainly focuses on getting and passing down the equipment info
 */
-const SwapEquipmentScreen = () => {
+export default function SwapEquipment() {
   const { setIsLoading } = useLoad();
   const { orgUserStorage } = useUser();
   const { equipmentData } = useEquipment();
@@ -52,7 +52,7 @@ const SwapEquipmentScreen = () => {
   }, []);
 
   // reassign the equipment to the new OrgUserStorage by the id passed in
-  async function reassignEquipment(item: EquipmentObj, assignedTo: string) {
+  const reassignEquipment = async (item: EquipmentObj, assignedTo: string) => {
     try {
       setIsLoading(true);
       const swapOrgUserStorage = await DataStore.query(
@@ -74,7 +74,7 @@ const SwapEquipmentScreen = () => {
     } catch (e) {
       handleError("Swap Equipment", e as Error, setIsLoading);
     }
-  }
+  };
 
   // get selected user equipment
   const handleSet = (inputUser: OrgUserStorage | null) => {
@@ -93,6 +93,4 @@ const SwapEquipmentScreen = () => {
       reassignEquipment={reassignEquipment}
     />
   );
-};
-
-export default SwapEquipmentScreen;
+}

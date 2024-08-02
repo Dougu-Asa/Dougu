@@ -26,7 +26,7 @@ import {
   DrawerParamList,
 } from "../../types/NavigatorTypes";
 import { DrawerNavProps } from "../../types/ScreenTypes";
-import { CustomDrawerContent } from "../../components/drawer/CustomDrawerContent";
+import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
 import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
 
@@ -36,7 +36,7 @@ import { useLoad } from "../../helper/LoadingContext";
     when logged in, and checks if the user is part of an org
     to direct them to the correct screen.
 */
-function DrawerNav({ navigation }: DrawerNavProps) {
+export default function DrawerNav({ navigation }: DrawerNavProps) {
   const Drawer = createDrawerNavigator<DrawerParamList>();
   const isFocused = useIsFocused();
   const { user, setOrg, resetContext } = useUser();
@@ -58,7 +58,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
   // because users are first directed here on sign in, we check if they are part of an org
   useEffect(() => {
     // check if user is part of an org to automatically direct them to the correct screen
-    async function checkUserOrg() {
+    const checkUserOrg = async () => {
       try {
         const key = user!.attributes.sub + " currOrg";
         const org = await AsyncStorage.getItem(key);
@@ -89,7 +89,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
       } catch (error) {
         handleError("checkUserOrg", error as Error, null);
       }
-    }
+    };
 
     if (isFocused) {
       checkUserOrg();
@@ -109,9 +109,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
   }
 
   //Left profile icon
-  const MyHeaderProfileButton = ({
-    navigation,
-  }: MyHeaderProfileButtonProps) => {
+  function MyHeaderProfileButton ({ navigation }: MyHeaderProfileButtonProps) {
     return (
       <TouchableOpacity
         style={styles.profile}
@@ -123,7 +121,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
         />
       </TouchableOpacity>
     );
-  };
+  }
 
   return (
     <Drawer.Navigator
@@ -150,8 +148,6 @@ function DrawerNav({ navigation }: DrawerNavProps) {
     </Drawer.Navigator>
   );
 }
-
-export default DrawerNav;
 
 const styles = StyleSheet.create({
   profile: {
