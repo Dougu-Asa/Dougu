@@ -1,15 +1,14 @@
 import { View } from "react-native";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { DataStore } from "@aws-amplify/datastore";
 import { ScrollView } from "react-native-gesture-handler";
 
 // project imports
-import { Equipment } from "../../models";
 import UserEquipment from "../../components/member/UserEquipment";
 import { useUser } from "../../helper/UserContext";
-import { getOrgEquipment } from "../../helper/DataStoreUtils";
+import { sortOrgEquipment } from "../../helper/DataStoreUtils";
 import type { OrgEquipmentObj } from "../../types/ModelTypes";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
   Screen for viewing all equipment in the organization
@@ -18,19 +17,16 @@ import type { OrgEquipmentObj } from "../../types/ModelTypes";
 function TeamEquipmentScreen() {
   const [orgEquipment, setOrgEquipment] = useState<OrgEquipmentObj[]>([]);
   const { org } = useUser();
+  const { equipmentData } = useEquipment();
 
   useEffect(() => {
     async function handleGetEquipment() {
-      const equipment = await getOrgEquipment(org!.id);
+      const equipment = sortOrgEquipment(equipmentData);
       setOrgEquipment(equipment);
     }
 
-    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      handleGetEquipment();
-    });
-
-    return () => subscription.unsubscribe();
-  }, [org]);
+    handleGetEquipment();
+  }, [equipmentData, org]);
 
   return (
     <View style={{ backgroundColor: "white", minHeight: "100%" }}>

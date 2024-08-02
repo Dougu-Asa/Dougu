@@ -42,7 +42,7 @@ function MemberRow({
 
   // make sure the owner wants to delete the equipment
   const handleEdit = () => {
-    if (org!.organizationManagerUserId !== user!.attributes.sub) {
+    if (org!.manager !== user!.attributes.sub) {
       Alert.alert("You must be a manager to edit users/storages");
       return;
     }

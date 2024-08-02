@@ -12,6 +12,7 @@ import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 import { createUserGroup, addUserToGroup } from "../../helper/AWS";
+import { validateRequirements } from "../../helper/drawer/CreateOrgUtils";
 
 /*
   Screen for creating an organization, user enters the name of the org
@@ -21,7 +22,7 @@ import { createUserGroup, addUserToGroup } from "../../helper/AWS";
 function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [name, onChangeName] = React.useState("");
-  const { user, setOrg } = useUser();
+  const { user } = useUser();
   const token = user!.signInUserSession.idToken.jwtToken;
   var randomstring = require("randomstring");
   const [hasConnection, setHasConnection] = React.useState(false);
@@ -44,29 +45,15 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         length: 7,
         capitalization: "uppercase",
       });
-      // Check that access code and name are unique
+      // Check that access code is unique
       const orgs = await DataStore.query(Organization, (c) =>
-        c.or((c) => [c.accessCode.eq(code), c.name.eq(name)]),
+        c.accessCode.eq(code),
       );
       if (orgs == null || orgs.length === 0) {
         return code;
+      } else {
+        console.log("Code already exists, generating another...");
       }
-    }
-  }
-
-  // if a user is part of more than 5 orgs, datastore begins to error
-  async function validate() {
-    const regEx = /[\p{L}\p{M}\p{S}\p{N}\p{P}]+/u;
-    if (!regEx.test(name)) {
-      throw new Error(
-        "Invalid orgName! Must contain at least one character and no spaces",
-      );
-    }
-    const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
-      c.user.eq(user!.attributes.sub),
-    );
-    if (userOrgs.length >= 5) {
-      throw new Error("User cannot be part of more than 5 organizations");
     }
   }
 
@@ -103,7 +90,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     if (newOrgUserStorage == null)
       throw new Error("OrgUserStorage not created successfully.");
     // add user to the user group
-    await addUserToGroup(token, name, user!.attributes.sub);
+    return await addUserToGroup(token, name, user!.attributes.sub);
   }
 
   // handle verification, creation, and navigation when creating a new Organization
@@ -112,19 +99,26 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       setIsLoading(true);
       // Generate a random access code
       const code = await generateCode();
-      await validate();
+      const validated = await validateRequirements(name, user!);
+      if (!validated) {
+        setIsLoading(false);
+        return;
+      }
       // Create the org and orgUserStorage
       const newOrg = await createOrg(code);
-      await createOrgUserStorage(newOrg);
+      const success = await createOrgUserStorage(newOrg);
+      if (!success) {
+        throw new Error("User not added to group successfully");
+      }
       // use a key to keep track of currentOrg per user
       const key = user!.attributes.sub + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(newOrg));
-      setOrg(newOrg);
       onChangeName("");
       setIsLoading(false);
       navigation.navigate("SyncScreen", {
         syncType: "CREATE",
         accessCode: code,
+        newOrg: newOrg,
       });
     } catch (error) {
       handleError("handleCreate", error as Error, setIsLoading);
@@ -134,10 +128,13 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   return (
     <View style={createJoinStyles.mainContainer}>
       {hasConnection ? (
-        <>
+        <View style={createJoinStyles.container}>
           <Text style={createJoinStyles.title}>Create Org</Text>
           <Text style={createJoinStyles.subtitle}>
-            Create a name for your org
+            Create a name for your org.
+          </Text>
+          <Text style={createJoinStyles.subtitle}>
+            Rule: 1-40 alphanumeric characters with no whitespaces.
           </Text>
           <TextInput
             style={createJoinStyles.input}
@@ -154,7 +151,7 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
           >
             <Text style={createJoinStyles.btnText}>Create Org</Text>
           </TouchableOpacity>
-        </>
+        </View>
       ) : (
         <>
           <Text style={createJoinStyles.title}>No Connection</Text>

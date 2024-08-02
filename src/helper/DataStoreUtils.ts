@@ -14,7 +14,8 @@ const collator = new Intl.Collator("en", {
 /* 
   sort the orgUserStorages by name
   and disregards upper/lower case
-  returns the sorted array
+  returns the sorted array 
+  USED ONLY IN USERSTORAGES
 */
 export function sortOrgUserStorages(
   orgUserStorages: OrgUserStorage[],
@@ -45,36 +46,46 @@ export const getEquipment = async (
 /* getEquipment but for every OrgUserStorage in the organization */
 export async function getOrgEquipment(
   orgId: string,
-): Promise<OrgEquipmentObj[]> {
+): Promise<Map<string, OrgEquipmentObj>> {
+  let orgEquipment = new Map<string, OrgEquipmentObj>();
   const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
     c.organizationUserOrStoragesId.eq(orgId),
   );
-  // sort orgUserStorages by name
-  const sortedMembers = sortOrgUserStorages(orgUserStorages);
   // for each orgUserStorage, get the equipment assigned to it
-  // distinguish between orgUserStorages with equipment and without
-  let orgEquipmentWithContent = [];
-  let orgEquipmentWithoutContent = [];
-  for (let i = 0; i < sortedMembers.length; i++) {
-    const processedEquipment = await getEquipment(sortedMembers[i]);
-    const length = processedEquipment ? processedEquipment.length : 0;
-    if (length > 0) {
-      orgEquipmentWithContent.push({
-        assignedToName: sortedMembers[i].name,
-        equipment: processedEquipment!,
-      });
-    } else {
-      orgEquipmentWithoutContent.push({
-        assignedToName: sortedMembers[i].name,
-        equipment: [],
-      });
-    }
+  for (let i = 0; i < orgUserStorages.length; i++) {
+    const processedEquipment = await getEquipment(orgUserStorages[i]);
+    let orgEquipmentObj = {
+      assignedToName: orgUserStorages[i].name,
+      equipment: processedEquipment ? processedEquipment : [],
+    };
+    orgEquipment.set(orgUserStorages[i].id, orgEquipmentObj);
   }
-  // return orgEquipment with those that have equipment first
-  const orgEquipment = orgEquipmentWithContent.concat(
-    orgEquipmentWithoutContent,
-  );
   return orgEquipment;
+}
+
+// sort orgEquipmentObj map by assignedToName, and having those with equipment first
+export function sortOrgEquipment(
+  orgEquipment: Map<string, OrgEquipmentObj>,
+): OrgEquipmentObj[] {
+  let orgEquipmentWithContent: OrgEquipmentObj[] = [];
+  let orgEquipmentWithoutContent: OrgEquipmentObj[] = [];
+  orgEquipment.forEach((value) => {
+    const length = value.equipment.length;
+    if (length > 0) {
+      orgEquipmentWithContent.push(value);
+    } else {
+      orgEquipmentWithoutContent.push(value);
+    }
+  });
+  // sort each array by assignedToName
+  orgEquipmentWithContent.sort((a, b) =>
+    collator.compare(a.assignedToName, b.assignedToName),
+  );
+  orgEquipmentWithoutContent.sort((a, b) =>
+    collator.compare(a.assignedToName, b.assignedToName),
+  );
+  // return orgEquipment with those that have equipment first
+  return orgEquipmentWithContent.concat(orgEquipmentWithoutContent);
 }
 
 /*

@@ -1,7 +1,7 @@
 import { Auth } from "aws-amplify";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
-import { MockUserProvider, MockLoadingProvider } from "./MockProviders";
+import { MockUserProvider, MockLoadingProvider } from "../mock/MockProviders";
 import LoginScreen from "../../components/Login";
 import { handleError } from "../../helper/Utils";
 

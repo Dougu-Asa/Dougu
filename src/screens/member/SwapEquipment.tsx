@@ -6,10 +6,10 @@ import { DataStore } from "aws-amplify";
 import { Equipment, OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
-import { getEquipment } from "../../helper/DataStoreUtils";
 import { handleError } from "../../helper/Utils";
 import { EquipmentObj } from "../../types/ModelTypes";
 import SwapGestures from "../../components/member/SwapGestures";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
   Screen for swapping equipment between the current user and another user.
@@ -17,7 +17,8 @@ import SwapGestures from "../../components/member/SwapGestures";
 */
 const SwapEquipmentScreen = () => {
   const { setIsLoading } = useLoad();
-  const { user, orgUserStorage } = useUser();
+  const { orgUserStorage } = useUser();
+  const { equipmentData } = useEquipment();
   let swapUser = useRef<OrgUserStorage | null>(null);
   const [resetValue, setResetValue] = useState(false);
   let [listOne, setListOne] = useState<EquipmentObj[]>([]);
@@ -25,29 +26,30 @@ const SwapEquipmentScreen = () => {
 
   // gets and sets the equipment for the current user and the swap user
   const setEquipment = useCallback(async () => {
-    const equipmentOne = await getEquipment(orgUserStorage!);
+    const userEquipmentOne = equipmentData.get(orgUserStorage!.id);
+    const equipmentOne = userEquipmentOne?.equipment;
     setListOne(equipmentOne ? equipmentOne : []);
     if (swapUser.current != null) {
-      const equipmentTwo = await getEquipment(swapUser.current);
+      const userEquipmentTwo = equipmentData.get(swapUser.current.id);
+      const equipmentTwo = userEquipmentTwo?.equipment;
       setListTwo(equipmentTwo ? equipmentTwo : []);
     } else {
       setListTwo([]);
     }
-  }, [orgUserStorage]);
+  }, [equipmentData, orgUserStorage]);
 
-  // subscribe to changes in equipment
+  // call setEquipment everytime the swap user changes
   useEffect(() => {
-    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      setEquipment();
-    });
+    setEquipment();
+  }, [setEquipment]);
 
-    // on unmount clear the subscription, and clear the swap user and dropdown
+  // on unmount clear the swap user and dropdown
+  useEffect(() => {
     return () => {
-      subscription.unsubscribe();
       swapUser.current = null;
       setResetValue(true);
     };
-  }, [user, orgUserStorage, setEquipment]);
+  }, []);
 
   // reassign the equipment to the new OrgUserStorage by the id passed in
   async function reassignEquipment(item: EquipmentObj, assignedTo: string) {
