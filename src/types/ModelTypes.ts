@@ -6,6 +6,7 @@ export type EquipmentObj = {
   label: string;
   count: number;
   data: string[];
+  detailData: string[];
   assignedTo: string;
   assignedToName: string;
 };

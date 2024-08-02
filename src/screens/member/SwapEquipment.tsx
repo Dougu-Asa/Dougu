@@ -38,7 +38,6 @@ const SwapEquipmentScreen = () => {
   // subscribe to changes in equipment
   useEffect(() => {
     const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      console.log("Equipment updated");
       setEquipment();
     });
 

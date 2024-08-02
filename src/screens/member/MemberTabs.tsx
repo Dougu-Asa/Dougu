@@ -5,6 +5,7 @@ import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Alert, Keyboard } from "react-native";
+import { EquipmentProvider } from "../../helper/EquipmentContext";
 
 // project imports
 import EquipmentScreen from "./Equipment";
@@ -17,6 +18,7 @@ import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
+import EquipmentOverlay from "../../components/member/EquipmentOverlay";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -105,60 +107,62 @@ function MemberTabs({ navigation }: MemberTabsScreenProps) {
   }
 
   return (
-    // tab navigator has the tab bar at the bottom of the screen
-    <Tab.Navigator
-      tabBarPosition="bottom"
-      initialRouteName="OrgInfo"
-      screenOptions={{
-        tabBarLabelStyle: {
-          fontSize: 9,
-        },
-        tabBarStyle: {
-          height: keyboardVisible ? 0 : 70,
-          paddingTop: keyboardVisible ? 0 : 5,
-        },
-        tabBarIconStyle: {
-          marginTop: -5,
-        },
-        tabBarShowIcon: true,
-        swipeEnabled: false,
-      }}
-    >
-      <Tab.Screen
-        name="Equipment"
-        component={EquipmentScreen}
-        options={{
-          tabBarIcon: () => (
-            <FontAwesone5 name="home" color={"black"} size={20} />
-          ),
+    <EquipmentProvider>
+      <Tab.Navigator
+        tabBarPosition="bottom"
+        initialRouteName="OrgInfo"
+        screenOptions={{
+          tabBarLabelStyle: {
+            fontSize: 9,
+          },
+          tabBarStyle: {
+            height: keyboardVisible ? 0 : 70,
+            paddingTop: keyboardVisible ? 0 : 5,
+          },
+          tabBarIconStyle: {
+            marginTop: -5,
+          },
+          tabBarShowIcon: true,
+          swipeEnabled: false,
         }}
-      />
-      <Tab.Screen
-        name="Swap"
-        component={SwapEquipmentScreen}
-        options={{
-          tabBarIcon: () => <Entypo name="cycle" color={"black"} size={20} />,
-        }}
-      />
-      <Tab.Screen
-        name="Team"
-        component={TeamEquipmentScreen}
-        options={{
-          tabBarIcon: () => (
-            <FontAwesone5 name="users" color={"black"} size={19} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="OrgInfo"
-        component={OrgStackNavigator}
-        options={{
-          tabBarIcon: () => (
-            <MaterialCommunityIcons name="crown" color={"black"} size={21} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="Equipment"
+          component={EquipmentScreen}
+          options={{
+            tabBarIcon: () => (
+              <FontAwesone5 name="home" color={"black"} size={20} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Swap"
+          component={SwapEquipmentScreen}
+          options={{
+            tabBarIcon: () => <Entypo name="cycle" color={"black"} size={20} />,
+          }}
+        />
+        <Tab.Screen
+          name="Team"
+          component={TeamEquipmentScreen}
+          options={{
+            tabBarIcon: () => (
+              <FontAwesone5 name="users" color={"black"} size={19} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="OrgInfo"
+          component={OrgStackNavigator}
+          options={{
+            tabBarIcon: () => (
+              <MaterialCommunityIcons name="crown" color={"black"} size={21} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+      <EquipmentOverlay />
+    </EquipmentProvider>
   );
 }
 

@@ -93,6 +93,7 @@ export function processEquipmentData(
       const existingEquip = equipmentMap.get(equip.name);
       existingEquip!.count += 1;
       existingEquip!.data.push(equip.id);
+      existingEquip!.detailData.push(equip.details ? equip.details : "");
       equipmentMap.set(equip.name, existingEquip!);
     } else {
       // new equipment
@@ -101,6 +102,7 @@ export function processEquipmentData(
         label: equip.name,
         count: 1,
         data: [equip.id],
+        detailData: [equip.details ? equip.details : ""],
         assignedTo: orgUserStorage.id,
         assignedToName: orgUserStorage.name,
       });

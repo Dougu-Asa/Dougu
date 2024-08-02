@@ -58,12 +58,14 @@ function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   async function validate() {
     const regEx = /[\p{L}\p{M}\p{S}\p{N}\p{P}]+/u;
     if (!regEx.test(name)) {
-      throw new Error("Invalid orgName! Must contain at least one character and no spaces"); 
+      throw new Error(
+        "Invalid orgName! Must contain at least one character and no spaces",
+      );
     }
     const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
       c.user.eq(user!.attributes.sub),
     );
-    if(userOrgs.length >= 5) {
+    if (userOrgs.length >= 5) {
       throw new Error("User cannot be part of more than 5 organizations");
     }
   }

@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-import { EquipmentObj } from "../../types/ModelTypes";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import { EquipmentObj } from "../../types/ModelTypes";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -16,10 +17,14 @@ export default function EquipmentItem({
   item: EquipmentObj | null;
   count: number;
 }) {
-  const tapGesture = Gesture.Tap().onEnd(() => {
-    "worklet";
-    console.log("Tapped");
-  });
+  const { setVisible, setEquipmentItem } = useEquipment();
+
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      setEquipmentItem(item);
+      setVisible(true);
+    })
+    .runOnJS(true);
 
   return (
     <>
