@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { OrgUserStorage, Organization } from "../models";
+import { EquipmentObj, OrgEquipmentObj } from "./ModelTypes";
 
 /*
     Defines the types for the context objects used in the app.
@@ -29,4 +30,13 @@ export type UserContextType = {
 export type LoadingContextType = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+};
+
+export type EquipmentContextType = {
+  equipmentData: Map<string, OrgEquipmentObj>;
+  equipmentItem: EquipmentObj | null;
+  setEquipmentItem: Dispatch<SetStateAction<EquipmentObj | null>>;
+  visible: boolean;
+  setVisible: Dispatch<SetStateAction<boolean>>;
+  modifyEquipmentItem: (item: EquipmentObj, newId: string) => void;
 };

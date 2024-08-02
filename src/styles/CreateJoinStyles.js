@@ -5,6 +5,11 @@ const createJoinStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+    width: "100%",
+  },
+  container: {
+    top: "20%",
+    alignItems: "center",
     justifyContent: "center",
     width: "100%",
   },

@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -12,19 +14,34 @@ export default function EquipmentItem({
   item,
   count,
 }: {
-  item: EquipmentObj;
+  item: EquipmentObj | null;
   count: number;
 }) {
+  const { setVisible, setEquipmentItem } = useEquipment();
+
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      setEquipmentItem(item);
+      setVisible(true);
+    })
+    .runOnJS(true);
+
   return (
-    <View style={equipment.container}>
-      <View style={equipment.equipment}>
-        <Entypo name="camera" size={50} color="black" />
-        <View style={equipment.circle}>
-          <Text style={equipment.count}>{count ? count : item.count}</Text>
-        </View>
-      </View>
-      <Text style={{ fontSize: 12 }}>{item.label}</Text>
-    </View>
+    <>
+      {item && count > 0 && (
+        <GestureDetector gesture={tapGesture}>
+          <View style={equipment.container}>
+            <View style={equipment.equipment}>
+              <Entypo name="camera" size={50} color="black" />
+              <View style={equipment.circle}>
+                <Text style={equipment.count}>{count}</Text>
+              </View>
+            </View>
+            <Text style={{ fontSize: 12 }}>{item.label}</Text>
+          </View>
+        </GestureDetector>
+      )}
+    </>
   );
 }
 
@@ -33,24 +50,30 @@ const equipment = StyleSheet.create({
     alignItems: "center",
     maxWidth: 100,
   },
+  containerPressed: {
+    opacity: 0.75,
+  },
   equipment: {
     backgroundColor: "skyblue",
-    width: Dimensions.get("window").width / 4,
-    height: Dimensions.get("window").width / 4,
-    borderRadius: Dimensions.get("window").width / 8,
+    width: Dimensions.get("window").width / 5,
+    height: Dimensions.get("window").width / 5,
+    borderRadius: Dimensions.get("window").width / 14,
     justifyContent: "center",
     alignItems: "center",
   },
+  equipmentPressed: {
+    backgroundColor: "red",
+  },
   circle: {
     backgroundColor: "white",
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    right: 0,
-    bottom: 0,
+    right: -7,
+    bottom: -7,
     borderWidth: 1,
   },
   count: {

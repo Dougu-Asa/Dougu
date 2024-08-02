@@ -16,7 +16,8 @@ import { useUser } from "../../helper/UserContext";
 import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { EquipmentObj } from "../../types/ModelTypes";
-import { getOrgEquipment } from "../../helper/DataStoreUtils";
+import { sortOrgEquipment } from "../../helper/DataStoreUtils";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
   Component for displaying all equipment in the organization
@@ -34,6 +35,7 @@ export default function EquipmentTable({
   const [filteredData, setFilteredData] = useState<EquipmentObj[]>([]);
   const isManager = useRef<boolean>(false);
   const { user, org } = useUser();
+  const { equipmentData } = useEquipment();
   const { setIsLoading } = useLoad();
 
   // subscribe to and get all equipment in the organization
@@ -41,24 +43,19 @@ export default function EquipmentTable({
     // get all equipment in the organization by concating all equipment arrays
     // from each of the assigned users/storages
     async function handleGetEquipment() {
-      const equipmentData = await getOrgEquipment(org!.id);
+      const data = sortOrgEquipment(equipmentData);
       let tableData: EquipmentObj[] = [];
       // Iterate over equipmentData and concatenate the equipment arrays
-      equipmentData.forEach((assignedEquipment) => {
+      data.forEach((assignedEquipment) => {
         tableData = tableData.concat(assignedEquipment.equipment);
       });
       setTableData(tableData);
       setFilteredData(tableData);
     }
 
-    isManager.current =
-      org!.organizationManagerUserId === user!.attributes.sub ? true : false;
-    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      handleGetEquipment();
-    });
-
-    return () => subscription.unsubscribe();
-  }, [org, user]);
+    isManager.current = org!.manager === user!.attributes.sub ? true : false;
+    handleGetEquipment();
+  }, [equipmentData, org, user]);
 
   // listen for changes in the search bar
   useEffect(() => {

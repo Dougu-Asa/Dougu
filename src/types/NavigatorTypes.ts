@@ -1,5 +1,6 @@
 import type { NavigatorScreenParams } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { Organization } from "../models";
 
 /* 
     Defines the types for the navigator objects used in the app.
@@ -8,7 +9,11 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 // Navigator types
 export type RootStackParamList = {
   Home: undefined;
-  SyncScreen: { syncType: "START" | "CREATE" | "JOIN"; accessCode?: string };
+  SyncScreen: {
+    syncType: "START" | "CREATE" | "JOIN";
+    accessCode?: string;
+    newOrg?: Organization;
+  };
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
 };
 
@@ -18,7 +23,6 @@ export type DrawerParamList = {
   CreateOrg: undefined;
   AccessCode: { accessCode: string };
   MyOrgs: undefined;
-  JoinOrCreate: undefined;
   Profile: undefined;
 };
 

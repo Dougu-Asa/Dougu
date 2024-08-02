@@ -19,7 +19,7 @@ import { addUserToGroup } from "../../helper/AWS";
 function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [code, onChangeCode] = React.useState("");
-  const { user, setOrg } = useUser();
+  const { user } = useUser();
   const token = user!.signInUserSession.idToken.jwtToken;
   const [hasConnection, setHasConnection] = React.useState(false);
 
@@ -94,10 +94,9 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       // update context and async storage
       const key = user!.attributes.sub + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(org));
-      setOrg(org);
       setIsLoading(false);
       onChangeCode("");
-      navigation.navigate("SyncScreen", { syncType: "JOIN" });
+      navigation.navigate("SyncScreen", { syncType: "JOIN", newOrg: org });
     } catch (error) {
       handleError("joinOrg", error as Error, setIsLoading);
     }
@@ -106,7 +105,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   return (
     <View style={createJoinStyles.mainContainer}>
       {hasConnection ? (
-        <>
+        <View style={createJoinStyles.container}>
           <Text style={createJoinStyles.title}>Join Org</Text>
           <Text style={createJoinStyles.subtitle}>
             Enter the access code provided by the organization manager
@@ -124,7 +123,7 @@ function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
           >
             <Text style={createJoinStyles.btnText}>Join My Org</Text>
           </TouchableOpacity>
-        </>
+        </View>
       ) : (
         <>
           <Text style={createJoinStyles.title}>No Connection</Text>

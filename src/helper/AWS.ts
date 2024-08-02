@@ -19,7 +19,10 @@ export const createUserGroup = async (
       name: userGroupName,
     }),
   });
-  return await response.json();
+  if (response.status !== 200) {
+    throw new Error("Failed to create user group");
+  }
+  return true;
 };
 
 // add a user of the given userId to the user group of the given name
@@ -39,5 +42,8 @@ export const addUserToGroup = async (
       userId: userId,
     }),
   });
-  return await response.json();
+  if (response.status !== 200) {
+    throw new Error("Failed to add user to group");
+  }
+  return true;
 };

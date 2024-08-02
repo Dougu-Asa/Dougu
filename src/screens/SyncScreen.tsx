@@ -12,7 +12,8 @@ import { useUser } from "../helper/UserContext";
 function SyncScreen({ route, navigation }: SyncScreenProps) {
   const { syncType } = route.params;
   const { accessCode } = route.params;
-  const { user } = useUser();
+  const { newOrg } = route.params;
+  const { user, setOrg } = useUser();
 
   // start DataStore and listen for DataStore ready event
   useEffect(() => {
@@ -39,12 +40,14 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
           navigation.navigate("DrawerNav", { screen: "MyOrgs" });
           break;
         case "CREATE":
+          setOrg(newOrg ? newOrg : null);
           navigation.navigate("DrawerNav", {
             screen: "AccessCode",
             params: { accessCode: accessCode ? accessCode : "ERROR" },
           });
           break;
         case "JOIN":
+          setOrg(newOrg ? newOrg : null);
           navigation.navigate("DrawerNav", {
             screen: "MemberTabs",
             params: {
@@ -68,7 +71,7 @@ function SyncScreen({ route, navigation }: SyncScreenProps) {
     return () => {
       listener();
     };
-  }, [accessCode, navigation, syncType, user]);
+  }, [accessCode, navigation, newOrg, setOrg, syncType, user]);
 
   return (
     <View style={styles.container}>

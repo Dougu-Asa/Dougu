@@ -1,15 +1,19 @@
-import React, { useRef, useEffect } from "react";
-import {
-  Animated,
-  LayoutChangeEvent,
-  PanResponder,
-  PanResponderGestureState,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Dimensions } from "react-native";
 import EquipmentItem from "./EquipmentItem";
+import {
+  GestureDetector,
+  Gesture,
+  ScrollView,
+  GestureStateChangeEvent,
+  PanGestureHandlerEventPayload,
+  GestureUpdateEvent,
+  PanGestureChangeEventPayload,
+  LongPressGestureHandlerEventPayload,
+} from "react-native-gesture-handler";
+import Animated, { useSharedValue, runOnJS } from "react-native-reanimated";
+
 import { EquipmentObj } from "../../types/ModelTypes";
-import type { DimensionsType, Position } from "../../types/ModelTypes";
 
 /*
   Draggable Equipment is a component that allows the user to drag equipment objects
@@ -18,112 +22,77 @@ import type { DimensionsType, Position } from "../../types/ModelTypes";
 */
 const DraggableEquipment = ({
   item,
-  onDrop,
+  scrollViewRef,
+  setItem,
   onStart,
   onMove,
-  onTerminate,
+  onFinalize,
+  onReassign,
 }: {
   item: EquipmentObj;
-  onDrop: (item: EquipmentObj, dropPositionY: number) => void;
-  onStart: (
+  scrollViewRef: React.RefObject<ScrollView>;
+  setItem: (
     item: EquipmentObj,
-    gestureState: PanResponderGestureState,
-    position: Position | null,
+    gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
   ) => void;
-  onMove: (gestureState: PanResponderGestureState) => void;
-  onTerminate: () => void;
+  onStart: (
+    e: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
+  ) => void;
+  onMove: (
+    e: GestureUpdateEvent<
+      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+    >,
+  ) => void;
+  onFinalize: () => void;
+  onReassign: (
+    e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => void;
 }) => {
-  const pan = useRef(new Animated.ValueXY()).current;
-  let dimensions = useRef<DimensionsType | null>(null);
-  let position = useRef<Position | null>(null);
-  const itemRef = useRef(item); // avoid stale item state
+  let isDragging = useSharedValue(false);
+  const [stateDragging, setStateDragging] = useState(false);
 
-  // update the itemRef when the item changes to avoid stale state
-  useEffect(() => {
-    itemRef.current = item;
-  }, [item]);
+  const panGesture = Gesture.Pan()
+    .onChange((e) => {
+      "worklet";
+      if (!isDragging.value) return;
+      onMove(e);
+    })
+    .onFinalize((e) => {
+      "worklet";
+      isDragging.value = false;
+      onFinalize();
+      runOnJS(onReassign)(e);
+      // looks weird if the item immediately reappears
+      runOnJS(setStateDragging)(false);
+    })
+    .requireExternalGestureToFail(scrollViewRef);
 
-  // we need to know where the equipment we start dragging is located
-  // get the position and dimensions of the equipment object
-  const onLayout = (event: LayoutChangeEvent) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    position.current = { x, y };
-    dimensions.current = { width, height };
-  };
+  const longPressGesture = Gesture.LongPress().onStart((e) => {
+    "worklet";
+    isDragging.value = true;
+    onStart(e);
+    runOnJS(setItem)(item, e);
+    runOnJS(setStateDragging)(true);
+  });
 
-  // Check if the touch is within the bounds of the equipment
-  const isWithinBounds = (gestureState: PanResponderGestureState) => {
-    if (!position.current || !dimensions.current) return false;
-    const { x0, y0 } = gestureState;
-    console.log("current position: ", position.current.x, position.current.y);
-    console.log(
-      "current dimensions: ",
-      dimensions.current.width,
-      dimensions.current.height,
-    );
-    console.log("current touch: ", x0, y0);
-    const withinXBounds =
-      x0 >= position.current.x &&
-      x0 <= position.current.x + dimensions.current.width / 2;
-    const withinYBounds =
-      y0 >= position.current.y &&
-      y0 <= position.current.y + dimensions.current.height / 2;
-    console.log("within bounds: ", withinXBounds, withinYBounds);
-    return withinXBounds && withinYBounds;
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      // determine whether or not to start the pan responder
-      /*onStartShouldSetPanResponder: (evt, gestureState) =>
-        isWithinBounds(gestureState), */
-      // called when the pan responder is granted/starts moving
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (evt, gestureState) => {
-        console.log(itemRef.current);
-        onStart(itemRef.current, gestureState, position.current); // Pass the item and its start position
-      },
-      // called when the pan responder is moving
-      onPanResponderMove: (event, gestureState) => {
-        onMove(gestureState); // Pass the gesture state
-        Animated.event([null, { dx: pan.x, dy: pan.y }], {
-          useNativeDriver: false,
-        })(event, gestureState);
-      },
-      // called when the pan responder is released
-      onPanResponderRelease: (e, gesture) => {
-        onDrop(itemRef.current, gesture.moveY); // Pass the item and its drop position
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-      // called when the pan responder is terminated
-      onPanResponderTerminate: () => {
-        onTerminate();
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-    }),
-  ).current;
+  const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
 
   return (
-    <Animated.View
-      onLayout={onLayout}
-      style={[pan.getLayout(), styles.container]}
-      {...panResponder.panHandlers}
-    >
-      <EquipmentItem item={itemRef.current} count={itemRef.current.count} />
-    </Animated.View>
+    <GestureDetector gesture={panPressGesture}>
+      <Animated.View style={styles.container}>
+        <EquipmentItem
+          item={item}
+          count={stateDragging ? item.count - 1 : item.count}
+        />
+      </Animated.View>
+    </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get("window").width / 4,
-    height: Dimensions.get("window").width / 4,
+    width: Dimensions.get("window").width / 5,
+    height: Dimensions.get("window").width / 5,
     marginHorizontal: 8,
   },
 });

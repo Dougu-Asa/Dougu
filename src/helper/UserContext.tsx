@@ -27,6 +27,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         c.and((c) => [
           c.organizationUserOrStoragesId.eq(org.id),
           c.user.eq(user.attributes.sub),
+          c.type.eq(UserOrStorage.USER),
         ]),
       );
       setOrgUserStorage(orgUser[0]);

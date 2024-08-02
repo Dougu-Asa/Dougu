@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Text, Animated, PanResponder, StyleSheet, View } from "react-native";
 
 const DraggableEquipment = ({ item, onDrop, onStart, onMove, onTerminate }) => {

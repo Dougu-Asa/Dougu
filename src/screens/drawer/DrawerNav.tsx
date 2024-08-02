@@ -17,7 +17,6 @@ import CreateOrgScreen from "./CreateOrgScreen";
 import AccessCodeScreen from "./AccessCodeScreen";
 import MyOrgsScreen from "./MyOrgsScreen";
 import MemberTabs from "../member/MemberTabs";
-import JoinOrCreateScreen from "./JoinOrCreateScreen";
 import ProfileScreen from "./ProfileScreen";
 import { OrgUserStorage, Organization } from "../../models";
 import { useUser } from "../../helper/UserContext";
@@ -85,7 +84,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
           navigation.navigate("DrawerNav", { screen: "MyOrgs" });
         } else {
           // user has no org and no previous org
-          navigation.navigate("DrawerNav", { screen: "JoinOrCreate" });
+          navigation.navigate("DrawerNav", { screen: "JoinOrg" });
         }
       } catch (error) {
         handleError("checkUserOrg", error as Error, null);
@@ -137,6 +136,7 @@ function DrawerNav({ navigation }: DrawerNavProps) {
           color: "#791111",
         },
         headerTitle: "Dougu",
+        swipeEnabled: false,
       })}
       initialRouteName="MyOrgs"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -146,7 +146,6 @@ function DrawerNav({ navigation }: DrawerNavProps) {
       <Drawer.Screen name="CreateOrg" component={CreateOrgScreen} />
       <Drawer.Screen name="AccessCode" component={AccessCodeScreen} />
       <Drawer.Screen name="MyOrgs" component={MyOrgsScreen} />
-      <Drawer.Screen name="JoinOrCreate" component={JoinOrCreateScreen} />
       <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>
   );

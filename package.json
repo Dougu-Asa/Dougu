@@ -23,7 +23,7 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "@sentry/react-native": "~5.22.0",
     "aws-amplify": "^5.3.18",
-    "expo": "~51.0.22",
+    "expo": "~51.0.24",
     "expo-linear-gradient": "~13.0.2",
     "randomstring": "^1.3.0",
     "react": "18.2.0",
@@ -58,6 +58,7 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"],
     "setupFilesAfterEnv": [
       "./src/jest.setup.js"
     ],
