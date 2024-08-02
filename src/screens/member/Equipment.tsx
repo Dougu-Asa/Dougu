@@ -12,28 +12,46 @@ import { useEquipment } from "../../helper/EquipmentContext";
   Screen for viewing all equipment assigned to the current user
 */
 const EquipmentScreen = () => {
-  const [equipment, setEquipment] = useState<EquipmentObj[][]>([[]]);
-  const { user, org, orgUserStorage } = useUser();
+  //const [equipment, setEquipment] = useState<EquipmentObj[][]>([[]]);
+  const { orgUserStorage } = useUser();
   const { equipmentData } = useEquipment();
+  const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
+    equipment.reduce(
+      (acc, _, i) => (i % size ? acc : [...acc, equipment.slice(i, i + size)]),
+      [] as EquipmentObj[][],
+    );
 
-  useEffect(() => {
-    // Function to chunk the equipment array into subarrays of size items each
-    const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
-      equipment.reduce(
-        (acc, _, i) =>
-          i % size ? acc : [...acc, equipment.slice(i, i + size)],
-        [] as EquipmentObj[][],
-      );
-
-    // Get the equipment assigned to the current user and set the state
-    const userEquipment = equipmentData.get(orgUserStorage!.id);
-    const equipment = userEquipment?.equipment;
-    if (!equipment) return;
-    setEquipment(chunkedEquipment(equipment, 3));
-  }, [equipmentData, org, orgUserStorage, user]);
+  // Get the equipment assigned to the current user
+  const userEquipment = equipmentData.get(orgUserStorage!.id);
+  const equipment = userEquipment?.equipment || [];
+  const chunkedData = chunkedEquipment(equipment, 3);
 
   return (
     <View style={styles.background}>
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.title}>My Equipment</Text>
+          {chunkedData.map((group, index) => (
+            <View key={index} style={styles.equipmentRow}>
+              {group.map((equip) => (
+                <View key={equip.id} style={styles.equipmentItemContainer}>
+                  <EquipmentItem
+                    key={equip.id}
+                    item={equip}
+                    count={equip.count}
+                  />
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
+/*
+<View style={styles.background}>
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.title}>My Equipment</Text>
@@ -53,9 +71,7 @@ const EquipmentScreen = () => {
         </View>
       </ScrollView>
     </View>
-  );
-};
-
+    */
 export default EquipmentScreen;
 
 const styles = StyleSheet.create({

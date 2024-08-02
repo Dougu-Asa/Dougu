@@ -12,24 +12,27 @@ import { ScrollView } from "react-native-gesture-handler";
     stats, counts, and grouped equipment items.
 */
 const EquipmentOverlay = () => {
-  const { visible, setVisible, equipmentItem } = useEquipment();
+  const { visible, setVisible, equipmentItem, modifyEquipmentItem } =
+    useEquipment();
 
   return (
     <Overlay isVisible={visible} fullScreen={true}>
       <Text style={styles.title}>{equipmentItem?.label}</Text>
       <ScrollView>
         {equipmentItem &&
-          equipmentItem.data.map((item, index) => (
+          equipmentItem.data.map((itemId, index) => (
             <Pressable
               key={index}
               onPress={() => {
-                console.log("hi!");
+                modifyEquipmentItem(equipmentItem, itemId);
               }}
             >
               <Card
-                containerStyle={equipmentItem.id === item && styles.highlighted}
+                containerStyle={
+                  equipmentItem.id === itemId && styles.highlighted
+                }
               >
-                <Card.Title>{item}</Card.Title>
+                <Card.Title>{itemId}</Card.Title>
                 <Card.Divider />
                 <Text>{equipmentItem.detailData[index]}</Text>
               </Card>

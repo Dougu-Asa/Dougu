@@ -40,6 +40,21 @@ export const EquipmentProvider = ({
     return () => subscription.unsubscribe();
   }, [org]);
 
+  const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
+    // find the equipment object in the equipmentData map
+    const equipment = equipmentData.get(item.assignedTo);
+    if (!equipment) return;
+    // find the index of the equipment object in the equipment array
+    const index = equipment.equipment.findIndex((e) => e.id === item.id);
+    if (index === -1) return;
+    // create a new equipment object swapping the id with the new id
+    const newEquipment = { ...item, id: newId };
+    setEquipmentItem(newEquipment);
+    // update the equipment array with the new equipment object
+    equipment.equipment[index] = newEquipment;
+    equipmentData.set(item.assignedTo, equipment);
+  };
+
   return (
     <EquipmentContext.Provider
       value={{
@@ -48,6 +63,7 @@ export const EquipmentProvider = ({
         setEquipmentItem,
         visible,
         setVisible,
+        modifyEquipmentItem,
       }}
     >
       {children}

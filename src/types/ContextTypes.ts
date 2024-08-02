@@ -38,4 +38,5 @@ export type EquipmentContextType = {
   setEquipmentItem: Dispatch<SetStateAction<EquipmentObj | null>>;
   visible: boolean;
   setVisible: Dispatch<SetStateAction<boolean>>;
+  modifyEquipmentItem: (item: EquipmentObj, newId: string) => void;
 };
