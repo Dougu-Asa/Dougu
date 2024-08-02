@@ -34,7 +34,8 @@ describe("validateRequirements", () => {
 
     expect(result).toBe(false);
     expect(Alert.alert).toHaveBeenCalledWith(
-      "Org name must contain at least one character and no spaces!",
+      "Name invalid!",
+      "Please check the rules.",
     );
   });
 
