@@ -1,4 +1,4 @@
-import { Alert, View, TextInput, StyleSheet, Text } from "react-native";
+import { View, TextInput, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
+import { validateRequirements } from "../helper/CreateAccUtils";
 
 /*
   A component that allows the user to create an account
@@ -26,11 +27,16 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const [last, onChangeLast] = React.useState("");
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
+  const [confirmPassword, onChangeConfirmPassword] = React.useState("");
 
   // Function to toggle the password visibility state
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   // username = first + ' ' + last
@@ -49,15 +55,14 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   }) => {
     try {
       setIsLoading(true);
-      if (
-        username === "" ||
-        username === "" ||
-        password === "" ||
-        email === ""
-      ) {
-        Alert.alert("Form Error", "Please fill out all fields.", [
-          { text: "OK" },
-        ]);
+      const validation = await validateRequirements(
+        username,
+        email,
+        password,
+        confirmPassword,
+      );
+      if (!validation) {
+        setIsLoading(false);
         return;
       }
       await Auth.signUp({
@@ -125,6 +130,23 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           onPress={() => toggleShowPassword()}
         />
       </View>
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.pinput}
+          onChangeText={onChangeConfirmPassword}
+          secureTextEntry={!showConfirmPassword}
+          value={confirmPassword}
+          placeholder="confirm password"
+          keyboardType="default"
+        />
+        <MaterialCommunityIcons
+          name={showConfirmPassword ? "eye-off" : "eye"}
+          size={28}
+          color="#aaa"
+          style={styles.icon}
+          onPress={() => toggleShowConfirmPassword()}
+        />
+      </View>
       <TouchableOpacity
         style={styles.button}
         onPress={() => handleSignUp({ username, email, password })}
@@ -150,7 +172,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderWidth: 1,
     borderRadius: 10,
-    margin: "5%",
+    marginTop: "5%",
     width: "80%",
     padding: 10,
   },
@@ -167,6 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "80%",
     height: 60,
+    marginTop: "5%",
   },
   nameContainer: {
     flexDirection: "row",
