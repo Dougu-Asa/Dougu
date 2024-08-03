@@ -9,10 +9,16 @@ import {
 import React from "react";
 import { useState } from "react";
 import { DataStore } from "aws-amplify";
+import { Tab } from "@rneui/themed";
 
 // project imports
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
-import { OrgUserStorage, Equipment, Organization } from "../../models";
+import {
+  OrgUserStorage,
+  Equipment,
+  Organization,
+  Container,
+} from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
@@ -26,7 +32,8 @@ export default function CreateEquipmentScreen() {
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
-  const [selected, setSelected] = useState("equip");
+  // index 0 is equipment, index 1 is container
+  const [index, setIndex] = useState(0);
   const [resetValue, setResetValue] = useState(false);
   const { setIsLoading } = useLoad();
   const { org } = useUser();
@@ -34,29 +41,63 @@ export default function CreateEquipmentScreen() {
   // ensure all input values are valid
   const verifyValues = () => {
     // check that quantity > 1
-    const quantityCount = parseInt(quantity);
-    if (quantityCount < 1 || isNaN(quantityCount) || quantityCount > 50) {
-      throw new Error(
-        "Quantity must be a number or greater than 0 and less than 50.",
-      );
+    const quantityCount = index === 0 ? parseInt(quantity) : 1;
+    if (isNaN(quantityCount) || assignUser == null || name === "") {
+      throw new Error("Please fill out all fields.");
     }
-    // check that selected user isn't null
-    if (assignUser == null) {
-      throw new Error("User must be selected.");
-    }
-    // check that name isn't empty
-    if (name === "") {
-      throw new Error("Name must not be empty.");
+    if (quantityCount < 1 || quantityCount > 25) {
+      throw new Error("You must make between 1 and 25 equipment at a time.");
     }
     return quantityCount;
+  };
+
+  const CreateEquipment = async (
+    quantityCount: number,
+    dataOrg: Organization,
+    orgUserStorage: OrgUserStorage,
+  ) => {
+    // create however many equipment specified by quantity
+    for (let i = 0; i < quantityCount; i++) {
+      await DataStore.save(
+        new Equipment({
+          name: name,
+          organization: dataOrg,
+          lastUpdatedDate: new Date().toISOString(),
+          assignedTo: orgUserStorage,
+          details: details,
+          image: "default",
+          group: org!.name,
+        }),
+      );
+    }
+    Alert.alert("Equipment created successfully!");
+  };
+
+  const CreateContainer = async (
+    dataOrg: Organization,
+    orgUserStorage: OrgUserStorage,
+  ) => {
+    await DataStore.save(
+      new Container({
+        name: name,
+        organization: dataOrg,
+        lastUpdatedDate: new Date().toISOString(),
+        assignedTo: orgUserStorage,
+        details: details,
+        color: "#ffffff",
+        group: org!.name,
+        equipment: [],
+      }),
+    );
+    Alert.alert("Container created successfully!");
   };
 
   // Create a new equipment and assign it to a user
   const handleCreate = async () => {
     try {
-      const quantityCount = verifyValues();
       setIsLoading(true);
-      // create the equipment
+      const quantityCount = verifyValues();
+      // find the orgUserStorage to assign to
       const dataOrg = await DataStore.query(Organization, org!.id);
       const orgUserStorage = await DataStore.query(
         OrgUserStorage,
@@ -65,19 +106,11 @@ export default function CreateEquipmentScreen() {
       if (dataOrg == null || orgUserStorage == null) {
         throw new Error("Organization or User not found.");
       }
-      // create however many equipment specified by quantity
-      for (let i = 0; i < quantityCount; i++) {
-        await DataStore.save(
-          new Equipment({
-            name: name,
-            organization: dataOrg,
-            lastUpdatedDate: new Date().toISOString(),
-            assignedTo: orgUserStorage,
-            details: details,
-            image: "default",
-            group: org!.name,
-          }),
-        );
+      // index 0 is equipment, index 1 is container
+      if (index === 0) {
+        await CreateEquipment(quantityCount, dataOrg, orgUserStorage);
+      } else {
+        await CreateContainer(dataOrg, orgUserStorage);
       }
       onChangeName("");
       onChangeQuantity("");
@@ -85,7 +118,6 @@ export default function CreateEquipmentScreen() {
       setAssignUser(null);
       setResetValue(true);
       setIsLoading(false);
-      Alert.alert("Equipment created successfully!");
     } catch (error) {
       handleError("CreateEquipment", error as Error, setIsLoading);
     }
@@ -124,30 +156,21 @@ export default function CreateEquipmentScreen() {
         </View>
         <View style={styles.row2}>
           <View style={styles.toggleContainer}>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                selected === "equip" ? styles.selectedBtn : null,
-              ]}
-              onPress={() => setSelected("equip")}
+            <Tab
+              value={index}
+              onChange={setIndex}
+              dense
+              buttonStyle={(active) =>
+                active ? styles.selectedBtn : styles.button
+              }
+              titleStyle={(active) =>
+                active ? styles.selectedText : styles.text
+              }
+              disableIndicator={true}
             >
-              <Text style={[selected === "equip" ? styles.selectedText : null]}>
-                Equip
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                selected === "container" ? styles.selectedBtn : null,
-              ]}
-              onPress={() => setSelected("container")}
-            >
-              <Text
-                style={[selected === "container" ? styles.selectedText : null]}
-              >
-                Container
-              </Text>
-            </TouchableOpacity>
+              <Tab.Item>Equipment</Tab.Item>
+              <Tab.Item>Container</Tab.Item>
+            </Tab>
           </View>
         </View>
       </View>
@@ -159,7 +182,7 @@ export default function CreateEquipmentScreen() {
           <TextInput
             style={styles.input}
             onChangeText={handleNumberChange}
-            value={quantity.toString()}
+            value={index === 0 ? quantity.toString() : "1"}
             placeholder="quantity"
             keyboardType="numeric"
           />
@@ -205,13 +228,15 @@ const styles = StyleSheet.create({
   },
   details: {
     height: 80,
-    margin: 12,
+    marginHorizontal: 12,
     borderWidth: 1,
     padding: 10,
+    marginBottom: 10,
   },
   rowContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+    marginTop: 10,
   },
   row1: {
     flex: 1,
@@ -229,18 +254,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    width: "90%",
+    marginHorizontal: "auto",
   },
   selectedBtn: {
-    backgroundColor: "#000000", // Selected background color
+    backgroundColor: "#000000",
+    padding: 10,
   },
   selectedText: {
-    color: "#ffffff", // Selected text color
+    color: "#ffffff",
+  },
+  text: {
+    color: "#000000",
   },
   button: {
     backgroundColor: "#f6f6f6",
     padding: 10,
-    borderRadius: 10,
-    width: "35%",
   },
   createBtn: {
     backgroundColor: "#791111",
