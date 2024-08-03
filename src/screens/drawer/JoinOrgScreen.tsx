@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import NetInfo from "@react-native-community/netinfo";
 
 // project imports
-import createJoinStyles from "../../styles/CreateJoinStyles";
+import { createJoinStyles } from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/LoadingContext";
 import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";

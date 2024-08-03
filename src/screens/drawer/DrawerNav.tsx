@@ -116,7 +116,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
         onPress={() => navigation.toggleDrawer()}
       >
         <Image
-          source={require("../../assets/uuserprofiles/miku.jpg")}
+          source={require("../../assets/userprofiles/miku.jpg")}
           style={styles.circleImage}
         />
       </TouchableOpacity>

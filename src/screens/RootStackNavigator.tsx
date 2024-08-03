@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
 import SyncScreen from "./SyncScreen";
+import RequestReset from "./RequestReset";
+import ResetPassword from "./ResetPassword";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/LoadingContext";
@@ -35,6 +37,8 @@ export default function RootStackNavigator() {
           component={SyncScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="RequestReset" component={RequestReset} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>
