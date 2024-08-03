@@ -1,9 +1,9 @@
 import React from "react";
-import { Overlay } from "@rneui/themed";
-import { Text, StyleSheet, View } from "react-native";
+import { Overlay, Card, Button } from "@rneui/themed";
+import { Text, StyleSheet, Pressable } from "react-native";
+import { LinearGradient } from "expo-linear-gradient"; // Import the LinearGradient component
 
 import { useEquipment } from "../../helper/EquipmentContext";
-import { Button } from "@rneui/base";
 import { ScrollView } from "react-native-gesture-handler";
 
 /*
@@ -17,23 +17,44 @@ const EquipmentOverlay = () => {
   return (
     <Overlay isVisible={visible} fullScreen={true}>
       <Text style={styles.title}>{equipmentItem?.label}</Text>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView>
         {equipmentItem &&
           equipmentItem.data.map((item, index) => (
-            <View key={index}>
-              <Text>{item}</Text>
-              <Text>{equipmentItem.detailData[index]}</Text>
-            </View>
+            <Pressable
+              key={index}
+              onPress={() => {
+                console.log("hi!");
+              }}
+            >
+              <Card
+                containerStyle={equipmentItem.id === item && styles.highlighted}
+              >
+                <Card.Title>{item}</Card.Title>
+                <Card.Divider />
+                <Text>{equipmentItem.detailData[index]}</Text>
+              </Card>
+            </Pressable>
           ))}
       </ScrollView>
-      <Button onPress={() => setVisible(false)}>Close</Button>
+      <Button
+        ViewComponent={LinearGradient}
+        linearGradientProps={{
+          colors: ["#FF9800", "#F44336"],
+          start: { x: 0, y: 0.5 },
+          end: { x: 1, y: 0.5 },
+        }}
+        onPress={() => setVisible(false)}
+      >
+        Close
+      </Button>
     </Overlay>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 9,
+  highlighted: {
+    borderWidth: 3,
+    borderColor: "black",
   },
   overlayStyles: {
     display: "flex",
@@ -45,8 +66,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
-    flexShrink: 1,
-    flex: 2,
   },
 });
 
