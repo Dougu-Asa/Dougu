@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 
 // project imports
-import createJoinStyles from "../../styles/CreateJoinStyles";
+import { createJoinStyles } from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/LoadingContext";
 import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";

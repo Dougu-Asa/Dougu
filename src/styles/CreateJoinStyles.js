@@ -1,6 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const createJoinStyles = StyleSheet.create({
+export const createJoinStyles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#fff",
@@ -49,5 +49,3 @@ const createJoinStyles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
-export default createJoinStyles;

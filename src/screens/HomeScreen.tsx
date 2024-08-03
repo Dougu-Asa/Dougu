@@ -1,5 +1,11 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useEffect } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 
 // Project Files
@@ -8,6 +14,7 @@ import LoginScreen from "../components/Login";
 import CreateAccScreen from "../components/CreateAcc";
 import { HomeScreenProps } from "../types/ScreenTypes";
 import { useLoad } from "../helper/LoadingContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
@@ -17,6 +24,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [login, setLogin] = React.useState(true);
   const { setUser } = useUser();
   const { setIsLoading } = useLoad();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
     // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
@@ -34,9 +42,29 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     checkCurrentUser();
   }, [navigation, setIsLoading, setUser]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Dougu</Text>
+    <SafeAreaView style={styles.container}>
+      {!isKeyboardVisible && <Text style={styles.title}>Dougu</Text>}
       <View style={styles.loginCreateContainer}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setLogin(true)}>
@@ -52,7 +80,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <CreateAccScreen navigation={navigation} />
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -71,9 +99,9 @@ const styles = StyleSheet.create({
   },
   loginCreateContainer: {
     width: "80%",
-    height: "80%",
     borderWidth: 1,
     borderRadius: 20,
+    marginTop: "10%",
   },
   header: {
     height: "10%",

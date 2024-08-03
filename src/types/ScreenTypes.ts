@@ -41,6 +41,16 @@ export type SyncScreenProps = NativeStackScreenProps<
   "SyncScreen"
 >;
 
+export type RequestResetScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "RequestReset"
+>;
+
+export type ResetPasswordScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "ResetPassword"
+>;
+
 // for CreateAcc and Login screens
 export type NavigationOnlyProps = {
   navigation: NavigationProp<RootStackParamList>;

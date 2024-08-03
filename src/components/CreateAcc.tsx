@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet, Text } from "react-native";
+import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { useUser } from "../helper/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
+import { styles } from "../styles/LoginCreate";
 
 /*
   A component that allows the user to create an account
@@ -32,12 +33,6 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   // Function to toggle the password visibility state
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const toggleShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
 
   // username = first + ' ' + last
   useEffect(() => {
@@ -123,11 +118,11 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           keyboardType="default"
         />
         <MaterialCommunityIcons
-          name={showPassword ? "eye-off" : "eye"}
+          name={showPassword ? "eye" : "eye-off"}
           size={28}
           color="#aaa"
           style={styles.icon}
-          onPress={() => toggleShowPassword()}
+          onPress={() => setShowPassword(!showPassword)}
         />
       </View>
       <View style={styles.passwordContainer}>
@@ -140,11 +135,11 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           keyboardType="default"
         />
         <MaterialCommunityIcons
-          name={showConfirmPassword ? "eye-off" : "eye"}
+          name={showConfirmPassword ? "eye" : "eye-off"}
           size={28}
           color="#aaa"
           style={styles.icon}
-          onPress={() => toggleShowConfirmPassword()}
+          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
         />
       </View>
       <TouchableOpacity
@@ -156,69 +151,3 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    width: "100%",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: "8%",
-  },
-  input: {
-    height: 60,
-    borderWidth: 1,
-    borderRadius: 10,
-    marginTop: "5%",
-    width: "80%",
-    padding: 10,
-  },
-  pinput: {
-    height: 60,
-    width: "82%",
-    padding: 10,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "80%",
-    height: 60,
-    marginTop: "5%",
-  },
-  nameContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "80%",
-    marginTop: "5%",
-  },
-  name: {
-    width: "40%",
-    height: 60,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-  },
-  icon: {
-    padding: 5,
-    width: "18%",
-  },
-  button: {
-    height: 50,
-    margin: 15,
-    backgroundColor: "#333333",
-    width: "80%",
-    borderRadius: 10,
-  },
-  btnText: {
-    textAlign: "center",
-    color: "#fff",
-    padding: 10,
-  },
-});

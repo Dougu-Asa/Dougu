@@ -1,10 +1,4 @@
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -15,6 +9,7 @@ import { useLoad } from "../helper/LoadingContext";
 import { useUser } from "../helper/UserContext";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { handleError } from "../helper/Utils";
+import { styles } from "../styles/LoginCreate";
 
 /*
   A component that allows the user to login to the app 
@@ -57,7 +52,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Login</Text>
+      <Text style={styles.header}>Login</Text>
       <TextInput
         style={styles.input}
         onChangeText={onChangeUsername}
@@ -66,7 +61,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
         keyboardType="email-address"
         testID="emailInput"
       />
-      <View style={styles.password}>
+      <View style={styles.passwordContainer}>
         <TextInput
           style={styles.pinput}
           onChangeText={onChangePassword}
@@ -77,12 +72,21 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
           testID="passwordInput"
         />
         <MaterialCommunityIcons
-          name={showPassword ? "eye-off" : "eye"}
-          size={24}
+          name={showPassword ? "eye" : "eye-off"}
+          size={28}
           color="#aaa"
+          style={styles.icon}
           onPress={toggleShowPassword}
         />
       </View>
+      <Text
+        style={styles.forgotPassword}
+        onPress={() => {
+          navigation.navigate("RequestReset");
+        }}
+      >
+        Forgot Password?
+      </Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => signIn({ username, password })}
@@ -93,50 +97,3 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    width: "100%",
-  },
-  input: {
-    height: 60,
-    margin: "5%",
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    width: "80%",
-  },
-  pinput: {
-    height: 50,
-    margin: "5%",
-    padding: 10,
-    width: "75%",
-  },
-  password: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "80%",
-    height: 60,
-  },
-  button: {
-    height: 50,
-    margin: 15,
-    backgroundColor: "#333333",
-    width: "80%",
-    borderRadius: 10,
-  },
-  btnText: {
-    textAlign: "center",
-    color: "#fff",
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: "8%",
-  },
-});
