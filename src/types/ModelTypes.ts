@@ -1,15 +1,29 @@
 import { OrgUserStorage } from "../models";
 
-// how equipment data is stored in the app
-export type EquipmentObj = {
+export type EquipmentOrContainer = "equipment" | "container";
+
+export interface ItemType {
   id: string;
   label: string;
+  assignedTo: string;
+  assignedToName: string;
+  type: EquipmentOrContainer;
+}
+
+// how equipment data is stored in the app
+export interface EquipmentObj extends ItemType {
   count: number;
   data: string[];
   detailData: string[];
+}
+
+export interface ContainerObj extends ItemType {
+  id: string;
+  label: string;
   assignedTo: string;
   assignedToName: string;
-};
+  equipment: EquipmentObj[];
+}
 
 export type OrgEquipmentObj = {
   assignedToName: string;

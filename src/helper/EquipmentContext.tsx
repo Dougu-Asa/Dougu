@@ -2,10 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import { Equipment } from "../models";
 
-import { EquipmentObj, OrgEquipmentObj } from "../types/ModelTypes";
+import {
+  EquipmentObj,
+  OrgEquipmentObj,
+  ContainerObj,
+} from "../types/ModelTypes";
 import { EquipmentContextType } from "../types/ContextTypes";
 import { useUser } from "./UserContext";
 import { getOrgEquipment } from "./DataStoreUtils";
+import { ItemType } from "../types/ModelTypes";
 
 /* 
   Context only available within MemberTabs that distributes the equipment
@@ -25,7 +30,12 @@ export default function EquipmentProvider({
   const [equipmentData, setEquipmentData] = useState<
     Map<string, OrgEquipmentObj>
   >(new Map());
+  const [containerData, setContainerData] = useState<Map<string, ContainerObj>>(
+    new Map(),
+  );
   const [equipmentItem, setEquipmentItem] = useState<EquipmentObj | null>(null);
+  const [containerItem, setContainerItem] = useState<ContainerObj | null>(null);
+  const [itemData, setItemData] = useState<Map<string, ItemType[]>>(new Map());
   const [visible, setVisible] = useState<boolean>(false);
   const { org } = useUser();
 
