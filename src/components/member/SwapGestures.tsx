@@ -4,7 +4,6 @@ import { Dimensions } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import {
   GestureHandlerRootView,
-  ScrollView,
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
   GestureUpdateEvent,
@@ -23,8 +22,6 @@ import Animated, {
 import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
-import DraggableEquipment from "../../components/member/DraggableEquipment";
-import DraggableContainer from "./DraggableContainer";
 import {
   EquipmentObj,
   Position,
@@ -34,6 +31,8 @@ import {
 } from "../../types/ModelTypes";
 import EquipmentItem from "../../components/member/EquipmentItem";
 import ContainerItem from "../../components/member/ContainerItem";
+import ScrollRow from "./ScrollRow";
+import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -60,7 +59,9 @@ export default function SwapGestures({
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
   // this is half the width of the equipment item (for centering)
-  const halfEquipment = Dimensions.get("window").width / 10;
+  const equipmentWidth = Dimensions.get("window").width / 5;
+  // so that only 4 items are visible at a time.
+  const offset = Dimensions.get("window").width / 4;
   // these are for handling dragging overlay animation
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   const draggingOffset = useSharedValue<Position>({
@@ -78,10 +79,6 @@ export default function SwapGestures({
       ],
     };
   });
-
-  // this is for the scrollview to take priority in scrolling
-  const topScrollViewRef = useRef<ScrollView>(null);
-  const bottomScrollViewRef = useRef<ScrollView>(null);
 
   // we need to know the size of our container
   const onLayout = (event: LayoutChangeEvent) => {
@@ -107,12 +104,12 @@ export default function SwapGestures({
     "worklet";
     size.value = withSpring(1.2);
     draggingOffset.value = {
-      x: gestureState.absoluteX - halfEquipment,
+      x: gestureState.absoluteX - equipmentWidth / 2,
       y: gestureState.absoluteY - headerHeight - 40,
     };
     // save the start position so we can snap back to it at the end
     startPosition.value = {
-      x: gestureState.absoluteX - halfEquipment,
+      x: gestureState.absoluteX - equipmentWidth / 2,
       y: gestureState.absoluteY - headerHeight - 40,
     };
   };
@@ -124,7 +121,6 @@ export default function SwapGestures({
     >,
   ) => {
     "worklet";
-    console.log("gestureState", gestureState);
     draggingOffset.value = {
       x: gestureState.changeX + draggingOffset.value.x,
       y: gestureState.changeY + draggingOffset.value.y,
@@ -160,11 +156,49 @@ export default function SwapGestures({
     setDraggingItem(null);
   };
 
-  const handleLayout = (layoutEvent: LayoutChangeEvent) => {
-    const { x, y, width, height } = layoutEvent.nativeEvent.layout;
-    console.log(
-      "x: " + x + " y: " + y + " width: " + width + " height: " + height,
+  // on Hover method:
+  // calculate if item is top or bottom
+  // check itemSquare by horizontalOffset + x / offset
+  // if a container item is at the position, open a modal
+  // top/bottom, horizontalOffset, hoverMethod, containerSquares
+  const [topOffset, setTopOffset] = useState(0);
+  const [bottomOffset, setBottomOffset] = useState(0);
+  // map that keeps track of where the container items are
+  const topContainers = useRef(new Map<number, boolean>());
+  const bottomContainers = useRef(new Map<number, boolean>());
+  const topYRange = {
+    start: headerHeight + 120,
+    end: headerHeight + 120 + equipmentWidth,
+  };
+  const bottomYRange = {
+    start: halfLine.current + 40,
+    end: halfLine.current + equipmentWidth + 40,
+  };
+  const { setContainerVisible, setContainerItem } = useEquipment();
+
+  const handleHover = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    const top = gestureState.absoluteY < halfLine.current;
+    // ensure absoluteY is in the correct range
+    const range = top ? topYRange : bottomYRange;
+    if (
+      gestureState.absoluteY < range.start ||
+      gestureState.absoluteY > range.end
+    ) {
+      return;
+    }
+    const horizontalOffset = top ? topOffset : bottomOffset;
+    const position = Math.ceil(
+      (gestureState.absoluteX + horizontalOffset) / offset,
     );
+    const map = top ? topContainers : bottomContainers;
+    if (map.current.has(position)) {
+      // open modal
+      console.log("open modal");
+    }
   };
 
   return (
@@ -175,82 +209,35 @@ export default function SwapGestures({
         </Text>
       </View>
       <Text style={styles.scrollText}>My Equipment</Text>
-      <ScrollView
-        horizontal={true}
-        decelerationRate={"normal"}
-        showsHorizontalScrollIndicator={false}
-        ref={topScrollViewRef}
-      >
-        <View style={styles.scrollRow} onLayout={onLayout}>
-          <View style={styles.scroll}>
-            {listOne.map((item) => (
-              <View key={item.id} onLayout={handleLayout}>
-                {item.type === "equipment" ? (
-                  <DraggableEquipment
-                    item={item as EquipmentObj}
-                    scrollViewRef={topScrollViewRef}
-                    setItem={handleSetItem}
-                    onStart={handleStart}
-                    onMove={handleMove}
-                    onFinalize={handleFinalize}
-                    onReassign={handleReassign}
-                  />
-                ) : (
-                  <DraggableContainer
-                    item={item as ContainerObj}
-                    scrollViewRef={topScrollViewRef}
-                    setItem={handleSetItem}
-                    onStart={handleStart}
-                    onMove={handleMove}
-                    onFinalize={handleFinalize}
-                    onReassign={handleReassign}
-                  />
-                )}
-              </View>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
+      <ScrollRow
+        containerSquares={topContainers}
+        listData={listOne}
+        onLayout={onLayout}
+        setItem={handleSetItem}
+        setOffset={setTopOffset}
+        onStart={handleStart}
+        onMove={handleMove}
+        onFinalize={handleFinalize}
+        onReassign={handleReassign}
+        onHover={handleHover}
+      />
       <CurrMembersDropdown
         setUser={handleSet}
         isCreate={false}
         resetValue={resetValue}
       />
-      <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        ref={bottomScrollViewRef}
-      >
-        <View style={styles.scrollRow}>
-          <View style={styles.scroll}>
-            {listTwo.map((item) => (
-              <View key={item.id} onLayout={handleLayout}>
-                {item.type === "equipment" ? (
-                  <DraggableEquipment
-                    item={item as EquipmentObj}
-                    scrollViewRef={bottomScrollViewRef}
-                    setItem={handleSetItem}
-                    onStart={handleStart}
-                    onMove={handleMove}
-                    onFinalize={handleFinalize}
-                    onReassign={handleReassign}
-                  />
-                ) : (
-                  <DraggableContainer
-                    item={item as ContainerObj}
-                    scrollViewRef={bottomScrollViewRef}
-                    setItem={handleSetItem}
-                    onStart={handleStart}
-                    onMove={handleMove}
-                    onFinalize={handleFinalize}
-                    onReassign={handleReassign}
-                  />
-                )}
-              </View>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
+      <ScrollRow
+        containerSquares={bottomContainers}
+        listData={listTwo}
+        onLayout={onLayout}
+        setItem={handleSetItem}
+        setOffset={setBottomOffset}
+        onStart={handleStart}
+        onMove={handleMove}
+        onFinalize={handleFinalize}
+        onReassign={handleReassign}
+        onHover={handleHover}
+      />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
@@ -262,7 +249,12 @@ export default function SwapGestures({
   );
 }
 
+// 4/5 is taken up by items, 8 equal spaces to share the remaining 1/5
+const equipmentSpacing = Dimensions.get("window").width / 40;
 const styles = StyleSheet.create({
+  item: {
+    marginHorizontal: equipmentSpacing,
+  },
   floatingItem: {
     position: "absolute",
     justifyContent: "center",
@@ -287,7 +279,6 @@ const styles = StyleSheet.create({
   scrollRow: {
     flex: 1,
     flexDirection: "column",
-    marginHorizontal: 20,
     minWidth: Dimensions.get("window").width,
   },
   scrollText: {
@@ -301,8 +292,5 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
     flexDirection: "row",
-  },
-  item: {
-    margin: 5,
   },
 });
