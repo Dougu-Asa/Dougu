@@ -34,7 +34,6 @@ import ContainerItem from "../../components/member/ContainerItem";
 import ScrollRow from "./ScrollRow";
 import { useEquipment } from "../../helper/EquipmentContext";
 import CustomContainerOverlay from "./CustomContainerOverlay";
-import { Portal } from "react-native-paper";
 
 /*
     this section focuses on handling draggin and dropping equipment
