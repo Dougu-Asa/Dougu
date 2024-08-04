@@ -79,7 +79,10 @@ export default function CreateEquipmentScreen() {
     orgUserStorage: OrgUserStorage,
   ) => {
     const container = await DataStore.query(Container, (c) =>
-      c.or((c) => [c.name.eq(name), c.organizationContainersId.eq(dataOrg.id)]),
+      c.and((c) => [
+        c.name.eq(name),
+        c.organizationContainersId.eq(dataOrg.id),
+      ]),
     );
     if (container.length > 0) {
       throw new Error("Container already exists in the organization.");

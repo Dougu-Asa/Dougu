@@ -19,6 +19,7 @@ import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
+import ContainerOverlay from "../../components/member/ContainerOverlay";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -161,6 +162,7 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
           }}
         />
       </Tab.Navigator>
+      <ContainerOverlay />
       <EquipmentOverlay />
     </EquipmentProvider>
   );

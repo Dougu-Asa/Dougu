@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import Entypo from "react-native-vector-icons/Entypo";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/EquipmentContext";
@@ -11,9 +10,12 @@ import { useEquipment } from "../../helper/EquipmentContext";
   objects that can be dragged around the screen.
 */
 export default function ContainerItem({ item }: { item: ContainerObj | null }) {
+  const { setContainerItem, setContainerVisible } = useEquipment();
+
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
-      console.log("Tap!");
+      setContainerItem(item);
+      setContainerVisible(true);
     })
     .runOnJS(true);
 
@@ -22,9 +24,7 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
       {item && (
         <GestureDetector gesture={tapGesture}>
           <View style={equipment.container}>
-            <View style={equipment.equipment}>
-              <Entypo name="camera" size={50} color="black" />
-            </View>
+            <View style={equipment.equipment} />
             <Text style={{ fontSize: 12 }}>{item.label}</Text>
           </View>
         </GestureDetector>
@@ -42,7 +42,7 @@ const equipment = StyleSheet.create({
     opacity: 0.75,
   },
   equipment: {
-    backgroundColor: "white",
+    backgroundColor: "rgba(33, 33, 33, 0.15)",
     width: Dimensions.get("window").width / 5,
     height: Dimensions.get("window").width / 5,
     borderRadius: Dimensions.get("window").width / 14,
