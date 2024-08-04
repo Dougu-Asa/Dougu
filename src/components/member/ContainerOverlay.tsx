@@ -1,6 +1,6 @@
 import React from "react";
-import { Overlay } from "@rneui/themed";
-import { StyleSheet, Text } from "react-native";
+import { Overlay, Divider } from "@rneui/themed";
+import { StyleSheet, Text, View } from "react-native";
 
 import { useEquipment } from "../../helper/EquipmentContext";
 
@@ -19,21 +19,52 @@ export default function ContainerOverlay() {
       onBackdropPress={() => {
         setContainerVisible(false);
       }}
-      backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
+      backdropStyle={styles.backDrop}
       overlayStyle={styles.overlayContainer}
     >
-      <Text>Containers</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{containerItem?.label}</Text>
+      </View>
+      <Divider />
+      <View style={styles.itemContainer}>
+        <Text>Containers</Text>
+      </View>
     </Overlay>
   );
 }
 
 const styles = StyleSheet.create({
+  backDrop: {
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  itemContainer: {
+    flex: 9,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   overlayContainer: {
     justifyContent: "center",
     alignItems: "center",
     width: "85%",
-    height: "55%",
+    height: "60%",
     borderRadius: 20,
-    marginTop: "40%",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "white",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "black",
+  },
+  titleContainer: {
+    alignItems: "center",
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    width: "90%",
+    flex: 1,
   },
 });

@@ -65,7 +65,8 @@ export default function DraggableEquipment({
       // looks weird if the item immediately reappears
       runOnJS(setStateDragging)(false);
     })
-    .requireExternalGestureToFail(scrollViewRef);
+    .requireExternalGestureToFail(scrollViewRef)
+    .activateAfterLongPress(0);
 
   const longPressGesture = Gesture.LongPress().onStart((e) => {
     "worklet";
@@ -74,7 +75,6 @@ export default function DraggableEquipment({
     runOnJS(setItem)(item, e);
     runOnJS(setStateDragging)(true);
   });
-
   const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
 
   return (

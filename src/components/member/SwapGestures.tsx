@@ -123,6 +123,7 @@ export default function SwapGestures({
     >,
   ) => {
     "worklet";
+    console.log("gestureState", gestureState);
     draggingOffset.value = {
       x: gestureState.changeX + draggingOffset.value.x,
       y: gestureState.changeY + draggingOffset.value.y,
