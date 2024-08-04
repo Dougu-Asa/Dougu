@@ -5,7 +5,6 @@ import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Alert, Keyboard } from "react-native";
-import EquipmentProvider from "../../helper/EquipmentContext";
 
 // project imports
 import EquipmentScreen from "./Equipment";
@@ -20,6 +19,7 @@ import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
 import ContainerOverlay from "../../components/member/ContainerOverlay";
+import EquipmentProvider from "../../helper/EquipmentContext";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -109,6 +109,7 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
 
   return (
     <EquipmentProvider>
+      <EquipmentOverlay />
       <Tab.Navigator
         tabBarPosition="bottom"
         initialRouteName="OrgInfo"
@@ -162,8 +163,6 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
           }}
         />
       </Tab.Navigator>
-      <ContainerOverlay />
-      <EquipmentOverlay />
     </EquipmentProvider>
   );
 }

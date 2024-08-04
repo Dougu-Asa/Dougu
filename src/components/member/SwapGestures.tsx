@@ -33,6 +33,8 @@ import EquipmentItem from "../../components/member/EquipmentItem";
 import ContainerItem from "../../components/member/ContainerItem";
 import ScrollRow from "./ScrollRow";
 import { useEquipment } from "../../helper/EquipmentContext";
+import CustomContainerOverlay from "./CustomContainerOverlay";
+import { Portal } from "react-native-paper";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -156,11 +158,7 @@ export default function SwapGestures({
     setDraggingItem(null);
   };
 
-  // on Hover method:
-  // calculate if item is top or bottom
-  // check itemSquare by horizontalOffset + x / offset
-  // if a container item is at the position, open a modal
-  // top/bottom, horizontalOffset, hoverMethod, containerSquares
+  // onHover necessary calculations
   const [topOffset, setTopOffset] = useState(0);
   const [bottomOffset, setBottomOffset] = useState(0);
   // map that keeps track of where the container items are
@@ -174,7 +172,7 @@ export default function SwapGestures({
     start: halfLine.current + 40,
     end: halfLine.current + equipmentWidth + 40,
   };
-  const { setContainerVisible, setContainerItem } = useEquipment();
+  const { containerVisible, setContainerVisible } = useEquipment();
 
   const handleHover = (
     gestureState: GestureUpdateEvent<
@@ -197,7 +195,7 @@ export default function SwapGestures({
     const map = top ? topContainers : bottomContainers;
     if (map.current.has(position)) {
       // open modal
-      console.log("open modal");
+      setContainerVisible(true);
     }
   };
 
@@ -238,6 +236,7 @@ export default function SwapGestures({
         onReassign={handleReassign}
         onHover={handleHover}
       />
+      <CustomContainerOverlay />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
