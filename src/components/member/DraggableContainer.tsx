@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { StyleSheet, Dimensions } from "react-native";
-import EquipmentItem from "./EquipmentItem";
 import {
   GestureDetector,
   Gesture,
@@ -13,14 +12,15 @@ import {
 } from "react-native-gesture-handler";
 import Animated, { useSharedValue, runOnJS } from "react-native-reanimated";
 
-import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import { ContainerObj, ItemObj } from "../../types/ModelTypes";
+import ContainerItem from "./ContainerItem";
 
 /*
   Draggable Equipment is a component that allows the user to drag equipment objects
   around the screen. It uses the PanResponder API to handle touch events and the
   Animated API to move the equipment objects.
 */
-export default function DraggableEquipment({
+export default function DraggableContainer({
   item,
   scrollViewRef,
   setItem,
@@ -29,7 +29,7 @@ export default function DraggableEquipment({
   onFinalize,
   onReassign,
 }: {
-  item: EquipmentObj;
+  item: ContainerObj;
   scrollViewRef: React.RefObject<ScrollView>;
   setItem: (
     item: ItemObj,
@@ -73,16 +73,14 @@ export default function DraggableEquipment({
     onStart(e);
     runOnJS(setItem)(item, e);
     runOnJS(setStateDragging)(true);
+    console.log("longpressed!");
   });
   const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
 
   return (
     <GestureDetector gesture={panPressGesture}>
       <Animated.View style={styles.container}>
-        <EquipmentItem
-          item={item}
-          count={stateDragging ? item.count - 1 : item.count}
-        />
+        {!stateDragging && <ContainerItem item={item} />}
       </Animated.View>
     </GestureDetector>
   );

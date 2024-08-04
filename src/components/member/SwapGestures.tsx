@@ -24,6 +24,7 @@ import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
+import DraggableContainer from "./DraggableContainer";
 import {
   EquipmentObj,
   Position,
@@ -61,7 +62,7 @@ export default function SwapGestures({
   // this is half the width of the equipment item (for centering)
   const halfEquipment = Dimensions.get("window").width / 10;
   // these are for handling dragging overlay animation
-  const [draggingItem, setDraggingItem] = useState<EquipmentObj | null>(null);
+  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   const draggingOffset = useSharedValue<Position>({
     x: 0,
     y: 0,
@@ -90,7 +91,7 @@ export default function SwapGestures({
 
   // set the equipment item to be dragged through the JS thread
   const handleSetItem = (
-    item: EquipmentObj,
+    item: ItemObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
   ) => {
     setDraggingItem(item);
@@ -154,8 +155,16 @@ export default function SwapGestures({
       return;
     const swapId =
       assignedTo === "bottom" ? swapUser.current.id : orgUserStorage!.id;
-    runOnJS(reassignEquipment)(draggingItem!, swapId);
+    // SETUP ASSIGNMENTS FOR CONTAINER
+    //runOnJS(reassignEquipment)(draggingItem!, swapId);
     setDraggingItem(null);
+  };
+
+  const handleLayout = (layoutEvent: LayoutChangeEvent) => {
+    const { x, y, width, height } = layoutEvent.nativeEvent.layout;
+    console.log(
+      "x: " + x + " y: " + y + " width: " + width + " height: " + height,
+    );
   };
 
   return (
@@ -175,7 +184,7 @@ export default function SwapGestures({
         <View style={styles.scrollRow} onLayout={onLayout}>
           <View style={styles.scroll}>
             {listOne.map((item) => (
-              <View key={item.id}>
+              <View key={item.id} onLayout={handleLayout}>
                 {item.type === "equipment" ? (
                   <DraggableEquipment
                     item={item as EquipmentObj}
@@ -187,7 +196,15 @@ export default function SwapGestures({
                     onReassign={handleReassign}
                   />
                 ) : (
-                  <ContainerItem item={item as ContainerObj} />
+                  <DraggableContainer
+                    item={item as ContainerObj}
+                    scrollViewRef={topScrollViewRef}
+                    setItem={handleSetItem}
+                    onStart={handleStart}
+                    onMove={handleMove}
+                    onFinalize={handleFinalize}
+                    onReassign={handleReassign}
+                  />
                 )}
               </View>
             ))}
@@ -207,7 +224,7 @@ export default function SwapGestures({
         <View style={styles.scrollRow}>
           <View style={styles.scroll}>
             {listTwo.map((item) => (
-              <View key={item.id}>
+              <View key={item.id} onLayout={handleLayout}>
                 {item.type === "equipment" ? (
                   <DraggableEquipment
                     item={item as EquipmentObj}
@@ -219,7 +236,15 @@ export default function SwapGestures({
                     onReassign={handleReassign}
                   />
                 ) : (
-                  <ContainerItem item={item as ContainerObj} />
+                  <DraggableContainer
+                    item={item as ContainerObj}
+                    scrollViewRef={bottomScrollViewRef}
+                    setItem={handleSetItem}
+                    onStart={handleStart}
+                    onMove={handleMove}
+                    onFinalize={handleFinalize}
+                    onReassign={handleReassign}
+                  />
                 )}
               </View>
             ))}
@@ -227,7 +252,11 @@ export default function SwapGestures({
         </View>
       </ScrollView>
       <Animated.View style={[styles.floatingItem, movingStyles]}>
-        <EquipmentItem item={draggingItem} count={1} />
+        {draggingItem?.type === "equipment" ? (
+          <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
+        ) : (
+          <ContainerItem item={draggingItem as ContainerObj} />
+        )}
       </Animated.View>
     </GestureHandlerRootView>
   );

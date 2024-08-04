@@ -42,7 +42,7 @@ const equipment = StyleSheet.create({
     opacity: 0.75,
   },
   equipment: {
-    backgroundColor: "rgba(33, 33, 33, 0.15)",
+    backgroundColor: "rgba(222, 222, 222, 1)",
     width: Dimensions.get("window").width / 5,
     height: Dimensions.get("window").width / 5,
     borderRadius: Dimensions.get("window").width / 14,
