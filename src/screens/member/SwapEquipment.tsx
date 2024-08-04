@@ -7,7 +7,7 @@ import { Equipment, OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/LoadingContext";
 import { useUser } from "../../helper/UserContext";
 import { handleError } from "../../helper/Utils";
-import { EquipmentObj } from "../../types/ModelTypes";
+import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import SwapGestures from "../../components/member/SwapGestures";
 import { useEquipment } from "../../helper/EquipmentContext";
 
@@ -18,25 +18,25 @@ import { useEquipment } from "../../helper/EquipmentContext";
 export default function SwapEquipment() {
   const { setIsLoading } = useLoad();
   const { orgUserStorage } = useUser();
-  const { equipmentData } = useEquipment();
+  const { itemData } = useEquipment();
   let swapUser = useRef<OrgUserStorage | null>(null);
   const [resetValue, setResetValue] = useState(false);
-  let [listOne, setListOne] = useState<EquipmentObj[]>([]);
-  let [listTwo, setListTwo] = useState<EquipmentObj[]>([]);
+  let [listOne, setListOne] = useState<ItemObj[]>([]);
+  let [listTwo, setListTwo] = useState<ItemObj[]>([]);
 
   // gets and sets the equipment for the current user and the swap user
   const setEquipment = useCallback(async () => {
-    const userEquipmentOne = equipmentData.get(orgUserStorage!.id);
-    const equipmentOne = userEquipmentOne?.equipment;
-    setListOne(equipmentOne ? equipmentOne : []);
+    const userItemsOne = itemData.get(orgUserStorage!.id);
+    const itemsOne = userItemsOne?.data;
+    setListOne(itemsOne ? itemsOne : []);
     if (swapUser.current != null) {
-      const userEquipmentTwo = equipmentData.get(swapUser.current.id);
-      const equipmentTwo = userEquipmentTwo?.equipment;
-      setListTwo(equipmentTwo ? equipmentTwo : []);
+      const userItemsTwo = itemData.get(swapUser.current.id);
+      const itemsTwo = userItemsTwo?.data;
+      setListTwo(itemsTwo ? itemsTwo : []);
     } else {
       setListTwo([]);
     }
-  }, [equipmentData, orgUserStorage]);
+  }, [itemData, orgUserStorage]);
 
   // call setEquipment everytime the swap user changes
   useEffect(() => {

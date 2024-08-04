@@ -1,16 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
-import { Equipment } from "../models";
 
-import {
-  EquipmentObj,
-  OrgEquipmentObj,
-  ContainerObj,
-} from "../types/ModelTypes";
+import { EquipmentObj, ContainerObj, OrgItem } from "../types/ModelTypes";
 import { EquipmentContextType } from "../types/ContextTypes";
 import { useUser } from "./UserContext";
-import { getOrgEquipment } from "./DataStoreUtils";
-import { ItemType } from "../types/ModelTypes";
+import { getOrgItems } from "./DataStoreUtils";
+import { Equipment, Container } from "../models";
 
 /* 
   Context only available within MemberTabs that distributes the equipment
@@ -27,54 +22,60 @@ export default function EquipmentProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [equipmentData, setEquipmentData] = useState<
-    Map<string, OrgEquipmentObj>
-  >(new Map());
-  const [containerData, setContainerData] = useState<Map<string, ContainerObj>>(
-    new Map(),
-  );
   const [equipmentItem, setEquipmentItem] = useState<EquipmentObj | null>(null);
   const [containerItem, setContainerItem] = useState<ContainerObj | null>(null);
-  const [itemData, setItemData] = useState<Map<string, ItemType[]>>(new Map());
+  const [itemData, setItemData] = useState<Map<string, OrgItem>>(new Map());
   const [visible, setVisible] = useState<boolean>(false);
   const { org } = useUser();
 
   // subscribe to and get all equipment in the organization
   useEffect(() => {
-    const handleGetEquipment = async () => {
-      const equipment = await getOrgEquipment(org!.id);
-      setEquipmentData(equipment);
+    const handleGetItems = async () => {
+      const items = await getOrgItems(org!.id);
+      setItemData(items);
     };
 
-    const subscription = DataStore.observeQuery(Equipment).subscribe(() => {
-      handleGetEquipment();
-    });
+    const equipmentSubscription = DataStore.observeQuery(Equipment).subscribe(
+      () => {
+        handleGetItems();
+      },
+    );
+    const containerSubscription = DataStore.observeQuery(Container).subscribe(
+      () => {
+        handleGetItems();
+      },
+    );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      equipmentSubscription.unsubscribe();
+      containerSubscription.unsubscribe();
+    };
   }, [org]);
 
   // select a new default id for the equipment item passed in
   const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
     // find the equipment object in the equipmentData map
-    const equipment = equipmentData.get(item.assignedTo);
-    if (!equipment) return;
+    const orgItem = itemData.get(item.assignedTo);
+    if (!orgItem) return;
     // find the index of the equipment object in the equipment array
-    const index = equipment.equipment.findIndex((e) => e.id === item.id);
+    const index = orgItem.data.findIndex((e) => e.id === item.id);
     if (index === -1) return;
     // create a new equipment object swapping the id with the new id
     const newEquipment = { ...item, id: newId };
     setEquipmentItem(newEquipment);
     // update the equipment array with the new equipment object
-    equipment.equipment[index] = newEquipment;
-    equipmentData.set(item.assignedTo, equipment);
+    orgItem.data[index] = newEquipment;
+    itemData.set(item.assignedTo, orgItem);
   };
 
   return (
     <EquipmentContext.Provider
       value={{
-        equipmentData,
+        itemData,
         equipmentItem,
         setEquipmentItem,
+        containerItem,
+        setContainerItem,
         visible,
         setVisible,
         modifyEquipmentItem,

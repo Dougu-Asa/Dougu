@@ -2,7 +2,7 @@ import { OrgUserStorage } from "../models";
 
 export type EquipmentOrContainer = "equipment" | "container";
 
-export interface ItemType {
+export interface ItemObj {
   id: string;
   label: string;
   assignedTo: string;
@@ -11,24 +11,21 @@ export interface ItemType {
 }
 
 // how equipment data is stored in the app
-export interface EquipmentObj extends ItemType {
+export interface EquipmentObj extends ItemObj {
   count: number;
   data: string[];
   detailData: string[];
+  parent: string | null;
 }
 
-export interface ContainerObj extends ItemType {
-  id: string;
-  label: string;
-  assignedTo: string;
-  assignedToName: string;
+export interface ContainerObj extends ItemObj {
   equipment: EquipmentObj[];
 }
 
-export type OrgEquipmentObj = {
+export interface OrgItem {
   assignedToName: string;
-  equipment: EquipmentObj[];
-};
+  data: ItemObj[];
+}
 
 // for current members dropdown
 export type UserNames = {

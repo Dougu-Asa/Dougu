@@ -1,7 +1,12 @@
 import { DataStore } from "@aws-amplify/datastore";
 
-import { Equipment } from "../models";
-import { EquipmentObj, OrgEquipmentObj } from "../types/ModelTypes";
+import { Container, Equipment } from "../models";
+import {
+  EquipmentObj,
+  OrgItem,
+  ItemObj,
+  ContainerObj,
+} from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Utils";
 
@@ -21,7 +26,7 @@ export const sortOrgUserStorages = (
   orgUserStorages: OrgUserStorage[],
 ): OrgUserStorage[] => {
   return orgUserStorages.sort((a, b) => collator.compare(a.name, b.name));
-}
+};
 
 /* 
   get the equipment for a user by OrgUserStorage id
@@ -35,6 +40,7 @@ export const getEquipment = async (
     const equipment = await DataStore.query(Equipment, (c) =>
       c.assignedTo.id.eq(orgUserStorage.id),
     );
+    // group duplicates and merge their counts
     const equipmentData = processEquipmentData(equipment, orgUserStorage);
     return equipmentData;
   } catch (error) {
@@ -43,50 +49,84 @@ export const getEquipment = async (
   }
 };
 
-/* getEquipment but for every OrgUserStorage in the organization */
-export const getOrgEquipment = async (
+export const getContainers = async (
+  orgUserStorage: OrgUserStorage,
+): Promise<Map<string, ContainerObj>> => {
+  // get all the containers assigned to the user
+  const containers = await DataStore.query(Container, (c) =>
+    c.assignedTo.id.eq(orgUserStorage.id),
+  );
+  // for each container id, create a map <containerId, containerObj>
+  const containerMap = new Map<string, ContainerObj>();
+  for (let j = 0; j < containers.length; j++) {
+    const containerObj: ContainerObj = {
+      id: containers[j].id,
+      label: containers[j].name,
+      assignedTo: orgUserStorage.id,
+      assignedToName: orgUserStorage.name,
+      type: "container",
+      equipment: [],
+    };
+    containerMap.set(containers[j].id, containerObj);
+  }
+  return containerMap;
+};
+
+export const getOrgItems = async (
   orgId: string,
-): Promise<Map<string, OrgEquipmentObj>> => {
-  let orgEquipment = new Map<string, OrgEquipmentObj>();
+): Promise<Map<string, OrgItem>> => {
+  // every orgUserStorage has a list of items assigned to it
+  let orgItems = new Map<string, OrgItem>();
   const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
     c.organizationUserOrStoragesId.eq(orgId),
   );
-  // for each orgUserStorage, get the equipment assigned to it
+  // for each orgUserStorage, get the items assigned to it
   for (let i = 0; i < orgUserStorages.length; i++) {
-    const processedEquipment = await getEquipment(orgUserStorages[i]);
-    let orgEquipmentObj = {
+    let userData: ItemObj[] = [];
+    // get all the processed equipmentdata  assigned to the user
+    const equipmentData = await getEquipment(orgUserStorages[i]);
+    // set a container object map for the user
+    const containerMap = await getContainers(orgUserStorages[i]);
+    // separate equipment that is in a container to part of a containerObj
+    equipmentData?.forEach((equip) => {
+      if (equip.parent && equip.parent in containerMap) {
+        containerMap.get(equip.parent)!.equipment.push(equip);
+      } else {
+        userData.push(equip);
+      }
+    });
+    // add each containerObj to userData
+    containerMap.forEach((value) => {
+      userData.push(value);
+    });
+    // sort the array by name
+    userData.sort((a, b) => collator.compare(a.label, b.label));
+    orgItems.set(orgUserStorages[i].id, {
       assignedToName: orgUserStorages[i].name,
-      equipment: processedEquipment ? processedEquipment : [],
-    };
-    orgEquipment.set(orgUserStorages[i].id, orgEquipmentObj);
+      data: userData,
+    });
   }
-  return orgEquipment;
-}
+  return orgItems;
+};
 
-// sort orgEquipmentObj map by assignedToName, and having those with equipment first
-export const sortOrgEquipment = (
-  orgEquipment: Map<string, OrgEquipmentObj>,
-): OrgEquipmentObj[] => {
-  let orgEquipmentWithContent: OrgEquipmentObj[] = [];
-  let orgEquipmentWithoutContent: OrgEquipmentObj[] = [];
-  orgEquipment.forEach((value) => {
-    const length = value.equipment.length;
-    if (length > 0) {
-      orgEquipmentWithContent.push(value);
+export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
+  let orgItemsArray: OrgItem[] = [];
+  let orgItemsArrayEmpty: OrgItem[] = [];
+  orgItems.forEach((value) => {
+    if (value.data.length > 0) {
+      orgItemsArray.push(value);
     } else {
-      orgEquipmentWithoutContent.push(value);
+      orgItemsArrayEmpty.push(value);
     }
   });
-  // sort each array by assignedToName
-  orgEquipmentWithContent.sort((a, b) =>
+  orgItemsArray.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  orgEquipmentWithoutContent.sort((a, b) =>
+  orgItemsArrayEmpty.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  // return orgEquipment with those that have equipment first
-  return orgEquipmentWithContent.concat(orgEquipmentWithoutContent);
-}
+  return orgItemsArray.concat(orgItemsArrayEmpty);
+};
 
 /*
   get duplicates and merge their counts
@@ -112,19 +152,17 @@ export const processEquipmentData = (
         id: equip.id,
         label: equip.name,
         count: 1,
+        type: "equipment",
         data: [equip.id],
         detailData: [equip.details ? equip.details : ""],
         assignedTo: orgUserStorage.id,
         assignedToName: orgUserStorage.name,
+        parent: equip.containerEquipmentId ? equip.containerEquipmentId : null,
       });
     }
   });
 
-  // Sort map by the keys so equipment names are in alphabetical order
-  const sortedMap = new Map(
-    [...equipmentMap.entries()].sort((a, b) => collator.compare(a[0], b[0])),
-  );
   // Convert the Map back to an array
-  const processedEquipmentData = Array.from(sortedMap.values());
+  const processedEquipmentData = Array.from(equipmentMap.values());
   return processedEquipmentData;
-}
+};

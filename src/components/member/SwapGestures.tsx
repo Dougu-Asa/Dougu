@@ -24,8 +24,15 @@ import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import DraggableEquipment from "../../components/member/DraggableEquipment";
-import { EquipmentObj, Position, TopOrBottom } from "../../types/ModelTypes";
+import {
+  EquipmentObj,
+  Position,
+  TopOrBottom,
+  ContainerObj,
+  ItemObj,
+} from "../../types/ModelTypes";
 import EquipmentItem from "../../components/member/EquipmentItem";
+import ContainerItem from "../../components/member/ContainerItem";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -40,8 +47,8 @@ export default function SwapGestures({
   swapUser,
   reassignEquipment,
 }: {
-  listOne: EquipmentObj[];
-  listTwo: EquipmentObj[];
+  listOne: ItemObj[];
+  listTwo: ItemObj[];
   handleSet: (user: OrgUserStorage | null) => void;
   resetValue: boolean;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
@@ -167,16 +174,21 @@ export default function SwapGestures({
         <View style={styles.scrollRow} onLayout={onLayout}>
           <View style={styles.scroll}>
             {listOne.map((item) => (
-              <DraggableEquipment
-                key={item.id}
-                item={item}
-                scrollViewRef={topScrollViewRef}
-                setItem={handleSetItem}
-                onStart={handleStart}
-                onMove={handleMove}
-                onFinalize={handleFinalize}
-                onReassign={handleReassign}
-              />
+              <View key={item.id}>
+                {item.type === "equipment" ? (
+                  <DraggableEquipment
+                    item={item as EquipmentObj}
+                    scrollViewRef={topScrollViewRef}
+                    setItem={handleSetItem}
+                    onStart={handleStart}
+                    onMove={handleMove}
+                    onFinalize={handleFinalize}
+                    onReassign={handleReassign}
+                  />
+                ) : (
+                  <ContainerItem item={item as ContainerObj} />
+                )}
+              </View>
             ))}
           </View>
         </View>
@@ -194,16 +206,21 @@ export default function SwapGestures({
         <View style={styles.scrollRow}>
           <View style={styles.scroll}>
             {listTwo.map((item) => (
-              <DraggableEquipment
-                key={item.id}
-                item={item}
-                scrollViewRef={bottomScrollViewRef}
-                setItem={handleSetItem}
-                onStart={handleStart}
-                onMove={handleMove}
-                onFinalize={handleFinalize}
-                onReassign={handleReassign}
-              />
+              <View key={item.id}>
+                {item.type === "equipment" ? (
+                  <DraggableEquipment
+                    item={item as EquipmentObj}
+                    scrollViewRef={bottomScrollViewRef}
+                    setItem={handleSetItem}
+                    onStart={handleStart}
+                    onMove={handleMove}
+                    onFinalize={handleFinalize}
+                    onReassign={handleReassign}
+                  />
+                ) : (
+                  <ContainerItem item={item as ContainerObj} />
+                )}
+              </View>
             ))}
           </View>
         </View>

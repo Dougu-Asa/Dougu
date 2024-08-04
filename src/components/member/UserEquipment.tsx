@@ -2,7 +2,8 @@ import React from "react";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Dimensions } from "react-native";
 import EquipmentItem from "./EquipmentItem";
-import { EquipmentObj } from "../../types/ModelTypes";
+import { EquipmentObj, ItemObj, ContainerObj } from "../../types/ModelTypes";
+import ContainerItem from "./ContainerItem";
 
 /* 
   Displays a user's equipment in a horizontal scroll view
@@ -15,7 +16,7 @@ export default function UserEquipment({
   list,
   name,
 }: {
-  list: EquipmentObj[];
+  list: ItemObj[];
   name: string;
 }) {
   return (
@@ -30,11 +31,14 @@ export default function UserEquipment({
           <View style={styles.scrollRow}>
             {list.map((item) => (
               <View key={item.label} style={styles.equipmentWrapper}>
-                <EquipmentItem
-                  key={item.label}
-                  item={item}
-                  count={item.count}
-                />
+                {item.type === "equipment" ? (
+                  <EquipmentItem
+                    item={item as EquipmentObj}
+                    count={(item as EquipmentObj).count}
+                  />
+                ) : (
+                  <ContainerItem item={item as ContainerObj} />
+                )}
               </View>
             ))}
           </View>
