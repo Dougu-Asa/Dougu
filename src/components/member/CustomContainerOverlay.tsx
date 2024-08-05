@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
@@ -14,13 +8,22 @@ import { useEquipment } from "../../helper/EquipmentContext";
     stats, counts, and grouped equipment items.
 */
 export default function CustomContainerOverlay() {
-  const { containerVisible, setContainerVisible, containerItem } =
-    useEquipment();
+  const {
+    containerVisible,
+    setContainerVisible,
+    containerItem,
+    setContainerItem,
+  } = useEquipment();
+
+  const closeContainer = () => {
+    setContainerVisible(false);
+    setContainerItem(null);
+  };
 
   return (
     <View style={styles.screen}>
       {containerVisible && (
-        <TouchableWithoutFeedback onPress={() => setContainerVisible(false)}>
+        <TouchableWithoutFeedback onPress={closeContainer}>
           <View style={styles.backDrop}>
             <TouchableWithoutFeedback>
               <View style={styles.overlayContainer}>
@@ -61,6 +64,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     backgroundColor: "white",
+    borderWidth: 1,
   },
   title: {
     fontSize: 24,

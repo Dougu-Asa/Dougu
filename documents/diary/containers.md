@@ -8,8 +8,6 @@ Over the container overlay, I came to notice that implementing blur is very diff
 ## Detecting Containers and Opening Modals
 After a lot of thought and contemplation, I figured out a way to track if a user has hovered over a modal for an extended period of time. In the interest of trying to keep the process efficient, I first setup a layout where the screen will only show 4 items at a time, spaced equally apart. And the scrollview locks such that the four items are always in the same place. Then, I keep track of the horizontal offset and calculate which square the current hover is in by doing ceiling((x + horizontalOffset) / scrollOffset). And so, by keeping tracking of which grid squares are active through onLayout, I can quickly check if the user is currently over a container square.
 
-- Switching characters and hovering where the container used to be still opens the modal
+Instead of opening the modal, for simplicity's sake I chose to just have the overlay shrink when it hovers over a container it can be placed into. I am starting to get worried about the complexity and performance of my code, because while it's smooth on my test phone, I believe that it may start to struggle against slower models. There are just a lot of calculations. 
 
-After this, I had to setup a method to open the modal, though I quickly noticed that the modal overlaps the dragging Item. Therefore, I needed to develop a custom modal popup and it inside swapEquipmentScreen for the draggingItem to cover. However, now 
-
-- Modal no longer works on equipment, team, and orgInfo
+- Bottom swapUser container's aren't causing overlay shrinks

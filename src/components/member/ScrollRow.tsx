@@ -29,7 +29,7 @@ export default function ScrollRow({
   onReassign,
   onHover,
 }: {
-  containerSquares: React.MutableRefObject<Map<number, boolean>>;
+  containerSquares: React.MutableRefObject<Map<number, ItemObj>>;
   listData: ItemObj[];
   onLayout: (e: LayoutChangeEvent) => void;
   setOffset: React.Dispatch<React.SetStateAction<number>>;
@@ -63,7 +63,8 @@ export default function ScrollRow({
     const { x } = layoutEvent.nativeEvent.layout;
     // calculate grid position for each item
     const containerPosition = Math.ceil(x / offsets);
-    containerSquares.current.set(containerPosition, true);
+    containerSquares.current.set(containerPosition, item);
+    console.log(containerSquares.current);
   };
 
   return (

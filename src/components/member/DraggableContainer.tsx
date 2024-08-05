@@ -80,7 +80,6 @@ export default function DraggableContainer({
     onStart(e);
     runOnJS(setItem)(item, e);
     runOnJS(setStateDragging)(true);
-    console.log("longpressed!");
   });
   const panPressGesture = Gesture.Simultaneous(panGesture, longPressGesture);
 

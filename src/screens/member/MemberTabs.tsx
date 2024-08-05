@@ -18,8 +18,8 @@ import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
-import ContainerOverlay from "../../components/member/ContainerOverlay";
 import EquipmentProvider from "../../helper/EquipmentContext";
+import CustomContainerOverlay from "../../components/member/CustomContainerOverlay";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -28,7 +28,10 @@ const Tab = createMaterialTopTabNavigator<TabParamList>();
   MemberTabs is the tab navigator for a user. It holds all the screens
   that a user can navigate to while they are a member of an organization.
 */
-export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
+export default function MemberTabs({
+  navigation,
+  route,
+}: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -109,7 +112,6 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
 
   return (
     <EquipmentProvider>
-      <EquipmentOverlay />
       <Tab.Navigator
         tabBarPosition="bottom"
         initialRouteName="OrgInfo"
@@ -163,6 +165,8 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
           }}
         />
       </Tab.Navigator>
+      <EquipmentOverlay />
+      <CustomContainerOverlay />
     </EquipmentProvider>
   );
 }

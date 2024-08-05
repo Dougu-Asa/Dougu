@@ -16,6 +16,7 @@ import Animated, {
   withSpring,
   runOnJS,
   withTiming,
+  runOnUI,
 } from "react-native-reanimated";
 
 // project imports
@@ -32,8 +33,6 @@ import {
 import EquipmentItem from "../../components/member/EquipmentItem";
 import ContainerItem from "../../components/member/ContainerItem";
 import ScrollRow from "./ScrollRow";
-import { useEquipment } from "../../helper/EquipmentContext";
-import CustomContainerOverlay from "./CustomContainerOverlay";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -161,8 +160,8 @@ export default function SwapGestures({
   const [topOffset, setTopOffset] = useState(0);
   const [bottomOffset, setBottomOffset] = useState(0);
   // map that keeps track of where the container items are
-  const topContainers = useRef(new Map<number, boolean>());
-  const bottomContainers = useRef(new Map<number, boolean>());
+  const topContainers = useRef(new Map<number, ItemObj>());
+  const bottomContainers = useRef(new Map<number, ItemObj>());
   const topYRange = {
     start: headerHeight + 120,
     end: headerHeight + 120 + equipmentWidth,
@@ -171,13 +170,14 @@ export default function SwapGestures({
     start: halfLine.current + 40,
     end: halfLine.current + equipmentWidth + 40,
   };
-  const { containerVisible, setContainerVisible } = useEquipment();
+  let prevPosition = "";
 
   const handleHover = (
     gestureState: GestureUpdateEvent<
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
     >,
   ) => {
+    if (draggingItem?.type === "container") return;
     const top = gestureState.absoluteY < halfLine.current;
     // ensure absoluteY is in the correct range
     const range = top ? topYRange : bottomYRange;
@@ -185,17 +185,36 @@ export default function SwapGestures({
       gestureState.absoluteY < range.start ||
       gestureState.absoluteY > range.end
     ) {
+      if ("out" === prevPosition) {
+        return;
+      }
+      prevPosition = "out";
+      changePosition(null, 0);
       return;
     }
     const horizontalOffset = top ? topOffset : bottomOffset;
     const position = Math.ceil(
       (gestureState.absoluteX + horizontalOffset) / offset,
     );
-    const map = top ? topContainers : bottomContainers;
-    if (map.current.has(position)) {
-      // open modal
-      setContainerVisible(true);
+    const positionKey = `${top}-${position}`;
+    if (positionKey === prevPosition) {
+      return;
     }
+    console.log("positionKey", positionKey);
+    changePosition(top, position);
+    prevPosition = positionKey;
+  };
+
+  const changePosition = (isTop: boolean | null, position: number) => {
+    if (!isTop) {
+      size.value = withSpring(1.2);
+      return;
+    }
+    const map = isTop ? topContainers : bottomContainers;
+    console.log("map", map.current);
+    if (map.current.has(position)) {
+      size.value = withSpring(0.7);
+    } else size.value = withSpring(1.2);
   };
 
   return (
@@ -219,7 +238,10 @@ export default function SwapGestures({
         onHover={handleHover}
       />
       <CurrMembersDropdown
-        setUser={handleSet}
+        setUser={(user) => {
+          bottomContainers.current.clear();
+          handleSet(user);
+        }}
         isCreate={false}
         resetValue={resetValue}
       />
@@ -235,7 +257,6 @@ export default function SwapGestures({
         onReassign={handleReassign}
         onHover={handleHover}
       />
-      <CustomContainerOverlay />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
