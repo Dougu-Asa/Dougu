@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { View, Dimensions, StyleSheet, LayoutChangeEvent } from "react-native";
 import {
   ScrollView,
@@ -8,10 +8,11 @@ import {
   PanGestureHandlerEventPayload,
   PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
-import { EquipmentObj, ContainerObj, ItemObj } from "../../types/ModelTypes";
 
+import { EquipmentObj, ContainerObj, ItemObj } from "../../types/ModelTypes";
 import DraggableEquipment from "./DraggableEquipment";
 import DraggableContainer from "./DraggableContainer";
+import { chunkEquipment } from "../../helper/DataStoreUtils";
 
 /*
     ScrollRow is a component that allows the user to scroll through a row of
@@ -22,6 +23,8 @@ export default function ScrollRow({
   listData,
   onLayout,
   setOffset,
+  scrollPage,
+  determineScroll,
   setItem,
   onStart,
   onMove,
@@ -32,7 +35,13 @@ export default function ScrollRow({
   containerSquares: React.MutableRefObject<Map<number, ItemObj>>;
   listData: ItemObj[];
   onLayout: (e: LayoutChangeEvent) => void;
-  setOffset: React.Dispatch<React.SetStateAction<number>>;
+  setOffset: (offset: number) => void;
+  scrollPage: number;
+  determineScroll: (
+    e: GestureUpdateEvent<
+      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+    >,
+  ) => void;
   setItem: (
     item: ItemObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
@@ -55,16 +64,28 @@ export default function ScrollRow({
     >,
   ) => void;
 }) {
+  const windowWidth = Dimensions.get("window").width;
+  const offsets = windowWidth / 4;
   const scrollViewRef = useRef<ScrollView>(null);
-  const offsets = Dimensions.get("window").width / 4;
+  const chunkedData = chunkEquipment(listData, 4);
 
-  const handleLayout = (layoutEvent: LayoutChangeEvent, item: ItemObj) => {
+  useEffect(() => {
+    if (scrollPage < 0) return;
+    if (scrollPage > chunkedData.length - 1) return;
+    const scrollValue = scrollPage * windowWidth;
+    scrollViewRef.current?.scrollTo({ x: scrollValue });
+  }, [chunkedData.length, scrollPage, windowWidth]);
+
+  const handleLayout = (
+    layoutEvent: LayoutChangeEvent,
+    item: ItemObj,
+    index: number,
+  ) => {
     if (item.type === "equipment") return;
     const { x } = layoutEvent.nativeEvent.layout;
     // calculate grid position for each item
-    const containerPosition = Math.ceil(x / offsets);
+    const containerPosition = Math.ceil(x / offsets) + index * 4;
     containerSquares.current.set(containerPosition, item);
-    console.log("layout at: ", containerPosition);
   };
 
   return (
@@ -72,23 +93,26 @@ export default function ScrollRow({
       horizontal={true}
       showsHorizontalScrollIndicator={false}
       ref={scrollViewRef}
-      snapToInterval={offsets}
+      snapToInterval={windowWidth}
       onScroll={(e) => setOffset(e.nativeEvent.contentOffset.x)}
       scrollEventThrottle={8}
+      onLayout={onLayout}
+      decelerationRate={"fast"}
     >
-      <View style={styles.scrollRow} onLayout={onLayout}>
-        <View style={styles.scroll}>
-          {listData.map((item) => (
+      {chunkedData.map((chunk, index) => (
+        <View key={index} style={styles.scrollRow}>
+          {chunk.map((item) => (
             <View
               key={item.id}
               style={styles.item}
-              onLayout={(e) => handleLayout(e, item)}
+              onLayout={(e) => handleLayout(e, item, index)}
             >
               {item.type === "equipment" ? (
                 <DraggableEquipment
                   item={item as EquipmentObj}
                   scrollViewRef={scrollViewRef}
                   setItem={setItem}
+                  determineScroll={determineScroll}
                   onStart={onStart}
                   onMove={onMove}
                   onFinalize={onFinalize}
@@ -100,6 +124,7 @@ export default function ScrollRow({
                   item={item as ContainerObj}
                   scrollViewRef={scrollViewRef}
                   setItem={setItem}
+                  determineScroll={determineScroll}
                   onStart={onStart}
                   onMove={onMove}
                   onFinalize={onFinalize}
@@ -109,7 +134,7 @@ export default function ScrollRow({
             </View>
           ))}
         </View>
-      </View>
+      ))}
     </ScrollView>
   );
 }
@@ -122,11 +147,7 @@ const styles = StyleSheet.create({
   },
   scrollRow: {
     flex: 1,
-    flexDirection: "column",
-    minWidth: Dimensions.get("window").width,
-  },
-  scroll: {
-    flex: 1,
     flexDirection: "row",
+    minWidth: Dimensions.get("window").width,
   },
 });

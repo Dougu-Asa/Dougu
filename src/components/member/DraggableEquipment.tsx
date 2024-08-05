@@ -4,12 +4,12 @@ import EquipmentItem from "./EquipmentItem";
 import {
   GestureDetector,
   Gesture,
-  ScrollView,
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
   GestureUpdateEvent,
   PanGestureChangeEventPayload,
   LongPressGestureHandlerEventPayload,
+  ScrollView,
 } from "react-native-gesture-handler";
 import Animated, { useSharedValue, runOnJS } from "react-native-reanimated";
 
@@ -24,6 +24,7 @@ export default function DraggableEquipment({
   item,
   scrollViewRef,
   setItem,
+  determineScroll,
   onStart,
   onMove,
   onFinalize,
@@ -35,6 +36,11 @@ export default function DraggableEquipment({
   setItem: (
     item: ItemObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
+  ) => void;
+  determineScroll: (
+    e: GestureUpdateEvent<
+      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+    >,
   ) => void;
   onStart: (
     e: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
@@ -63,6 +69,7 @@ export default function DraggableEquipment({
       if (!isDragging.value) return;
       onMove(e);
       runOnJS(onHover)(e);
+      runOnJS(determineScroll)(e);
     })
     .onFinalize((e) => {
       "worklet";

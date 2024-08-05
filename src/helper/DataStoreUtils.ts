@@ -16,61 +16,19 @@ const collator = new Intl.Collator("en", {
   sensitivity: "base",
 });
 
-/* 
-  sort the orgUserStorages by name
-  and disregards upper/lower case
-  returns the sorted array 
-  USED ONLY IN USERSTORAGES
-*/
+// sort the orgUserStorages by name
 export const sortOrgUserStorages = (
   orgUserStorages: OrgUserStorage[],
 ): OrgUserStorage[] => {
   return orgUserStorages.sort((a, b) => collator.compare(a.name, b.name));
 };
 
-/* 
-  get the equipment for a user by OrgUserStorage id
-  returns an array of processed equipment objects
-*/
-export const getEquipment = async (
-  orgUserStorage: OrgUserStorage,
-): Promise<EquipmentObj[] | undefined> => {
-  try {
-    if (!orgUserStorage) throw new Error("OrgUserStorage does not exist!");
-    const equipment = await DataStore.query(Equipment, (c) =>
-      c.assignedTo.id.eq(orgUserStorage.id),
-    );
-    // group duplicates and merge their counts
-    const equipmentData = processEquipmentData(equipment, orgUserStorage);
-    return equipmentData;
-  } catch (error) {
-    handleError("GetEquipment", error as Error, null);
-    return undefined;
-  }
-};
-
-export const getContainers = async (
-  orgUserStorage: OrgUserStorage,
-): Promise<Map<string, ContainerObj>> => {
-  // get all the containers assigned to the user
-  const containers = await DataStore.query(Container, (c) =>
-    c.assignedTo.id.eq(orgUserStorage.id),
+// chunk the equipment into groups of size
+export const chunkEquipment = (items: ItemObj[], size: number) =>
+  items.reduce(
+    (acc, _, i) => (i % size ? acc : [...acc, items.slice(i, i + size)]),
+    [] as ItemObj[][],
   );
-  // for each container id, create a map <containerId, containerObj>
-  const containerMap = new Map<string, ContainerObj>();
-  for (let j = 0; j < containers.length; j++) {
-    const containerObj: ContainerObj = {
-      id: containers[j].id,
-      label: containers[j].name,
-      assignedTo: orgUserStorage.id,
-      assignedToName: orgUserStorage.name,
-      type: "container",
-      equipment: [],
-    };
-    containerMap.set(containers[j].id, containerObj);
-  }
-  return containerMap;
-};
 
 export const getOrgItems = async (
   orgId: string,
@@ -126,6 +84,48 @@ export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
     collator.compare(a.assignedToName, b.assignedToName),
   );
   return orgItemsArray.concat(orgItemsArrayEmpty);
+};
+
+//get the equipment for a user by OrgUserStorage id
+//returns an array of processed equipment objects
+export const getEquipment = async (
+  orgUserStorage: OrgUserStorage,
+): Promise<EquipmentObj[] | undefined> => {
+  try {
+    if (!orgUserStorage) throw new Error("OrgUserStorage does not exist!");
+    const equipment = await DataStore.query(Equipment, (c) =>
+      c.assignedTo.id.eq(orgUserStorage.id),
+    );
+    // group duplicates and merge their counts
+    const equipmentData = processEquipmentData(equipment, orgUserStorage);
+    return equipmentData;
+  } catch (error) {
+    handleError("GetEquipment", error as Error, null);
+    return undefined;
+  }
+};
+
+export const getContainers = async (
+  orgUserStorage: OrgUserStorage,
+): Promise<Map<string, ContainerObj>> => {
+  // get all the containers assigned to the user
+  const containers = await DataStore.query(Container, (c) =>
+    c.assignedTo.id.eq(orgUserStorage.id),
+  );
+  // for each container id, create a map <containerId, containerObj>
+  const containerMap = new Map<string, ContainerObj>();
+  for (let j = 0; j < containers.length; j++) {
+    const containerObj: ContainerObj = {
+      id: containers[j].id,
+      label: containers[j].name,
+      assignedTo: orgUserStorage.id,
+      assignedToName: orgUserStorage.name,
+      type: "container",
+      equipment: [],
+    };
+    containerMap.set(containers[j].id, containerObj);
+  }
+  return containerMap;
 };
 
 /*

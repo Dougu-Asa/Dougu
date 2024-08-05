@@ -3,12 +3,12 @@ import { StyleSheet, Dimensions } from "react-native";
 import {
   GestureDetector,
   Gesture,
-  ScrollView,
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
   GestureUpdateEvent,
   PanGestureChangeEventPayload,
   LongPressGestureHandlerEventPayload,
+  ScrollView,
 } from "react-native-gesture-handler";
 import Animated, { useSharedValue, runOnJS } from "react-native-reanimated";
 
@@ -24,6 +24,7 @@ export default function DraggableContainer({
   item,
   scrollViewRef,
   setItem,
+  determineScroll,
   onStart,
   onMove,
   onFinalize,
@@ -34,6 +35,11 @@ export default function DraggableContainer({
   setItem: (
     item: ItemObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
+  ) => void;
+  determineScroll: (
+    e: GestureUpdateEvent<
+      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+    >,
   ) => void;
   onStart: (
     e: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
@@ -56,6 +62,7 @@ export default function DraggableContainer({
       "worklet";
       if (!isDragging.value) return;
       onMove(e);
+      runOnJS(determineScroll)(e);
     })
     .onFinalize((e) => {
       "worklet";

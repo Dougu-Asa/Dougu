@@ -16,7 +16,6 @@ import Animated, {
   withSpring,
   runOnJS,
   withTiming,
-  runOnUI,
 } from "react-native-reanimated";
 
 // project imports
@@ -58,10 +57,11 @@ export default function SwapGestures({
   const start = useRef<TopOrBottom | null>(null);
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
+  const windowWidth = Dimensions.get("window").width;
   // this is half the width of the equipment item (for centering)
-  const equipmentWidth = Dimensions.get("window").width / 5;
+  const equipmentWidth = windowWidth / 5;
   // so that only 4 items are visible at a time.
-  const offset = Dimensions.get("window").width / 4;
+  const offset = windowWidth / 4;
   // these are for handling dragging overlay animation
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   const draggingOffset = useSharedValue<Position>({
@@ -157,8 +157,16 @@ export default function SwapGestures({
   };
 
   // onHover necessary calculations
-  const [topOffset, setTopOffset] = useState(0);
-  const [bottomOffset, setBottomOffset] = useState(0);
+  const [topPage, setTopPage] = useState(0);
+  const [bottomPage, setBottomPage] = useState(0);
+  const [nextTopPage, setNextTopPage] = useState(0);
+  const [nextBottomPage, setNextBottomPage] = useState(0);
+  const handleTopOffset = (offset: number) => {
+    setTopPage(Math.round(offset / windowWidth));
+  };
+  const handleBottomOffset = (offset: number) => {
+    setBottomPage(Math.round(offset / windowWidth));
+  };
   // map that keeps track of where the container items are
   const topContainers = useRef(new Map<number, ItemObj>());
   const bottomContainers = useRef(new Map<number, ItemObj>());
@@ -171,6 +179,47 @@ export default function SwapGestures({
     end: halfLine.current + equipmentWidth + 40,
   };
   let prevPosition = "";
+  let scrollTimeout: NodeJS.Timeout | null = null;
+  let prevScroll: direction;
+  type direction = "left" | "right" | "none";
+
+  const determineScrollValue = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    const top = gestureState.absoluteY < halfLine.current;
+    const changePage = top ? setNextTopPage : setNextBottomPage;
+    const currPage = top ? topPage : bottomPage;
+    let currentScroll: direction = "none";
+    if (gestureState.absoluteX < 50) {
+      currentScroll = "left";
+    } else if (gestureState.absoluteX > windowWidth - 50) {
+      currentScroll = "right";
+    }
+    // if we switch scroll areas, clear the timeout and return
+    if (currentScroll !== prevScroll) {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = null;
+      }
+      prevScroll = currentScroll;
+      return;
+    } else {
+      // if we are in the same scroll area, start a timeout
+      if (scrollTimeout) {
+        return;
+      }
+      scrollTimeout = setTimeout(() => {
+        if (currentScroll === "left") {
+          changePage(currPage - 1);
+        } else if (currentScroll === "right") {
+          changePage(currPage + 1);
+        }
+        scrollTimeout = null;
+      }, 800);
+    }
+  };
 
   //Determine if an equiment item is hovering over a container item
   //and change the size of the equipment item accordingl
@@ -184,10 +233,10 @@ export default function SwapGestures({
     let horizontalOffset;
     if (top) {
       range = topYRange;
-      horizontalOffset = topOffset;
+      horizontalOffset = topPage * windowWidth;
     } else {
       range = bottomYRange;
-      horizontalOffset = bottomOffset;
+      horizontalOffset = bottomPage * windowWidth;
     }
     // check if the equipmentItem is within range
     let currPosition;
@@ -238,7 +287,9 @@ export default function SwapGestures({
         listData={listOne}
         onLayout={onLayout}
         setItem={handleSetItem}
-        setOffset={setTopOffset}
+        setOffset={handleTopOffset}
+        scrollPage={nextTopPage}
+        determineScroll={determineScrollValue}
         onStart={handleStart}
         onMove={handleMove}
         onFinalize={handleFinalize}
@@ -258,7 +309,9 @@ export default function SwapGestures({
         listData={listTwo}
         onLayout={onLayout}
         setItem={handleSetItem}
-        setOffset={setBottomOffset}
+        setOffset={handleBottomOffset}
+        scrollPage={nextBottomPage}
+        determineScroll={determineScrollValue}
         onStart={handleStart}
         onMove={handleMove}
         onFinalize={handleFinalize}
