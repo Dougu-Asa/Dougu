@@ -64,7 +64,7 @@ export default function ScrollRow({
     // calculate grid position for each item
     const containerPosition = Math.ceil(x / offsets);
     containerSquares.current.set(containerPosition, item);
-    console.log(containerSquares.current);
+    console.log("layout at: ", containerPosition);
   };
 
   return (
@@ -104,7 +104,6 @@ export default function ScrollRow({
                   onMove={onMove}
                   onFinalize={onFinalize}
                   onReassign={onReassign}
-                  onHover={onHover}
                 />
               )}
             </View>

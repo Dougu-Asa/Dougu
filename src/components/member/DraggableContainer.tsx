@@ -28,7 +28,6 @@ export default function DraggableContainer({
   onMove,
   onFinalize,
   onReassign,
-  onHover,
 }: {
   item: ContainerObj;
   scrollViewRef: React.RefObject<ScrollView>;
@@ -48,11 +47,6 @@ export default function DraggableContainer({
   onReassign: (
     e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => void;
-  onHover: (
-    e: GestureUpdateEvent<
-      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-    >,
-  ) => void;
 }) {
   let isDragging = useSharedValue(false);
   const [stateDragging, setStateDragging] = useState(false);
@@ -62,7 +56,6 @@ export default function DraggableContainer({
       "worklet";
       if (!isDragging.value) return;
       onMove(e);
-      runOnJS(onHover)(e);
     })
     .onFinalize((e) => {
       "worklet";

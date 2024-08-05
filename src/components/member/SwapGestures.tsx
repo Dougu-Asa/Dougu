@@ -172,46 +172,54 @@ export default function SwapGestures({
   };
   let prevPosition = "";
 
+  //Determine if an equiment item is hovering over a container item
+  //and change the size of the equipment item accordingl
   const handleHover = (
     gestureState: GestureUpdateEvent<
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
     >,
   ) => {
-    if (draggingItem?.type === "container") return;
     const top = gestureState.absoluteY < halfLine.current;
-    // ensure absoluteY is in the correct range
-    const range = top ? topYRange : bottomYRange;
+    let range;
+    let horizontalOffset;
+    if (top) {
+      range = topYRange;
+      horizontalOffset = topOffset;
+    } else {
+      range = bottomYRange;
+      horizontalOffset = bottomOffset;
+    }
+    // check if the equipmentItem is within range
+    let currPosition;
+    let position;
     if (
       gestureState.absoluteY < range.start ||
       gestureState.absoluteY > range.end
     ) {
-      if ("out" === prevPosition) {
-        return;
-      }
-      prevPosition = "out";
-      changePosition(null, 0);
+      currPosition = "out";
+      position = 0;
+    } else {
+      position = Math.ceil(
+        (gestureState.absoluteX + horizontalOffset) / offset,
+      );
+      currPosition = `${top}-${position}`;
+    }
+    if (currPosition === prevPosition) {
       return;
     }
-    const horizontalOffset = top ? topOffset : bottomOffset;
-    const position = Math.ceil(
-      (gestureState.absoluteX + horizontalOffset) / offset,
-    );
-    const positionKey = `${top}-${position}`;
-    if (positionKey === prevPosition) {
-      return;
-    }
-    console.log("positionKey", positionKey);
+    console.log("positionKey", currPosition);
     changePosition(top, position);
-    prevPosition = positionKey;
+    prevPosition = currPosition;
   };
 
   const changePosition = (isTop: boolean | null, position: number) => {
-    if (!isTop) {
+    // position 0 is the out of bounds position
+    if (position === 0) {
       size.value = withSpring(1.2);
       return;
     }
+    // check if the grid location has a container item
     const map = isTop ? topContainers : bottomContainers;
-    console.log("map", map.current);
     if (map.current.has(position)) {
       size.value = withSpring(0.7);
     } else size.value = withSpring(1.2);
