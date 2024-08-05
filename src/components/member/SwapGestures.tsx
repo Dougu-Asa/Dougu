@@ -183,7 +183,7 @@ export default function SwapGestures({
   let prevScroll: direction;
   type direction = "left" | "right" | "none";
 
-  const determineScrollValue = (
+  const determineScrollPage = (
     gestureState: GestureUpdateEvent<
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
     >,
@@ -289,7 +289,7 @@ export default function SwapGestures({
         setItem={handleSetItem}
         setOffset={handleTopOffset}
         scrollPage={nextTopPage}
-        determineScroll={determineScrollValue}
+        determineScroll={determineScrollPage}
         onStart={handleStart}
         onMove={handleMove}
         onFinalize={handleFinalize}
@@ -311,7 +311,7 @@ export default function SwapGestures({
         setItem={handleSetItem}
         setOffset={handleBottomOffset}
         scrollPage={nextBottomPage}
-        determineScroll={determineScrollValue}
+        determineScroll={determineScrollPage}
         onStart={handleStart}
         onMove={handleMove}
         onFinalize={handleFinalize}
