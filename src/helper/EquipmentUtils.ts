@@ -137,12 +137,16 @@ export const processEquipmentData = (
   orgUserStorage: OrgUserStorage,
 ): EquipmentObj[] => {
   const equipmentMap = new Map<string, EquipmentObj>();
-
   equipment.forEach((equip) => {
     // duplicate
-    const key = equip.name + equip.containerId;
+    let key;
+    if (equip.containerId) {
+      key = equip.name + equip.containerId;
+    } else {
+      key = equip.name;
+    }
     if (equipmentMap.has(key)) {
-      const existingEquip = equipmentMap.get(equip.name);
+      const existingEquip = equipmentMap.get(key);
       existingEquip!.count += 1;
       existingEquip!.data.push(equip.id);
       existingEquip!.detailData.push(equip.details ? equip.details : "");

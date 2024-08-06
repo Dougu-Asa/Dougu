@@ -16,3 +16,4 @@ Instead of opening the modal, for simplicity's sake I chose to just have the ove
 - worried that removing the relations and requerying for equipment may be slow
 - I think that mutations, queries, and subscriptions inside /graphql aren't being updated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
 - SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
+- moving equipment into container on swapUser side (bottom -> bottom) caused strange stale behavior 

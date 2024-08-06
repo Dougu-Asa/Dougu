@@ -2,7 +2,7 @@ import { DataStore } from "aws-amplify";
 import { Alert } from "react-native";
 
 import { OrgUserStorage, Equipment, Container } from "../models";
-import { ContainerObj, EquipmentObj } from "../types/ModelTypes";
+import { ContainerObj } from "../types/ModelTypes";
 import { handleError } from "./Utils";
 
 /* 
@@ -60,13 +60,25 @@ export const reassignContainer = async (
     const container = await DataStore.query(Container, item.id);
     if (!swapOrgUserStorage) throw new Error("OrgUserStorage does not exist!");
     if (!container) throw new Error("Container does not exist!");
-    /*await DataStore.save(
+    const containerEquipment = await DataStore.query(Equipment, (c) =>
+      c.containerId.eq(item.id),
+    );
+    // reassign the container to the new OrgUserStorage
+    await DataStore.save(
       Container.copyOf(container, (updated) => {
         updated.assignedTo = swapOrgUserStorage;
         updated.lastUpdatedDate = new Date().toISOString();
       }),
-    ); */
-    // update all equipment that belongs to the container
+    );
+    // reassign all equipment that belongs to the container
+    containerEquipment.forEach(async (equip) => {
+      await DataStore.save(
+        Equipment.copyOf(equip, (updated) => {
+          updated.assignedTo = swapOrgUserStorage;
+          updated.lastUpdatedDate = new Date().toISOString();
+        }),
+      );
+    });
     setIsLoading(false);
     Alert.alert("Swap Successful!");
   } catch (e) {
@@ -84,14 +96,16 @@ export const addEquipmentToContainer = async (
   try {
     setIsLoading(true);
     const equip = await DataStore.query(Equipment, itemId);
-    if (!equip) throw new Error("Equipment does not exist!");
-    // verify container exists
     const container = await DataStore.query(Container, containerId);
+    if (!equip) throw new Error("Equipment does not exist!");
     if (!container) throw new Error("Container does not exist!");
+    const contanierUser = await container.assignedTo;
+    // equipment is reassigned to the container and container owner
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.lastUpdatedDate = new Date().toISOString();
         updated.containerId = containerId;
+        updated.assignedTo = contanierUser;
       }),
     );
     setIsLoading(false);

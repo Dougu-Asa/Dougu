@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { useEquipment } from "../../helper/EquipmentContext";
+import { ScrollView } from "react-native-gesture-handler";
 
 /*
     This overlay is what is shown when the user taps
@@ -25,24 +26,26 @@ export default function CustomContainerOverlay() {
       {containerVisible && (
         <TouchableWithoutFeedback onPress={closeContainer}>
           <View style={styles.backDrop}>
-            <TouchableWithoutFeedback>
+            <ScrollView>
               <View style={styles.overlayContainer}>
                 <View style={styles.titleContainer}>
                   <Text style={styles.title}>{containerItem?.label}</Text>
                 </View>
                 <View style={styles.divider} />
                 <View style={styles.itemContainer}>
-                  <Text>Containers</Text>
-                  <Text>{JSON.stringify(containerItem?.equipment)}</Text>
+                  <Text>{JSON.stringify(containerItem, null, 2)}</Text>
+                  <Text>Equipment</Text>
                 </View>
               </View>
-            </TouchableWithoutFeedback>
+            </ScrollView>
           </View>
         </TouchableWithoutFeedback>
       )}
     </View>
   );
 }
+
+// scrollview should be touchable without feedback
 
 const styles = StyleSheet.create({
   backDrop: {

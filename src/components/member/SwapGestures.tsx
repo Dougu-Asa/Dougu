@@ -98,6 +98,7 @@ export default function SwapGestures({
     item: ItemObj,
     gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
   ) => {
+    containerItem.current = null;
     setDraggingItem(item);
     start.current =
       gestureState.absoluteY > halfLine.current ? "bottom" : "top";
@@ -161,39 +162,29 @@ export default function SwapGestures({
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     if (draggingItem == null) return;
-    const assignedTo =
-      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
     // equipment -> container
-    if (assignedTo === start.current && containerItem.current) {
-      runOnJS(addEquipmentToContainer)(
+    if (draggingItem.type === "equipment" && containerItem.current) {
+      console.log("reassigning equipment to container");
+      addEquipmentToContainer(
         draggingItem.id,
         containerItem.current.id,
         setIsLoading,
       );
-      console.log("reassigning equipment to container");
     }
-    // this means we are reassigning to a new user
-    if (
-      draggingItem == null ||
-      swapUser.current == null ||
-      assignedTo === start.current
-    )
-      return;
+    // transfer from one user to another
+    const dropLocation =
+      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+    if (dropLocation === start.current || !swapUser.current) return;
+    const assignTo =
+      dropLocation === "top" ? orgUserStorage! : swapUser.current;
     if (draggingItem.type === "container") {
-      console.log("reassigning container to new user");
-      // container -> new user
-      // reassignContainer
-    } else if (!containerItem.current) {
-      // equipment -> new user
-      /*runOnJS(reassignEquipment)(
-        draggingItem.id,
-        swapUser.current!.id,
+      reassignContainer(
+        draggingItem as ContainerObj,
+        assignTo.id,
         setIsLoading,
-      ); */
-      console.log("reassigning equipment to new user");
+      );
     } else {
-      // equipment -> new user, new container
-      console.log("reassigning equipment to new user and container");
+      reassignEquipment(draggingItem.id, assignTo.id, setIsLoading);
     }
   };
 
