@@ -38,7 +38,6 @@ export default function EquipmentOverlay() {
               </Card>
             </Pressable>
           ))}
-        <Text>{JSON.stringify(equipmentItem, null, 2)}</Text>
       </ScrollView>
       <Button
         ViewComponent={LinearGradient}

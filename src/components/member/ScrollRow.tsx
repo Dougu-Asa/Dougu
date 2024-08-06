@@ -70,7 +70,6 @@ export default function ScrollRow({
   const chunkedData = chunkEquipment(listData, 4);
 
   useEffect(() => {
-    console.log("scrollPage:", scrollPage);
     if (scrollPage < 0) return;
     if (scrollPage > chunkedData.length - 1) return;
     const scrollValue = scrollPage * windowWidth;
@@ -86,6 +85,7 @@ export default function ScrollRow({
     const { x } = layoutEvent.nativeEvent.layout;
     // calculate grid position for each item
     const containerPosition = Math.ceil(x / offsets) + index * 4;
+    console.log("containerPosition", containerPosition);
     containerSquares.current.set(containerPosition, item as ContainerObj);
   };
 

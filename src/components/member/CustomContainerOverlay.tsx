@@ -33,7 +33,6 @@ export default function CustomContainerOverlay() {
                 </View>
                 <View style={styles.divider} />
                 <View style={styles.itemContainer}>
-                  <Text>{JSON.stringify(containerItem, null, 2)}</Text>
                   <Text>Equipment</Text>
                 </View>
               </View>

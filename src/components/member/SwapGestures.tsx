@@ -224,9 +224,9 @@ export default function SwapGestures({
     const changePage = top ? setNextTopPage : setNextBottomPage;
     const currPage = top ? topPage : bottomPage;
     let currentScroll: direction = "none";
-    if (gestureState.absoluteX < 50) {
+    if (gestureState.absoluteX < 40) {
       currentScroll = "left";
-    } else if (gestureState.absoluteX > windowWidth - 50) {
+    } else if (gestureState.absoluteX > windowWidth - 40) {
       currentScroll = "right";
     }
     // if we switch scroll areas, clear the timeout and return
@@ -251,6 +251,7 @@ export default function SwapGestures({
           changePage(currPage + 1);
           console.log("scrolling right");
         }
+        containerItem.current = null;
         scrollTimeout = null;
       }, 800);
     }
@@ -264,15 +265,10 @@ export default function SwapGestures({
     >,
   ) => {
     const top = gestureState.absoluteY < halfLine.current;
-    let range;
-    let horizontalOffset;
-    if (top) {
-      range = topYRange;
-      horizontalOffset = topPage * windowWidth;
-    } else {
-      range = bottomYRange;
-      horizontalOffset = bottomPage * windowWidth;
-    }
+    let range = top ? topYRange : bottomYRange;
+    let horizontalOffset = top
+      ? topPage * windowWidth
+      : bottomPage * windowWidth;
     // check if the equipmentItem is within range
     let currPosition;
     let position;
