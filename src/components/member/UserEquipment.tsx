@@ -29,8 +29,8 @@ export default function UserEquipment({
       >
         <View style={styles.scrollTable}>
           <View style={styles.scrollRow}>
-            {list.map((item) => (
-              <View key={item.label} style={styles.equipmentWrapper}>
+            {list.map((item, index) => (
+              <View key={index} style={styles.equipmentWrapper}>
                 {item.type === "equipment" ? (
                   <EquipmentItem
                     item={item as EquipmentObj}

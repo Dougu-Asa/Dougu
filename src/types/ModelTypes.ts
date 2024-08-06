@@ -15,7 +15,7 @@ export interface EquipmentObj extends ItemObj {
   count: number;
   data: string[];
   detailData: string[];
-  parent: string | null;
+  container: string | null;
 }
 
 export interface ContainerObj extends ItemObj {

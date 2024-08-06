@@ -12,3 +12,7 @@ Instead of opening the modal, for simplicity's sake I chose to just have the ove
 
 - Bottom swapUser container's aren't causing overlay shrinks
 - I tried to fix a Datastore warning on Equipment creation since Equipment belongs to a Container yet I don't assign it to one. However, after playing around with various schemas, I decided that the worning wasn't really a problem and that it was important for me to hold to HasMany HasOne from Container to Equipment.
+- Problem with @hasMany and @belongsTo was that it was causing duplication issues
+- worried that removing the relations and requerying for equipment may be slow
+- I think that mutations, queries, and subscriptions inside /graphql aren't being updated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
+- SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING

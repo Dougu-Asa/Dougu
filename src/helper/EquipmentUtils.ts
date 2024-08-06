@@ -47,8 +47,8 @@ export const getOrgItems = async (
     const containerMap = await getContainers(orgUserStorages[i]);
     // separate equipment that is in a container to part of a containerObj
     equipmentData?.forEach((equip) => {
-      if (equip.parent && equip.parent in containerMap) {
-        containerMap.get(equip.parent)!.equipment.push(equip);
+      if (equip.container && containerMap.has(equip.container)) {
+        containerMap.get(equip.container)!.equipment.push(equip);
       } else {
         userData.push(equip);
       }
@@ -140,7 +140,8 @@ export const processEquipmentData = (
 
   equipment.forEach((equip) => {
     // duplicate
-    if (equipmentMap.has(equip.name)) {
+    const key = equip.name + equip.containerId;
+    if (equipmentMap.has(key)) {
       const existingEquip = equipmentMap.get(equip.name);
       existingEquip!.count += 1;
       existingEquip!.data.push(equip.id);
@@ -148,7 +149,7 @@ export const processEquipmentData = (
       equipmentMap.set(equip.name, existingEquip!);
     } else {
       // new equipment
-      equipmentMap.set(equip.name, {
+      equipmentMap.set(key, {
         id: equip.id,
         label: equip.name,
         count: 1,
@@ -157,7 +158,7 @@ export const processEquipmentData = (
         detailData: [equip.details ? equip.details : ""],
         assignedTo: orgUserStorage.id,
         assignedToName: orgUserStorage.name,
-        parent: equip.containerEquipmentId ? equip.containerEquipmentId : null,
+        container: equip.containerId ? equip.containerId : null,
       });
     }
   });

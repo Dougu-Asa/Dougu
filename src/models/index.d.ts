@@ -107,7 +107,6 @@ type EagerContainer = {
   readonly assignedTo: OrgUserStorage;
   readonly color: string;
   readonly group: string;
-  readonly equipment?: (Equipment | null)[] | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -127,7 +126,6 @@ type LazyContainer = {
   readonly assignedTo: AsyncItem<OrgUserStorage>;
   readonly color: string;
   readonly group: string;
-  readonly equipment: AsyncCollection<Equipment>;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -153,13 +151,12 @@ type EagerEquipment = {
   readonly assignedTo: OrgUserStorage;
   readonly image: string;
   readonly group: string;
-  readonly container?: Container | null;
+  readonly containerId?: string | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationEquipmentId?: string | null;
   readonly orgUserStorageEquipmentId?: string | null;
-  readonly containerEquipmentId?: string | null;
 }
 
 type LazyEquipment = {
@@ -174,13 +171,12 @@ type LazyEquipment = {
   readonly assignedTo: AsyncItem<OrgUserStorage>;
   readonly image: string;
   readonly group: string;
-  readonly container: AsyncItem<Container | undefined>;
+  readonly containerId?: string | null;
   readonly details?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly organizationEquipmentId?: string | null;
   readonly orgUserStorageEquipmentId?: string | null;
-  readonly containerEquipmentId?: string | null;
 }
 
 export declare type Equipment = LazyLoading extends LazyLoadingDisabled ? EagerEquipment : LazyEquipment

@@ -7,6 +7,8 @@ export const getOrganization = /* GraphQL */ `
       id
       name
       accessCode
+      image
+      manager
       equipment {
         nextToken
         startedAt
@@ -22,23 +24,11 @@ export const getOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
-      manager {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-      organizationManagerUserId
       __typename
     }
   }
@@ -54,12 +44,13 @@ export const listOrganizations = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       nextToken
@@ -85,89 +76,8 @@ export const syncOrganizations = /* GraphQL */ `
         id
         name
         accessCode
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        organizationManagerUserId
-        __typename
-      }
-      nextToken
-      startedAt
-      __typename
-    }
-  }
-`;
-export const getUser = /* GraphQL */ `
-  query GetUser($userId: ID!) {
-    getUser(userId: $userId) {
-      userId
-      name
-      email
-      organizations {
-        nextToken
-        startedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const listUsers = /* GraphQL */ `
-  query ListUsers(
-    $userId: ID
-    $filter: ModelUserFilterInput
-    $limit: Int
-    $nextToken: String
-    $sortDirection: ModelSortDirection
-  ) {
-    listUsers(
-      userId: $userId
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      sortDirection: $sortDirection
-    ) {
-      items {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
-      nextToken
-      startedAt
-      __typename
-    }
-  }
-`;
-export const syncUsers = /* GraphQL */ `
-  query SyncUsers(
-    $filter: ModelUserFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncUsers(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        userId
-        name
-        email
+        image
+        manager
         createdAt
         updatedAt
         _version
@@ -190,26 +100,19 @@ export const getOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
-      user {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      image
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -227,7 +130,6 @@ export const getOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -243,6 +145,9 @@ export const listOrgUserStorages = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -250,7 +155,6 @@ export const listOrgUserStorages = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
       nextToken
@@ -276,6 +180,9 @@ export const syncOrgUserStorages = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -283,7 +190,6 @@ export const syncOrgUserStorages = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
       nextToken
@@ -301,12 +207,13 @@ export const getContainer = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -314,6 +221,9 @@ export const getContainer = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -321,14 +231,10 @@ export const getContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      equipment {
-        nextToken
-        startedAt
-        __typename
-      }
+      color
+      group
       details
       createdAt
       updatedAt
@@ -352,6 +258,8 @@ export const listContainers = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        color
+        group
         details
         createdAt
         updatedAt
@@ -385,6 +293,8 @@ export const syncContainers = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        color
+        group
         details
         createdAt
         updatedAt
@@ -410,12 +320,13 @@ export const getEquipment = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -423,6 +334,9 @@ export const getEquipment = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -430,23 +344,11 @@ export const getEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      parent {
-        id
-        name
-        lastUpdatedDate
-        details
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        organizationContainersId
-        orgUserStorageContainersId
-        __typename
-      }
+      image
+      group
+      containerId
       details
       createdAt
       updatedAt
@@ -455,7 +357,6 @@ export const getEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      containerEquipmentId
       __typename
     }
   }
@@ -471,6 +372,9 @@ export const listEquipment = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        image
+        group
+        containerId
         details
         createdAt
         updatedAt
@@ -479,7 +383,6 @@ export const listEquipment = /* GraphQL */ `
         _lastChangedAt
         organizationEquipmentId
         orgUserStorageEquipmentId
-        containerEquipmentId
         __typename
       }
       nextToken
@@ -505,6 +408,9 @@ export const syncEquipment = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        image
+        group
+        containerId
         details
         createdAt
         updatedAt
@@ -513,7 +419,6 @@ export const syncEquipment = /* GraphQL */ `
         _lastChangedAt
         organizationEquipmentId
         orgUserStorageEquipmentId
-        containerEquipmentId
         __typename
       }
       nextToken

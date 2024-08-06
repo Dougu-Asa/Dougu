@@ -96,7 +96,6 @@ export default function CreateEquipmentScreen() {
         details: details,
         color: "#ffffff",
         group: org!.name,
-        equipment: [],
       }),
     );
     Alert.alert("Container created successfully!");

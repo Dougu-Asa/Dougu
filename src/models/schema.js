@@ -367,22 +367,6 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "equipment": {
-                    "name": "equipment",
-                    "isArray": true,
-                    "type": {
-                        "model": "Equipment"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true,
-                    "association": {
-                        "connectionType": "HAS_MANY",
-                        "associatedWith": [
-                            "containerEquipmentId"
-                        ]
-                    }
-                },
                 "details": {
                     "name": "details",
                     "isArray": false,
@@ -524,20 +508,12 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "container": {
-                    "name": "container",
+                "containerId": {
+                    "name": "containerId",
                     "isArray": false,
-                    "type": {
-                        "model": "Container"
-                    },
+                    "type": "String",
                     "isRequired": false,
-                    "attributes": [],
-                    "association": {
-                        "connectionType": "BELONGS_TO",
-                        "targetNames": [
-                            "containerEquipmentId"
-                        ]
-                    }
+                    "attributes": []
                 },
                 "details": {
                     "name": "details",
@@ -571,13 +547,6 @@ export const schema = {
                 },
                 "orgUserStorageEquipmentId": {
                     "name": "orgUserStorageEquipmentId",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "containerEquipmentId": {
-                    "name": "containerEquipmentId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": false,
@@ -631,5 +600,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "baea6785f6382d9851cd3afdb936990f"
+    "version": "3e031e086bd7b98c1b1361b661f0567f"
 };
