@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/EquipmentContext";
@@ -24,7 +24,16 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
       {item && (
         <GestureDetector gesture={tapGesture}>
           <View style={equipment.container}>
-            <View style={equipment.equipment} />
+            <Pressable
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? "rgb(180, 180, 180)"
+                    : "rgb(222, 222, 222)",
+                },
+                equipment.equipment,
+              ]}
+            />
             <Text style={{ fontSize: 12 }}>{item.label}</Text>
           </View>
         </GestureDetector>
@@ -42,7 +51,6 @@ const equipment = StyleSheet.create({
     opacity: 0.75,
   },
   equipment: {
-    backgroundColor: "rgba(222, 222, 222, 1)",
     width: Dimensions.get("window").width / 5,
     height: Dimensions.get("window").width / 5,
     borderRadius: Dimensions.get("window").width / 14,

@@ -15,7 +15,6 @@ export default function SwapEquipment() {
   const { orgUserStorage } = useUser();
   const { itemData } = useEquipment();
   let swapUser = useRef<OrgUserStorage | null>(null);
-  const [resetValue, setResetValue] = useState(false);
   let [listOne, setListOne] = useState<ItemObj[]>([]);
   let [listTwo, setListTwo] = useState<ItemObj[]>([]);
 
@@ -42,14 +41,12 @@ export default function SwapEquipment() {
   useEffect(() => {
     return () => {
       swapUser.current = null;
-      setResetValue(true);
     };
   }, []);
 
   // get selected user equipment
   const handleSet = (inputUser: OrgUserStorage | null) => {
     swapUser.current = inputUser;
-    setResetValue(false);
     setEquipment();
   };
 
@@ -58,7 +55,6 @@ export default function SwapEquipment() {
       listOne={listOne}
       listTwo={listTwo}
       handleSet={handleSet}
-      resetValue={resetValue}
       swapUser={swapUser}
     />
   );

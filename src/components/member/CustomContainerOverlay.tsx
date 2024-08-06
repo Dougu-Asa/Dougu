@@ -1,7 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+
+import { useEquipment } from "../../helper/EquipmentContext";
+import { chunkEquipment } from "../../helper/EquipmentUtils";
+import EquipmentItem from "./EquipmentItem";
 
 /*
     This overlay is what is shown when the user taps
@@ -21,63 +24,67 @@ export default function CustomContainerOverlay() {
     setContainerItem(null);
   };
 
+  const equipmentChunks = chunkEquipment(containerItem?.equipment ?? [], 9);
+
   return (
-    <View style={styles.screen}>
+    <>
       {containerVisible && (
-        <TouchableWithoutFeedback onPress={closeContainer}>
+        <Pressable style={styles.screen} onPress={closeContainer}>
           <View style={styles.backDrop}>
-            <ScrollView>
-              <View style={styles.overlayContainer}>
-                <View style={styles.titleContainer}>
-                  <Text style={styles.title}>{containerItem?.label}</Text>
-                </View>
-                <View style={styles.divider} />
-                <View style={styles.itemContainer}>
-                  <Text>Equipment</Text>
-                </View>
-              </View>
-            </ScrollView>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{containerItem?.label}</Text>
+            </View>
+            <Pressable style={styles.itemContainer}>
+              <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                horizontal={true}
+              >
+                {containerItem?.equipment.map((item, index) => (
+                  <EquipmentItem key={index} item={item} count={item.count} />
+                ))}
+              </ScrollView>
+            </Pressable>
           </View>
-        </TouchableWithoutFeedback>
+        </Pressable>
       )}
-    </View>
+    </>
   );
 }
 
-// scrollview should be touchable without feedback
-
+// use dimension calculations because equipmentItems require dimensions
+const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   backDrop: {
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
     alignItems: "center",
-    justifyContent: "center",
     flex: 1,
   },
-  itemContainer: {
-    flex: 9,
+  scrollContainer: {
     justifyContent: "center",
     alignItems: "center",
+    height: "100%",
+    minWidth: "100%",
   },
-  overlayContainer: {
+  itemContainer: {
+    marginTop: "10%",
     justifyContent: "center",
     alignItems: "center",
-    width: "85%",
-    height: "60%",
+    width: width * 0.85,
+    height: height * 0.5,
     borderRadius: 20,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "white",
-    borderWidth: 1,
+    backgroundColor: "rgb(240, 240, 240)",
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
     color: "black",
   },
   titleContainer: {
     alignItems: "center",
-    width: "90%",
-    flex: 1,
+    minHeight: "10%",
+    marginTop: "20%",
   },
   divider: {
     height: 1,

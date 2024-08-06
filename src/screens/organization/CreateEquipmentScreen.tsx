@@ -34,7 +34,6 @@ export default function CreateEquipmentScreen() {
   const [details, onChangeDetails] = useState("");
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
-  const [resetValue, setResetValue] = useState(false);
   const { setIsLoading } = useLoad();
   const { org } = useUser();
 
@@ -125,7 +124,6 @@ export default function CreateEquipmentScreen() {
       onChangeQuantity("");
       onChangeDetails("");
       setAssignUser(null);
-      setResetValue(true);
       setIsLoading(false);
     } catch (error) {
       handleError("CreateEquipment", error as Error, setIsLoading);
@@ -140,7 +138,6 @@ export default function CreateEquipmentScreen() {
   // update the user to assign the equipment to
   const handleUserChange = (user: OrgUserStorage | null) => {
     setAssignUser(user);
-    setResetValue(false);
   };
 
   return (
@@ -212,11 +209,7 @@ export default function CreateEquipmentScreen() {
           />
         </View>
       </View>
-      <CurrMembersDropdown
-        setUser={handleUserChange}
-        isCreate={true}
-        resetValue={resetValue}
-      />
+      <CurrMembersDropdown setUser={handleUserChange} isCreate={true} />
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>

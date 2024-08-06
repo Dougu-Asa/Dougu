@@ -18,11 +18,9 @@ import { sortOrgUserStorages } from "../helper/EquipmentUtils";
 export default function CurrMembersDropdown({
   setUser,
   isCreate,
-  resetValue,
 }: {
   setUser: (inputUser: OrgUserStorage | null) => void;
   isCreate: boolean;
-  resetValue: boolean;
 }) {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -68,12 +66,6 @@ export default function CurrMembersDropdown({
 
     return () => subscription.unsubscribe();
   }, [isCreate, isFocused, org, user]);
-
-  useEffect(() => {
-    if (resetValue) {
-      setValue(null);
-    }
-  }, [resetValue, setUser]);
 
   const handleChangeUser = (value: OrgUserStorage) => {
     setUser(value);

@@ -6,11 +6,10 @@ import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/EquipmentContext";
 
 /*
-  EquipmentItem is a component that displays an equipment object with a label and
-  a count. It is used in the DraggableEquipment component to display the equipment
-  objects that can be dragged around the screen.
+  This is basically EquipmentItem but much smaller, as it
+  is used inside of container items.
 */
-export default function EquipmentItem({
+export default function MiniEquipmentItem({
   item,
   count,
 }: {

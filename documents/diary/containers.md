@@ -16,3 +16,11 @@ In order to setup assigning equipment, reassigning equipment, and reassigning co
 - The overall swap logic is that: if an equipment goes to a container, it takes on the container's assignedTo. Every other case now requires a swap from one user to the other. Therefore, I then just check for this case, determine who is being swapped to, and reassign the respective item to the recipient.
 - I think that mutations, queries, and subscriptions inside /graphql aren't being auto generated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
 - SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
+
+
+Issues:
+- non-container position was being recognized as a container, cause is that the map isn't being cleared whent he equipment changes
+- automatic scroll isn't moving to the next page, not sure when or how to reproduce. 
+- containerItem is always null, so you can't add equipment to containers, cause is that determine scroll page setting currItem to null while hovering
+- grabbing an equipment, auto scroll to a different page, hover over a container on the edge, and autoscroll back keeps the dragging equipment location keeps it minimized and connected to the container item it was previously hovering over. Cause is that the timeouts were stale because I wasn't using a reference. 
+- after swapping equipment, spots which used to hold containers would still act as though containers were there. Cause was that maps weren't being reset between swaps, so handle reassign now clears the respective map

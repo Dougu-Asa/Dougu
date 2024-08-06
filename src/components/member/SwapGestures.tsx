@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
 import { Dimensions } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import {
-  GestureHandlerRootView,
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
   GestureUpdateEvent,
@@ -48,13 +47,11 @@ export default function SwapGestures({
   listOne,
   listTwo,
   handleSet,
-  resetValue,
   swapUser,
 }: {
   listOne: ItemObj[];
   listTwo: ItemObj[];
   handleSet: (user: OrgUserStorage | null) => void;
-  resetValue: boolean;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
 }) {
   const { orgUserStorage } = useUser();
@@ -87,7 +84,7 @@ export default function SwapGestures({
     };
   });
 
-  // we need to know the size of our container
+  // we need to calculate the half line for the equipment items
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
     halfLine.current = height + 120 + headerHeight;
@@ -136,13 +133,13 @@ export default function SwapGestures({
   };
 
   const clearTimeouts = () => {
-    if (containerTimeout) {
-      clearTimeout(containerTimeout);
-      containerTimeout = null;
+    if (containerTimeout.current) {
+      clearTimeout(containerTimeout.current);
+      containerTimeout.current = null;
     }
-    if (scrollTimeout) {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = null;
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = null;
     }
   };
 
@@ -162,6 +159,10 @@ export default function SwapGestures({
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     if (draggingItem == null) return;
+    const dropLocation =
+      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+    const mapToClear =
+      dropLocation === "top" ? topContainers : bottomContainers;
     // equipment -> container
     if (draggingItem.type === "equipment" && containerItem.current) {
       console.log("reassigning equipment to container");
@@ -170,11 +171,11 @@ export default function SwapGestures({
         containerItem.current.id,
         setIsLoading,
       );
+      mapToClear.current.clear();
     }
-    // transfer from one user to another
-    const dropLocation =
-      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
     if (dropLocation === start.current || !swapUser.current) return;
+    // now swappping equipment between users
+    mapToClear.current.clear();
     const assignTo =
       dropLocation === "top" ? orgUserStorage! : swapUser.current;
     if (draggingItem.type === "container") {
@@ -211,7 +212,8 @@ export default function SwapGestures({
     end: halfLine.current + equipmentWidth + 40,
   };
   let prevPosition = "";
-  let scrollTimeout: NodeJS.Timeout | null = null;
+  let scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  let containerTimeout = useRef<NodeJS.Timeout | null>(null);
   let prevScroll: direction;
   type direction = "left" | "right" | "none";
 
@@ -231,28 +233,24 @@ export default function SwapGestures({
     }
     // if we switch scroll areas, clear the timeout and return
     if (currentScroll !== prevScroll) {
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = null;
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+        scrollTimeout.current = null;
       }
       prevScroll = currentScroll;
       return;
     } else {
       // if we are in the same scroll area, start a timeout
-      if (scrollTimeout) {
+      if (scrollTimeout.current) {
         return;
       }
-      console.log("currentPage", currPage);
-      scrollTimeout = setTimeout(() => {
+      scrollTimeout.current = setTimeout(() => {
         if (currentScroll === "left") {
           changePage(currPage - 1);
-          console.log("scrolling left");
         } else if (currentScroll === "right") {
           changePage(currPage + 1);
-          console.log("scrolling right");
         }
-        containerItem.current = null;
-        scrollTimeout = null;
+        scrollTimeout.current = null;
       }, 800);
     }
   };
@@ -292,28 +290,27 @@ export default function SwapGestures({
     prevPosition = currPosition;
   };
 
-  let containerTimeout: NodeJS.Timeout | null = null;
   const changePosition = (isTop: boolean | null, position: number) => {
     containerItem.current = null;
     size.value = withSpring(1.2);
     // clear timeout
-    if (containerTimeout) {
-      clearTimeout(containerTimeout);
-      containerTimeout = null;
+    if (containerTimeout.current) {
+      clearTimeout(containerTimeout.current);
+      containerTimeout.current = null;
     }
     // check if the grid location has a container item, set a timeout if there is
     const map = isTop ? topContainers : bottomContainers;
     if (map.current.has(position)) {
-      containerTimeout = setTimeout(() => {
+      containerTimeout.current = setTimeout(() => {
         size.value = withSpring(0.7);
-        containerTimeout = null;
         containerItem.current = map.current.get(position)!;
+        containerTimeout.current = null;
       }, 500);
     }
   };
 
   return (
-    <GestureHandlerRootView style={styles.scrollContainer}>
+    <View style={styles.scrollContainer}>
       <View style={styles.info}>
         <Text style={styles.infoTxt}>
           To swap equipment, drag-and-drop your equipment with a team member!
@@ -340,7 +337,6 @@ export default function SwapGestures({
           handleSet(user);
         }}
         isCreate={false}
-        resetValue={resetValue}
       />
       <ScrollRow
         containerSquares={bottomContainers}
@@ -363,7 +359,7 @@ export default function SwapGestures({
           <ContainerItem item={draggingItem as ContainerObj} />
         )}
       </Animated.View>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
