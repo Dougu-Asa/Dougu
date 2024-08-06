@@ -70,6 +70,7 @@ export default function ScrollRow({
   const chunkedData = chunkEquipment(listData, 4);
 
   useEffect(() => {
+    console.log("scrollPage:", scrollPage);
     if (scrollPage < 0) return;
     if (scrollPage > chunkedData.length - 1) return;
     const scrollValue = scrollPage * windowWidth;

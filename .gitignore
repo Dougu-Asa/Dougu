@@ -37,6 +37,15 @@ yarn-error.*
 # google sign-in
 Userskanel.androiddebug.keystore
 
+
+#expo ios and android builds
+ios/
+android/
+
+# managing aws secrets
+secret.json
+.env
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
@@ -58,11 +67,3 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
-
-#expo ios and android builds
-ios/
-android/
-
-# managing aws secrets
-secret.json
-.env

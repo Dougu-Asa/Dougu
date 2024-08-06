@@ -89,19 +89,24 @@ export const addEquipmentToContainer = async (
     const equip = await DataStore.query(Equipment, itemId);
     if (!container) throw new Error("Container does not exist!");
     if (!equip) throw new Error("Equipment does not exist!");
-    await DataStore.save(
+    /*await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.lastUpdatedDate = new Date().toISOString();
         updated.containerEquipmentId = container.id;
       }),
-    );
+    ); */
+    console.log("equipment added to container:", equip);
+    let equipment = await container.equipment.toArray();
+    console.log("equipment of container:", equipment);
+    equipment.push(equip);
+    console.log("equipment of container:", equipment);
     // update container
-    await DataStore.save(
+    /*await DataStore.save(
       Container.copyOf(container, (updated) => {
-        updated.equipment!.push(equip);
+        updated.equipment = equipment;
         updated.lastUpdatedDate = new Date().toISOString();
       }),
-    );
+    ); */
     setIsLoading(false);
     Alert.alert("Added Equipment to Container!");
   } catch (e) {

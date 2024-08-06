@@ -48,7 +48,7 @@ type Container @model  @auth(rules: [
   assignedTo: OrgUserStorage! @belongsTo
   color: String!
   group: String!
-  equipment: [Equipment]! @hasMany
+  equipment: [Equipment] @hasMany
   details: String
 }
 
@@ -63,6 +63,6 @@ type Equipment @model @auth(rules: [
   assignedTo: OrgUserStorage! @belongsTo
   image: String!
   group: String!
-  parent: Container @belongsTo @optional
+  container: Container @belongsTo
   details: String
 }

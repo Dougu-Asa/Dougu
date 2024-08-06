@@ -11,3 +11,4 @@ After a lot of thought and contemplation, I figured out a way to track if a user
 Instead of opening the modal, for simplicity's sake I chose to just have the overlay shrink when it hovers over a container it can be placed into. I am starting to get worried about the complexity and performance of my code, because while it's smooth on my test phone, I believe that it may start to struggle against slower models. There are just a lot of calculations. 
 
 - Bottom swapUser container's aren't causing overlay shrinks
+- I tried to fix a Datastore warning on Equipment creation since Equipment belongs to a Container yet I don't assign it to one. However, after playing around with various schemas, I decided that the worning wasn't really a problem and that it was important for me to hold to HasMany HasOne from Container to Equipment.

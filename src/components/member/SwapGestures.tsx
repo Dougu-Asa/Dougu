@@ -251,11 +251,14 @@ export default function SwapGestures({
       if (scrollTimeout) {
         return;
       }
+      console.log("currentPage", currPage);
       scrollTimeout = setTimeout(() => {
         if (currentScroll === "left") {
           changePage(currPage - 1);
+          console.log("scrolling left");
         } else if (currentScroll === "right") {
           changePage(currPage + 1);
+          console.log("scrolling right");
         }
         scrollTimeout = null;
       }, 800);
