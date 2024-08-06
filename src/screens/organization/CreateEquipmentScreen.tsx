@@ -67,7 +67,7 @@ export default function CreateEquipmentScreen() {
           details: details,
           image: "default",
           group: org!.name,
-          parent: null,
+          containerEquipmentId: null,
         }),
       );
     }

@@ -33,6 +33,7 @@ export default function CustomContainerOverlay() {
                 <View style={styles.divider} />
                 <View style={styles.itemContainer}>
                   <Text>Containers</Text>
+                  <Text>{JSON.stringify(containerItem?.equipment)}</Text>
                 </View>
               </View>
             </TouchableWithoutFeedback>

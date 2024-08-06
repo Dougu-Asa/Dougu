@@ -16,7 +16,7 @@ import { useUser } from "../../helper/UserContext";
 import { useLoad } from "../../helper/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
-import { sortOrgItems } from "../../helper/DataStoreUtils";
+import { sortOrgItems } from "../../helper/EquipmentUtils";
 import { useEquipment } from "../../helper/EquipmentContext";
 
 /*

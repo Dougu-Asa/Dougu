@@ -6,7 +6,7 @@ import { UserType } from "../../types/ContextTypes";
 
 export const validateRequirements = async (name: string, user: UserType) => {
   // check an appropriate orgName (no spaces, no special characters)
-  const regEx = /^[a-zA-Z0-9]{1,40}$/;
+  const regEx = /^[a-zA-Z0-9-_]{1,40}$/;
   if (!regEx.test(name)) {
     Alert.alert("Name invalid!", "Please check the rules.");
     return false;

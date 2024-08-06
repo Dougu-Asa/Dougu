@@ -17,8 +17,7 @@
         "userPoolGroups": {}
       },
       "api": {
-        "asaapp": {},
-        "DouguREST": {}
+        "asaapp": {}
       }
     }
   }

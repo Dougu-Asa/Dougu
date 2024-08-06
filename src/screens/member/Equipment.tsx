@@ -8,7 +8,7 @@ import { useUser } from "../../helper/UserContext";
 import type { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/EquipmentContext";
 import ContainerItem from "../../components/member/ContainerItem";
-import { chunkEquipment } from "../../helper/DataStoreUtils";
+import { chunkEquipment } from "../../helper/EquipmentUtils";
 
 /*
   Screen for viewing all equipment assigned to the current user

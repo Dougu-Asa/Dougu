@@ -12,7 +12,7 @@ import {
 import { EquipmentObj, ContainerObj, ItemObj } from "../../types/ModelTypes";
 import DraggableEquipment from "./DraggableEquipment";
 import DraggableContainer from "./DraggableContainer";
-import { chunkEquipment } from "../../helper/DataStoreUtils";
+import { chunkEquipment } from "../../helper/EquipmentUtils";
 
 /*
     ScrollRow is a component that allows the user to scroll through a row of
@@ -32,7 +32,7 @@ export default function ScrollRow({
   onReassign,
   onHover,
 }: {
-  containerSquares: React.MutableRefObject<Map<number, ItemObj>>;
+  containerSquares: React.MutableRefObject<Map<number, ContainerObj>>;
   listData: ItemObj[];
   onLayout: (e: LayoutChangeEvent) => void;
   setOffset: (offset: number) => void;
@@ -85,7 +85,7 @@ export default function ScrollRow({
     const { x } = layoutEvent.nativeEvent.layout;
     // calculate grid position for each item
     const containerPosition = Math.ceil(x / offsets) + index * 4;
-    containerSquares.current.set(containerPosition, item);
+    containerSquares.current.set(containerPosition, item as ContainerObj);
   };
 
   return (

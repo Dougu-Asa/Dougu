@@ -375,7 +375,7 @@ export const schema = {
                     },
                     "isRequired": false,
                     "attributes": [],
-                    "isArrayNullable": true,
+                    "isArrayNullable": false,
                     "association": {
                         "connectionType": "HAS_MANY",
                         "associatedWith": [
@@ -524,21 +524,6 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "parent": {
-                    "name": "parent",
-                    "isArray": false,
-                    "type": {
-                        "model": "Container"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "association": {
-                        "connectionType": "BELONGS_TO",
-                        "targetNames": [
-                            "containerEquipmentId"
-                        ]
-                    }
-                },
                 "details": {
                     "name": "details",
                     "isArray": false,
@@ -592,6 +577,15 @@ export const schema = {
                     "properties": {}
                 },
                 {
+                    "type": "key",
+                    "properties": {
+                        "name": "gsi-Container.equipment",
+                        "fields": [
+                            "containerEquipmentId"
+                        ]
+                    }
+                },
+                {
                     "type": "auth",
                     "properties": {
                         "rules": [
@@ -631,5 +625,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "7cd5ce8fe5df646620f897d7525e32df"
+    "version": "f77f739953ae8c1f6fa03f091a0f50c9"
 };

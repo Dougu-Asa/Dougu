@@ -6,7 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 // project imports
 import UserEquipment from "../../components/member/UserEquipment";
 import { useUser } from "../../helper/UserContext";
-import { sortOrgItems } from "../../helper/DataStoreUtils";
+import { sortOrgItems } from "../../helper/EquipmentUtils";
 import type { OrgItem } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/EquipmentContext";
 

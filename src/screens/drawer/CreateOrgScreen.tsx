@@ -134,13 +134,14 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
             Create a name for your org.
           </Text>
           <Text style={createJoinStyles.subtitle}>
-            Rule: 1-40 alphanumeric characters with no whitespaces.
+            Rule: 1-40 alphanumeric characters with no whitespaces (_ and - are
+            allowed).
           </Text>
           <TextInput
             style={createJoinStyles.input}
             onChangeText={onChangeName}
             value={name}
-            placeholder="Ex. Asayake Taiko"
+            placeholder="Ex. Great_Org"
             keyboardType="default"
           />
           <TouchableOpacity

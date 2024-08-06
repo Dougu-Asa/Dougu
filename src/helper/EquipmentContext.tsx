@@ -4,7 +4,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import { EquipmentObj, ContainerObj, OrgItem } from "../types/ModelTypes";
 import { EquipmentContextType } from "../types/ContextTypes";
 import { useUser } from "./UserContext";
-import { getOrgItems } from "./DataStoreUtils";
+import { getOrgItems } from "./EquipmentUtils";
 import { Equipment, Container } from "../models";
 
 /* 

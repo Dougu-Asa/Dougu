@@ -32,6 +32,12 @@ import {
 import EquipmentItem from "../../components/member/EquipmentItem";
 import ContainerItem from "../../components/member/ContainerItem";
 import ScrollRow from "./ScrollRow";
+import {
+  reassignEquipment,
+  addEquipmentToContainer,
+  reassignContainer,
+} from "../../helper/SwapUtils";
+import { useLoad } from "../../helper/LoadingContext";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -44,16 +50,15 @@ export default function SwapGestures({
   handleSet,
   resetValue,
   swapUser,
-  reassignEquipment,
 }: {
   listOne: ItemObj[];
   listTwo: ItemObj[];
   handleSet: (user: OrgUserStorage | null) => void;
   resetValue: boolean;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
-  reassignEquipment: (equipment: EquipmentObj, swapId: string) => void;
 }) {
   const { orgUserStorage } = useUser();
+  const { setIsLoading } = useLoad();
   const start = useRef<TopOrBottom | null>(null);
   const headerHeight = useHeaderHeight();
   let halfLine = useRef(0);
@@ -64,6 +69,8 @@ export default function SwapGestures({
   const offset = windowWidth / 4;
   // these are for handling dragging overlay animation
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+  // keeps track of if an equipment is dragged to a container
+  const containerItem = useRef<ContainerObj | null>(null);
   const draggingOffset = useSharedValue<Position>({
     x: 0,
     y: 0,
@@ -127,9 +134,21 @@ export default function SwapGestures({
     };
   };
 
+  const clearTimeouts = () => {
+    if (containerTimeout) {
+      clearTimeout(containerTimeout);
+      containerTimeout = null;
+    }
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = null;
+    }
+  };
+
   // handle finalizing the drag and drop animation
   const handleFinalize = () => {
     "worklet";
+    runOnJS(clearTimeouts)();
     size.value = withTiming(0, undefined, (isFinished) => {
       if (isFinished) {
         runOnJS(setDraggingItem)(null);
@@ -141,19 +160,41 @@ export default function SwapGestures({
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
+    if (draggingItem == null) return;
     const assignedTo =
       gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+    // equipment -> container
+    if (assignedTo === start.current && containerItem.current) {
+      runOnJS(addEquipmentToContainer)(
+        draggingItem.id,
+        containerItem.current.id,
+        setIsLoading,
+      );
+      console.log("reassigning equipment to container");
+    }
+    // this means we are reassigning to a new user
     if (
+      draggingItem == null ||
       swapUser.current == null ||
-      assignedTo === start.current ||
-      draggingItem == null
+      assignedTo === start.current
     )
       return;
-    const swapId =
-      assignedTo === "bottom" ? swapUser.current.id : orgUserStorage!.id;
-    // SETUP ASSIGNMENTS FOR CONTAINER
-    //runOnJS(reassignEquipment)(draggingItem!, swapId);
-    setDraggingItem(null);
+    if (draggingItem.type === "container") {
+      console.log("reassigning container to new user");
+      // container -> new user
+      // reassignContainer
+    } else if (!containerItem.current) {
+      // equipment -> new user
+      /*runOnJS(reassignEquipment)(
+        draggingItem.id,
+        swapUser.current!.id,
+        setIsLoading,
+      ); */
+      console.log("reassigning equipment to new user");
+    } else {
+      // equipment -> new user, new container
+      console.log("reassigning equipment to new user and container");
+    }
   };
 
   // onHover necessary calculations
@@ -168,8 +209,8 @@ export default function SwapGestures({
     setBottomPage(Math.round(offset / windowWidth));
   };
   // map that keeps track of where the container items are
-  const topContainers = useRef(new Map<number, ItemObj>());
-  const bottomContainers = useRef(new Map<number, ItemObj>());
+  const topContainers = useRef(new Map<number, ContainerObj>());
+  const bottomContainers = useRef(new Map<number, ContainerObj>());
   const topYRange = {
     start: headerHeight + 120,
     end: headerHeight + 120 + equipmentWidth,
@@ -261,17 +302,24 @@ export default function SwapGestures({
     prevPosition = currPosition;
   };
 
+  let containerTimeout: NodeJS.Timeout | null = null;
   const changePosition = (isTop: boolean | null, position: number) => {
-    // position 0 is the out of bounds position
-    if (position === 0) {
-      size.value = withSpring(1.2);
-      return;
+    containerItem.current = null;
+    size.value = withSpring(1.2);
+    // clear timeout
+    if (containerTimeout) {
+      clearTimeout(containerTimeout);
+      containerTimeout = null;
     }
-    // check if the grid location has a container item
+    // check if the grid location has a container item, set a timeout if there is
     const map = isTop ? topContainers : bottomContainers;
     if (map.current.has(position)) {
-      size.value = withSpring(0.7);
-    } else size.value = withSpring(1.2);
+      containerTimeout = setTimeout(() => {
+        size.value = withSpring(0.7);
+        containerTimeout = null;
+        containerItem.current = map.current.get(position)!;
+      }, 500);
+    }
   };
 
   return (

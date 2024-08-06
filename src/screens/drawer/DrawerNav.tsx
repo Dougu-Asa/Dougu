@@ -109,7 +109,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   }
 
   //Left profile icon
-  function MyHeaderProfileButton ({ navigation }: MyHeaderProfileButtonProps) {
+  function MyHeaderProfileButton({ navigation }: MyHeaderProfileButtonProps) {
     return (
       <TouchableOpacity
         style={styles.profile}
