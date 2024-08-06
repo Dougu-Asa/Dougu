@@ -10,10 +10,9 @@ After a lot of thought and contemplation, I figured out a way to track if a user
 
 Instead of opening the modal, for simplicity's sake I chose to just have the overlay shrink when it hovers over a container it can be placed into. I am starting to get worried about the complexity and performance of my code, because while it's smooth on my test phone, I believe that it may start to struggle against slower models. There are just a lot of calculations. 
 
-- Bottom swapUser container's aren't causing overlay shrinks
-- I tried to fix a Datastore warning on Equipment creation since Equipment belongs to a Container yet I don't assign it to one. However, after playing around with various schemas, I decided that the worning wasn't really a problem and that it was important for me to hold to HasMany HasOne from Container to Equipment.
-- Problem with @hasMany and @belongsTo was that it was causing duplication issues
-- worried that removing the relations and requerying for equipment may be slow
-- I think that mutations, queries, and subscriptions inside /graphql aren't being updated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
+## Reassignments and Assignments
+In order to setup assigning equipment, reassigning equipment, and reassigning containers, I had to write out all the possible combinations in order to find an efficient way to break it down. Additionally, I was having a lot of trouble with the schema, especially with the @hasMany and @belongsTo. Ultimately, I chose to remove that relationship, and I have gotten swapping working (or so I believe).
+- @hasMany and @belongsTo was swapped in favor of a one-direction equipment -containerId-> container. I am only worried a little about the speed of querying equipment that belongs to a container, but I only need to do that query for swapping
+- The overall swap logic is that: if an equipment goes to a container, it takes on the container's assignedTo. Every other case now requires a swap from one user to the other. Therefore, I then just check for this case, determine who is being swapped to, and reassign the respective item to the recipient.
+- I think that mutations, queries, and subscriptions inside /graphql aren't being auto generated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
 - SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
-- moving equipment into container on swapUser side (bottom -> bottom) caused strange stale behavior 
