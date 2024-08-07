@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
 import MiniEquipmentItem from "./MiniEquipmentItem";
+import { itemStyles } from "../../styles/ItemStyles";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -15,7 +16,6 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
   const { setContainerItem, setContainerVisible } = useEquipment();
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkEquipment(firstNine ? firstNine : [], 3);
-  const borderRadius = Dimensions.get("window").width / 14;
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
@@ -28,28 +28,23 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
     <>
       {item && (
         <GestureDetector gesture={tapGesture}>
-          <View style={equipment.container}>
-            <View
-              style={{
-                backgroundColor: "black",
-                borderRadius: borderRadius,
-              }}
-            >
+          <View style={itemStyles.container}>
+            <View style={itemStyles.backDrop}>
               <Pressable
                 style={({ pressed }) => [
                   {
                     opacity: pressed ? 0.7 : 1,
                   },
-                  equipment.equipment,
+                  itemStyles.containerItem,
                 ]}
               >
-                <View style={equipment.table}>
+                <View style={itemStyles.table}>
                   {chunkedData.map((row, index) => (
-                    <View key={index} style={equipment.equipmentRow}>
+                    <View key={index} style={itemStyles.equipmentRow}>
                       {row.map((equip) => (
                         <View
                           key={equip.id}
-                          style={equipment.equipmentItemContainer}
+                          style={itemStyles.equipmentItemContainer}
                         >
                           <MiniEquipmentItem item={equip as EquipmentObj} />
                         </View>
@@ -59,43 +54,10 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
                 </View>
               </Pressable>
             </View>
-            <Text style={{ fontSize: 12, overflow: "hidden" }}>
-              {item.label}
-            </Text>
+            <Text style={itemStyles.text}>{item.label}</Text>
           </View>
         </GestureDetector>
       )}
     </>
   );
 }
-
-const equipment = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    maxWidth: Dimensions.get("window").width / 5,
-  },
-  equipment: {
-    width: Dimensions.get("window").width / 5,
-    height: Dimensions.get("window").width / 5,
-    borderRadius: Dimensions.get("window").width / 14,
-    flexDirection: "column",
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgb(222, 222, 222)",
-  },
-  equipmentRow: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    flexBasis: "33.33%",
-    alignItems: "center",
-  },
-  equipmentItemContainer: {
-    width: "33.33%",
-    alignItems: "center",
-  },
-  table: {
-    width: "85%",
-    height: "85%",
-  },
-});

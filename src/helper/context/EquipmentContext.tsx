@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
-import { EquipmentObj, ContainerObj, OrgItem } from "../types/ModelTypes";
-import { EquipmentContextType } from "../types/ContextTypes";
+import { EquipmentObj, ContainerObj, OrgItem } from "../../types/ModelTypes";
+import { EquipmentContextType } from "../../types/ContextTypes";
 import { useUser } from "./UserContext";
-import { getOrgItems } from "./EquipmentUtils";
-import { Equipment, Container } from "../models";
+import { getOrgItems } from "../EquipmentUtils";
+import { Equipment, Container } from "../../models";
 
 /* 
   Context only available within MemberTabs that distributes the equipment

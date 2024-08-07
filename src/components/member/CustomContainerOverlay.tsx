@@ -13,7 +13,7 @@ import {
   Gesture,
 } from "react-native-gesture-handler";
 
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";

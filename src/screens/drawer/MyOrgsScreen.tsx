@@ -4,7 +4,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { OrgUserStorage, Organization } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { MyOrgsScreenProps } from "../../types/ScreenTypes";
 
 /*

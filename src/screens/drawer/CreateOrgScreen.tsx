@@ -6,9 +6,9 @@ import NetInfo from "@react-native-community/netinfo";
 
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 import { createUserGroup, addUserToGroup } from "../../helper/AWS";

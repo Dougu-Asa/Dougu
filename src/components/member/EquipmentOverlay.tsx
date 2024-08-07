@@ -3,7 +3,7 @@ import { Overlay, Card, Button } from "@rneui/themed";
 import { Text, StyleSheet, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // Import the LinearGradient component
 
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 import { ScrollView } from "react-native-gesture-handler";
 
 /*

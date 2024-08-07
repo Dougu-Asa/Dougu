@@ -6,7 +6,7 @@ import { SearchBar } from "@rneui/themed";
 // project imports
 import EquipmentTable from "../../components/organization/EquipmentTable";
 import { ManageEquipmentScreenProps } from "../../types/ScreenTypes";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 
 /*
   The screen that displays a list of equipment in the organization.

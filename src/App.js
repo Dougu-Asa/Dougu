@@ -5,8 +5,8 @@ import { registerRootComponent } from "expo";
 import * as Sentry from "@sentry/react-native";
 
 // Project Files
-import LoadingProvider from "./helper/LoadingContext";
-import UserProvider from "./helper/UserContext";
+import LoadingProvider from "./helper/context/LoadingContext";
+import UserProvider from "./helper/context/UserContext";
 import amplifyconfig from "./amplifyconfiguration.json";
 import RootStackNavigator from "./screens/RootStackNavigator";
 

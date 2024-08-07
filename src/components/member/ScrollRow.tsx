@@ -88,7 +88,6 @@ export default function ScrollRow({
     if (item.type === "equipment") {
       containerSquares.current.set(containerPosition, null);
     } else {
-      console.log("setting container", containerPosition);
       containerSquares.current.set(containerPosition, item as ContainerObj);
     }
   };

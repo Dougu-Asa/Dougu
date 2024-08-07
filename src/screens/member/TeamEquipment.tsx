@@ -5,10 +5,10 @@ import { ScrollView } from "react-native-gesture-handler";
 
 // project imports
 import UserEquipment from "../../components/member/UserEquipment";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { sortOrgItems } from "../../helper/EquipmentUtils";
 import type { OrgItem } from "../../types/ModelTypes";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 
 /*
   Screen for viewing all equipment in the organization

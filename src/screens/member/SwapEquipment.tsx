@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 
 // project imports
 import { OrgUserStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { ItemObj } from "../../types/ModelTypes";
 import SwapGestures from "../../components/member/SwapGestures";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 
 /*
   Screen for swapping equipment between the current user and another user.

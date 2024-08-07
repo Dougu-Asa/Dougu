@@ -3,7 +3,7 @@ import { View, Image, StyleSheet } from "react-native";
 import { Hub, DataStore, Auth } from "aws-amplify";
 
 import { SyncScreenProps } from "../types/ScreenTypes";
-import { useUser } from "../helper/UserContext";
+import { useUser } from "../helper/context/UserContext";
 
 /*
   after a user logs in, this screen is displayed while the app

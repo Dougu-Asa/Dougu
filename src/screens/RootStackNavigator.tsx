@@ -7,7 +7,7 @@ import RequestReset from "./RequestReset";
 import ResetPassword from "./ResetPassword";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
-import { useLoad } from "../helper/LoadingContext";
+import { useLoad } from "../helper/context/LoadingContext";
 
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { LoadingContextType } from "../types/ContextTypes";
+import { LoadingContextType } from "../../types/ContextTypes";
 
 const LoadingContext = React.createContext<LoadingContextType | undefined>(
   undefined,

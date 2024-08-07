@@ -7,7 +7,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 // project imports
 import { OrgUserStorage } from "../models";
-import { useUser } from "../helper/UserContext";
+import { useUser } from "../helper/context/UserContext";
 import { UserNames } from "../types/ModelTypes";
 import { sortOrgUserStorages } from "../helper/EquipmentUtils";
 

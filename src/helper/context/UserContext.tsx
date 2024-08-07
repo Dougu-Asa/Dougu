@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
-import { Organization, OrgUserStorage, UserOrStorage } from "../models";
-import { UserType, UserContextType } from "../types/ContextTypes";
+import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
+import { UserType, UserContextType } from "../../types/ContextTypes";
 
 /* 
   Context that distributes the user object, organization object, and the user's organization object

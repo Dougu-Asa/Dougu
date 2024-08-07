@@ -10,15 +10,15 @@ import { Alert, Keyboard } from "react-native";
 import EquipmentScreen from "./Equipment";
 import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
 import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
-import EquipmentProvider from "../../helper/EquipmentContext";
+import EquipmentProvider from "../../helper/context/EquipmentContext";
 import CustomContainerOverlay from "../../components/member/CustomContainerOverlay";
 
 // The navigator for a logged in member of an organization

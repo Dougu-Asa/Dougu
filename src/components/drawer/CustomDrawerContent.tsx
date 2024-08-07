@@ -6,8 +6,8 @@ import {
 } from "@react-navigation/drawer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useLoad } from "../../helper/LoadingContext";
-import { useUser } from "../../helper/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
+import { useUser } from "../../helper/context/UserContext";
 import { signOut } from "../../helper/Utils";
 
 // Create a custom drawer component to override default

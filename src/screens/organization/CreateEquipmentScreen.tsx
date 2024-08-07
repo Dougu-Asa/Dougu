@@ -19,8 +19,8 @@ import {
   Organization,
   Container,
 } from "../../models";
-import { useLoad } from "../../helper/LoadingContext";
-import { useUser } from "../../helper/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
+import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 
 /*

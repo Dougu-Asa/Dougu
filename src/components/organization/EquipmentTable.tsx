@@ -12,12 +12,12 @@ import { DataStore } from "aws-amplify";
 
 // project imports
 import { Container, Equipment } from "../../models";
-import { useUser } from "../../helper/UserContext";
-import { useLoad } from "../../helper/LoadingContext";
+import { useUser } from "../../helper/context/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { sortOrgItems } from "../../helper/EquipmentUtils";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 
 /*
   Component for displaying all equipment in the organization

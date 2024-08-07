@@ -19,7 +19,7 @@ import MyOrgsScreen from "./MyOrgsScreen";
 import MemberTabs from "../member/MemberTabs";
 import ProfileScreen from "./ProfileScreen";
 import { OrgUserStorage, Organization } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import {
   MyHeaderProfileButtonProps,
@@ -28,7 +28,7 @@ import {
 import { DrawerNavProps } from "../../types/ScreenTypes";
 import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
 import { signOut } from "../../helper/Utils";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 /* 
     DrawerNav is the main form of navigation for the app.

@@ -42,3 +42,8 @@ export type EquipmentContextType = {
   setContainerVisible: Dispatch<SetStateAction<boolean>>;
   modifyEquipmentItem: (item: EquipmentObj, newId: string) => void;
 };
+
+export type DimensionsContextType = {
+  width: number;
+  height: number;
+};

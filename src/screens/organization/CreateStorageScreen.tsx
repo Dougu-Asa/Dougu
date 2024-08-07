@@ -11,9 +11,9 @@ import { useState } from "react";
 import { DataStore } from "aws-amplify";
 
 // project imports
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 
 /*

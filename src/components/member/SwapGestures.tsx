@@ -19,7 +19,7 @@ import Animated, {
 
 // project imports
 import { OrgUserStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
 import {
   EquipmentObj,
@@ -36,7 +36,7 @@ import {
   addEquipmentToContainer,
   reassignContainer,
 } from "../../helper/SwapUtils";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -284,7 +284,6 @@ export default function SwapGestures({
     if (currPosition === prevPosition) {
       return;
     }
-    console.log("positionKey", currPosition);
     changePosition(top, position);
     prevPosition = currPosition;
   };
