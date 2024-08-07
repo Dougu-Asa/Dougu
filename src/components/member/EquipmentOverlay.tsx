@@ -35,7 +35,6 @@ export default function EquipmentOverlay() {
                 <Card.Title>{itemId}</Card.Title>
                 <Card.Divider />
                 <Text>{equipmentItem.detailData[index]}</Text>
-                <Text>{JSON.stringify(equipmentItem)}</Text>
               </Card>
             </Pressable>
           ))}

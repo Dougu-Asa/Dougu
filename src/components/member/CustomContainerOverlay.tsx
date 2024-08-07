@@ -1,10 +1,22 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
+import {
+  ScrollView,
+  GestureDetector,
+  Gesture,
+} from "react-native-gesture-handler";
 
 import { useEquipment } from "../../helper/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
+import { EquipmentObj } from "../../types/ModelTypes";
 
 /*
     This overlay is what is shown when the user taps
@@ -19,33 +31,82 @@ export default function CustomContainerOverlay() {
     setContainerItem,
   } = useEquipment();
 
-  const closeContainer = () => {
-    setContainerVisible(false);
-    setContainerItem(null);
-  };
-
+  // equipment is displayed in a 3x3 grid format
   const equipmentChunks = chunkEquipment(containerItem?.equipment ?? [], 9);
+  const equipmentChunks3 = equipmentChunks.map((group) =>
+    chunkEquipment(group, 3),
+  );
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      setContainerVisible(false);
+      setContainerItem(null);
+      console.log("equipmentChunks3", equipmentChunks3);
+    })
+    .runOnJS(true);
+
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const pageIndex = Math.round(
+      event.nativeEvent.contentOffset.x / Dimensions.get("window").width,
+    );
+    setCurrentPage(pageIndex);
+  };
 
   return (
     <>
       {containerVisible && (
-        <Pressable style={styles.screen} onPress={closeContainer}>
+        <GestureDetector gesture={tapGesture}>
           <View style={styles.backDrop}>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>{containerItem?.label}</Text>
             </View>
-            <Pressable style={styles.itemContainer}>
+            <View style={styles.itemContainer}>
               <ScrollView
-                contentContainerStyle={styles.scrollContainer}
                 horizontal={true}
+                pagingEnabled={true}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
+                showsHorizontalScrollIndicator={false}
               >
-                {containerItem?.equipment.map((item, index) => (
-                  <EquipmentItem key={index} item={item} count={item.count} />
-                ))}
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  {equipmentChunks3.map((page, index) => (
+                    <View key={index} style={styles.itemPage}>
+                      {page.map((row, index) => (
+                        <View key={`r${index}`} style={styles.equipmentRow}>
+                          {row.map((equip) => (
+                            <View
+                              key={equip.id}
+                              style={styles.equipmentItemContainer}
+                            >
+                              <EquipmentItem
+                                item={equip as EquipmentObj}
+                                count={(equip as EquipmentObj).count}
+                              />
+                            </View>
+                          ))}
+                        </View>
+                      ))}
+                    </View>
+                  ))}
+                </View>
               </ScrollView>
-            </Pressable>
+              <View style={styles.pagination}>
+                {equipmentChunks3.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.paginationDot,
+                      index === currentPage
+                        ? styles.paginationDotActive
+                        : styles.paginationDotInactive,
+                    ]}
+                  />
+                ))}
+              </View>
+            </View>
           </View>
-        </Pressable>
+        </GestureDetector>
       )}
     </>
   );
@@ -55,15 +116,25 @@ export default function CustomContainerOverlay() {
 const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   backDrop: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     alignItems: "center",
     flex: 1,
-  },
-  scrollContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    position: "absolute",
+    width: "100%",
     height: "100%",
-    minWidth: "100%",
+  },
+  equipmentRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: "90%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    flexBasis: "33.33%",
+    alignItems: "center",
+  },
+  equipmentItemContainer: {
+    width: "33.33%",
+    alignItems: "center",
   },
   itemContainer: {
     marginTop: "10%",
@@ -72,9 +143,12 @@ const styles = StyleSheet.create({
     width: width * 0.85,
     height: height * 0.5,
     borderRadius: 20,
+    backgroundColor: "rgb(240, 240, 240)",
+  },
+  itemPage: {
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "rgb(240, 240, 240)",
+    width: width * 0.85,
   },
   title: {
     fontSize: 32,
@@ -92,10 +166,20 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     marginVertical: 10,
   },
-  screen: {
-    flex: 1,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
+  pagination: {
+    flexDirection: "row",
+    height: 30,
+  },
+  paginationDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  paginationDotInactive: {
+    backgroundColor: "gray",
+  },
+  paginationDotActive: {
+    backgroundColor: "black",
   },
 });

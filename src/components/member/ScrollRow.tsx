@@ -32,7 +32,7 @@ export default function ScrollRow({
   onReassign,
   onHover,
 }: {
-  containerSquares: React.MutableRefObject<Map<number, ContainerObj>>;
+  containerSquares: React.MutableRefObject<Map<number, ContainerObj | null>>;
   listData: ItemObj[];
   onLayout: (e: LayoutChangeEvent) => void;
   setOffset: (offset: number) => void;
@@ -81,20 +81,23 @@ export default function ScrollRow({
     item: ItemObj,
     index: number,
   ) => {
-    if (item.type === "equipment") return;
     const { x } = layoutEvent.nativeEvent.layout;
     // calculate grid position for each item
     const containerPosition = Math.ceil(x / offsets) + index * 4;
-    console.log("containerPosition", containerPosition);
-    containerSquares.current.set(containerPosition, item as ContainerObj);
+    if (item.type === "equipment") {
+      containerSquares.current.set(containerPosition, null);
+    } else {
+      console.log("setting container", containerPosition);
+      containerSquares.current.set(containerPosition, item as ContainerObj);
+    }
   };
 
   return (
     <ScrollView
       horizontal={true}
-      showsHorizontalScrollIndicator={false}
+      showsHorizontalScrollIndicator={true}
       ref={scrollViewRef}
-      snapToInterval={windowWidth}
+      pagingEnabled={true}
       onScroll={(e) => setOffset(e.nativeEvent.contentOffset.x)}
       scrollEventThrottle={8}
       onLayout={onLayout}

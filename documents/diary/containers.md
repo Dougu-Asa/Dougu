@@ -17,10 +17,16 @@ In order to setup assigning equipment, reassigning equipment, and reassigning co
 - I think that mutations, queries, and subscriptions inside /graphql aren't being auto generated? Because new files are bieng generated in workspace root, and /graphql files aren't changing
 - SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
 
-
+## Bug Fixing and Container UI
 Issues:
 - non-container position was being recognized as a container, cause is that the map isn't being cleared whent he equipment changes
-- automatic scroll isn't moving to the next page, not sure when or how to reproduce. 
+- automatic scroll isn't moving to the next page, not sure when or how to reproduce. However, I believe it occurs when nextTop/BottomPage is already set to the next page (for ex. currPage = 0, want to move right, but next Page is already 1). I addressed this by making sure to keep nextPage = currPage when not scrolling
 - containerItem is always null, so you can't add equipment to containers, cause is that determine scroll page setting currItem to null while hovering
 - grabbing an equipment, auto scroll to a different page, hover over a container on the edge, and autoscroll back keeps the dragging equipment location keeps it minimized and connected to the container item it was previously hovering over. Cause is that the timeouts were stale because I wasn't using a reference. 
 - after swapping equipment, spots which used to hold containers would still act as though containers were there. Cause was that maps weren't being reset between swaps, so handle reassign now clears the respective map
+- 2 chappa items of different descriptions create duplicates. Cause: I forgot to update the key variable in process equipment.
+- after adding an equipment to a container I can no longer add equipment to containers for that section. The caues is that the map was being reset, but the layout wasn't changed, so the map wasn't updated. To fix this, I had the map set both containers and equipment, and check that the position is in range and that the map item is a container
+
+Overall, I fixed a lot of bugs and changed up the logic to make it much cleaner. Additionally, now containers will display items inside of it and allow users to see the items. Moving forward, I notice small amounts of lag that I would like to speed up, as well as adding a page indicator for the swap equipment and container items. I also still need to implement dragging an equipmentItem out of a container.
+
+- Also different users (those with no equipment and those with) seem to have different heights

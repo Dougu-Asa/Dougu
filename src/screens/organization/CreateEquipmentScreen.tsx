@@ -121,9 +121,8 @@ export default function CreateEquipmentScreen() {
         await CreateContainer(dataOrg, orgUserStorage);
       }
       onChangeName("");
-      onChangeQuantity("");
+      onChangeQuantity("0");
       onChangeDetails("");
-      setAssignUser(null);
       setIsLoading(false);
     } catch (error) {
       handleError("CreateEquipment", error as Error, setIsLoading);

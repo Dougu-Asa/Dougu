@@ -145,12 +145,13 @@ export const processEquipmentData = (
     } else {
       key = equip.name;
     }
+    // if chappa is in the key, print the equip
     if (equipmentMap.has(key)) {
       const existingEquip = equipmentMap.get(key);
       existingEquip!.count += 1;
       existingEquip!.data.push(equip.id);
       existingEquip!.detailData.push(equip.details ? equip.details : "");
-      equipmentMap.set(equip.name, existingEquip!);
+      equipmentMap.set(key, existingEquip!);
     } else {
       // new equipment
       equipmentMap.set(key, {

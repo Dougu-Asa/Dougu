@@ -161,8 +161,6 @@ export default function SwapGestures({
     if (draggingItem == null) return;
     const dropLocation =
       gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
-    const mapToClear =
-      dropLocation === "top" ? topContainers : bottomContainers;
     // equipment -> container
     if (draggingItem.type === "equipment" && containerItem.current) {
       console.log("reassigning equipment to container");
@@ -171,11 +169,9 @@ export default function SwapGestures({
         containerItem.current.id,
         setIsLoading,
       );
-      mapToClear.current.clear();
     }
     if (dropLocation === start.current || !swapUser.current) return;
     // now swappping equipment between users
-    mapToClear.current.clear();
     const assignTo =
       dropLocation === "top" ? orgUserStorage! : swapUser.current;
     if (draggingItem.type === "container") {
@@ -245,6 +241,8 @@ export default function SwapGestures({
         return;
       }
       scrollTimeout.current = setTimeout(() => {
+        // make sure nextPage is correct before changing page
+        changePage(currPage);
         if (currentScroll === "left") {
           changePage(currPage - 1);
         } else if (currentScroll === "right") {
@@ -300,7 +298,12 @@ export default function SwapGestures({
     }
     // check if the grid location has a container item, set a timeout if there is
     const map = isTop ? topContainers : bottomContainers;
-    if (map.current.has(position)) {
+    const maxPosition = isTop ? listOne.length : listTwo.length;
+    if (
+      map.current.has(position) &&
+      position <= maxPosition &&
+      map.current.get(position)
+    ) {
       containerTimeout.current = setTimeout(() => {
         size.value = withSpring(0.7);
         containerItem.current = map.current.get(position)!;
