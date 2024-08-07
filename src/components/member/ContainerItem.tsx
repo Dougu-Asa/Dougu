@@ -66,6 +66,7 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
 const equipment = StyleSheet.create({
   container: {
     alignItems: "center",
+    maxWidth: Dimensions.get("window").width / 5,
   },
   equipment: {
     width: Dimensions.get("window").width / 5,
@@ -87,7 +88,7 @@ const equipment = StyleSheet.create({
     alignItems: "center",
   },
   table: {
-    width: "90%",
-    height: "90%",
+    width: "85%",
+    height: "85%",
   },
 });

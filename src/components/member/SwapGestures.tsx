@@ -439,10 +439,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   paginationDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 2,
   },
   paginationDotInactive: {
     backgroundColor: "gray",

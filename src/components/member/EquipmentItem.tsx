@@ -59,6 +59,7 @@ export default function EquipmentItem({
 const equipment = StyleSheet.create({
   container: {
     alignItems: "center",
+    maxWidth: Dimensions.get("window").width / 5,
   },
   equipment: {
     width: Dimensions.get("window").width / 5,

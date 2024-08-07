@@ -32,3 +32,6 @@ Overall, I fixed a lot of bugs and changed up the logic to make it much cleaner.
 Speedup ideas:
 - useMemo for equipmentUtils
 - useMemo for Dimensions calculations, especially for styles
+- removing render functions (this creates a new function on every render)
+- change scrollview to flatlist (though flatlist isn't compatible with gesture handler :/)
+- context provider for Dimensions calculations in styling

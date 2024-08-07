@@ -7,7 +7,7 @@ import { EquipmentObj } from "../../types/ModelTypes";
   This is basically EquipmentItem but much smaller, as it
   is used inside of container items.
 */
-const size = Dimensions.get("window").width / 20;
+const size = Dimensions.get("window").width / 22;
 export default function MiniEquipmentItem({
   item,
 }: {
@@ -31,7 +31,7 @@ const equipment = StyleSheet.create({
   equipment: {
     width: size,
     height: size,
-    borderRadius: Dimensions.get("window").width / 60,
+    borderRadius: Dimensions.get("window").width / 64,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgb(135, 206, 235)",
