@@ -87,7 +87,7 @@ export default function SwapGestures({
   // we need to calculate the half line for the equipment items
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
-    halfLine.current = height + 120 + headerHeight;
+    halfLine.current = height + 150 + headerHeight;
   };
 
   // set the equipment item to be dragged through the JS thread
@@ -335,6 +335,21 @@ export default function SwapGestures({
         onReassign={handleReassign}
         onHover={handleHover}
       />
+      <View style={styles.pagination}>
+        {Array.from({ length: Math.ceil(listOne.length / 4) }).map(
+          (_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.paginationDot,
+                index === topPage
+                  ? styles.paginationDotActive
+                  : styles.paginationDotInactive,
+              ]}
+            />
+          ),
+        )}
+      </View>
       <CurrMembersDropdown
         setUser={(user) => {
           bottomContainers.current.clear();
@@ -356,6 +371,21 @@ export default function SwapGestures({
         onReassign={handleReassign}
         onHover={handleHover}
       />
+      <View style={styles.pagination}>
+        {Array.from({ length: Math.ceil(listTwo.length / 4) }).map(
+          (_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.paginationDot,
+                index === bottomPage
+                  ? styles.paginationDotActive
+                  : styles.paginationDotInactive,
+              ]}
+            />
+          ),
+        )}
+      </View>
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
@@ -401,5 +431,23 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderTopColor: "grey",
     borderTopWidth: 0.5,
+  },
+  pagination: {
+    flexDirection: "row",
+    height: 30,
+    width: "100%",
+    justifyContent: "center",
+  },
+  paginationDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  paginationDotInactive: {
+    backgroundColor: "gray",
+  },
+  paginationDotActive: {
+    backgroundColor: "black",
   },
 });

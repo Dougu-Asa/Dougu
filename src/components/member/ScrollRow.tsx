@@ -68,7 +68,7 @@ export default function ScrollRow({
   const offsets = windowWidth / 4;
   const scrollViewRef = useRef<ScrollView>(null);
   const chunkedData = chunkEquipment(listData, 4);
-  const scrollHeight = Math.round((Dimensions.get("window").height - 160) / 2);
+  const scrollHeight = Math.round((Dimensions.get("window").height - 220) / 2);
 
   useEffect(() => {
     if (scrollPage < 0) return;
@@ -96,7 +96,6 @@ export default function ScrollRow({
   return (
     <ScrollView
       horizontal={true}
-      showsHorizontalScrollIndicator={true}
       ref={scrollViewRef}
       pagingEnabled={true}
       onScroll={(e) => setOffset(e.nativeEvent.contentOffset.x)}
@@ -104,6 +103,7 @@ export default function ScrollRow({
       onLayout={onLayout}
       decelerationRate={"fast"}
       style={{ height: scrollHeight }}
+      showsHorizontalScrollIndicator={false}
     >
       {chunkedData.map((chunk, index) => (
         <View key={index} style={styles.scrollRow}>
