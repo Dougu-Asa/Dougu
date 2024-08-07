@@ -15,6 +15,7 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
   const { setContainerItem, setContainerVisible } = useEquipment();
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkEquipment(firstNine ? firstNine : [], 3);
+  const borderRadius = Dimensions.get("window").width / 14;
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
@@ -28,31 +29,36 @@ export default function ContainerItem({ item }: { item: ContainerObj | null }) {
       {item && (
         <GestureDetector gesture={tapGesture}>
           <View style={equipment.container}>
-            <Pressable
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed
-                    ? "rgb(180, 180, 180)"
-                    : "rgb(222, 222, 222)",
-                },
-                equipment.equipment,
-              ]}
+            <View
+              style={{
+                backgroundColor: "black",
+                borderRadius: borderRadius,
+              }}
             >
-              <View style={equipment.table}>
-                {chunkedData.map((row, index) => (
-                  <View key={index} style={equipment.equipmentRow}>
-                    {row.map((equip) => (
-                      <View
-                        key={equip.id}
-                        style={equipment.equipmentItemContainer}
-                      >
-                        <MiniEquipmentItem item={equip as EquipmentObj} />
-                      </View>
-                    ))}
-                  </View>
-                ))}
-              </View>
-            </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.7 : 1,
+                  },
+                  equipment.equipment,
+                ]}
+              >
+                <View style={equipment.table}>
+                  {chunkedData.map((row, index) => (
+                    <View key={index} style={equipment.equipmentRow}>
+                      {row.map((equip) => (
+                        <View
+                          key={equip.id}
+                          style={equipment.equipmentItemContainer}
+                        >
+                          <MiniEquipmentItem item={equip as EquipmentObj} />
+                        </View>
+                      ))}
+                    </View>
+                  ))}
+                </View>
+              </Pressable>
+            </View>
             <Text style={{ fontSize: 12, overflow: "hidden" }}>
               {item.label}
             </Text>
@@ -76,6 +82,7 @@ const equipment = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgb(222, 222, 222)",
   },
   equipmentRow: {
     flexDirection: "row",

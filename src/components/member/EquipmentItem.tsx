@@ -46,9 +46,9 @@ export default function EquipmentItem({
                 <Text style={equipment.count}>{count}</Text>
               </View>
             </Pressable>
-            <Text style={{ fontSize: 12, overflow: "hidden" }}>
-              {item.label}
-            </Text>
+            <View style={{ alignItems: "center", height: 40 }}>
+              <Text style={{ fontSize: 12 }}>{item.label}</Text>
+            </View>
           </View>
         </GestureDetector>
       )}
