@@ -12,15 +12,26 @@ import { itemStyles } from "../../styles/ItemStyles";
   a count. It is used in the DraggableEquipment component to display the equipment
   objects that can be dragged around the screen.
 */
-export default function ContainerItem({ item }: { item: ContainerObj | null }) {
-  const { setContainerItem, setContainerVisible } = useEquipment();
+export default function ContainerItem({
+  item,
+  swapable,
+}: {
+  item: ContainerObj | null;
+  swapable: boolean;
+}) {
+  const { setContainerItem, setContainerVisible, setSwapContainerVisible } =
+    useEquipment();
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkEquipment(firstNine ? firstNine : [], 3);
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
       setContainerItem(item);
-      setContainerVisible(true);
+      if (swapable) {
+        setSwapContainerVisible(true);
+      } else {
+        setContainerVisible(true);
+      }
     })
     .runOnJS(true);
 

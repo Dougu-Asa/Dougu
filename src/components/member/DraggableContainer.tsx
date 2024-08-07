@@ -86,7 +86,7 @@ export default function DraggableContainer({
   return (
     <GestureDetector gesture={panPressGesture}>
       <Animated.View style={styles.container}>
-        {!stateDragging && <ContainerItem item={item} />}
+        {!stateDragging && <ContainerItem item={item} swapable={true} />}
       </Animated.View>
     </GestureDetector>
   );

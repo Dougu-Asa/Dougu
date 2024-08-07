@@ -40,10 +40,7 @@ export type EquipmentContextType = {
   setVisible: Dispatch<SetStateAction<boolean>>;
   containerVisible: boolean;
   setContainerVisible: Dispatch<SetStateAction<boolean>>;
+  swapContainerVisible: boolean;
+  setSwapContainerVisible: Dispatch<SetStateAction<boolean>>;
   modifyEquipmentItem: (item: EquipmentObj, newId: string) => void;
-};
-
-export type DimensionsContextType = {
-  width: number;
-  height: number;
 };

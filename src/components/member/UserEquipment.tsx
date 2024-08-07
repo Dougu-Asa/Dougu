@@ -37,7 +37,7 @@ export default function UserEquipment({
                     count={(item as EquipmentObj).count}
                   />
                 ) : (
-                  <ContainerItem item={item as ContainerObj} />
+                  <ContainerItem item={item as ContainerObj} swapable={false} />
                 )}
               </View>
             ))}

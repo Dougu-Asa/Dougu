@@ -37,6 +37,7 @@ import {
   reassignContainer,
 } from "../../helper/SwapUtils";
 import { useLoad } from "../../helper/context/LoadingContext";
+import SwapContainerOverlay from "./SwapContainerOverlay";
 
 /*
     this section focuses on handling draggin and dropping equipment
@@ -385,11 +386,20 @@ export default function SwapGestures({
           ),
         )}
       </View>
+      <SwapContainerOverlay
+        setItem={handleSetItem}
+        determineScroll={determineScrollPage}
+        onStart={handleStart}
+        onMove={handleMove}
+        onFinalize={handleFinalize}
+        onReassign={handleReassign}
+        onHover={handleHover}
+      />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
         ) : (
-          <ContainerItem item={draggingItem as ContainerObj} />
+          <ContainerItem item={draggingItem as ContainerObj} swapable={false} />
         )}
       </Animated.View>
     </View>

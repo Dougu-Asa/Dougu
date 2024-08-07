@@ -17,7 +17,7 @@ export default function MiniEquipmentItem({
     <>
       {item && (
         <View style={equipment.equipment}>
-          <Entypo name="camera" size={size / 1.8} color="black" />
+          <Entypo name="camera" size={size / 1.8} color="white" />
         </View>
       )}
     </>

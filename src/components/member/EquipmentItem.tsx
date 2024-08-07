@@ -41,7 +41,7 @@ export default function EquipmentItem({
                   itemStyles.equipment,
                 ]}
               >
-                <Entypo name="camera" size={50} color="black" />
+                <Entypo name="camera" size={50} color="white" />
               </Pressable>
             </View>
             <View style={itemStyles.circle}>

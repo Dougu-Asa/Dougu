@@ -27,6 +27,8 @@ export default function EquipmentProvider({
   const [itemData, setItemData] = useState<Map<string, OrgItem>>(new Map());
   const [visible, setVisible] = useState<boolean>(false);
   const [containerVisible, setContainerVisible] = useState<boolean>(false);
+  const [swapContainerVisible, setSwapContainerVisible] =
+    useState<boolean>(false);
   const { org } = useUser();
 
   // subscribe to and get all equipment in the organization
@@ -81,6 +83,8 @@ export default function EquipmentProvider({
         setVisible,
         containerVisible,
         setContainerVisible,
+        swapContainerVisible,
+        setSwapContainerVisible,
         modifyEquipmentItem,
       }}
     >
