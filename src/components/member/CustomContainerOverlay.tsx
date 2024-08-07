@@ -36,13 +36,13 @@ export default function CustomContainerOverlay() {
   const equipmentChunks3 = equipmentChunks.map((group) =>
     chunkEquipment(group, 3),
   );
+  // for the pageination dots
   const [currentPage, setCurrentPage] = useState(0);
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
       setContainerVisible(false);
       setContainerItem(null);
-      console.log("equipmentChunks3", equipmentChunks3);
     })
     .runOnJS(true);
 

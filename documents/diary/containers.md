@@ -29,4 +29,6 @@ Issues:
 
 Overall, I fixed a lot of bugs and changed up the logic to make it much cleaner. Additionally, now containers will display items inside of it and allow users to see the items. Moving forward, I notice small amounts of lag that I would like to speed up, as well as adding a page indicator for the swap equipment and container items. I also still need to implement dragging an equipmentItem out of a container.
 
-- Also different users (those with no equipment and those with) seem to have different heights
+Speedup ideas:
+- useMemo for equipmentUtils
+- useMemo for Dimensions calculations, especially for styles

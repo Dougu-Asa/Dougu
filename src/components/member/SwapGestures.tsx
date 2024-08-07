@@ -108,14 +108,15 @@ export default function SwapGestures({
   ) => {
     "worklet";
     size.value = withSpring(1.2);
+    const halfEquipment = equipmentWidth / 2;
     draggingOffset.value = {
-      x: gestureState.absoluteX - equipmentWidth / 2,
-      y: gestureState.absoluteY - headerHeight - 40,
+      x: gestureState.absoluteX - halfEquipment,
+      y: gestureState.absoluteY - headerHeight - halfEquipment,
     };
     // save the start position so we can snap back to it at the end
     startPosition.value = {
-      x: gestureState.absoluteX - equipmentWidth / 2,
-      y: gestureState.absoluteY - headerHeight - 40,
+      x: gestureState.absoluteX - halfEquipment,
+      y: gestureState.absoluteY - headerHeight - halfEquipment,
     };
   };
 
@@ -393,11 +394,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  scrollRow: {
-    flex: 1,
-    flexDirection: "column",
-    minWidth: Dimensions.get("window").width,
-  },
   scrollText: {
     height: 40,
     fontSize: 20,
@@ -405,9 +401,5 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderTopColor: "grey",
     borderTopWidth: 0.5,
-  },
-  scroll: {
-    flex: 1,
-    flexDirection: "row",
   },
 });
