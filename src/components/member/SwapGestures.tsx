@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   Dimensions,
   LayoutChangeEvent,
 } from "react-native";
@@ -38,6 +37,13 @@ import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
 import CurrMembersDropdown from "../CurrMembersDropdown";
 import ScrollRow from "./ScrollRow";
+import {
+  addEquipmentToContainer,
+  reassignContainer,
+  reassignEquipment,
+} from "../../helper/SwapUtils";
+import { useUser } from "../../helper/context/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 export default function SwapGestures({
   listOne,
@@ -51,6 +57,8 @@ export default function SwapGestures({
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
 }) {
   const { setSwapContainerVisible } = useEquipment();
+  const { orgUserStorage } = useUser();
+  const { setIsLoading } = useLoad();
   const [listOneCounts, setListOneCounts] = useState<number[]>([]);
   const [listTwoCounts, setListTwoCounts] = useState<number[]>([]);
 
@@ -146,6 +154,7 @@ export default function SwapGestures({
   };
   const startSide = useRef<TopOrBottom | null>(null);
   const startIdx = useRef<number | null>(null);
+  const offset = windowWidth / 4;
 
   const handleSetItem = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
@@ -167,9 +176,7 @@ export default function SwapGestures({
     }
     if (absoluteY < yRange.start || absoluteY > yRange.end) return;
     // check if the user is hovering over an item
-    const idx = Math.ceil(
-      (gesture.absoluteX + horizontalOffset) / (windowWidth / 4),
-    );
+    const idx = Math.ceil((gesture.absoluteX + horizontalOffset) / offset);
     if (idx < 1 || idx > list.length) return;
     // ensure idx is within bounds
     const item = list[idx - 1];
@@ -227,7 +234,6 @@ export default function SwapGestures({
     }
     // if we switch scroll areas, clear the timeout and return
     if (currentScroll !== prevScroll.current) {
-      console.log("switched scroll areas to ", currentScroll);
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
         scrollTimeout.current = null;
@@ -246,9 +252,65 @@ export default function SwapGestures({
         } else if (currentScroll === "right") {
           changePage(currPage + 1);
         }
-        console.log("changing page to ", currPage);
         scrollTimeout.current = null;
       }, 800);
+    }
+  };
+
+  let prevPosition = "";
+  const containerTimeout = useRef<NodeJS.Timeout | null>(null);
+  //Determine if an equiment item is hovering over a container item
+  //and change the size of the equipment item accordingl
+  const handleHover = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    if (draggingItem && draggingItem.type === "container") return;
+    const top = gestureState.absoluteY < halfLine.current;
+    let range = top ? topYRange : bottomYRange;
+    let horizontalOffset = top
+      ? topPage * windowWidth
+      : bottomPage * windowWidth;
+    // check if the equipmentItem is within range
+    let currPosition;
+    let position;
+    if (
+      gestureState.absoluteY < range.start ||
+      gestureState.absoluteY > range.end
+    ) {
+      currPosition = "out";
+      position = 0;
+    } else {
+      position = Math.ceil(
+        (gestureState.absoluteX + horizontalOffset) / offset,
+      );
+      currPosition = `${top}-${position}`;
+    }
+    if (currPosition === prevPosition) {
+      return;
+    }
+    changePosition(top, position);
+    prevPosition = currPosition;
+  };
+
+  const changePosition = (isTop: boolean | null, position: number) => {
+    containerItem.current = null;
+    size.value = withSpring(1.2);
+    // clear timeout
+    if (containerTimeout.current) {
+      clearTimeout(containerTimeout.current);
+      containerTimeout.current = null;
+    }
+    // check if the grid location has a container item, set a timeout if there is
+    const item = isTop ? listOne[position - 1] : listTwo[position - 1];
+    console.log("item: ", item);
+    if (item && item.type === "container") {
+      containerTimeout.current = setTimeout(() => {
+        size.value = withSpring(0.7);
+        containerItem.current = item as ContainerObj;
+        containerTimeout.current = null;
+      }, 500);
     }
   };
 
@@ -262,12 +324,38 @@ export default function SwapGestures({
     });
   };
 
+  // decide where to reassign the equipment (this runs on the JS thread)
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
+    if (draggingItem == null) return;
     const setListCounts =
       startSide.current === "top" ? setListOneCounts : setListTwoCounts;
     incrementCountAtIndex(startIdx.current as number, setListCounts);
+    const dropLocation =
+      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+    // equipment -> container
+    if (draggingItem.type === "equipment" && containerItem.current) {
+      console.log("reassigning equipment to container");
+      addEquipmentToContainer(
+        draggingItem.id,
+        containerItem.current.id,
+        setIsLoading,
+      );
+    }
+    if (dropLocation === startSide.current || !swapUser.current) return;
+    // now swappping equipment between users
+    const assignTo =
+      dropLocation === "top" ? orgUserStorage! : swapUser.current;
+    if (draggingItem.type === "container") {
+      reassignContainer(
+        draggingItem as ContainerObj,
+        assignTo.id,
+        setIsLoading,
+      );
+    } else {
+      reassignEquipment(draggingItem.id, assignTo.id, setIsLoading);
+    }
   };
 
   const clearTimeouts = () => {
@@ -287,6 +375,7 @@ export default function SwapGestures({
       "worklet";
       animateMove(e);
       runOnJS(determineScrollPage)(e);
+      runOnJS(handleHover)(e);
     })
     .onFinalize((e) => {
       "worklet";
