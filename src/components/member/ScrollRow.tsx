@@ -6,7 +6,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
@@ -16,20 +16,32 @@ import PaginationDots from "./PaginationDots";
 
 export default function ScrollRow({
   listData,
+  countData,
   setPage,
+  nextPage,
 }: {
   listData: ItemObj[];
+  countData: number[];
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  nextPage: number;
 }) {
   const chunkedData = chunkEquipment(listData, 4);
   const windowWidth = Dimensions.get("window").width;
   const [currPage, setCurrPage] = useState(0);
+  const scrollViewRef = React.useRef<ScrollView>(null);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newPage = Math.round(event.nativeEvent.contentOffset.x / windowWidth);
     setPage(newPage);
     setCurrPage(newPage);
   };
+
+  useEffect(() => {
+    if (nextPage < 0) return;
+    if (nextPage > chunkedData.length - 1) return;
+    const scrollValue = nextPage * windowWidth;
+    scrollViewRef.current?.scrollTo({ x: scrollValue });
+  }, [chunkedData.length, nextPage, windowWidth]);
 
   return (
     <>
@@ -39,6 +51,7 @@ export default function ScrollRow({
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={8}
+        ref={scrollViewRef}
       >
         {chunkedData.map((chunk, rowIdx) => (
           <View key={rowIdx} style={styles.scrollRow}>
@@ -47,10 +60,14 @@ export default function ScrollRow({
                 {item.type === "equipment" ? (
                   <EquipmentItem
                     item={item as EquipmentObj}
-                    count={(item as EquipmentObj).count}
+                    count={countData[rowIdx * 4 + itemIdx]}
                   />
                 ) : (
-                  <ContainerItem item={item as ContainerObj} swapable={true} />
+                  <ContainerItem
+                    item={item as ContainerObj}
+                    swapable={true}
+                    count={countData[rowIdx * 4 + itemIdx]}
+                  />
                 )}
               </View>
             ))}

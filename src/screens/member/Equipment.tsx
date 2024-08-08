@@ -37,7 +37,10 @@ export default function EquipmentScreen() {
                       count={(equip as EquipmentObj).count}
                     />
                   ) : (
-                    <ContainerItem item={equip as ContainerObj} />
+                    <ContainerItem
+                      item={equip as ContainerObj}
+                      swapable={false}
+                    />
                   )}
                 </View>
               ))}

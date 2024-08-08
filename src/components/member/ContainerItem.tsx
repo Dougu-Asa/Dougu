@@ -15,9 +15,11 @@ import { itemStyles } from "../../styles/ItemStyles";
 export default function ContainerItem({
   item,
   swapable,
+  count,
 }: {
-  item: ContainerObj | null;
+  item: ContainerObj;
   swapable: boolean;
+  count?: number;
 }) {
   const { setContainerItem, setContainerVisible, setSwapContainerVisible } =
     useEquipment();
@@ -40,32 +42,36 @@ export default function ContainerItem({
       {item && (
         <GestureDetector gesture={tapGesture}>
           <View style={itemStyles.container}>
-            <View style={itemStyles.backDrop}>
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                  itemStyles.containerItem,
-                ]}
-              >
-                <View style={itemStyles.table}>
-                  {chunkedData.map((row, index) => (
-                    <View key={index} style={itemStyles.equipmentRow}>
-                      {row.map((equip) => (
-                        <View
-                          key={equip.id}
-                          style={itemStyles.equipmentItemContainer}
-                        >
-                          <MiniEquipmentItem item={equip as EquipmentObj} />
+            {(count == null || count > 0) && (
+              <>
+                <View style={itemStyles.backDrop}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      {
+                        opacity: pressed ? 0.7 : 1,
+                      },
+                      itemStyles.containerItem,
+                    ]}
+                  >
+                    <View style={itemStyles.table}>
+                      {chunkedData.map((row, index) => (
+                        <View key={index} style={itemStyles.equipmentRow}>
+                          {row.map((equip) => (
+                            <View
+                              key={equip.id}
+                              style={itemStyles.equipmentItemContainer}
+                            >
+                              <MiniEquipmentItem item={equip as EquipmentObj} />
+                            </View>
+                          ))}
                         </View>
                       ))}
                     </View>
-                  ))}
+                  </Pressable>
                 </View>
-              </Pressable>
-            </View>
-            <Text style={itemStyles.text}>{item.label}</Text>
+                <Text style={itemStyles.text}>{item.label}</Text>
+              </>
+            )}
           </View>
         </GestureDetector>
       )}

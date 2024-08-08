@@ -15,7 +15,7 @@ export default function EquipmentItem({
   item,
   count,
 }: {
-  item: EquipmentObj | null;
+  item: EquipmentObj;
   count: number;
 }) {
   const { setVisible, setEquipmentItem } = useEquipment();
@@ -28,10 +28,10 @@ export default function EquipmentItem({
     .runOnJS(true);
 
   return (
-    <>
-      {item && count > 0 && (
-        <GestureDetector gesture={tapGesture}>
-          <View style={itemStyles.container}>
+    <GestureDetector gesture={tapGesture}>
+      <View style={itemStyles.container}>
+        {count > 0 && (
+          <>
             <View style={itemStyles.backDrop}>
               <Pressable
                 style={({ pressed }) => [
@@ -50,9 +50,9 @@ export default function EquipmentItem({
             <View style={itemStyles.textContainer}>
               <Text style={itemStyles.text}>{item.label}</Text>
             </View>
-          </View>
-        </GestureDetector>
-      )}
-    </>
+          </>
+        )}
+      </View>
+    </GestureDetector>
   );
 }

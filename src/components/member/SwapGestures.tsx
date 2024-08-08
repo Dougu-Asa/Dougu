@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -68,28 +68,26 @@ export default function SwapGestures({
     });
   };
 
-  const incrementCountAtIndex = (
-    index: number,
-    setList: React.Dispatch<React.SetStateAction<number[]>>,
-  ) => {
-    if (!listOneCounts) return;
-    setListOneCounts((prevCounts) => {
-      const newCounts = [...prevCounts];
-      newCounts[index] += 1;
-      return newCounts;
-    });
-  };
-
-  useEffect(() => {
-    const counts = listOne.map((item) => {
-      if (item.type === "equipment") {
-        return (item as EquipmentObj).count;
-      } else {
-        return 0;
-      }
-    });
-    setListOneCounts(counts);
-  }, [listOne]);
+  const resetCounts = useCallback(() => {
+    setListOneCounts(
+      listOne.map((item) => {
+        if (item.type === "equipment") {
+          return (item as EquipmentObj).count;
+        } else {
+          return 1;
+        }
+      }),
+    );
+    setListTwoCounts(
+      listTwo.map((item) => {
+        if (item.type === "equipment") {
+          return (item as EquipmentObj).count;
+        } else {
+          return 1;
+        }
+      }),
+    );
+  }, [listOne, listTwo]);
 
   // distance from the top of the screen to the top of the header
   const displacement = useHeaderHeight() + 80;
@@ -141,17 +139,19 @@ export default function SwapGestures({
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     const absoluteY = gesture.absoluteY;
-    let yRange, horizontalOffset, list;
+    let yRange, horizontalOffset, list, setListCounts;
     if (absoluteY < halfLine.current) {
       yRange = topYRange;
       horizontalOffset = topPage * windowWidth;
       list = listOne;
       startSide.current = "top";
+      setListCounts = setListOneCounts;
     } else {
       yRange = bottomYRange;
       horizontalOffset = bottomPage * windowWidth;
       list = listTwo;
       startSide.current = "bottom";
+      setListCounts = setListTwoCounts;
     }
     if (absoluteY < yRange.start || absoluteY > yRange.end) return;
     // check if the user is hovering over an item
@@ -161,6 +161,7 @@ export default function SwapGestures({
     if (idx < 1 || idx > list.length) return;
     // ensure idx is within bounds
     const item = list[idx - 1];
+    decrementCountAtIndex(idx - 1, setListCounts);
     setDraggingItem(item);
   };
 
@@ -177,7 +178,7 @@ export default function SwapGestures({
   };
 
   // we need to know how much the equipment has been moved
-  const handleMove = (
+  const animateMove = (
     gestureState: GestureUpdateEvent<
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
     >,
@@ -189,14 +190,67 @@ export default function SwapGestures({
     };
   };
 
+  type direction = "none" | "left" | "right";
+  const prevScroll = useRef<direction>("none");
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  const determineScrollPage = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    let changePage, currPage;
+    if (gestureState.absoluteY < halfLine.current) {
+      changePage = setNextTopPage;
+      currPage = topPage;
+    } else {
+      changePage = setNextBottomPage;
+      currPage = bottomPage;
+    }
+    let currentScroll: direction = "none";
+    if (gestureState.absoluteX < 40) {
+      currentScroll = "left";
+    } else if (gestureState.absoluteX > windowWidth - 40) {
+      currentScroll = "right";
+    }
+    // if we switch scroll areas, clear the timeout and return
+    if (currentScroll !== prevScroll.current) {
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+        scrollTimeout.current = null;
+      }
+      prevScroll.current = currentScroll;
+      return;
+    } else {
+      // if we are in the same scroll area, start a timeout
+      if (scrollTimeout.current) {
+        return;
+      }
+      scrollTimeout.current = setTimeout(() => {
+        // make sure nextPage is correct before changing page
+        if (currentScroll === "left") {
+          changePage(currPage - 1);
+        } else if (currentScroll === "right") {
+          changePage(currPage + 1);
+        }
+        scrollTimeout.current = null;
+      }, 800);
+    }
+  };
+
   // handle finalizing the drag and drop animation
-  const handleFinalize = () => {
+  const animateFinalize = () => {
     "worklet";
     size.value = withTiming(0, undefined, (isFinished) => {
       if (isFinished) {
         runOnJS(setDraggingItem)(null);
       }
     });
+  };
+
+  const handleReassign = async (
+    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    resetCounts();
   };
 
   const panPressGesture = Gesture.Pan()
@@ -207,11 +261,13 @@ export default function SwapGestures({
     })
     .onChange((e) => {
       "worklet";
-      handleMove(e);
+      animateMove(e);
+      runOnJS(determineScrollPage)(e);
     })
-    .onFinalize(() => {
+    .onFinalize((e) => {
       "worklet";
-      handleFinalize();
+      animateFinalize();
+      runOnJS(handleReassign)(e);
     })
     .activateAfterLongPress(500);
 
@@ -221,11 +277,21 @@ export default function SwapGestures({
         <View style={styles.container}>
           <View style={styles.halfContainer}>
             <Text style={styles.userText}>My Equipment</Text>
-            <ScrollRow listData={listOne} setPage={setTopPage} />
+            <ScrollRow
+              listData={listOne}
+              countData={listOneCounts}
+              setPage={setTopPage}
+              nextPage={nextTopPage}
+            />
           </View>
           <View style={styles.halfContainer} onLayout={handleLayout}>
             <CurrMembersDropdown setUser={handleSet} isCreate={false} />
-            <ScrollRow listData={listTwo} setPage={setBottomPage} />
+            <ScrollRow
+              listData={listTwo}
+              countData={listTwoCounts}
+              setPage={setBottomPage}
+              nextPage={nextBottomPage}
+            />
           </View>
         </View>
       </GestureDetector>

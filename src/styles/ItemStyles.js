@@ -27,7 +27,7 @@ export const itemStyles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    maxWidth: itemWidth,
+    width: itemWidth,
   },
   containerItem: {
     width: itemWidth,
