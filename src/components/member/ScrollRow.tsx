@@ -43,6 +43,7 @@ export default function ScrollRow({
     scrollViewRef.current?.scrollTo({ x: scrollValue });
   }, [chunkedData.length, nextPage, windowWidth]);
 
+  let itemIdx = 0;
   return (
     <>
       <ScrollView
@@ -55,22 +56,25 @@ export default function ScrollRow({
       >
         {chunkedData.map((chunk, rowIdx) => (
           <View key={rowIdx} style={styles.scrollRow}>
-            {chunk.map((item, itemIdx) => (
-              <View key={item.id} style={styles.item}>
-                {item.type === "equipment" ? (
-                  <EquipmentItem
-                    item={item as EquipmentObj}
-                    count={countData[rowIdx * 4 + itemIdx]}
-                  />
-                ) : (
-                  <ContainerItem
-                    item={item as ContainerObj}
-                    swapable={true}
-                    count={countData[rowIdx * 4 + itemIdx]}
-                  />
-                )}
-              </View>
-            ))}
+            {chunk.map((item) => {
+              const idx = itemIdx++;
+              return (
+                <View key={item.id} style={styles.item}>
+                  {item.type === "equipment" ? (
+                    <EquipmentItem
+                      item={item as EquipmentObj}
+                      count={countData[idx]}
+                    />
+                  ) : (
+                    <ContainerItem
+                      item={item as ContainerObj}
+                      swapable={true}
+                      count={countData[idx]}
+                    />
+                  )}
+                </View>
+              );
+            })}
           </View>
         ))}
       </ScrollView>

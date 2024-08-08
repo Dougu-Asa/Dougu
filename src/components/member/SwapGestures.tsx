@@ -58,8 +58,7 @@ export default function SwapGestures({
     index: number,
     setList: React.Dispatch<React.SetStateAction<number[]>>,
   ) => {
-    if (!listOneCounts) return;
-    setListOneCounts((prevCounts) => {
+    setList((prevCounts) => {
       const newCounts = [...prevCounts];
       if (newCounts[index] > 0) {
         newCounts[index] -= 1;
@@ -68,7 +67,19 @@ export default function SwapGestures({
     });
   };
 
-  const resetCounts = useCallback(() => {
+  const incrementCountAtIndex = (
+    index: number,
+    setList: React.Dispatch<React.SetStateAction<number[]>>,
+  ) => {
+    setList((prevCounts) => {
+      const newCounts = [...prevCounts];
+      newCounts[index] += 1;
+      return newCounts;
+    });
+  };
+
+  useEffect(() => {
+    console.log("running effect");
     setListOneCounts(
       listOne.map((item) => {
         if (item.type === "equipment") {
@@ -134,6 +145,7 @@ export default function SwapGestures({
     end: halfLine.current + 40 + equipmentWidth,
   };
   const startSide = useRef<TopOrBottom | null>(null);
+  const startIdx = useRef<number | null>(null);
 
   const handleSetItem = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
@@ -162,6 +174,7 @@ export default function SwapGestures({
     // ensure idx is within bounds
     const item = list[idx - 1];
     decrementCountAtIndex(idx - 1, setListCounts);
+    startIdx.current = idx - 1;
     setDraggingItem(item);
   };
 
@@ -214,6 +227,7 @@ export default function SwapGestures({
     }
     // if we switch scroll areas, clear the timeout and return
     if (currentScroll !== prevScroll.current) {
+      console.log("switched scroll areas to ", currentScroll);
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
         scrollTimeout.current = null;
@@ -225,13 +239,14 @@ export default function SwapGestures({
       if (scrollTimeout.current) {
         return;
       }
+      // make sure nextPage is correct before changing page
       scrollTimeout.current = setTimeout(() => {
-        // make sure nextPage is correct before changing page
         if (currentScroll === "left") {
           changePage(currPage - 1);
         } else if (currentScroll === "right") {
           changePage(currPage + 1);
         }
+        console.log("changing page to ", currPage);
         scrollTimeout.current = null;
       }, 800);
     }
@@ -250,7 +265,16 @@ export default function SwapGestures({
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    resetCounts();
+    const setListCounts =
+      startSide.current === "top" ? setListOneCounts : setListTwoCounts;
+    incrementCountAtIndex(startIdx.current as number, setListCounts);
+  };
+
+  const clearTimeouts = () => {
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = null;
+    }
   };
 
   const panPressGesture = Gesture.Pan()
@@ -268,6 +292,7 @@ export default function SwapGestures({
       "worklet";
       animateFinalize();
       runOnJS(handleReassign)(e);
+      runOnJS(clearTimeouts)();
     })
     .activateAfterLongPress(500);
 
