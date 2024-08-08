@@ -39,5 +39,7 @@ Speedup ideas:
 ## SwapContainerOverlay
 Because the container overlay on the swap screen needs to have access to gestures in a way the other screens don't, I decided to create a separate overlay for this. This allowed me to insert it into swap equipmentScreen and pass it the functions to handle the panrespodners. And while this works great, the biggest problem is that when the modal closes, the draggable equipment items are no longer rendered and the panresponder closes. This is quite a big problem, and I don't really know if it's a great solution to simply set opacity of everything to zero and keep the modal. I am likely going to try to play with a new way of setting up a pan responder on the screen level to better handle the complex gestures that occur.
 
-Planning:
-- 
+## SwapEquipment Refactor
+After realizing that a better design would be to have a panGesture handler at the screen level isntead of at the item level, I now plan on rewriting the swapEquipment setup to utilize this new strategy. This requires some pretty big changes:
+- panPressGesture is now at screen level
+- equipmentItem counts are now stored using state and updated by the grid
