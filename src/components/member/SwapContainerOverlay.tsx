@@ -20,51 +20,17 @@ import { useHeaderHeight } from "@react-navigation/elements";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
-import DraggableEquipment from "./DraggableEquipment";
-import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import { EquipmentObj } from "../../types/ModelTypes";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
+import EquipmentItem from "./EquipmentItem";
+import PaginationDots from "./PaginationDots";
 
 /*
     This overlay is what is shown when the user taps
     on an equipment item. It displays the equipment item's 
     stats, counts, and grouped equipment items.
 */
-export default function SwapContainerOverlay({
-  setItem,
-  determineScroll,
-  onStart,
-  onMove,
-  onFinalize,
-  onReassign,
-  onHover,
-}: {
-  setItem: (
-    item: ItemObj,
-    gestureState: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
-  ) => void;
-  determineScroll: (
-    e: GestureUpdateEvent<
-      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-    >,
-  ) => void;
-  onStart: (
-    e: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>,
-  ) => void;
-  onMove: (
-    e: GestureUpdateEvent<
-      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-    >,
-  ) => void;
-  onFinalize: () => void;
-  onReassign: (
-    e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => void;
-  onHover: (
-    e: GestureUpdateEvent<
-      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-    >,
-  ) => void;
-}) {
+export default function SwapContainerOverlay() {
   const {
     containerItem,
     setContainerItem,
@@ -102,33 +68,6 @@ export default function SwapContainerOverlay({
     setCurrentPage(pageIndex);
   };
 
-  const handleReassign = (
-    e: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
-    return;
-  };
-
-  const handleHover = (
-    e: GestureUpdateEvent<
-      PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-    >,
-  ) => {
-    // item page is 0.6 device height, and 0.2 down from header
-    // it is also 0.85 device width and centered
-    // if the gesture is outside of the item page, close the overlay
-    const y = e.absoluteY - headerHeight;
-    if (
-      y < yRange.min ||
-      y > yRange.max ||
-      e.absoluteX < xRange.min ||
-      e.absoluteX > xRange.max
-    ) {
-      setSwapContainerVisible(false);
-      setContainerItem(null);
-    }
-    return;
-  };
-
   return (
     <>
       {swapContainerVisible && (
@@ -163,16 +102,9 @@ export default function SwapContainerOverlay({
                                 containerOverlayStyles.equipmentItemContainer
                               }
                             >
-                              <DraggableEquipment
+                              <EquipmentItem
                                 item={equip as EquipmentObj}
-                                scrollViewRef={scrollViewRef}
-                                setItem={setItem}
-                                determineScroll={determineScroll}
-                                onStart={onStart}
-                                onMove={onMove}
-                                onFinalize={onFinalize}
-                                onReassign={handleReassign}
-                                onHover={handleHover}
+                                count={(equip as EquipmentObj).count}
                               />
                             </View>
                           ))}
@@ -182,19 +114,10 @@ export default function SwapContainerOverlay({
                   ))}
                 </View>
               </ScrollView>
-              <View style={containerOverlayStyles.pagination}>
-                {equipmentChunks3.map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      containerOverlayStyles.paginationDot,
-                      index === currentPage
-                        ? containerOverlayStyles.paginationDotActive
-                        : containerOverlayStyles.paginationDotInactive,
-                    ]}
-                  />
-                ))}
-              </View>
+              <PaginationDots
+                length={equipmentChunks3.length}
+                currIdx={currentPage}
+              />
             </View>
           </View>
         </GestureDetector>

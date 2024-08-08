@@ -44,6 +44,7 @@ import {
 } from "../../helper/SwapUtils";
 import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
+import SwapContainerOverlay from "./SwapContainerOverlay";
 
 export default function SwapGestures({
   listOne,
@@ -161,25 +162,18 @@ export default function SwapGestures({
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     const absoluteY = gesture.absoluteY;
-    let yRange, horizontalOffset, list, setListCounts;
-    if (absoluteY < halfLine.current) {
-      yRange = topYRange;
-      horizontalOffset = topPage * windowWidth;
-      list = listOne;
-      startSide.current = "top";
-      setListCounts = setListOneCounts;
-    } else {
-      yRange = bottomYRange;
-      horizontalOffset = bottomPage * windowWidth;
-      list = listTwo;
-      startSide.current = "bottom";
-      setListCounts = setListTwoCounts;
-    }
+    const isTop = absoluteY < halfLine.current;
+    const yRange = isTop ? topYRange : bottomYRange;
+    const horizontalOffset = isTop
+      ? topPage * windowWidth
+      : bottomPage * windowWidth;
+    const list = isTop ? listOne : listTwo;
+    const setListCounts = isTop ? setListOneCounts : setListTwoCounts;
     if (absoluteY < yRange.start || absoluteY > yRange.end) return;
     // check if the user is hovering over an item
     const idx = Math.ceil((gesture.absoluteX + horizontalOffset) / offset);
-    if (idx < 1 || idx > list.length) return;
     // ensure idx is within bounds
+    if (idx < 1 || idx > list.length) return;
     const item = list[idx - 1];
     decrementCountAtIndex(idx - 1, setListCounts);
     startIdx.current = idx - 1;
@@ -359,7 +353,6 @@ export default function SwapGestures({
     .onChange((e) => {
       "worklet";
       animateMove(e);
-      //runOnJS(determineScrollPage)(e);
       runOnJS(handleHover)(e);
     })
     .onFinalize((e) => {
@@ -400,6 +393,7 @@ export default function SwapGestures({
           </View>
         </View>
       </GestureDetector>
+      <SwapContainerOverlay />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
