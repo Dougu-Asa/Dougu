@@ -35,3 +35,9 @@ Speedup ideas:
 - removing render functions (this creates a new function on every render)
 - change scrollview to flatlist (though flatlist isn't compatible with gesture handler :/)
 - context provider for Dimensions calculations in styling
+
+## SwapContainerOverlay
+Because the container overlay on the swap screen needs to have access to gestures in a way the other screens don't, I decided to create a separate overlay for this. This allowed me to insert it into swap equipmentScreen and pass it the functions to handle the panrespodners. And while this works great, the biggest problem is that when the modal closes, the draggable equipment items are no longer rendered and the panresponder closes. This is quite a big problem, and I don't really know if it's a great solution to simply set opacity of everything to zero and keep the modal. I am likely going to try to play with a new way of setting up a pan responder on the screen level to better handle the complex gestures that occur.
+
+Planning:
+- 
