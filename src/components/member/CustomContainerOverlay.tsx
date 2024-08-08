@@ -17,6 +17,7 @@ import { chunkEquipment } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
+import PaginationDots from "./PaginationDots";
 
 /*
     This overlay is what is shown when the user taps
@@ -98,19 +99,10 @@ export default function CustomContainerOverlay() {
                   ))}
                 </View>
               </ScrollView>
-              <View style={containerOverlayStyles.pagination}>
-                {equipmentChunks3.map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      containerOverlayStyles.paginationDot,
-                      index === currentPage
-                        ? containerOverlayStyles.paginationDotActive
-                        : containerOverlayStyles.paginationDotInactive,
-                    ]}
-                  />
-                ))}
-              </View>
+              <PaginationDots
+                length={equipmentChunks3.length}
+                currIdx={currentPage}
+              />
             </View>
           </View>
         </GestureDetector>

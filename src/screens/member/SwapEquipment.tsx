@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 // project imports
 import { OrgUserStorage } from "../../models";
@@ -51,11 +52,38 @@ export default function SwapEquipment() {
   };
 
   return (
-    <SwapGestures
-      listOne={listOne}
-      listTwo={listTwo}
-      handleSet={handleSet}
-      swapUser={swapUser}
-    />
+    <View style={styles.container}>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoTxt}>
+          To swap equipment, drag-and-drop your equipment with a team member!
+        </Text>
+      </View>
+      <SwapGestures
+        listOne={listOne}
+        listTwo={listTwo}
+        handleSet={handleSet}
+        swapUser={swapUser}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    borderWidth: 1,
+    backgroundColor: "#fff",
+  },
+  infoContainer: {
+    height: 80,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomColor: "grey",
+    borderBottomWidth: 0.5,
+  },
+  infoTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

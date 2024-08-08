@@ -1,16 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Dimensions,
+  LayoutChangeEvent,
+} from "react-native";
 import {
   GestureDetector,
   GestureHandlerRootView,
   Gesture,
+  PanGestureHandlerEventPayload,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
+import { useHeaderHeight } from "@react-navigation/elements";
+import Animated, {
+  runOnJS,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import {
+  ContainerObj,
+  EquipmentObj,
+  ItemObj,
+  Position,
+  TopOrBottom,
+} from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
+import CurrMembersDropdown from "../CurrMembersDropdown";
+import ScrollRow from "./ScrollRow";
 
 export default function SwapGestures({
   listOne,
@@ -64,70 +91,167 @@ export default function SwapGestures({
     setListOneCounts(counts);
   }, [listOne]);
 
+  // distance from the top of the screen to the top of the header
+  const displacement = useHeaderHeight() + 80;
+  const halfLine = useRef<number>(0);
+
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const y = e.nativeEvent.layout.y;
+    halfLine.current = y + displacement;
+    console.log("halfLine: ", halfLine.current);
+  };
+
+  // scroll logic
+  const [topPage, setTopPage] = useState(0);
+  const [nextTopPage, setNextTopPage] = useState(0);
+  const [bottomPage, setBottomPage] = useState(0);
+  const [nextBottomPage, setNextBottomPage] = useState(0);
+
+  // hovering logic
+  const containerItem = useRef<ContainerObj | null>(null);
+  const draggingOffset = useSharedValue<Position>({
+    x: 0,
+    y: 0,
+  });
+  const size = useSharedValue(1);
+  const movingStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: draggingOffset.value.x },
+        { translateY: draggingOffset.value.y },
+        { scale: size.value },
+      ],
+    };
+  });
+
+  const windowWidth = Dimensions.get("window").width;
+  const equipmentWidth = windowWidth / 5;
+  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+  const topYRange = {
+    start: displacement + 40,
+    end: displacement + 40 + equipmentWidth,
+  };
+  const bottomYRange = {
+    start: halfLine.current + 40,
+    end: halfLine.current + 40 + equipmentWidth,
+  };
+  const startSide = useRef<TopOrBottom | null>(null);
+
+  const handleSetItem = (
+    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    const absoluteY = gesture.absoluteY;
+    let yRange, horizontalOffset, list;
+    if (absoluteY < halfLine.current) {
+      yRange = topYRange;
+      horizontalOffset = topPage * windowWidth;
+      list = listOne;
+      startSide.current = "top";
+    } else {
+      yRange = bottomYRange;
+      horizontalOffset = bottomPage * windowWidth;
+      list = listTwo;
+      startSide.current = "bottom";
+    }
+    if (absoluteY < yRange.start || absoluteY > yRange.end) return;
+    // check if the user is hovering over an item
+    const idx = Math.ceil(
+      (gesture.absoluteX + horizontalOffset) / (windowWidth / 4),
+    );
+    if (idx < 1 || idx > list.length) return;
+    // ensure idx is within bounds
+    const item = list[idx - 1];
+    setDraggingItem(item);
+  };
+
+  const animateStart = (
+    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    "worklet";
+    size.value = withSpring(1.2);
+    const halfEquipment = equipmentWidth / 2;
+    draggingOffset.value = {
+      x: gesture.absoluteX - halfEquipment,
+      y: gesture.absoluteY - halfEquipment - displacement,
+    };
+  };
+
+  // we need to know how much the equipment has been moved
+  const handleMove = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    "worklet";
+    draggingOffset.value = {
+      x: gestureState.changeX + draggingOffset.value.x,
+      y: gestureState.changeY + draggingOffset.value.y,
+    };
+  };
+
+  // handle finalizing the drag and drop animation
+  const handleFinalize = () => {
+    "worklet";
+    size.value = withTiming(0, undefined, (isFinished) => {
+      if (isFinished) {
+        runOnJS(setDraggingItem)(null);
+      }
+    });
+  };
+
   const panPressGesture = Gesture.Pan()
     .onStart((e) => {
-      decrementCountAtIndex(4, setListOneCounts);
+      "worklet";
+      runOnJS(handleSetItem)(e);
+      animateStart(e);
     })
     .onChange((e) => {
-      console.log(e);
+      "worklet";
+      handleMove(e);
     })
     .onFinalize(() => {
-      incrementCountAtIndex(4, setListOneCounts);
+      "worklet";
+      handleFinalize();
     })
-    .activateAfterLongPress(600)
-    .runOnJS(true);
+    .activateAfterLongPress(500);
 
   return (
     <GestureHandlerRootView>
       <GestureDetector gesture={panPressGesture}>
         <View style={styles.container}>
-          {listOne.map((item, index) =>
-            item.type === "equipment" ? (
-              <EquipmentItem
-                item={item as EquipmentObj}
-                count={listOneCounts[index]}
-                key={index}
-              />
-            ) : (
-              <ContainerItem
-                item={item as ContainerObj}
-                swapable={false}
-                key={index}
-              />
-            ),
-          )}
+          <View style={styles.halfContainer}>
+            <Text style={styles.userText}>My Equipment</Text>
+            <ScrollRow listData={listOne} setPage={setTopPage} />
+          </View>
+          <View style={styles.halfContainer} onLayout={handleLayout}>
+            <CurrMembersDropdown setUser={handleSet} isCreate={false} />
+            <ScrollRow listData={listTwo} setPage={setBottomPage} />
+          </View>
         </View>
       </GestureDetector>
+      <Animated.View style={[styles.floatingItem, movingStyles]}>
+        {draggingItem?.type === "equipment" ? (
+          <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
+        ) : (
+          <ContainerItem item={draggingItem as ContainerObj} swapable={false} />
+        )}
+      </Animated.View>
     </GestureHandlerRootView>
   );
 }
 
-/*<View style={styles.infoContainer}>
-            <Text style={styles.infoTxt}>
-              To swap equipment, drag-and-drop your equipment with a team
-              member!
-            </Text>
-          </View>
-          <Text style={styles.userText}>My Equipment</Text> */
-
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
-    borderWidth: 1,
-    backgroundColor: "#fff",
-    height: Dimensions.get("window").height / 2,
+    flex: 1,
   },
-  infoContainer: {
-    height: 80,
-    backgroundColor: "#f5f5f5",
+  floatingItem: {
+    position: "absolute",
     justifyContent: "center",
     alignItems: "center",
-    borderBottomColor: "grey",
-    borderBottomWidth: 0.5,
+    zIndex: 100,
   },
-  infoTxt: {
-    fontSize: 16,
-    fontWeight: "bold",
+  halfContainer: {
+    flex: 1,
   },
   userText: {
     height: 40,
