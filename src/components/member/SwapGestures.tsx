@@ -109,12 +109,12 @@ export default function SwapGestures({
   }, [listOne, listTwo]);
 
   // distance from the top of the screen to the top of the header
-  const displacement = useHeaderHeight() + 80;
+  const headerHeight = useHeaderHeight();
   const halfLine = useRef<number>(0);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
-    halfLine.current = y + displacement;
+    halfLine.current = y + headerHeight;
     console.log("halfLine: ", halfLine.current);
   };
 
@@ -144,9 +144,10 @@ export default function SwapGestures({
   const windowWidth = Dimensions.get("window").width;
   const equipmentWidth = windowWidth / 5;
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+  // 120 = 80 (infoContainer) + 40 (userText)
   const topYRange = {
-    start: displacement + 40,
-    end: displacement + 40 + equipmentWidth,
+    start: headerHeight + 120,
+    end: headerHeight + 120 + equipmentWidth,
   };
   const bottomYRange = {
     start: halfLine.current + 40,
@@ -193,7 +194,7 @@ export default function SwapGestures({
     const halfEquipment = equipmentWidth / 2;
     draggingOffset.value = {
       x: gesture.absoluteX - halfEquipment,
-      y: gesture.absoluteY - halfEquipment - displacement,
+      y: gesture.absoluteY - halfEquipment - headerHeight,
     };
   };
 
@@ -210,55 +211,21 @@ export default function SwapGestures({
     };
   };
 
-  type direction = "none" | "left" | "right";
-  const prevScroll = useRef<direction>("none");
+  let prevPosition = "";
+  const containerTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
-  const determineScrollPage = (
-    gestureState: GestureUpdateEvent<
-      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
-    >,
-  ) => {
-    let changePage, currPage;
-    if (gestureState.absoluteY < halfLine.current) {
-      changePage = setNextTopPage;
-      currPage = topPage;
-    } else {
-      changePage = setNextBottomPage;
-      currPage = bottomPage;
+
+  const clearTimeouts = () => {
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = null;
     }
-    let currentScroll: direction = "none";
-    if (gestureState.absoluteX < 40) {
-      currentScroll = "left";
-    } else if (gestureState.absoluteX > windowWidth - 40) {
-      currentScroll = "right";
-    }
-    // if we switch scroll areas, clear the timeout and return
-    if (currentScroll !== prevScroll.current) {
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current);
-        scrollTimeout.current = null;
-      }
-      prevScroll.current = currentScroll;
-      return;
-    } else {
-      // if we are in the same scroll area, start a timeout
-      if (scrollTimeout.current) {
-        return;
-      }
-      // make sure nextPage is correct before changing page
-      scrollTimeout.current = setTimeout(() => {
-        if (currentScroll === "left") {
-          changePage(currPage - 1);
-        } else if (currentScroll === "right") {
-          changePage(currPage + 1);
-        }
-        scrollTimeout.current = null;
-      }, 800);
+    if (containerTimeout.current) {
+      clearTimeout(containerTimeout.current);
+      containerTimeout.current = null;
     }
   };
 
-  let prevPosition = "";
-  const containerTimeout = useRef<NodeJS.Timeout | null>(null);
   //Determine if an equiment item is hovering over a container item
   //and change the size of the equipment item accordingl
   const handleHover = (
@@ -266,52 +233,77 @@ export default function SwapGestures({
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
     >,
   ) => {
-    if (draggingItem && draggingItem.type === "container") return;
-    const top = gestureState.absoluteY < halfLine.current;
-    let range = top ? topYRange : bottomYRange;
-    let horizontalOffset = top
-      ? topPage * windowWidth
-      : bottomPage * windowWidth;
-    // check if the equipmentItem is within range
-    let currPosition;
-    let position;
-    if (
+    if (!draggingItem) return;
+    const isTop = gestureState.absoluteY < halfLine.current;
+    const range = isTop ? topYRange : bottomYRange;
+    const absoluteX = gestureState.absoluteX;
+    // leftEdge, rightEdge, top-position
+    if (absoluteX < 40) {
+      handlePosition("left", isTop);
+    } else if (absoluteX > windowWidth - 40) {
+      handlePosition("right", isTop);
+    } else if (
       gestureState.absoluteY < range.start ||
       gestureState.absoluteY > range.end
     ) {
-      currPosition = "out";
-      position = 0;
+      handlePosition("out", isTop);
     } else {
-      position = Math.ceil(
+      const horizontalOffset = isTop
+        ? topPage * windowWidth
+        : bottomPage * windowWidth;
+      const position = Math.ceil(
         (gestureState.absoluteX + horizontalOffset) / offset,
       );
-      currPosition = `${top}-${position}`;
+      handlePosition(`${isTop}-${position}`, isTop, position);
     }
-    if (currPosition === prevPosition) {
-      return;
-    }
-    changePosition(top, position);
-    prevPosition = currPosition;
   };
 
-  const changePosition = (isTop: boolean | null, position: number) => {
-    containerItem.current = null;
-    size.value = withSpring(1.2);
-    // clear timeout
-    if (containerTimeout.current) {
-      clearTimeout(containerTimeout.current);
-      containerTimeout.current = null;
+  const handleScroll = (isTop: boolean, position: string) => {
+    const changePage = isTop ? setNextTopPage : setNextBottomPage;
+    const currPage = isTop ? topPage : bottomPage;
+    if (scrollTimeout.current) {
+      return;
     }
-    // check if the grid location has a container item, set a timeout if there is
-    const item = isTop ? listOne[position - 1] : listTwo[position - 1];
-    console.log("item: ", item);
+    // make sure nextPage is correct before changing page
+    scrollTimeout.current = setTimeout(() => {
+      if (position === "left") {
+        changePage(currPage - 1);
+      } else if (position === "right") {
+        changePage(currPage + 1);
+      }
+      scrollTimeout.current = null;
+    }, 800);
+  };
+
+  const handleContainer = (isTop: boolean, index: number) => {
+    const list = isTop ? listOne : listTwo;
+    const item = list[index - 1];
     if (item && item.type === "container") {
+      if (containerTimeout.current) {
+        return;
+      }
       containerTimeout.current = setTimeout(() => {
         size.value = withSpring(0.7);
         containerItem.current = item as ContainerObj;
         containerTimeout.current = null;
       }, 500);
     }
+  };
+
+  const handlePosition = (position: string, isTop: boolean, index?: number) => {
+    if (position !== prevPosition) {
+      clearTimeouts();
+      containerItem.current = null;
+      size.value = withSpring(1.2);
+    } else if (position === "left" || position === "right") {
+      // if the equipment item is hovering over a scroll area
+      handleScroll(isTop, position);
+    } else {
+      if (draggingItem?.type === "container" || !index) return;
+      // if the equipment item is hovering over a container item
+      handleContainer(isTop, index);
+    }
+    prevPosition = position;
   };
 
   // handle finalizing the drag and drop animation
@@ -332,7 +324,7 @@ export default function SwapGestures({
     const setListCounts =
       startSide.current === "top" ? setListOneCounts : setListTwoCounts;
     incrementCountAtIndex(startIdx.current as number, setListCounts);
-    const dropLocation =
+    /*const dropLocation =
       gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
     // equipment -> container
     if (draggingItem.type === "equipment" && containerItem.current) {
@@ -355,14 +347,7 @@ export default function SwapGestures({
       );
     } else {
       reassignEquipment(draggingItem.id, assignTo.id, setIsLoading);
-    }
-  };
-
-  const clearTimeouts = () => {
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = null;
-    }
+    } */
   };
 
   const panPressGesture = Gesture.Pan()
@@ -374,7 +359,7 @@ export default function SwapGestures({
     .onChange((e) => {
       "worklet";
       animateMove(e);
-      runOnJS(determineScrollPage)(e);
+      //runOnJS(determineScrollPage)(e);
       runOnJS(handleHover)(e);
     })
     .onFinalize((e) => {
@@ -389,6 +374,12 @@ export default function SwapGestures({
     <GestureHandlerRootView>
       <GestureDetector gesture={panPressGesture}>
         <View style={styles.container}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTxt}>
+              To swap equipment, drag-and-drop your equipment with a team
+              member!
+            </Text>
+          </View>
           <View style={styles.halfContainer}>
             <Text style={styles.userText}>My Equipment</Text>
             <ScrollRow
@@ -423,6 +414,7 @@ export default function SwapGestures({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   floatingItem: {
     position: "absolute",
@@ -432,6 +424,18 @@ const styles = StyleSheet.create({
   },
   halfContainer: {
     flex: 1,
+  },
+  infoContainer: {
+    height: 80,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomColor: "grey",
+    borderBottomWidth: 0.5,
+  },
+  infoTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   userText: {
     height: 40,
