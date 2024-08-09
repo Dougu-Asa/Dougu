@@ -56,11 +56,15 @@ export default function SwapGestures({
   handleSet: (user: OrgUserStorage | null) => void;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
 }) {
-  const { orgUserStorage } = useUser();
-  const { setIsLoading } = useLoad();
+  const {
+    containerItem,
+    setContainerItem,
+    swapContainerVisible,
+    setSwapContainerVisible,
+  } = useEquipment();
   const [listOneCounts, setListOneCounts] = useState<number[]>([]);
   const [listTwoCounts, setListTwoCounts] = useState<number[]>([]);
-  const { setContainerItem, setSwapContainerVisible } = useEquipment();
+  const [containerCounts, setContainerCounts] = useState<number[]>([]);
 
   const decrementCountAtIndex = (
     index: number,
@@ -108,6 +112,14 @@ export default function SwapGestures({
     );
   }, [listOne, listTwo]);
 
+  useEffect(() => {
+    if (containerItem) {
+      setContainerCounts(
+        containerItem.equipment.map((item) => (item as EquipmentObj).count),
+      );
+    }
+  }, [containerItem]);
+
   // distance from the top of the screen to the top of the header
   const halfLine = useRef<number>(0);
 
@@ -124,7 +136,7 @@ export default function SwapGestures({
   const [nextBottomPage, setNextBottomPage] = useState(0);
 
   // hovering logic
-  const containerItem = useRef<ContainerObj | null>(null);
+  const hoverContainer = useRef<ContainerObj | null>(null);
   const draggingOffset = useSharedValue<Position>({
     x: 0,
     y: 0,
@@ -142,6 +154,7 @@ export default function SwapGestures({
 
   const windowWidth = Dimensions.get("window").width;
   const equipmentWidth = windowWidth / 5;
+  const offset = windowWidth / 4;
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   // 120 = 80 (infoContainer) + 40 (userText)
   const topYRange = {
@@ -154,7 +167,6 @@ export default function SwapGestures({
   };
   const startSide = useRef<TopOrBottom | null>(null);
   const startIdx = useRef<number | null>(null);
-  const offset = windowWidth / 4;
 
   const handleSetItem = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
@@ -179,6 +191,38 @@ export default function SwapGestures({
     setDraggingItem(item);
   };
 
+  const [containerPage, setContainerPage] = useState(0);
+  const windowHeight = Dimensions.get("window").height;
+  // setting an item while the container overlay is visible
+  const containerYRange = {
+    start: 0.2 * windowHeight,
+    end: 0.7 * windowHeight + 30,
+  };
+  const containerXRange = {
+    start: 0.075 * windowWidth,
+    end: 0.925 * windowWidth,
+  };
+  const containerSetItem = (
+    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    if (!containerItem) return;
+    const x = gesture.x;
+    const y = gesture.y;
+    // ensure the user is within the container overlay
+    if (x < containerXRange.start || x > containerXRange.end) return;
+    if (y < containerYRange.start || y > containerYRange.end) return;
+    const row = Math.floor((y - containerYRange.start) / (0.18 * windowHeight));
+    const col = Math.floor(
+      (x - containerXRange.start) / ((windowWidth * 0.85) / 3),
+    );
+    const idx = containerPage * 9 + row * 3 + col;
+    if (idx < 0 || idx > containerItem.equipment.length - 1) return;
+    const item = containerItem.equipment[idx];
+    decrementCountAtIndex(idx, setContainerCounts);
+    startIdx.current = idx;
+    setDraggingItem(item);
+  };
+
   const animateStart = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
@@ -198,7 +242,6 @@ export default function SwapGestures({
     >,
   ) => {
     "worklet";
-    console.log("gestureState: ", gestureState);
     draggingOffset.value = {
       x: gestureState.changeX + draggingOffset.value.x,
       y: gestureState.changeY + draggingOffset.value.y,
@@ -217,6 +260,25 @@ export default function SwapGestures({
     if (containerTimeout.current) {
       clearTimeout(containerTimeout.current);
       containerTimeout.current = null;
+    }
+  };
+
+  const containerHover = (
+    gestureState: GestureUpdateEvent<
+      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
+    >,
+  ) => {
+    if (!draggingItem) return;
+    const x = gestureState.x;
+    const y = gestureState.y;
+    if (
+      x < containerXRange.start ||
+      x > containerXRange.end ||
+      y < containerYRange.start ||
+      y > containerYRange.end
+    ) {
+      setSwapContainerVisible(false);
+      setContainerItem(null);
     }
   };
 
@@ -273,7 +335,7 @@ export default function SwapGestures({
       }
       containerTimeout.current = setTimeout(() => {
         size.value = withSpring(0.7);
-        containerItem.current = item as ContainerObj;
+        hoverContainer.current = item as ContainerObj;
         containerTimeout.current = null;
       }, 500);
     }
@@ -282,7 +344,7 @@ export default function SwapGestures({
   const handlePosition = (position: string, isTop: boolean, index?: number) => {
     if (position !== prevPosition) {
       clearTimeouts();
-      containerItem.current = null;
+      hoverContainer.current = null;
       size.value = withSpring(1.2);
     } else if (position === "left" || position === "right") {
       // if the equipment item is hovering over a scroll area
@@ -305,22 +367,24 @@ export default function SwapGestures({
     });
   };
 
+  const { orgUserStorage } = useUser();
+  const { setIsLoading } = useLoad();
   // decide where to reassign the equipment (this runs on the JS thread)
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    if (draggingItem == null) return;
+    if (!draggingItem || !startIdx.current) return;
     const setListCounts =
       startSide.current === "top" ? setListOneCounts : setListTwoCounts;
-    incrementCountAtIndex(startIdx.current as number, setListCounts);
+    incrementCountAtIndex(startIdx.current, setListCounts);
     /*const dropLocation =
       gestureEvent.y > halfLine.current ? "bottom" : "top";
     // equipment -> container
-    if (draggingItem.type === "equipment" && containerItem.current) {
+    if (draggingItem.type === "equipment" && hoverContainer.current) {
       console.log("reassigning equipment to container");
       addEquipmentToContainer(
         draggingItem.id,
-        containerItem.current.id,
+        hoverContainer.current.id,
         setIsLoading,
       );
     }
@@ -339,21 +403,29 @@ export default function SwapGestures({
     } */
   };
 
+  const containerReassign = async () => {
+    if (!draggingItem || !containerItem || startIdx.current == null) return;
+    incrementCountAtIndex(startIdx.current, setContainerCounts);
+  };
+
   const panPressGesture = Gesture.Pan()
     .onStart((e) => {
       "worklet";
-      runOnJS(handleSetItem)(e);
       animateStart(e);
+      if (swapContainerVisible) runOnJS(containerSetItem)(e);
+      else runOnJS(handleSetItem)(e);
     })
     .onChange((e) => {
       "worklet";
       animateMove(e);
-      runOnJS(handleHover)(e);
+      if (swapContainerVisible) runOnJS(containerHover)(e);
+      else runOnJS(handleHover)(e);
     })
     .onFinalize((e) => {
       "worklet";
       animateFinalize();
-      runOnJS(handleReassign)(e);
+      if (swapContainerVisible) runOnJS(containerReassign)();
+      else runOnJS(handleReassign)(e);
       runOnJS(clearTimeouts)();
     })
     .activateAfterLongPress(500);
@@ -386,7 +458,10 @@ export default function SwapGestures({
               nextPage={nextBottomPage}
             />
           </View>
-          <SwapContainerOverlay />
+          <SwapContainerOverlay
+            setContainerPage={setContainerPage}
+            containerCounts={containerCounts}
+          />
         </View>
       </GestureDetector>
       <Animated.View style={[styles.floatingItem, movingStyles]}>

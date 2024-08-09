@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,15 +10,7 @@ import {
   ScrollView,
   GestureDetector,
   Gesture,
-  GestureStateChangeEvent,
-  LongPressGestureHandlerEventPayload,
-  GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
-  PanGestureChangeEventPayload,
-  PanGesture,
-  TapGesture,
 } from "react-native-gesture-handler";
-import { useHeaderHeight } from "@react-navigation/elements";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
@@ -32,7 +24,13 @@ import PaginationDots from "./PaginationDots";
     on an equipment item. It displays the equipment item's 
     stats, counts, and grouped equipment items.
 */
-export default function SwapContainerOverlay() {
+export default function SwapContainerOverlay({
+  setContainerPage,
+  containerCounts,
+}: {
+  setContainerPage: React.Dispatch<React.SetStateAction<number>>;
+  containerCounts: number[];
+}) {
   const {
     containerItem,
     setContainerItem,
@@ -47,16 +45,7 @@ export default function SwapContainerOverlay() {
   // for the pageination dots
   const [currentPage, setCurrentPage] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
-  const headerHeight = useHeaderHeight();
-  const { width, height } = Dimensions.get("window");
-  const xRange = {
-    min: 0.075 * width,
-    max: 0.925 * width,
-  };
-  const yRange = {
-    min: 0.2 * height,
-    max: 0.8 * height,
-  };
+  const { width } = Dimensions.get("window");
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
@@ -68,8 +57,10 @@ export default function SwapContainerOverlay() {
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const pageIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentPage(pageIndex);
+    setContainerPage(pageIndex);
   };
 
+  let itemIdx = 0;
   return (
     <>
       {swapContainerVisible && (
@@ -97,19 +88,22 @@ export default function SwapContainerOverlay() {
                           key={`r${index}`}
                           style={containerOverlayStyles.equipmentRow}
                         >
-                          {row.map((equip) => (
-                            <View
-                              key={equip.id}
-                              style={
-                                containerOverlayStyles.equipmentItemContainer
-                              }
-                            >
-                              <EquipmentItem
-                                item={equip as EquipmentObj}
-                                count={(equip as EquipmentObj).count}
-                              />
-                            </View>
-                          ))}
+                          {row.map((equip) => {
+                            const idx = itemIdx++;
+                            return (
+                              <View
+                                key={equip.id}
+                                style={
+                                  containerOverlayStyles.equipmentItemContainer
+                                }
+                              >
+                                <EquipmentItem
+                                  item={equip as EquipmentObj}
+                                  count={containerCounts[idx]}
+                                />
+                              </View>
+                            );
+                          })}
                         </View>
                       ))}
                     </View>
