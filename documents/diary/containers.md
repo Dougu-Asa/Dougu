@@ -1,4 +1,4 @@
-# 8-3-24 -> 
+# 8-3-24 -> 8-9-24
 ## Displaying Containers
 Containers are very similar to folders on the app store, and so today I setup a system to create containers and have it be rendered. After creating a quick method to create containers, I had to overhaul the current equipmentItem context and system of distributing data. Since I valued having a generic item class that encompasses both equipment and container for dragging reusability and sorting items by their label, I created an Item interface. Then, I changed the equipment context to distribute a map of Items rather than of just Equipment. Therefore, on render, all I would need to do is check the item.type and then decide whether to render an equipmentItem or container. 
 
@@ -43,7 +43,8 @@ Because the container overlay on the swap screen needs to have access to gesture
 After realizing that a better design would be to have a panGesture handler at the screen level isntead of at the item level, I now plan on rewriting the swapEquipment setup to utilize this new strategy. This requires some pretty big changes:
 - panPressGesture is now at screen level
 - equipmentItem counts are now stored using state and updated by the grid
+- containerOverlay is part of the swapEquipment screen such that screen gestures are detected while it is visible
+- Reassign equipment is simplified such that the util functions in SwapUtils handle special cases, swapGestures just calls them.
 
-issues:
-- listOne and listTwo increment counts aren't updating properly. Depending on configuration, dragging listone increments listTwo, and etc.
-- swap screen doesn't give overall screen gesture events... 
+## Finishing and Cleaning
+Ultimately, swapGestures is complete, but it is very bulky. Over time, I hope to break it into smaller components and test it's functionality. Additionally, I need to add animations for opening the container. 

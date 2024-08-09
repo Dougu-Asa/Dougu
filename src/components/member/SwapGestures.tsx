@@ -224,6 +224,7 @@ export default function SwapGestures({
     setDraggingItem(item);
   };
 
+  // we need to know where to start the dragging animation
   const animateStart = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
@@ -253,7 +254,6 @@ export default function SwapGestures({
   const containerTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
-
   const clearTimeouts = () => {
     if (scrollTimeout.current) {
       clearTimeout(scrollTimeout.current);
@@ -269,6 +269,7 @@ export default function SwapGestures({
     }
   };
 
+  // when dragging an equipment while the container overlay is visible
   const containerHover = (
     gestureState: GestureUpdateEvent<
       PanGestureChangeEventPayload & PanGestureHandlerEventPayload
@@ -322,6 +323,8 @@ export default function SwapGestures({
     }
   };
 
+  // determine if the equipment item is hovering over a scroll area
+  // and change the page accordingly
   const handleScroll = (isTop: boolean, position: string) => {
     const changePage = isTop ? setNextTopPage : setNextBottomPage;
     const currPage = isTop ? topPage : bottomPage;
@@ -339,6 +342,7 @@ export default function SwapGestures({
     }, 800);
   };
 
+  // handles the case where the equipment item is hovering over a container item
   const handleContainer = (isTop: boolean, index: number) => {
     const list = isTop ? listOne : listTwo;
     const item = list[index];
@@ -350,11 +354,11 @@ export default function SwapGestures({
         size.value = withSpring(0.7);
         hoverContainer.current = item as ContainerObj;
         containerTimeout.current = null;
-        console.log("hovering over container");
       }, 500);
     }
   };
 
+  // depending on the position of the equipment item, call the appropriate function
   const handlePosition = (position: string, isTop: boolean, index?: number) => {
     if (position !== prevPosition) {
       clearTimeouts();
@@ -383,7 +387,7 @@ export default function SwapGestures({
 
   const { orgUserStorage } = useUser();
   const { setIsLoading } = useLoad();
-  // decide where to reassign the equipment (this runs on the JS thread)
+  // decide where to reassign the equipment
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {

@@ -14,6 +14,10 @@ import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
 import PaginationDots from "./PaginationDots";
 
+/*
+  Handles an individual user row of equipment in swapEquipment screen.
+  It tracks current page and renders the equipment in a horizontal scroll view.
+*/
 export default function ScrollRow({
   listData,
   countData,
@@ -25,6 +29,7 @@ export default function ScrollRow({
   setPage: React.Dispatch<React.SetStateAction<number>>;
   nextPage: number;
 }) {
+  // data is displayed as pages of 4 items
   const chunkedData = chunkEquipment(listData, 4);
   const windowWidth = Dimensions.get("window").width;
   const [currPage, setCurrPage] = useState(0);

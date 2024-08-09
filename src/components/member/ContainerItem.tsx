@@ -8,9 +8,9 @@ import MiniEquipmentItem from "./MiniEquipmentItem";
 import { itemStyles } from "../../styles/ItemStyles";
 
 /*
-  EquipmentItem is a component that displays an equipment object with a label and
-  a count. It is used in the DraggableEquipment component to display the equipment
-  objects that can be dragged around the screen.
+  ContainerItem is a component that displays a container object with a label and
+  pages of all its equipment objects. Tapping on the container will open the
+  ContainerOverlay to display all the equipment objects in the container.
 */
 export default function ContainerItem({
   item,
@@ -23,9 +23,12 @@ export default function ContainerItem({
 }) {
   const { setContainerItem, setContainerVisible, setSwapContainerVisible } =
     useEquipment();
+  // only display the first 9 equipment items in a 3x3 grid
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkEquipment(firstNine ? firstNine : [], 3);
 
+  // swapable is a boolean that determines if the container opens the swapContainerOverlay
+  // since swapContainerOverlay is only used in the swapEquipment screen
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
       setContainerItem(item);

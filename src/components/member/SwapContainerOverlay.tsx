@@ -21,8 +21,8 @@ import PaginationDots from "./PaginationDots";
 
 /*
     This overlay is what is shown when the user taps
-    on an equipment item. It displays the equipment item's 
-    stats, counts, and grouped equipment items.
+    on a Container item. This is a special overlay used only
+    in swapEquipment screen to pass props from screen to overlay
 */
 export default function SwapContainerOverlay({
   setContainerPage,
@@ -42,7 +42,7 @@ export default function SwapContainerOverlay({
   const equipmentChunks3 = equipmentChunks.map((group) =>
     chunkEquipment(group, 3),
   );
-  // for the pageination dots
+  // for the pagination dots
   const [currentPage, setCurrentPage] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get("window");
@@ -54,6 +54,7 @@ export default function SwapContainerOverlay({
     })
     .runOnJS(true);
 
+  // keep track of the current page
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const pageIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentPage(pageIndex);

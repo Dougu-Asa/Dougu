@@ -5,7 +5,7 @@ import { EquipmentObj } from "../../types/ModelTypes";
 
 /*
   This is basically EquipmentItem but much smaller, as it
-  is used inside of container items.
+  is used to display equipment inside of container items.
 */
 const size = Dimensions.get("window").width / 22;
 export default function MiniEquipmentItem({

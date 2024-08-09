@@ -7,15 +7,15 @@ import { handleError } from "./Utils";
 
 /* 
     This file contains utility functions for swapping equipment and containers
-    between OrgUserStorages. There are four main types:
-    1. equipment -> new OrgUserStorage
-    2. container -> new OrgUserStorage
-    3. equipment -> container
-    4. equipment -> container, new OrgUserStorage
+    in SwapGestures.tsx. There are four main types:
+    1. Equipment -> UserStorage
+    2. Container -> UserStorage
+    3. Equipment -> Container
+    4. Equipment -> Out of Container
 */
 
 // reassign the equipment to the new OrgUserStorage by the id passed in
-// equipment -> new OrgUserStorage
+// Equipment -> UserStorage
 export const reassignEquipment = async (
   item: EquipmentObj,
   assignedTo: OrgUserStorage,
@@ -46,7 +46,7 @@ export const reassignEquipment = async (
 };
 
 // reassign the container to the new OrgUserStorage by the id passed in
-// container -> new OrgUserStorage
+// Container -> UserStorage
 export const reassignContainer = async (
   item: ContainerObj,
   assignedTo: OrgUserStorage,
@@ -72,7 +72,7 @@ export const reassignContainer = async (
         updated.lastUpdatedDate = new Date().toISOString();
       }),
     );
-    // reassign all equipment that belongs to the container
+    // reassign all equipment that belong to the container
     containerEquipment.forEach(async (equip) => {
       await DataStore.save(
         Equipment.copyOf(equip, (updated) => {
@@ -89,7 +89,7 @@ export const reassignContainer = async (
 };
 
 // reassign the equipment to the container by the id passed in
-// equipment -> container
+// Equipment -> Container
 export const addEquipmentToContainer = async (
   item: EquipmentObj,
   containerItem: ContainerObj,
@@ -118,6 +118,8 @@ export const addEquipmentToContainer = async (
   }
 };
 
+// reassign the equipment out of the container
+// Equipment -> Out of Container
 export const moveOutOfContainer = async (
   item: EquipmentObj,
   assignedTo: OrgUserStorage,
