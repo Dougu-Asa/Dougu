@@ -29,7 +29,6 @@ import {
   EquipmentObj,
   ItemObj,
   Position,
-  TopOrBottom,
 } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
@@ -40,6 +39,7 @@ import {
   addEquipmentToContainer,
   reassignContainer,
   reassignEquipment,
+  moveOutOfContainer,
 } from "../../helper/SwapUtils";
 import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
@@ -165,7 +165,7 @@ export default function SwapGestures({
     start: halfLine.current + 40,
     end: halfLine.current + 40 + equipmentWidth,
   };
-  const startSide = useRef<TopOrBottom | null>(null);
+  const startSide = useRef<"top" | "bottom" | "container">("container");
   const startIdx = useRef<number | null>(null);
 
   const handleSetItem = (
@@ -220,6 +220,7 @@ export default function SwapGestures({
     const item = containerItem.equipment[idx];
     decrementCountAtIndex(idx, setContainerCounts);
     startIdx.current = idx;
+    startSide.current = "container";
     setDraggingItem(item);
   };
 
@@ -251,6 +252,7 @@ export default function SwapGestures({
   let prevPosition = "";
   const containerTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const clearTimeouts = () => {
     if (scrollTimeout.current) {
@@ -260,6 +262,10 @@ export default function SwapGestures({
     if (containerTimeout.current) {
       clearTimeout(containerTimeout.current);
       containerTimeout.current = null;
+    }
+    if (overlayTimeout.current) {
+      clearTimeout(overlayTimeout.current);
+      overlayTimeout.current = null;
     }
   };
 
@@ -277,8 +283,15 @@ export default function SwapGestures({
       y < containerYRange.start ||
       y > containerYRange.end
     ) {
-      setSwapContainerVisible(false);
-      setContainerItem(null);
+      if (overlayTimeout.current) {
+        return;
+      } else {
+        overlayTimeout.current = setTimeout(() => {
+          setSwapContainerVisible(false);
+          setContainerItem(null);
+          overlayTimeout.current = null;
+        }, 500);
+      }
     }
   };
 
@@ -337,6 +350,7 @@ export default function SwapGestures({
         size.value = withSpring(0.7);
         hoverContainer.current = item as ContainerObj;
         containerTimeout.current = null;
+        console.log("hovering over container");
       }, 500);
     }
   };
@@ -373,39 +387,45 @@ export default function SwapGestures({
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    if (!draggingItem || !startIdx.current) return;
-    const setListCounts =
-      startSide.current === "top" ? setListOneCounts : setListTwoCounts;
+    if (!draggingItem || startIdx.current == null) return;
+    let setListCounts: React.Dispatch<React.SetStateAction<number[]>>;
+    if (startSide.current === "top") {
+      setListCounts = setListOneCounts;
+    } else if (startSide.current === "bottom") {
+      setListCounts = setListTwoCounts;
+    } else {
+      setListCounts = setContainerCounts;
+    }
     incrementCountAtIndex(startIdx.current, setListCounts);
-    /*const dropLocation =
-      gestureEvent.y > halfLine.current ? "bottom" : "top";
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {
       console.log("reassigning equipment to container");
       addEquipmentToContainer(
-        draggingItem.id,
-        hoverContainer.current.id,
+        draggingItem as EquipmentObj,
+        hoverContainer.current,
         setIsLoading,
       );
+      return;
     }
-    if (dropLocation === startSide.current || !swapUser.current) return;
-    // now swappping equipment between users
+    if (!orgUserStorage || !swapUser.current) return;
     const assignTo =
-      dropLocation === "top" ? orgUserStorage! : swapUser.current;
+      gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
+    // dragging a container
     if (draggingItem.type === "container") {
-      reassignContainer(
-        draggingItem as ContainerObj,
-        assignTo.id,
-        setIsLoading,
-      );
+      reassignContainer(draggingItem as ContainerObj, assignTo, setIsLoading);
     } else {
-      reassignEquipment(draggingItem.id, assignTo.id, setIsLoading);
-    } */
-  };
-
-  const containerReassign = async () => {
-    if (!draggingItem || !containerItem || startIdx.current == null) return;
-    incrementCountAtIndex(startIdx.current, setContainerCounts);
+      // dragging equipment
+      // check if we are moving equipment out of a container
+      if ((draggingItem as EquipmentObj).container != null) {
+        moveOutOfContainer(
+          draggingItem as EquipmentObj,
+          assignTo,
+          setIsLoading,
+        );
+      } else {
+        reassignEquipment(draggingItem as EquipmentObj, assignTo, setIsLoading);
+      }
+    }
   };
 
   const panPressGesture = Gesture.Pan()
@@ -424,8 +444,7 @@ export default function SwapGestures({
     .onFinalize((e) => {
       "worklet";
       animateFinalize();
-      if (swapContainerVisible) runOnJS(containerReassign)();
-      else runOnJS(handleReassign)(e);
+      runOnJS(handleReassign)(e);
       runOnJS(clearTimeouts)();
     })
     .activateAfterLongPress(500);

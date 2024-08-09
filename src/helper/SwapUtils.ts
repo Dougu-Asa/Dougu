@@ -2,7 +2,7 @@ import { DataStore } from "aws-amplify";
 import { Alert } from "react-native";
 
 import { OrgUserStorage, Equipment, Container } from "../models";
-import { ContainerObj } from "../types/ModelTypes";
+import { ContainerObj, EquipmentObj } from "../types/ModelTypes";
 import { handleError } from "./Utils";
 
 /* 
@@ -17,17 +17,18 @@ import { handleError } from "./Utils";
 // reassign the equipment to the new OrgUserStorage by the id passed in
 // equipment -> new OrgUserStorage
 export const reassignEquipment = async (
-  itemId: string,
-  assignedTo: string,
+  item: EquipmentObj,
+  assignedTo: OrgUserStorage,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   try {
+    if (item.assignedTo === assignedTo.id) return;
     setIsLoading(true);
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
-      assignedTo,
+      assignedTo.id,
     );
-    const equip = await DataStore.query(Equipment, itemId);
+    const equip = await DataStore.query(Equipment, item.id);
     if (!swapOrgUserStorage) throw new Error("OrgUserStorage does not exist!");
     if (!equip) throw new Error("Equipment does not exist!");
     await DataStore.save(
@@ -48,14 +49,15 @@ export const reassignEquipment = async (
 // container -> new OrgUserStorage
 export const reassignContainer = async (
   item: ContainerObj,
-  assignedTo: string,
+  assignedTo: OrgUserStorage,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   try {
+    if (item.assignedTo === assignedTo.id) return;
     setIsLoading(true);
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
-      assignedTo,
+      assignedTo.id,
     );
     const container = await DataStore.query(Container, item.id);
     if (!swapOrgUserStorage) throw new Error("OrgUserStorage does not exist!");
@@ -89,14 +91,15 @@ export const reassignContainer = async (
 // reassign the equipment to the container by the id passed in
 // equipment -> container
 export const addEquipmentToContainer = async (
-  itemId: string,
-  containerId: string,
+  item: EquipmentObj,
+  containerItem: ContainerObj,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   try {
+    if (item.container === containerItem.id) return;
     setIsLoading(true);
-    const equip = await DataStore.query(Equipment, itemId);
-    const container = await DataStore.query(Container, containerId);
+    const equip = await DataStore.query(Equipment, item.id);
+    const container = await DataStore.query(Container, containerItem.id);
     if (!equip) throw new Error("Equipment does not exist!");
     if (!container) throw new Error("Container does not exist!");
     const contanierUser = await container.assignedTo;
@@ -104,7 +107,7 @@ export const addEquipmentToContainer = async (
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.lastUpdatedDate = new Date().toISOString();
-        updated.containerId = containerId;
+        updated.containerId = container.id;
         updated.assignedTo = contanierUser;
       }),
     );
@@ -112,5 +115,30 @@ export const addEquipmentToContainer = async (
     Alert.alert("Added Equipment to Container!");
   } catch (e) {
     handleError("addEquipmentToContainer", e as Error, setIsLoading);
+  }
+};
+
+export const moveOutOfContainer = async (
+  item: EquipmentObj,
+  assignedTo: OrgUserStorage,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
+  try {
+    setIsLoading(true);
+    const equip = await DataStore.query(Equipment, item.id);
+    const assignedToUser = await DataStore.query(OrgUserStorage, assignedTo.id);
+    if (!equip) throw new Error("Equipment does not exist!");
+    if (!assignedToUser) throw new Error("OrgUserStorage does not exist!");
+    await DataStore.save(
+      Equipment.copyOf(equip, (updated) => {
+        updated.lastUpdatedDate = new Date().toISOString();
+        updated.containerId = null;
+        updated.assignedTo = assignedToUser;
+      }),
+    );
+    setIsLoading(false);
+    Alert.alert("Equipment Moved Out of Container!");
+  } catch (e) {
+    handleError("Move Out of Container", e as Error, setIsLoading);
   }
 };
