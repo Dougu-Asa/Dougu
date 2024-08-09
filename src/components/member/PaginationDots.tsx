@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     height: 30,
     width: "100%",
     justifyContent: "center",
+    alignItems: "center",
   },
   paginationDot: {
     width: 8,

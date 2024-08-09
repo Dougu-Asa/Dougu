@@ -43,3 +43,7 @@ Because the container overlay on the swap screen needs to have access to gesture
 After realizing that a better design would be to have a panGesture handler at the screen level isntead of at the item level, I now plan on rewriting the swapEquipment setup to utilize this new strategy. This requires some pretty big changes:
 - panPressGesture is now at screen level
 - equipmentItem counts are now stored using state and updated by the grid
+
+issues:
+- listOne and listTwo increment counts aren't updating properly. Depending on configuration, dragging listone increments listTwo, and etc.
+- swap screen doesn't give overall screen gesture events... 

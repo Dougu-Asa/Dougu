@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import {
   GestureUpdateEvent,
   PanGestureHandlerEventPayload,
   PanGestureChangeEventPayload,
+  PanGesture,
+  TapGesture,
 } from "react-native-gesture-handler";
 import { useHeaderHeight } from "@react-navigation/elements";
 

@@ -20,6 +20,7 @@ export const containerOverlayStyles = StyleSheet.create({
     marginRight: "auto",
     flexBasis: "33.33%",
     alignItems: "center",
+    height: height * 0.18,
   },
   equipmentItemContainer: {
     width: "33.33%",
@@ -30,7 +31,7 @@ export const containerOverlayStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: width * 0.85,
-    height: height * 0.6,
+    height: height * 0.54 + 30,
     borderRadius: 20,
     backgroundColor: "rgb(240, 240, 240)",
   },
@@ -48,29 +49,6 @@ export const containerOverlayStyles = StyleSheet.create({
     alignItems: "center",
     height: height * 0.08,
     marginTop: height * 0.08,
-  },
-  divider: {
-    height: 1,
-    width: "90%",
-    backgroundColor: "black",
-    marginVertical: 10,
-  },
-  pagination: {
-    flexDirection: "row",
-    height: 30,
-    alignItems: "center",
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 2,
-  },
-  paginationDotInactive: {
-    backgroundColor: "gray",
-  },
-  paginationDotActive: {
-    backgroundColor: "black",
   },
   pagesContainer: {
     display: "flex",

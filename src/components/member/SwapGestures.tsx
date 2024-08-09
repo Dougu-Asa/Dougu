@@ -15,7 +15,6 @@ import {
   GestureUpdateEvent,
   PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
-import { useHeaderHeight } from "@react-navigation/elements";
 import Animated, {
   runOnJS,
   useSharedValue,
@@ -57,11 +56,11 @@ export default function SwapGestures({
   handleSet: (user: OrgUserStorage | null) => void;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
 }) {
-  const { setSwapContainerVisible } = useEquipment();
   const { orgUserStorage } = useUser();
   const { setIsLoading } = useLoad();
   const [listOneCounts, setListOneCounts] = useState<number[]>([]);
   const [listTwoCounts, setListTwoCounts] = useState<number[]>([]);
+  const { setContainerItem, setSwapContainerVisible } = useEquipment();
 
   const decrementCountAtIndex = (
     index: number,
@@ -110,12 +109,11 @@ export default function SwapGestures({
   }, [listOne, listTwo]);
 
   // distance from the top of the screen to the top of the header
-  const headerHeight = useHeaderHeight();
   const halfLine = useRef<number>(0);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
-    halfLine.current = y + headerHeight;
+    halfLine.current = y;
     console.log("halfLine: ", halfLine.current);
   };
 
@@ -147,8 +145,8 @@ export default function SwapGestures({
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   // 120 = 80 (infoContainer) + 40 (userText)
   const topYRange = {
-    start: headerHeight + 120,
-    end: headerHeight + 120 + equipmentWidth,
+    start: 120,
+    end: 120 + equipmentWidth,
   };
   const bottomYRange = {
     start: halfLine.current + 40,
@@ -161,22 +159,23 @@ export default function SwapGestures({
   const handleSetItem = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    const absoluteY = gesture.absoluteY;
-    const isTop = absoluteY < halfLine.current;
+    const y = gesture.y;
+    const isTop = y < halfLine.current;
     const yRange = isTop ? topYRange : bottomYRange;
     const horizontalOffset = isTop
       ? topPage * windowWidth
       : bottomPage * windowWidth;
     const list = isTop ? listOne : listTwo;
+    startSide.current = isTop ? "top" : "bottom";
     const setListCounts = isTop ? setListOneCounts : setListTwoCounts;
-    if (absoluteY < yRange.start || absoluteY > yRange.end) return;
+    if (y < yRange.start || y > yRange.end) return;
     // check if the user is hovering over an item
-    const idx = Math.ceil((gesture.absoluteX + horizontalOffset) / offset);
+    const idx = Math.floor((gesture.x + horizontalOffset) / offset);
     // ensure idx is within bounds
-    if (idx < 1 || idx > list.length) return;
-    const item = list[idx - 1];
-    decrementCountAtIndex(idx - 1, setListCounts);
-    startIdx.current = idx - 1;
+    if (idx < 0 || idx > list.length - 1) return;
+    const item = list[idx];
+    decrementCountAtIndex(idx, setListCounts);
+    startIdx.current = idx;
     setDraggingItem(item);
   };
 
@@ -187,8 +186,8 @@ export default function SwapGestures({
     size.value = withSpring(1.2);
     const halfEquipment = equipmentWidth / 2;
     draggingOffset.value = {
-      x: gesture.absoluteX - halfEquipment,
-      y: gesture.absoluteY - halfEquipment - headerHeight,
+      x: gesture.x - halfEquipment,
+      y: gesture.y - halfEquipment,
     };
   };
 
@@ -199,6 +198,7 @@ export default function SwapGestures({
     >,
   ) => {
     "worklet";
+    console.log("gestureState: ", gestureState);
     draggingOffset.value = {
       x: gestureState.changeX + draggingOffset.value.x,
       y: gestureState.changeY + draggingOffset.value.y,
@@ -228,26 +228,21 @@ export default function SwapGestures({
     >,
   ) => {
     if (!draggingItem) return;
-    const isTop = gestureState.absoluteY < halfLine.current;
+    const isTop = gestureState.y < halfLine.current;
     const range = isTop ? topYRange : bottomYRange;
-    const absoluteX = gestureState.absoluteX;
+    const x = gestureState.x;
     // leftEdge, rightEdge, top-position
-    if (absoluteX < 40) {
+    if (x < 40) {
       handlePosition("left", isTop);
-    } else if (absoluteX > windowWidth - 40) {
+    } else if (x > windowWidth - 40) {
       handlePosition("right", isTop);
-    } else if (
-      gestureState.absoluteY < range.start ||
-      gestureState.absoluteY > range.end
-    ) {
+    } else if (gestureState.y < range.start || gestureState.y > range.end) {
       handlePosition("out", isTop);
     } else {
       const horizontalOffset = isTop
         ? topPage * windowWidth
         : bottomPage * windowWidth;
-      const position = Math.ceil(
-        (gestureState.absoluteX + horizontalOffset) / offset,
-      );
+      const position = Math.floor((gestureState.x + horizontalOffset) / offset);
       handlePosition(`${isTop}-${position}`, isTop, position);
     }
   };
@@ -271,7 +266,7 @@ export default function SwapGestures({
 
   const handleContainer = (isTop: boolean, index: number) => {
     const list = isTop ? listOne : listTwo;
-    const item = list[index - 1];
+    const item = list[index];
     if (item && item.type === "container") {
       if (containerTimeout.current) {
         return;
@@ -293,7 +288,7 @@ export default function SwapGestures({
       // if the equipment item is hovering over a scroll area
       handleScroll(isTop, position);
     } else {
-      if (draggingItem?.type === "container" || !index) return;
+      if (draggingItem?.type === "container" || index == null) return;
       // if the equipment item is hovering over a container item
       handleContainer(isTop, index);
     }
@@ -319,7 +314,7 @@ export default function SwapGestures({
       startSide.current === "top" ? setListOneCounts : setListTwoCounts;
     incrementCountAtIndex(startIdx.current as number, setListCounts);
     /*const dropLocation =
-      gestureEvent.absoluteY > halfLine.current ? "bottom" : "top";
+      gestureEvent.y > halfLine.current ? "bottom" : "top";
     // equipment -> container
     if (draggingItem.type === "equipment" && containerItem.current) {
       console.log("reassigning equipment to container");
@@ -391,9 +386,9 @@ export default function SwapGestures({
               nextPage={nextBottomPage}
             />
           </View>
+          <SwapContainerOverlay />
         </View>
       </GestureDetector>
-      <SwapContainerOverlay />
       <Animated.View style={[styles.floatingItem, movingStyles]}>
         {draggingItem?.type === "equipment" ? (
           <EquipmentItem item={draggingItem as EquipmentObj} count={1} />
