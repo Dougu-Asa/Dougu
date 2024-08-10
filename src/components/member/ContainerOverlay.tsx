@@ -30,7 +30,7 @@ import PaginationDots from "./PaginationDots";
     on an equipment item. It displays the equipment item's 
     stats, counts, and grouped equipment items.
 */
-export default function CustomContainerOverlay() {
+export default function ContainerOverlay() {
   const {
     containerVisible,
     setContainerVisible,

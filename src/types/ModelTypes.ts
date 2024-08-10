@@ -3,6 +3,7 @@ import { OrgUserStorage } from "../models";
 export type EquipmentOrContainer = "equipment" | "container";
 
 export interface ItemObj {
+  count: number;
   id: string;
   label: string;
   assignedTo: string;

@@ -19,7 +19,7 @@ import { signOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
 import EquipmentProvider from "../../helper/context/EquipmentContext";
-import CustomContainerOverlay from "../../components/member/CustomContainerOverlay";
+import ContainerOverlay from "../../components/member/ContainerOverlay";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -165,7 +165,7 @@ export default function MemberTabs({
           }}
         />
       </Tab.Navigator>
-      <CustomContainerOverlay />
+      <ContainerOverlay />
       <EquipmentOverlay />
     </EquipmentProvider>
   );
