@@ -44,6 +44,7 @@ import {
 import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
 import SwapContainerOverlay from "./SwapContainerOverlay";
+import { Divider } from "@rneui/base";
 
 export default function SwapGestures({
   listOne,
@@ -127,7 +128,6 @@ export default function SwapGestures({
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
     halfLine.current = y;
-    console.log("halfLine: ", halfLine.current);
   };
 
   // scroll logic
@@ -474,8 +474,11 @@ export default function SwapGestures({
               nextPage={nextTopPage}
             />
           </View>
+          <Divider />
           <View style={styles.halfContainer} onLayout={handleLayout}>
-            <CurrMembersDropdown setUser={handleSet} isCreate={false} />
+            <View style={styles.spacer}>
+              <CurrMembersDropdown setUser={handleSet} isCreate={false} />
+            </View>
             <ScrollRow
               listData={listTwo}
               countData={listTwoCounts}
@@ -527,10 +530,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 20,
   },
+  spacer: {
+    marginTop: 20,
+  },
   userText: {
     height: 40,
     fontSize: 20,
     fontWeight: "bold",
     marginLeft: 20,
+    marginTop: 20,
   },
 });

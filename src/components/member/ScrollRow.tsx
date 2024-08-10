@@ -88,10 +88,10 @@ export default function ScrollRow({
   );
 }
 
-const equipmentSpacing = Dimensions.get("window").width / 40;
+const equipmentSpacing = Dimensions.get("window").width / 25;
 const styles = StyleSheet.create({
   item: {
-    marginHorizontal: equipmentSpacing,
+    marginLeft: equipmentSpacing,
   },
   scrollRow: {
     flex: 1,
