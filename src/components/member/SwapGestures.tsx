@@ -109,14 +109,13 @@ export default function SwapGestures({
   const equipmentWidth = windowWidth / 5;
   const offset = windowWidth / 4;
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
-  // 120 = 80 (infoContainer) + 40 (userText)
   const topYRange = {
-    start: 120,
-    end: 120 + equipmentWidth,
+    start: 140,
+    end: 140 + equipmentWidth,
   };
   const bottomYRange = {
-    start: halfLine.current + 40,
-    end: halfLine.current + 40 + equipmentWidth,
+    start: halfLine.current + 60,
+    end: halfLine.current + 60 + equipmentWidth,
   };
   const startSide = useRef<"top" | "bottom" | "container">("container");
   const startIdx = useRef<number | null>(null);
@@ -422,6 +421,7 @@ export default function SwapGestures({
             <Text style={styles.userText}>My Equipment</Text>
             <ScrollRow
               listData={listOne}
+              isSwap={true}
               countData={listOneCounts}
               setPage={setTopPage}
               nextPage={nextTopPage}
@@ -434,6 +434,7 @@ export default function SwapGestures({
             </View>
             <ScrollRow
               listData={listTwo}
+              isSwap={true}
               countData={listTwoCounts}
               setPage={setBottomPage}
               nextPage={nextBottomPage}

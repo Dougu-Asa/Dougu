@@ -6,44 +6,45 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
-import PaginationDots from "./PaginationDots";
 
 /*
-  Handles an individual user row of equipment in swapEquipment screen.
-  It tracks current page and renders the equipment in a horizontal scroll view.
+  Handles an individual user row of equipment, tracking page and displaying.
+  In swapEquipment, it also allows for scrolling to a specific page.
 */
 export default function ScrollRow({
   listData,
+  isSwap,
   countData,
   setPage,
   nextPage,
 }: {
   listData: ItemObj[];
-  countData: number[];
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  nextPage: number;
+  isSwap: boolean;
+  countData?: number[];
+  setPage?: React.Dispatch<React.SetStateAction<number>>;
+  nextPage?: number;
 }) {
   // data is displayed as pages of 4 items
   const chunkedData = chunkEquipment(listData, 4);
   const windowWidth = Dimensions.get("window").width;
-  const [currPage, setCurrPage] = useState(0);
   const scrollViewRef = React.useRef<ScrollView>(null);
 
+  // keep track of the current page
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newPage = Math.round(event.nativeEvent.contentOffset.x / windowWidth);
-    setPage(newPage);
-    setCurrPage(newPage);
+    if (setPage) setPage(newPage);
   };
 
+  // scroll to a page if a dragging item hovers over an edge
   useEffect(() => {
-    if (nextPage < 0) return;
-    if (nextPage > chunkedData.length - 1) return;
+    if (!nextPage) return;
+    if (nextPage < 0 || nextPage > chunkedData.length - 1) return;
     const scrollValue = nextPage * windowWidth;
     scrollViewRef.current?.scrollTo({ x: scrollValue });
   }, [chunkedData.length, nextPage, windowWidth]);
@@ -68,13 +69,13 @@ export default function ScrollRow({
                   {item.type === "equipment" ? (
                     <EquipmentItem
                       item={item as EquipmentObj}
-                      count={countData[idx]}
+                      count={countData ? countData[idx] : item.count}
                     />
                   ) : (
                     <ContainerItem
                       item={item as ContainerObj}
-                      swapable={true}
-                      count={countData[idx]}
+                      swapable={isSwap}
+                      count={countData ? countData[idx] : 1}
                     />
                   )}
                 </View>
@@ -83,7 +84,6 @@ export default function ScrollRow({
           </View>
         ))}
       </ScrollView>
-      <PaginationDots length={chunkedData.length} currIdx={currPage} />
     </>
   );
 }

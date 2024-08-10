@@ -1,14 +1,14 @@
-import { View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 
 // project imports
-import UserEquipment from "../../components/member/UserEquipment";
 import { useUser } from "../../helper/context/UserContext";
 import { sortOrgItems } from "../../helper/EquipmentUtils";
 import type { OrgItem } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
+import ScrollRow from "../../components/member/ScrollRow";
 
 /*
   Screen for viewing all equipment in the organization
@@ -32,13 +32,25 @@ export default function TeamEquipmentScreen() {
     <View style={{ backgroundColor: "white", minHeight: "100%" }}>
       <ScrollView>
         {orgItems.map((orgItem, index) => (
-          <UserEquipment
-            key={index}
-            list={orgItem.data}
-            name={orgItem.assignedToName}
-          />
+          <View style={styles.userContainer} key={index}>
+            <Text style={styles.scrollText}>{orgItem.assignedToName}</Text>
+            <ScrollRow listData={orgItem.data} isSwap={false} />
+          </View>
         ))}
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollText: {
+    height: 40,
+    fontSize: 20,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
+  userContainer: {
+    minHeight: 200,
+    backgroundColor: "white",
+  },
+});

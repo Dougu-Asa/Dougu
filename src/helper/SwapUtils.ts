@@ -24,6 +24,7 @@ export const reassignEquipment = async (
   try {
     if (item.assignedTo === assignedTo.id) return;
     setIsLoading(true);
+    // ensure equipment and user exist
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
       assignedTo.id,
@@ -31,6 +32,7 @@ export const reassignEquipment = async (
     const equip = await DataStore.query(Equipment, item.id);
     if (!swapOrgUserStorage) throw new Error("OrgUserStorage does not exist!");
     if (!equip) throw new Error("Equipment does not exist!");
+    // reassign
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.assignedTo = swapOrgUserStorage;
@@ -55,6 +57,7 @@ export const reassignContainer = async (
   try {
     if (item.assignedTo === assignedTo.id) return;
     setIsLoading(true);
+    // ensure container and user exist
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
       assignedTo.id,
@@ -98,6 +101,7 @@ export const addEquipmentToContainer = async (
   try {
     if (item.container === containerItem.id) return;
     setIsLoading(true);
+    // ensure equipment and container exist
     const equip = await DataStore.query(Equipment, item.id);
     const container = await DataStore.query(Container, containerItem.id);
     if (!equip) throw new Error("Equipment does not exist!");
@@ -127,10 +131,12 @@ export const moveOutOfContainer = async (
 ) => {
   try {
     setIsLoading(true);
+    // ensure equipment and user exist
     const equip = await DataStore.query(Equipment, item.id);
     const assignedToUser = await DataStore.query(OrgUserStorage, assignedTo.id);
     if (!equip) throw new Error("Equipment does not exist!");
     if (!assignedToUser) throw new Error("OrgUserStorage does not exist!");
+    // equipment is reassigned to the user and removed from the container
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.lastUpdatedDate = new Date().toISOString();
