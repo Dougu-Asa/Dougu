@@ -460,7 +460,7 @@ export default function SwapGestures({
         <View style={styles.container}>
           <View style={styles.infoContainer}>
             <Text style={styles.infoTxt}>
-              To swap equipment, drag-and-drop your equipment with a team
+              Swap equipment by holding then dragging your equipment to a
               member!
             </Text>
           </View>
@@ -524,6 +524,7 @@ const styles = StyleSheet.create({
   infoTxt: {
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 20,
   },
   userText: {
     height: 40,

@@ -1,6 +1,6 @@
 import React from "react";
 import { Overlay, Card, Button } from "@rneui/themed";
-import { Text, StyleSheet, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // Import the LinearGradient component
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
@@ -18,6 +18,11 @@ export default function EquipmentOverlay() {
   return (
     <Overlay isVisible={visible} fullScreen={true}>
       <Text style={styles.title}>{equipmentItem?.label}</Text>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoTxt}>
+          The outlined equipment is the one which gets swapped!
+        </Text>
+      </View>
       <ScrollView>
         {equipmentItem &&
           equipmentItem.data.map((itemId, index) => (
@@ -59,13 +64,26 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "black",
   },
+  infoContainer: {
+    height: 80,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomColor: "grey",
+    borderBottomWidth: 0.5,
+  },
+  infoTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
   overlayStyles: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
   },
   title: {
-    marginVertical: 20,
+    marginTop: 20,
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",

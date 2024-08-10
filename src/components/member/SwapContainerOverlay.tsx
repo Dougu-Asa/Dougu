@@ -11,6 +11,12 @@ import {
   GestureDetector,
   Gesture,
 } from "react-native-gesture-handler";
+import Animated, {
+  ZoomIn,
+  ZoomOut,
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
@@ -66,13 +72,21 @@ export default function SwapContainerOverlay({
     <>
       {swapContainerVisible && (
         <GestureDetector gesture={tapGesture}>
-          <View style={containerOverlayStyles.backDrop}>
+          <Animated.View
+            style={containerOverlayStyles.backDrop}
+            entering={FadeIn}
+            exiting={FadeOut}
+          >
             <View style={containerOverlayStyles.titleContainer}>
               <Text style={containerOverlayStyles.title}>
                 {containerItem?.label}
               </Text>
             </View>
-            <View style={containerOverlayStyles.itemContainer}>
+            <Animated.View
+              style={containerOverlayStyles.itemContainer}
+              entering={ZoomIn}
+              exiting={ZoomOut}
+            >
               <ScrollView
                 horizontal={true}
                 pagingEnabled={true}
@@ -115,8 +129,8 @@ export default function SwapContainerOverlay({
                 length={equipmentChunks3.length}
                 currIdx={currentPage}
               />
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
         </GestureDetector>
       )}
     </>
