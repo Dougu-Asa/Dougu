@@ -4,26 +4,23 @@ import { ScrollView } from "react-native-gesture-handler";
 
 // Project imports
 import EquipmentItem from "../../components/member/EquipmentItem";
-import { useUser } from "../../helper/UserContext";
-import type { EquipmentObj } from "../../types/ModelTypes";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useUser } from "../../helper/context/UserContext";
+import type { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
+import { useEquipment } from "../../helper/context/EquipmentContext";
+import ContainerItem from "../../components/member/ContainerItem";
+import { chunkEquipment } from "../../helper/EquipmentUtils";
 
 /*
   Screen for viewing all equipment assigned to the current user
 */
 export default function EquipmentScreen() {
   const { orgUserStorage } = useUser();
-  const { equipmentData } = useEquipment();
-  const chunkedEquipment = (equipment: EquipmentObj[], size: number) =>
-    equipment.reduce(
-      (acc, _, i) => (i % size ? acc : [...acc, equipment.slice(i, i + size)]),
-      [] as EquipmentObj[][],
-    );
+  const { itemData } = useEquipment();
 
   // Get the equipment assigned to the current user
-  const userEquipment = equipmentData.get(orgUserStorage!.id);
-  const equipment = userEquipment?.equipment || [];
-  const chunkedData = chunkedEquipment(equipment, 3);
+  const userItems = itemData.get(orgUserStorage!.id);
+  const items = userItems?.data || [];
+  const chunkedData = chunkEquipment(items, 3);
 
   return (
     <View style={styles.background}>
@@ -34,11 +31,17 @@ export default function EquipmentScreen() {
             <View key={index} style={styles.equipmentRow}>
               {group.map((equip) => (
                 <View key={equip.id} style={styles.equipmentItemContainer}>
-                  <EquipmentItem
-                    key={equip.id}
-                    item={equip}
-                    count={equip.count}
-                  />
+                  {equip.type === "equipment" ? (
+                    <EquipmentItem
+                      item={equip as EquipmentObj}
+                      count={(equip as EquipmentObj).count}
+                    />
+                  ) : (
+                    <ContainerItem
+                      item={equip as ContainerObj}
+                      swapable={false}
+                    />
+                  )}
                 </View>
               ))}
             </View>

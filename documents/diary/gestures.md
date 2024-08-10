@@ -14,3 +14,10 @@ One problem I had a lot of issues with was stale states, especially with referen
 One idea I wanted to implement was that by tapping on an item, just like opening an app, it would display a screen of information and details. The overlay and passing information wasn't difficult, but implementing a system to select which equipmentID would be swapped was more difficult. This was because an equipmentItem could be tapped on multiple screens, and each screen would subscribe to equipment changes. TO fix this, I decided to overhaul the equipment system by having an equipment provider that would subscribe to equipment changes and pass that data down to the screens. It should be faster and simpler. Also, I setup selecting a specific equipment ID that you may want to swap with, in preparation for nfc tag reading and also just overall customizability. It does so by modifying the shared equipmentData context, which is shared across all screens (and the screens directly use the data). While the saved customization goes away on any refresh, it still works and I think making it stay across various refreshes is too extra.
 
 P.s: I ran into createOrg issues while testing, turns out userContext was trying to update OrgUserStorage during the clear. So I fixed validation and synchronization issues. Also, I wrote some tests for validating createOrg.
+
+# 8-5-24
+## Hover Change Page
+I incorporated functionality to detect whether an equipment or container has been hovered on an edge of the screen, and to change the page of the screen. Here are a couple changes
+- Changed scrollview from per item snapToAlign to per screenWidth snap to align (or every 4 items). This was because an automatic scroll per item would require many small scrollTos that are computationally expensive
+- Implemented another JS threaded callback during pan onChange to check for hovering on edges, and to start a timeout if there has been an extended hover
+For the future, I need to implement some sort of UI to show that the page is able to turn.

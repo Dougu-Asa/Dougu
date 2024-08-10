@@ -7,9 +7,9 @@ import { useIsFocused } from "@react-navigation/native";
 
 // project imports
 import { OrgUserStorage } from "../models";
-import { useUser } from "../helper/UserContext";
+import { useUser } from "../helper/context/UserContext";
 import { UserNames } from "../types/ModelTypes";
-import { sortOrgUserStorages } from "../helper/DataStoreUtils";
+import { sortOrgUserStorages } from "../helper/EquipmentUtils";
 
 /*
   Dropdown component for selecting the current members
@@ -18,11 +18,9 @@ import { sortOrgUserStorages } from "../helper/DataStoreUtils";
 export default function CurrMembersDropdown({
   setUser,
   isCreate,
-  resetValue,
 }: {
   setUser: (inputUser: OrgUserStorage | null) => void;
   isCreate: boolean;
-  resetValue: boolean;
 }) {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -68,12 +66,6 @@ export default function CurrMembersDropdown({
 
     return () => subscription.unsubscribe();
   }, [isCreate, isFocused, org, user]);
-
-  useEffect(() => {
-    if (resetValue) {
-      setValue(null);
-    }
-  }, [resetValue, setUser]);
 
   const handleChangeUser = (value: OrgUserStorage) => {
     setUser(value);

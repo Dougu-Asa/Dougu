@@ -14,10 +14,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 // project imports
 import { OrgUserStorage, UserOrStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import MemberRow from "../../components/organization/MemberRow";
 import { UserStoragesScreenProps } from "../../types/ScreenTypes";
-import { sortOrgUserStorages } from "../../helper/DataStoreUtils";
+import { sortOrgUserStorages } from "../../helper/EquipmentUtils";
 
 /*
   Screen for viewing all members and storages in an organization

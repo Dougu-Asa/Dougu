@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 
 // Project Files
-import { useLoad } from "../helper/LoadingContext";
-import { useUser } from "../helper/UserContext";
+import { useLoad } from "../helper/context/LoadingContext";
+import { useUser } from "../helper/context/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";

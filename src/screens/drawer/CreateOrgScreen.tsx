@@ -6,9 +6,9 @@ import NetInfo from "@react-native-community/netinfo";
 
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 import { createUserGroup, addUserToGroup } from "../../helper/AWS";
@@ -134,13 +134,14 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
             Create a name for your org.
           </Text>
           <Text style={createJoinStyles.subtitle}>
-            Rule: 1-40 alphanumeric characters with no whitespaces.
+            Rule: 1-40 alphanumeric characters with no whitespaces (_ and - are
+            allowed).
           </Text>
           <TextInput
             style={createJoinStyles.input}
             onChangeText={onChangeName}
             value={name}
-            placeholder="Ex. Asayake Taiko"
+            placeholder="Ex. Great_Org"
             keyboardType="default"
           />
           <TouchableOpacity

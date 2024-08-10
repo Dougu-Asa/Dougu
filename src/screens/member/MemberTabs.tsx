@@ -5,20 +5,21 @@ import FontAwesone5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Alert, Keyboard } from "react-native";
-import EquipmentProvider from "../../helper/EquipmentContext";
 
 // project imports
 import EquipmentScreen from "./Equipment";
 import SwapEquipmentScreen from "./SwapEquipment";
 import TeamEquipmentScreen from "./TeamEquipment";
-import { useUser } from "../../helper/UserContext";
+import { useUser } from "../../helper/context/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
 import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
 import { signOut } from "../../helper/Utils";
-import { useLoad } from "../../helper/LoadingContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
+import EquipmentProvider from "../../helper/context/EquipmentContext";
+import CustomContainerOverlay from "../../components/member/CustomContainerOverlay";
 
 // The navigator for a logged in member of an organization
 const Tab = createMaterialTopTabNavigator<TabParamList>();
@@ -27,7 +28,10 @@ const Tab = createMaterialTopTabNavigator<TabParamList>();
   MemberTabs is the tab navigator for a user. It holds all the screens
   that a user can navigate to while they are a member of an organization.
 */
-export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
+export default function MemberTabs({
+  navigation,
+  route,
+}: MemberTabsScreenProps) {
   const [currOrgName, setCurrOrgName] = useState("");
   const [isManager, setIsManager] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -161,6 +165,7 @@ export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
           }}
         />
       </Tab.Navigator>
+      <CustomContainerOverlay />
       <EquipmentOverlay />
     </EquipmentProvider>
   );

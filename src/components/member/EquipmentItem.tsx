@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { useEquipment } from "../../helper/context/EquipmentContext";
+import { itemStyles } from "../../styles/ItemStyles";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -14,7 +15,7 @@ export default function EquipmentItem({
   item,
   count,
 }: {
-  item: EquipmentObj | null;
+  item: EquipmentObj;
   count: number;
 }) {
   const { setVisible, setEquipmentItem } = useEquipment();
@@ -27,57 +28,31 @@ export default function EquipmentItem({
     .runOnJS(true);
 
   return (
-    <>
-      {item && count > 0 && (
-        <GestureDetector gesture={tapGesture}>
-          <View style={equipment.container}>
-            <View style={equipment.equipment}>
-              <Entypo name="camera" size={50} color="black" />
-              <View style={equipment.circle}>
-                <Text style={equipment.count}>{count}</Text>
-              </View>
+    <GestureDetector gesture={tapGesture}>
+      <View style={itemStyles.container}>
+        {count > 0 && (
+          <>
+            <View style={itemStyles.backDrop}>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.7 : 1,
+                  },
+                  itemStyles.equipment,
+                ]}
+              >
+                <Entypo name="camera" size={50} color="white" />
+              </Pressable>
             </View>
-            <Text style={{ fontSize: 12 }}>{item.label}</Text>
-          </View>
-        </GestureDetector>
-      )}
-    </>
+            <View style={itemStyles.circle}>
+              <Text style={itemStyles.count}>{count}</Text>
+            </View>
+            <View style={itemStyles.textContainer}>
+              <Text style={itemStyles.text}>{item.label}</Text>
+            </View>
+          </>
+        )}
+      </View>
+    </GestureDetector>
   );
 }
-
-const equipment = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    maxWidth: 100,
-  },
-  containerPressed: {
-    opacity: 0.75,
-  },
-  equipment: {
-    backgroundColor: "skyblue",
-    width: Dimensions.get("window").width / 5,
-    height: Dimensions.get("window").width / 5,
-    borderRadius: Dimensions.get("window").width / 14,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  equipmentPressed: {
-    backgroundColor: "red",
-  },
-  circle: {
-    backgroundColor: "white",
-    width: 35,
-    height: 35,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    right: -7,
-    bottom: -7,
-    borderWidth: 1,
-  },
-  count: {
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-});

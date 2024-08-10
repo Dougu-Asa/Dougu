@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
-import { Organization, OrgUserStorage, UserOrStorage } from "../models";
-import { UserType, UserContextType } from "../types/ContextTypes";
+import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
+import { UserType, UserContextType } from "../../types/ContextTypes";
 
 /* 
   Context that distributes the user object, organization object, and the user's organization object
@@ -10,7 +10,11 @@ import { UserType, UserContextType } from "../types/ContextTypes";
 */
 const UserContext = React.createContext<UserContextType | undefined>(undefined);
 
-export default function UserProvider({ children }: { children: React.ReactNode }) {
+export default function UserProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = useState<UserType | null>(null);
   const [org, setOrg] = useState<Organization | null>(null);
   const [orgUserStorage, setOrgUserStorage] = useState<OrgUserStorage | null>(
@@ -60,7 +64,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       {children}
     </UserContext.Provider>
   );
-};
+}
 
 // ensure that UserContext isn't undefined in useUser
 export const useUser = (): UserContextType => {

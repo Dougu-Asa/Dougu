@@ -9,11 +9,11 @@ import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 
 // Project Files
-import { useUser } from "../helper/UserContext";
+import { useUser } from "../helper/context/UserContext";
 import LoginScreen from "../components/Login";
 import CreateAccScreen from "../components/CreateAcc";
 import { HomeScreenProps } from "../types/ScreenTypes";
-import { useLoad } from "../helper/LoadingContext";
+import { useLoad } from "../helper/context/LoadingContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 /* 

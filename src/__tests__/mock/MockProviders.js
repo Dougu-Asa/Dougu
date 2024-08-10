@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import LoadingProvider from "../../helper/LoadingContext";
-import UserProvider from "../../helper/UserContext";
+import LoadingProvider from "../../helper/context/LoadingContext";
+import UserProvider from "../../helper/context/UserContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 /* eslint-disable no-undef */
 

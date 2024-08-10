@@ -11,13 +11,13 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { DataStore } from "aws-amplify";
 
 // project imports
-import { Equipment } from "../../models";
-import { useUser } from "../../helper/UserContext";
-import { useLoad } from "../../helper/LoadingContext";
+import { Container, Equipment } from "../../models";
+import { useUser } from "../../helper/context/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
 import { handleError } from "../../helper/Utils";
-import { EquipmentObj } from "../../types/ModelTypes";
-import { sortOrgEquipment } from "../../helper/DataStoreUtils";
-import { useEquipment } from "../../helper/EquipmentContext";
+import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import { sortOrgItems } from "../../helper/EquipmentUtils";
+import { useEquipment } from "../../helper/context/EquipmentContext";
 
 /*
   Component for displaying all equipment in the organization
@@ -30,12 +30,12 @@ export default function EquipmentTable({
 }) {
   const tableHead = ["Name", "Assigned To", "Quantity", ""];
   // table data is the equipment in the organization
-  const [tableData, setTableData] = useState<EquipmentObj[]>([]);
+  const [tableData, setTableData] = useState<ItemObj[]>([]);
   // filtered data is the equipment that matches the search filter
-  const [filteredData, setFilteredData] = useState<EquipmentObj[]>([]);
+  const [filteredData, setFilteredData] = useState<ItemObj[]>([]);
   const isManager = useRef<boolean>(false);
   const { user, org } = useUser();
-  const { equipmentData } = useEquipment();
+  const { itemData } = useEquipment();
   const { setIsLoading } = useLoad();
 
   // subscribe to and get all equipment in the organization
@@ -43,11 +43,11 @@ export default function EquipmentTable({
     // get all equipment in the organization by concating all equipment arrays
     // from each of the assigned users/storages
     const handleGetEquipment = () => {
-      const data = sortOrgEquipment(equipmentData);
-      let tableData: EquipmentObj[] = [];
+      const data = sortOrgItems(itemData);
+      let tableData: ItemObj[] = [];
       // Iterate over equipmentData and concatenate the equipment arrays
       data.forEach((assignedEquipment) => {
-        tableData = tableData.concat(assignedEquipment.equipment);
+        tableData = tableData.concat(assignedEquipment.data);
       });
       setTableData(tableData);
       setFilteredData(tableData);
@@ -55,7 +55,7 @@ export default function EquipmentTable({
 
     isManager.current = org!.manager === user!.attributes.sub ? true : false;
     handleGetEquipment();
-  }, [equipmentData, org, user]);
+  }, [itemData, org, user]);
 
   // listen for changes in the search bar
   useEffect(() => {
@@ -76,12 +76,17 @@ export default function EquipmentTable({
   }, [searchFilter, tableData]);
 
   // delete equipment from the organization
-  const handleDelete = async (equipment: EquipmentObj) => {
+  const handleDelete = async (item: ItemObj) => {
     try {
       setIsLoading(true);
-      const datastoreEquipment = await DataStore.query(Equipment, equipment.id);
-      if (datastoreEquipment == null) throw new Error("Equipment not found");
-      await DataStore.delete(datastoreEquipment);
+      let toDelete;
+      if (item.type === "equipment") {
+        toDelete = await DataStore.query(Equipment, item.id);
+      } else {
+        toDelete = await DataStore.query(Container, item.id);
+      }
+      if (toDelete == null) throw new Error("Item not found");
+      await DataStore.delete(toDelete);
       setIsLoading(false);
       Alert.alert("Equipment Deleted Successfully!");
     } catch (error) {
@@ -90,7 +95,7 @@ export default function EquipmentTable({
   };
 
   // make sure the owner wants to delete the equipment
-  const handleEdit = (equipment: EquipmentObj) => {
+  const handleEdit = (equipment: ItemObj) => {
     if (!isManager.current) {
       Alert.alert("You must be a manager to edit equipment");
       return;
@@ -130,7 +135,11 @@ export default function EquipmentTable({
               <Text>{equipment.assignedToName}</Text>
             </View>
             <View style={[styles.cell, { flex: 3 }]}>
-              <Text>{equipment.count}</Text>
+              <Text>
+                {equipment.type === "equipment"
+                  ? (equipment as EquipmentObj).count
+                  : 1}
+              </Text>
             </View>
             <TouchableOpacity
               style={styles.icon}

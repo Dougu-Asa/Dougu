@@ -10,6 +10,8 @@ export const createOrganization = /* GraphQL */ `
       id
       name
       accessCode
+      image
+      manager
       equipment {
         nextToken
         startedAt
@@ -25,23 +27,11 @@ export const createOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
-      manager {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-      organizationManagerUserId
       __typename
     }
   }
@@ -55,6 +45,8 @@ export const updateOrganization = /* GraphQL */ `
       id
       name
       accessCode
+      image
+      manager
       equipment {
         nextToken
         startedAt
@@ -70,23 +62,11 @@ export const updateOrganization = /* GraphQL */ `
         startedAt
         __typename
       }
-      manager {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-      organizationManagerUserId
       __typename
     }
   }
@@ -100,6 +80,8 @@ export const deleteOrganization = /* GraphQL */ `
       id
       name
       accessCode
+      image
+      manager
       equipment {
         nextToken
         startedAt
@@ -111,87 +93,6 @@ export const deleteOrganization = /* GraphQL */ `
         __typename
       }
       containers {
-        nextToken
-        startedAt
-        __typename
-      }
-      manager {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      organizationManagerUserId
-      __typename
-    }
-  }
-`;
-export const createUser = /* GraphQL */ `
-  mutation CreateUser(
-    $input: CreateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    createUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      organizations {
-        nextToken
-        startedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const updateUser = /* GraphQL */ `
-  mutation UpdateUser(
-    $input: UpdateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    updateUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      organizations {
-        nextToken
-        startedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-  }
-`;
-export const deleteUser = /* GraphQL */ `
-  mutation DeleteUser(
-    $input: DeleteUserInput!
-    $condition: ModelUserConditionInput
-  ) {
-    deleteUser(input: $input, condition: $condition) {
-      userId
-      name
-      email
-      organizations {
         nextToken
         startedAt
         __typename
@@ -217,26 +118,19 @@ export const createOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
-      user {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      image
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -254,7 +148,6 @@ export const createOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -271,26 +164,19 @@ export const updateOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
-      user {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      image
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -308,7 +194,6 @@ export const updateOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -325,26 +210,19 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       type
-      user {
-        userId
-        name
-        email
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        __typename
-      }
+      image
+      group
+      user
       equipment {
         nextToken
         startedAt
@@ -362,7 +240,6 @@ export const deleteOrgUserStorage = /* GraphQL */ `
       _deleted
       _lastChangedAt
       organizationUserOrStoragesId
-      userOrganizationsUserId
       __typename
     }
   }
@@ -379,12 +256,13 @@ export const createContainer = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -392,6 +270,9 @@ export const createContainer = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -399,14 +280,10 @@ export const createContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      equipment {
-        nextToken
-        startedAt
-        __typename
-      }
+      color
+      group
       details
       createdAt
       updatedAt
@@ -431,12 +308,13 @@ export const updateContainer = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -444,6 +322,9 @@ export const updateContainer = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -451,14 +332,10 @@ export const updateContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      equipment {
-        nextToken
-        startedAt
-        __typename
-      }
+      color
+      group
       details
       createdAt
       updatedAt
@@ -483,12 +360,13 @@ export const deleteContainer = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -496,6 +374,9 @@ export const deleteContainer = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -503,14 +384,10 @@ export const deleteContainer = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      equipment {
-        nextToken
-        startedAt
-        __typename
-      }
+      color
+      group
       details
       createdAt
       updatedAt
@@ -535,12 +412,13 @@ export const createEquipment = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -548,6 +426,9 @@ export const createEquipment = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -555,23 +436,11 @@ export const createEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      parent {
-        id
-        name
-        lastUpdatedDate
-        details
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        organizationContainersId
-        orgUserStorageContainersId
-        __typename
-      }
+      image
+      group
+      containerId
       details
       createdAt
       updatedAt
@@ -580,7 +449,6 @@ export const createEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      containerEquipmentId
       __typename
     }
   }
@@ -597,12 +465,13 @@ export const updateEquipment = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -610,6 +479,9 @@ export const updateEquipment = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -617,23 +489,11 @@ export const updateEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      parent {
-        id
-        name
-        lastUpdatedDate
-        details
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        organizationContainersId
-        orgUserStorageContainersId
-        __typename
-      }
+      image
+      group
+      containerId
       details
       createdAt
       updatedAt
@@ -642,7 +502,6 @@ export const updateEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      containerEquipmentId
       __typename
     }
   }
@@ -659,12 +518,13 @@ export const deleteEquipment = /* GraphQL */ `
         id
         name
         accessCode
+        image
+        manager
         createdAt
         updatedAt
         _version
         _deleted
         _lastChangedAt
-        organizationManagerUserId
         __typename
       }
       lastUpdatedDate
@@ -672,6 +532,9 @@ export const deleteEquipment = /* GraphQL */ `
         id
         name
         type
+        image
+        group
+        user
         details
         createdAt
         updatedAt
@@ -679,23 +542,11 @@ export const deleteEquipment = /* GraphQL */ `
         _deleted
         _lastChangedAt
         organizationUserOrStoragesId
-        userOrganizationsUserId
         __typename
       }
-      parent {
-        id
-        name
-        lastUpdatedDate
-        details
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-        organizationContainersId
-        orgUserStorageContainersId
-        __typename
-      }
+      image
+      group
+      containerId
       details
       createdAt
       updatedAt
@@ -704,7 +555,6 @@ export const deleteEquipment = /* GraphQL */ `
       _lastChangedAt
       organizationEquipmentId
       orgUserStorageEquipmentId
-      containerEquipmentId
       __typename
     }
   }

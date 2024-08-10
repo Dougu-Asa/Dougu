@@ -1,20 +1,31 @@
 import { OrgUserStorage } from "../models";
 
-// how equipment data is stored in the app
-export type EquipmentObj = {
+export type EquipmentOrContainer = "equipment" | "container";
+
+export interface ItemObj {
   id: string;
   label: string;
+  assignedTo: string;
+  assignedToName: string;
+  type: EquipmentOrContainer;
+}
+
+// how equipment data is stored in the app
+export interface EquipmentObj extends ItemObj {
   count: number;
   data: string[];
   detailData: string[];
-  assignedTo: string;
-  assignedToName: string;
-};
+  container: string | null;
+}
 
-export type OrgEquipmentObj = {
-  assignedToName: string;
+export interface ContainerObj extends ItemObj {
   equipment: EquipmentObj[];
-};
+}
+
+export interface OrgItem {
+  assignedToName: string;
+  data: ItemObj[];
+}
 
 // for current members dropdown
 export type UserNames = {
@@ -28,5 +39,3 @@ export type Position = {
   x: number;
   y: number;
 };
-
-export type TopOrBottom = "top" | "bottom";
