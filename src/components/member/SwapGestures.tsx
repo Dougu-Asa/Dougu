@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -28,6 +28,7 @@ import {
   ContainerObj,
   EquipmentObj,
   ItemObj,
+  ListCounts,
   Position,
 } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
@@ -51,11 +52,21 @@ export default function SwapGestures({
   listTwo,
   handleSet,
   swapUser,
+  listOneCounts,
+  listTwoCounts,
+  containerCounts,
+  decrementCountAtIndex,
+  incrementCountAtIndex,
 }: {
   listOne: ItemObj[];
   listTwo: ItemObj[];
   handleSet: (user: OrgUserStorage | null) => void;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
+  listOneCounts: number[];
+  listTwoCounts: number[];
+  containerCounts: number[];
+  decrementCountAtIndex: (index: number, type: ListCounts) => void;
+  incrementCountAtIndex: (index: number, type: ListCounts) => void;
 }) {
   const {
     containerItem,
@@ -63,65 +74,6 @@ export default function SwapGestures({
     swapContainerVisible,
     setSwapContainerVisible,
   } = useEquipment();
-  // counts -section: when an item is dragged, the count of that item is decremented
-  // this keeps track for both lists and the container overlay
-  const [listOneCounts, setListOneCounts] = useState<number[]>([]);
-  const [listTwoCounts, setListTwoCounts] = useState<number[]>([]);
-  const [containerCounts, setContainerCounts] = useState<number[]>([]);
-
-  const decrementCountAtIndex = (
-    index: number,
-    setList: React.Dispatch<React.SetStateAction<number[]>>,
-  ) => {
-    setList((prevCounts) => {
-      const newCounts = [...prevCounts];
-      if (newCounts[index] > 0) {
-        newCounts[index] -= 1;
-      }
-      return newCounts;
-    });
-  };
-
-  const incrementCountAtIndex = (
-    index: number,
-    setList: React.Dispatch<React.SetStateAction<number[]>>,
-  ) => {
-    setList((prevCounts) => {
-      const newCounts = [...prevCounts];
-      newCounts[index] += 1;
-      return newCounts;
-    });
-  };
-
-  useEffect(() => {
-    setListOneCounts(
-      listOne.map((item) => {
-        if (item.type === "equipment") {
-          return (item as EquipmentObj).count;
-        } else {
-          return 1;
-        }
-      }),
-    );
-    setListTwoCounts(
-      listTwo.map((item) => {
-        if (item.type === "equipment") {
-          return (item as EquipmentObj).count;
-        } else {
-          return 1;
-        }
-      }),
-    );
-  }, [listOne, listTwo]);
-
-  useEffect(() => {
-    if (containerItem) {
-      setContainerCounts(
-        containerItem.equipment.map((item) => (item as EquipmentObj).count),
-      );
-    }
-  }, [containerItem]);
-
   // distance from the top of the screen to the top of the header
   const halfLine = useRef<number>(0);
 
@@ -180,14 +132,14 @@ export default function SwapGestures({
       : bottomPage * windowWidth;
     const list = isTop ? listOne : listTwo;
     startSide.current = isTop ? "top" : "bottom";
-    const setListCounts = isTop ? setListOneCounts : setListTwoCounts;
+    const type = isTop ? "one" : "two";
     if (y < yRange.start || y > yRange.end) return;
     // check if the user is hovering over an item
     const idx = Math.floor((gesture.x + horizontalOffset) / offset);
     // ensure idx is within bounds
     if (idx < 0 || idx > list.length - 1) return;
     const item = list[idx];
-    decrementCountAtIndex(idx, setListCounts);
+    decrementCountAtIndex(idx, type);
     startIdx.current = idx;
     setDraggingItem(item);
   };
@@ -219,7 +171,7 @@ export default function SwapGestures({
     const idx = containerPage * 9 + row * 3 + col;
     if (idx < 0 || idx > containerItem.equipment.length - 1) return;
     const item = containerItem.equipment[idx];
-    decrementCountAtIndex(idx, setContainerCounts);
+    decrementCountAtIndex(idx, "container");
     startIdx.current = idx;
     startSide.current = "container";
     setDraggingItem(item);
@@ -393,15 +345,16 @@ export default function SwapGestures({
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     if (!draggingItem || startIdx.current == null) return;
-    let setListCounts: React.Dispatch<React.SetStateAction<number[]>>;
+    let countType: ListCounts;
     if (startSide.current === "top") {
-      setListCounts = setListOneCounts;
+      countType = "one";
     } else if (startSide.current === "bottom") {
-      setListCounts = setListTwoCounts;
+      countType = "two";
     } else {
-      setListCounts = setContainerCounts;
+      countType = "container";
     }
-    incrementCountAtIndex(startIdx.current, setListCounts);
+    incrementCountAtIndex(startIdx.current, countType);
+    if (swapContainerVisible) return;
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {
       console.log("reassigning equipment to container");

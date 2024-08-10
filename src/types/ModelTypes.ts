@@ -39,3 +39,6 @@ export type Position = {
   x: number;
   y: number;
 };
+
+// either listOne, listTwo, or container for the swapEquipment screen
+export type ListCounts = "one" | "two" | "container";
