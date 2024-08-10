@@ -62,6 +62,8 @@ export default function SwapGestures({
     swapContainerVisible,
     setSwapContainerVisible,
   } = useEquipment();
+  // counts -section: when an item is dragged, the count of that item is decremented
+  // this keeps track for both lists and the container overlay
   const [listOneCounts, setListOneCounts] = useState<number[]>([]);
   const [listTwoCounts, setListTwoCounts] = useState<number[]>([]);
   const [containerCounts, setContainerCounts] = useState<number[]>([]);
@@ -91,7 +93,6 @@ export default function SwapGestures({
   };
 
   useEffect(() => {
-    console.log("running effect");
     setListOneCounts(
       listOne.map((item) => {
         if (item.type === "equipment") {
