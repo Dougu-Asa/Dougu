@@ -60,6 +60,22 @@ export default function EquipmentProvider({
     // find the equipment object in the equipmentData map
     const orgItem = itemData.get(item.assignedTo);
     if (!orgItem) return;
+    let newOrgItem: OrgItem | undefined;
+    if (item.container) {
+      newOrgItem = containerOrgItem(item, newId, orgItem);
+    } else {
+      newOrgItem = equipmentOrgItem(item, newId, orgItem);
+    }
+    if (!newOrgItem) return;
+    itemData.set(item.assignedTo, newOrgItem);
+  };
+
+  // updates the orgItem's equipment object with the new equipment object
+  const equipmentOrgItem = (
+    item: EquipmentObj,
+    newId: string,
+    orgItem: OrgItem,
+  ): OrgItem | undefined => {
     // find the index of the equipment object in the equipment array
     const index = orgItem.data.findIndex((e) => e.id === item.id);
     if (index === -1) return;
@@ -68,7 +84,31 @@ export default function EquipmentProvider({
     setEquipmentItem(newEquipment);
     // update the equipment array with the new equipment object
     orgItem.data[index] = newEquipment;
-    itemData.set(item.assignedTo, orgItem);
+    return orgItem;
+  };
+
+  // updates the orgItem's container object with the new equipment object
+  const containerOrgItem = (
+    item: EquipmentObj,
+    newId: string,
+    orgItem: OrgItem,
+  ): OrgItem | undefined => {
+    // find the index of the container with the equipment object
+    const containerIdx = orgItem.data.findIndex(
+      (e) => e.id === containerItem!.id,
+    );
+    // find idx of equipment object in the container
+    const index = containerItem?.equipment.findIndex((e) => e.id === item.id);
+    if (index === -1 || index === undefined) return;
+    // create a new equipment object and container object
+    const newEquipment = { ...item, id: newId };
+    let newEquipmentArray = containerItem!.equipment;
+    newEquipmentArray[index] = newEquipment;
+    let newContainer = { ...containerItem!, equipment: newEquipmentArray };
+    setContainerItem(newContainer);
+    setEquipmentItem(newEquipment);
+    orgItem.data[containerIdx] = newContainer;
+    return orgItem;
   };
 
   return (

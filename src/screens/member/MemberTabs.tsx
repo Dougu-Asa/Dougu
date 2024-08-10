@@ -165,8 +165,8 @@ export default function MemberTabs({
           }}
         />
       </Tab.Navigator>
-      <EquipmentOverlay />
       <CustomContainerOverlay />
+      <EquipmentOverlay />
     </EquipmentProvider>
   );
 }

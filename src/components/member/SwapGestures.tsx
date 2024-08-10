@@ -433,6 +433,7 @@ export default function SwapGestures({
   };
 
   const panPressGesture = Gesture.Pan()
+    .maxPointers(1)
     .onStart((e) => {
       "worklet";
       animateStart(e);
