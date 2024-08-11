@@ -41,7 +41,7 @@ Because the container overlay on the swap screen needs to have access to gesture
 
 ## SwapEquipment Refactor
 After realizing that a better design would be to have a panGesture handler at the screen level isntead of at the item level, I now plan on rewriting the swapEquipment setup to utilize this new strategy. This requires some pretty big changes:
-- panPressGesture is now at screen level
+- panPressGesture is now at screen level, the order in which you nest your JSX elements matters a lot for gesture handling!
 - equipmentItem counts are now stored using state and updated by the grid
 - containerOverlay is part of the swapEquipment screen such that screen gestures are detected while it is visible
 - Reassign equipment is simplified such that the util functions in SwapUtils handle special cases, swapGestures just calls them.

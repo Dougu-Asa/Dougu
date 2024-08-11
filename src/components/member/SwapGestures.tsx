@@ -18,29 +18,18 @@ import {
 import Animated, { runOnJS, withSpring } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import {
-  ContainerObj,
-  EquipmentObj,
-  ItemObj,
-  ListCounts,
-} from "../../types/ModelTypes";
+import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
 import CurrMembersDropdown from "../CurrMembersDropdown";
 import ScrollRow from "./ScrollRow";
-import {
-  addEquipmentToContainer,
-  reassignContainer,
-  reassignEquipment,
-  moveOutOfContainer,
-} from "../../helper/SwapUtils";
-import { useUser } from "../../helper/context/UserContext";
-import { useLoad } from "../../helper/context/LoadingContext";
 import SwapContainerOverlay from "./SwapContainerOverlay";
 import { Divider } from "@rneui/base";
 import useAnimateOverlay from "./useAnimateOverlay";
 import useItemCounts from "./useItemCounts";
+import useScroll from "./useScroll";
+import useSwap from "./useSwap";
 
 export default function SwapGestures({
   listOne,
@@ -55,6 +44,10 @@ export default function SwapGestures({
 }) {
   // state
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
+  const startIdx = useRef<number | null>(null);
+  const hoverContainer = useRef<ContainerObj | null>(null);
+  const halfLine = useRef<number>(0);
 
   // hooks
   const {
@@ -75,21 +68,30 @@ export default function SwapGestures({
     listOne,
     listTwo,
   });
+  const {
+    topPage,
+    setTopPage,
+    nextTopPage,
+    bottomPage,
+    setBottomPage,
+    nextBottomPage,
+    scrollTimeout,
+    handleScroll,
+  } = useScroll();
+  const { handleReassign } = useSwap({
+    draggingItem,
+    startIdx,
+    startSide,
+    hoverContainer,
+    halfLine,
+    swapUser,
+    incrementCountAtIndex,
+  });
 
-  const halfLine = useRef<number>(0);
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
     halfLine.current = y;
   };
-
-  // scroll logic
-  const [topPage, setTopPage] = useState(0);
-  const [nextTopPage, setNextTopPage] = useState(0);
-  const [bottomPage, setBottomPage] = useState(0);
-  const [nextBottomPage, setNextBottomPage] = useState(0);
-
-  // hovering logic
-  const hoverContainer = useRef<ContainerObj | null>(null);
 
   const windowWidth = Dimensions.get("window").width;
   const equipmentWidth = windowWidth / 5;
@@ -102,8 +104,6 @@ export default function SwapGestures({
     start: halfLine.current + 60,
     end: halfLine.current + 60 + equipmentWidth,
   };
-  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
-  const startIdx = useRef<number | null>(null);
 
   const handleSetItem = (
     gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
@@ -163,7 +163,6 @@ export default function SwapGestures({
 
   let prevPosition = "";
   const containerTimeout = useRef<NodeJS.Timeout | null>(null);
-  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
   const clearTimeouts = () => {
     if (scrollTimeout.current) {
@@ -234,25 +233,6 @@ export default function SwapGestures({
     }
   };
 
-  // determine if the equipment item is hovering over a scroll area
-  // and change the page accordingly
-  const handleScroll = (isTop: boolean, position: string) => {
-    const changePage = isTop ? setNextTopPage : setNextBottomPage;
-    const currPage = isTop ? topPage : bottomPage;
-    if (scrollTimeout.current) {
-      return;
-    }
-    // make sure nextPage is correct before changing page
-    scrollTimeout.current = setTimeout(() => {
-      if (position === "left") {
-        changePage(currPage - 1);
-      } else if (position === "right") {
-        changePage(currPage + 1);
-      }
-      scrollTimeout.current = null;
-    }, 800);
-  };
-
   // handles the case where the equipment item is hovering over a container item
   const handleContainer = (isTop: boolean, index: number) => {
     const list = isTop ? listOne : listTwo;
@@ -284,54 +264,6 @@ export default function SwapGestures({
       handleContainer(isTop, index);
     }
     prevPosition = position;
-  };
-
-  const { orgUserStorage } = useUser();
-  const { setIsLoading } = useLoad();
-  // decide where to reassign the equipment
-  const handleReassign = async (
-    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
-    if (!draggingItem || startIdx.current == null) return;
-    let countType: ListCounts;
-    if (startSide.current === "top") {
-      countType = "one";
-    } else if (startSide.current === "bottom") {
-      countType = "two";
-    } else {
-      countType = "container";
-    }
-    incrementCountAtIndex(startIdx.current, countType);
-    if (swapContainerVisible) return;
-    // equipment -> container
-    if (draggingItem.type === "equipment" && hoverContainer.current) {
-      console.log("reassigning equipment to container");
-      addEquipmentToContainer(
-        draggingItem as EquipmentObj,
-        hoverContainer.current,
-        setIsLoading,
-      );
-      return;
-    }
-    if (!orgUserStorage || !swapUser.current) return;
-    const assignTo =
-      gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
-    // dragging a container
-    if (draggingItem.type === "container") {
-      reassignContainer(draggingItem as ContainerObj, assignTo, setIsLoading);
-    } else {
-      // dragging equipment
-      // check if we are moving equipment out of a container
-      if ((draggingItem as EquipmentObj).container != null) {
-        moveOutOfContainer(
-          draggingItem as EquipmentObj,
-          assignTo,
-          setIsLoading,
-        );
-      } else {
-        reassignEquipment(draggingItem as EquipmentObj, assignTo, setIsLoading);
-      }
-    }
   };
 
   const panPressGesture = Gesture.Pan()

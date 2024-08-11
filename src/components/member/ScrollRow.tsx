@@ -43,7 +43,7 @@ export default function ScrollRow({
 
   // scroll to a page if a dragging item hovers over an edge
   useEffect(() => {
-    if (!nextPage) return;
+    if (nextPage == null) return;
     if (nextPage < 0 || nextPage > chunkedData.length - 1) return;
     const scrollValue = nextPage * windowWidth;
     scrollViewRef.current?.scrollTo({ x: scrollValue });
