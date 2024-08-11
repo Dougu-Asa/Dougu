@@ -15,13 +15,7 @@ import {
   GestureUpdateEvent,
   PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
-import Animated, {
-  runOnJS,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { runOnJS, withSpring } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import {
@@ -29,7 +23,6 @@ import {
   EquipmentObj,
   ItemObj,
   ListCounts,
-  Position,
 } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
@@ -46,37 +39,44 @@ import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
 import SwapContainerOverlay from "./SwapContainerOverlay";
 import { Divider } from "@rneui/base";
+import useAnimateOverlay from "./useAnimateOverlay";
+import useItemCounts from "./useItemCounts";
 
 export default function SwapGestures({
   listOne,
   listTwo,
   handleSet,
   swapUser,
-  listOneCounts,
-  listTwoCounts,
-  containerCounts,
-  decrementCountAtIndex,
-  incrementCountAtIndex,
 }: {
   listOne: ItemObj[];
   listTwo: ItemObj[];
   handleSet: (user: OrgUserStorage | null) => void;
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
-  listOneCounts: number[];
-  listTwoCounts: number[];
-  containerCounts: number[];
-  decrementCountAtIndex: (index: number, type: ListCounts) => void;
-  incrementCountAtIndex: (index: number, type: ListCounts) => void;
 }) {
+  // state
+  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+
+  // hooks
   const {
     containerItem,
     setContainerItem,
     swapContainerVisible,
     setSwapContainerVisible,
   } = useEquipment();
-  // distance from the top of the screen to the top of the header
-  const halfLine = useRef<number>(0);
+  const { size, movingStyles, animateStart, animateMove, animateFinalize } =
+    useAnimateOverlay({ setDraggingItem });
+  const {
+    listOneCounts,
+    listTwoCounts,
+    containerCounts,
+    incrementCountAtIndex,
+    decrementCountAtIndex,
+  } = useItemCounts({
+    listOne,
+    listTwo,
+  });
 
+  const halfLine = useRef<number>(0);
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
     halfLine.current = y;
@@ -90,25 +90,10 @@ export default function SwapGestures({
 
   // hovering logic
   const hoverContainer = useRef<ContainerObj | null>(null);
-  const draggingOffset = useSharedValue<Position>({
-    x: 0,
-    y: 0,
-  });
-  const size = useSharedValue(1);
-  const movingStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: draggingOffset.value.x },
-        { translateY: draggingOffset.value.y },
-        { scale: size.value },
-      ],
-    };
-  });
 
   const windowWidth = Dimensions.get("window").width;
   const equipmentWidth = windowWidth / 5;
   const offset = windowWidth / 4;
-  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   const topYRange = {
     start: 140,
     end: 140 + equipmentWidth,
@@ -117,7 +102,7 @@ export default function SwapGestures({
     start: halfLine.current + 60,
     end: halfLine.current + 60 + equipmentWidth,
   };
-  const startSide = useRef<"top" | "bottom" | "container">("container");
+  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
   const startIdx = useRef<number | null>(null);
 
   const handleSetItem = (
@@ -174,32 +159,6 @@ export default function SwapGestures({
     startIdx.current = idx;
     startSide.current = "container";
     setDraggingItem(item);
-  };
-
-  // we need to know where to start the dragging animation
-  const animateStart = (
-    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
-    "worklet";
-    size.value = withSpring(1.2);
-    const halfEquipment = equipmentWidth / 2;
-    draggingOffset.value = {
-      x: gesture.x - halfEquipment,
-      y: gesture.y - halfEquipment,
-    };
-  };
-
-  // we need to know how much the equipment has been moved
-  const animateMove = (
-    gestureState: GestureUpdateEvent<
-      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
-    >,
-  ) => {
-    "worklet";
-    draggingOffset.value = {
-      x: gestureState.changeX + draggingOffset.value.x,
-      y: gestureState.changeY + draggingOffset.value.y,
-    };
   };
 
   let prevPosition = "";
@@ -325,16 +284,6 @@ export default function SwapGestures({
       handleContainer(isTop, index);
     }
     prevPosition = position;
-  };
-
-  // handle finalizing the drag and drop animation
-  const animateFinalize = () => {
-    "worklet";
-    size.value = withTiming(0, undefined, (isFinished) => {
-      if (isFinished) {
-        runOnJS(setDraggingItem)(null);
-      }
-    });
   };
 
   const { orgUserStorage } = useUser();
