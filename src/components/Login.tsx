@@ -38,15 +38,21 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   }) => {
     try {
       setIsLoading(true);
-      await signIn({username, password});
+      await signIn({ username, password });
       const attributes = await fetchUserAttributes();
-      if(!attributes.name || !attributes.email || !attributes.sub || !attributes.profile) throw new Error("Missing attributes");
+      if (
+        !attributes.name ||
+        !attributes.email ||
+        !attributes.sub ||
+        !attributes.profile
+      )
+        throw new Error("Missing attributes");
       const user = {
         name: attributes.name,
         email: attributes.email,
         id: attributes.sub,
         profile: attributes.profile,
-      }
+      };
       setUser(user);
       setIsLoading(false);
       onChangePassword("");

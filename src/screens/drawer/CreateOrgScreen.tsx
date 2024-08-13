@@ -58,7 +58,10 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   };
 
   // create an org and orgUserStorage to add to the database
-  const createOrg = async (token: string, code: string): Promise<Organization> => {
+  const createOrg = async (
+    token: string,
+    code: string,
+  ): Promise<Organization> => {
     // Add the org to the database
     const newOrg = await DataStore.save(
       new Organization({
@@ -75,7 +78,10 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     return newOrg;
   };
 
-  const createOrgUserStorage = async (token: string, org: Organization): Promise<boolean> => {
+  const createOrgUserStorage = async (
+    token: string,
+    org: Organization,
+  ): Promise<boolean> => {
     // Add the OrgUserStorage to the DB
     const newOrgUserStorage = await DataStore.save(
       new OrgUserStorage({
@@ -106,8 +112,7 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       }
       // Get the user token for authorization to api calls
       const token = (await fetchAuthSession()).tokens?.idToken?.toString();
-      if (token == null)
-        throw new Error("Token not found");
+      if (token == null) throw new Error("Token not found");
       // Create the org and orgUserStorage
       const newOrg = await createOrg(token, code);
       const success = await createOrgUserStorage(token, newOrg);

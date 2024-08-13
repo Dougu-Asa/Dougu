@@ -2,7 +2,7 @@ import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { signUp, fetchUserAttributes, signIn } from 'aws-amplify/auth';
+import { signUp, fetchUserAttributes, signIn } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";

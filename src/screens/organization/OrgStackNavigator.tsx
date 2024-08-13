@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useLayoutEffect } from "react";
-import React from "react";
 import { useIsFocused } from "@react-navigation/native";
 
 import CreateEquipmentScreen from "./CreateEquipmentScreen";

@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "react-native";
 
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
@@ -19,6 +20,7 @@ export default function RootStackNavigator() {
 
   return (
     <>
+      <StatusBar barStyle="dark-content" />
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{ headerTitleAlign: "center" }}

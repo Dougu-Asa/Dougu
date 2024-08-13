@@ -6,7 +6,7 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import { fetchUserAttributes } from "aws-amplify/auth";
 
 // Project Files
 import { useUser } from "../helper/context/UserContext";
@@ -30,13 +30,19 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
     const checkCurrentUser = async () => {
       try {
-        const attributes = await fetchUserAttributes(); 
-        if(!attributes.name || !attributes.email || !attributes.sub || !attributes.profile) throw new Error("Missing attributes");
+        const attributes = await fetchUserAttributes();
+        if (
+          !attributes.name ||
+          !attributes.email ||
+          !attributes.sub ||
+          !attributes.profile
+        )
+          throw new Error("Missing attributes");
         const user = {
           name: attributes.name,
           email: attributes.email,
           id: attributes.sub,
-          profile: attributes.profile
+          profile: attributes.profile,
         };
         console.log("User is logged in");
         setUser(user);
@@ -46,7 +52,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       }
     };
 
-    checkCurrentUser(); 
+    checkCurrentUser();
   }, [navigation, setIsLoading, setUser]);
 
   useEffect(() => {

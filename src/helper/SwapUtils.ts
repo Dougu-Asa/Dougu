@@ -1,4 +1,4 @@
-import  { DataStore } from "@aws-amplify/datastore";
+import { DataStore } from "@aws-amplify/datastore";
 import { Alert } from "react-native";
 
 import { OrgUserStorage, Equipment, Container } from "../models";

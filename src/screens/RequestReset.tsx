@@ -11,7 +11,7 @@ export default function RequestReset({ navigation }: RequestResetScreenProps) {
 
   const forgotPassword = async (username: string) => {
     try {
-      const data = await resetPassword({username});
+      const data = await resetPassword({ username });
       console.log(data);
     } catch (err) {
       console.log(err);
