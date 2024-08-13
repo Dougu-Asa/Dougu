@@ -7,12 +7,10 @@ import { EquipmentObj, OrgItem, ContainerObj } from "./ModelTypes";
     Specifically for UserContext and LoadingContext
 */
 export type UserType = {
-  attributes: {
-    sub: string;
-    name: string;
-    [key: string]: any;
-  };
-  [key: string]: any;
+  name: string;
+  email: string;
+  id: string;
+  profile: string;
 };
 
 export type UserContextType = {
