@@ -1,10 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "react-native";
 
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
 import SyncScreen from "./SyncScreen";
 import RequestReset from "./RequestReset";
 import ResetPassword from "./ResetPassword";
+import AccessCodeScreen from "./AccessCodeScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/context/LoadingContext";
@@ -18,6 +20,7 @@ export default function RootStackNavigator() {
 
   return (
     <>
+      <StatusBar barStyle="dark-content" />
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{ headerTitleAlign: "center" }}
@@ -39,6 +42,7 @@ export default function RootStackNavigator() {
         />
         <Stack.Screen name="RequestReset" component={RequestReset} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="AccessCode" component={AccessCodeScreen} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>

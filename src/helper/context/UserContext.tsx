@@ -30,7 +30,7 @@ export default function UserProvider({
       const orgUser = await DataStore.query(OrgUserStorage, (c) =>
         c.and((c) => [
           c.organizationUserOrStoragesId.eq(org.id),
-          c.user.eq(user.attributes.sub),
+          c.user.eq(user.id),
           c.type.eq(UserOrStorage.USER),
         ]),
       );

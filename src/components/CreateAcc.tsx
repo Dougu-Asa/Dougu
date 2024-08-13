@@ -2,7 +2,7 @@ import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Auth } from "aws-amplify";
+import { signUp, fetchUserAttributes, signIn } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -60,16 +60,32 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         setIsLoading(false);
         return;
       }
-      await Auth.signUp({
+      await signUp({
         username: email, // email is the username
         password: password,
-        attributes: {
-          name: username,
-          profile: "default",
+        options: {
+          userAttributes: {
+            name: username,
+            profile: "default",
+          },
         },
       });
-      const user = await Auth.signIn(email, password);
-      setUser(user);
+      await signIn({ username: email, password: password });
+      const attributes = await fetchUserAttributes();
+      if (
+        !attributes.name ||
+        !attributes.email ||
+        !attributes.sub ||
+        !attributes.profile
+      )
+        throw new Error("Missing attributes");
+      const userObj = {
+        name: attributes.name,
+        email: attributes.email,
+        id: attributes.sub,
+        profile: attributes.profile,
+      };
+      setUser(userObj);
       onChangeEmail("");
       onChangeFirst("");
       onChangeLast("");

@@ -2,10 +2,14 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
 # SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
-type Organization @model @auth(rules: [
-  { allow: groups, groupsField: "name" }
-  { allow: private, operations: [create, read] }
-  ]) {
+type Organization
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groupsField: "name" }
+      { allow: private, operations: [create, read] }
+    ]
+  ) {
   id: ID!
   name: String!
   accessCode: String!
@@ -22,10 +26,14 @@ enum UserOrStorage {
 }
 
 # organizations can have users or storage to hold equipment
-type OrgUserStorage @model  @auth(rules: [
-  { allow: groups, groupsField: "group" }
-  { allow: private, operations: [create] }
-  ]) {
+type OrgUserStorage
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groupsField: "group" }
+      { allow: private, operations: [create] }
+    ]
+  ) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
@@ -38,10 +46,14 @@ type OrgUserStorage @model  @auth(rules: [
   details: String
 }
 
-type Container @model  @auth(rules: [
-  { allow: groups, groupsField: "group" }
-  { allow: private, operations: [create] }
-  ]) {
+type Container
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groupsField: "group" }
+      { allow: private, operations: [create] }
+    ]
+  ) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo
@@ -52,10 +64,14 @@ type Container @model  @auth(rules: [
   details: String
 }
 
-type Equipment @model @auth(rules: [
-  { allow: groups, groupsField: "group" }
-  { allow: private, operations: [create] }
-  ]) {
+type Equipment
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groupsField: "group" }
+      { allow: private, operations: [create] }
+    ]
+  ) {
   id: ID!
   name: String!
   organization: Organization! @belongsTo

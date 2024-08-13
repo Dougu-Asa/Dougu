@@ -1,4 +1,5 @@
 # Architectural Decision Record:
+
 - Chose react-native as the main framework due to my past experience with react
 - AWS and Amplify are both valuable skills with powerful integration with react native, so I chose it as my backend
 - Expo Go is beginner-friendly, especially with deploying the app, which is why I use it

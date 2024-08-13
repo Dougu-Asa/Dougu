@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { Hub, DataStore, Auth } from "aws-amplify";
+import { DataStore } from "aws-amplify/datastore";
+import { Hub } from "aws-amplify/utils";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 import { SyncScreenProps } from "../types/ScreenTypes";
 import { useUser } from "../helper/context/UserContext";
@@ -21,11 +23,10 @@ export default function SyncScreen({ route, navigation }: SyncScreenProps) {
       if (syncType !== "START") {
         await DataStore.clear();
         // wait for DataStore to clear (2 seconds)
+        if (!user) return;
         setTimeout(async () => {
-          // this updates Auth to trigger a refresh of the user
-          await Auth.updateUserAttributes(user!, {
-            name: user!.attributes.name,
-          });
+          // triggers a refresh so user groups are updated (which allows access to orgs)
+          await fetchAuthSession({ forceRefresh: true });
           await DataStore.start();
         }, 2000);
       } else {
@@ -41,9 +42,8 @@ export default function SyncScreen({ route, navigation }: SyncScreenProps) {
           break;
         case "CREATE":
           setOrg(newOrg ? newOrg : null);
-          navigation.navigate("DrawerNav", {
-            screen: "AccessCode",
-            params: { accessCode: accessCode ? accessCode : "ERROR" },
+          navigation.navigate("AccessCode", {
+            accessCode: accessCode ? accessCode : "ERROR",
           });
           break;
         case "JOIN":

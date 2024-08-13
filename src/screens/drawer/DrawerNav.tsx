@@ -14,7 +14,6 @@ import { DataStore } from "@aws-amplify/datastore";
 // project imports
 import JoinOrgScreen from "./JoinOrgScreen";
 import CreateOrgScreen from "./CreateOrgScreen";
-import AccessCodeScreen from "./AccessCodeScreen";
 import MyOrgsScreen from "./MyOrgsScreen";
 import MemberTabs from "../member/MemberTabs";
 import ProfileScreen from "./ProfileScreen";
@@ -27,7 +26,7 @@ import {
 } from "../../types/NavigatorTypes";
 import { DrawerNavProps } from "../../types/ScreenTypes";
 import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
-import { signOut } from "../../helper/Utils";
+import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
 
 /* 
@@ -46,7 +45,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   // This prevents returning to home without signing out
   useEffect(() => {
     function backAction(): boolean {
-      signOut(setIsLoading, navigation, resetContext);
+      callSignOut(setIsLoading, navigation, resetContext);
       return true;
     }
 
@@ -60,11 +59,11 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
     // check if user is part of an org to automatically direct them to the correct screen
     const checkUserOrg = async () => {
       try {
-        const key = user!.attributes.sub + " currOrg";
+        const key = user!.id + " currOrg";
         const org = await AsyncStorage.getItem(key);
         // check if user has an orgUserStorage (from previous devices)
         const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-          c.user.eq(user!.attributes.sub),
+          c.user.eq(user!.id),
         );
         // check if there was a previous org session
         if (org != null) {
@@ -142,7 +141,6 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
       <Drawer.Screen name="MemberTabs" component={MemberTabs} />
       <Drawer.Screen name="JoinOrg" component={JoinOrgScreen} />
       <Drawer.Screen name="CreateOrg" component={CreateOrgScreen} />
-      <Drawer.Screen name="AccessCode" component={AccessCodeScreen} />
       <Drawer.Screen name="MyOrgs" component={MyOrgsScreen} />
       <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>

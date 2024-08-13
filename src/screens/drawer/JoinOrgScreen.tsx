@@ -4,6 +4,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import NetInfo from "@react-native-community/netinfo";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
@@ -20,7 +21,6 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [code, onChangeCode] = React.useState("");
   const { user } = useUser();
-  const token = user!.signInUserSession.idToken.jwtToken;
   const [hasConnection, setHasConnection] = React.useState(false);
 
   // ensure network connection since api calls are made
@@ -48,7 +48,7 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     const exist = await DataStore.query(OrgUserStorage, (c) =>
       c.and((c) => [
         c.organizationUserOrStoragesId.eq(org[0].id),
-        c.user.eq(user!.attributes.sub),
+        c.user.eq(user!.id),
       ]),
     );
     if (exist.length > 0) {
@@ -60,7 +60,7 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   // if a user is part of more than 5 orgs, datastore begins to error
   const validate = async () => {
     const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
-      c.user.eq(user!.attributes.sub),
+      c.user.eq(user!.id),
     );
     if (userOrgs.length >= 5) {
       throw new Error("User cannot be part of more than 5 organizations!");
@@ -69,18 +69,20 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
 
   // create an orgUserStorage object for the user and the org
   const createOrgUserStorage = async (org: Organization) => {
+    const token = (await fetchAuthSession()).tokens?.idToken?.toString();
+    if (!token) throw new Error("Token not found");
     await DataStore.save(
       new OrgUserStorage({
         organization: org,
         type: UserOrStorage.USER,
-        name: user!.attributes.name,
+        name: user!.name,
         image: "default",
         group: org.name,
-        user: user!.attributes.sub,
+        user: user!.id,
       }),
     );
     // add the user to the user group
-    await addUserToGroup(token, org.name, user!.attributes.sub);
+    await addUserToGroup(token, org.name, user!.id);
   };
 
   const handleJoin = async () => {
@@ -92,7 +94,7 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
       // Create an OrgUserStorage object for the user
       await createOrgUserStorage(org);
       // update context and async storage
-      const key = user!.attributes.sub + " currOrg";
+      const key = user!.id + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(org));
       setIsLoading(false);
       onChangeCode("");

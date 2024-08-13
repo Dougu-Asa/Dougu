@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
-import { DataStore } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -42,7 +42,7 @@ export default function MemberRow({
 
   // make sure the owner wants to delete the equipment
   const handleEdit = () => {
-    if (org!.manager !== user!.attributes.sub) {
+    if (org!.manager !== user!.id) {
       Alert.alert("You must be a manager to edit users/storages");
       return;
     }

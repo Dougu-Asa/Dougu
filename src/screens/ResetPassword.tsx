@@ -3,7 +3,7 @@ import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../styles/LoginCreate";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Auth } from "aws-amplify";
+import { confirmResetPassword } from "aws-amplify/auth";
 
 import { ResetPasswordScreenProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
@@ -25,7 +25,11 @@ export default function ResetPassword({
     newPassword: string,
   ) => {
     try {
-      const data = await Auth.forgotPasswordSubmit(email, code, newPassword);
+      const data = await confirmResetPassword({
+        username: email,
+        confirmationCode: code,
+        newPassword: newPassword,
+      });
       console.log(data);
       Alert.alert("Success", "Password has been reset");
     } catch (err) {
@@ -66,7 +70,7 @@ export default function ResetPassword({
           onChangeText={onChangePassword}
           secureTextEntry={!showPassword}
           value={password}
-          placeholder="password"
+          placeholder="new password"
           keyboardType="default"
         />
         <MaterialCommunityIcons
@@ -83,7 +87,7 @@ export default function ResetPassword({
           onChangeText={onChangeConfirmPassword}
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
-          placeholder="confirm password"
+          placeholder="confirm new password"
           keyboardType="default"
         />
         <MaterialCommunityIcons

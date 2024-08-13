@@ -22,7 +22,7 @@ export default function MyOrgsScreen({ navigation }: MyOrgsScreenProps) {
     // get the organizations that the user is a part of
     const getOrgs = async () => {
       let orgs = await DataStore.query(Organization, (c) =>
-        c.UserOrStorages.user.eq(user!.attributes.sub),
+        c.UserOrStorages.user.eq(user!.id),
       );
       const orgData = orgs.map((org, index) => ({
         label: org["name"],
@@ -44,7 +44,7 @@ export default function MyOrgsScreen({ navigation }: MyOrgsScreenProps) {
   const setAndNavigate = async (orgName: string) => {
     const org = await DataStore.query(Organization, (c) => c.name.eq(orgName));
     // AsyncStorage helps us keep track of previous sessions on the device
-    const key = user!.attributes.sub + " currOrg";
+    const key = user!.id + " currOrg";
     await AsyncStorage.setItem(key, JSON.stringify(org[0]));
     setOrg(org[0]);
     navigation.navigate("MemberTabs", { screen: "Equipment" });

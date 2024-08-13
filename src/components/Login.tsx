@@ -2,7 +2,7 @@ import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Auth } from "aws-amplify";
+import { signIn, fetchUserAttributes } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
     setShowPassword(!showPassword);
   };
 
-  const signIn = async ({
+  const handleSignIn = async ({
     username,
     password,
   }: {
@@ -38,8 +38,21 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   }) => {
     try {
       setIsLoading(true);
-      await Auth.signIn(username, password);
-      const user = await Auth.currentAuthenticatedUser();
+      await signIn({ username, password });
+      const attributes = await fetchUserAttributes();
+      if (
+        !attributes.name ||
+        !attributes.email ||
+        !attributes.sub ||
+        !attributes.profile
+      )
+        throw new Error("Missing attributes");
+      const user = {
+        name: attributes.name,
+        email: attributes.email,
+        id: attributes.sub,
+        profile: attributes.profile,
+      };
       setUser(user);
       setIsLoading(false);
       onChangePassword("");
@@ -89,7 +102,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => signIn({ username, password })}
+        onPress={() => handleSignIn({ username, password })}
         testID="signInButton"
       >
         <Text style={styles.btnText}>Login</Text>

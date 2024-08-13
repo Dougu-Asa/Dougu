@@ -85,7 +85,7 @@ export default function UserStorages({
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {
-    if (org!.manager !== user!.attributes.sub)
+    if (org!.manager !== user!.id)
       Alert.alert("You need to be a manager to create a storage!");
     else navigation.navigate("CreateStorage");
   };

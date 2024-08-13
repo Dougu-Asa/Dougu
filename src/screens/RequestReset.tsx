@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
+import { resetPassword } from "aws-amplify/auth";
 
 import { styles } from "../styles/LoginCreate";
 import { RequestResetScreenProps } from "../types/ScreenTypes";
@@ -11,7 +11,7 @@ export default function RequestReset({ navigation }: RequestResetScreenProps) {
 
   const forgotPassword = async (username: string) => {
     try {
-      const data = await Auth.forgotPassword(username);
+      const data = await resetPassword({ username });
       console.log(data);
     } catch (err) {
       console.log(err);

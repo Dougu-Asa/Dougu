@@ -1,4 +1,4 @@
-import { Auth } from "aws-amplify";
+import { signIn, fetchUserAttributes } from "aws-amplify/auth";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
 import { MockUserProvider, MockLoadingProvider } from "../mock/MockProviders";
@@ -14,15 +14,25 @@ const mockNavigation = {
   navigate: jest.fn(),
 };
 
-jest.mock("aws-amplify", () => ({
-  Auth: {
-    signIn: jest.fn(),
-    currentAuthenticatedUser: jest.fn(),
-  },
+jest.mock("aws-amplify/auth", () => ({
+  signIn: jest.fn(),
+  fetchUserAttributes: jest.fn(),
 }));
 
 jest.mock("../../helper/Utils", () => ({
   handleError: jest.fn(),
+}));
+
+jest.mock("@aws-amplify/datastore", () => ({
+  DataStore: {
+    clear: jest.fn(),
+  },
+  initSchema: jest.fn(() => ({
+    Organization: jest.fn(),
+    OrgUserStorage: jest.fn(),
+    Container: jest.fn(),
+    Equipment: jest.fn(),
+  })),
 }));
 
 jest.setTimeout(10000);
@@ -35,10 +45,15 @@ describe("signIn", () => {
   it("signs in a user successfully", async () => {
     const username = "T@gmail.com";
     const password = "Tassword";
-    const mockUser = { username };
+    const mockAttributes = {
+      name: "Test User",
+      email: "testuser@example.com",
+      sub: "user-1",
+      profile: "test-profile",
+    };
 
-    Auth.signIn.mockResolvedValueOnce({});
-    Auth.currentAuthenticatedUser.mockResolvedValueOnce(mockUser);
+    signIn.mockResolvedValueOnce({});
+    fetchUserAttributes.mockResolvedValueOnce(mockAttributes);
 
     const { getByTestId } = render(
       <MockLoadingProvider>
@@ -63,8 +78,11 @@ describe("signIn", () => {
       fireEvent.press(signInButton);
     });
 
-    expect(Auth.signIn).toHaveBeenCalledWith(username, password);
-    expect(Auth.currentAuthenticatedUser).toHaveBeenCalled();
+    expect(signIn).toHaveBeenCalledWith({
+      username: username,
+      password: password,
+    });
+    expect(fetchUserAttributes).toHaveBeenCalled();
     expect(handleError).not.toHaveBeenCalled();
   });
 
@@ -73,7 +91,7 @@ describe("signIn", () => {
     const password = null;
     const error = new Error("sign in failed");
 
-    Auth.signIn.mockRejectedValueOnce(error);
+    signIn.mockRejectedValueOnce(error);
 
     const { getByTestId } = render(
       <MockLoadingProvider>
@@ -98,7 +116,10 @@ describe("signIn", () => {
       fireEvent.press(signInButton);
     });
 
-    expect(Auth.signIn).toHaveBeenCalledWith(username, password);
+    expect(signIn).toHaveBeenCalledWith({
+      username: username,
+      password: password,
+    });
     expect(handleError).toHaveBeenCalledWith(
       "signIn",
       error,
