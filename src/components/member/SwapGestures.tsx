@@ -18,7 +18,12 @@ import {
 import Animated, { runOnJS, withSpring } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import {
+  ContainerObj,
+  EquipmentObj,
+  ItemObj,
+  ListCounts,
+} from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
@@ -29,7 +34,14 @@ import { Divider } from "@rneui/base";
 import useAnimateOverlay from "./useAnimateOverlay";
 import useItemCounts from "./useItemCounts";
 import useScroll from "./useScroll";
-import useSwap from "./useSwap";
+import {
+  addEquipmentToContainer,
+  reassignContainer,
+  reassignEquipment,
+  moveOutOfContainer,
+} from "../../helper/SwapUtils";
+import { useUser } from "../../helper/context/UserContext";
+import useContainer from "./useContainer";
 
 export default function SwapGestures({
   listOne,
@@ -50,12 +62,7 @@ export default function SwapGestures({
   const halfLine = useRef<number>(0);
 
   // hooks
-  const {
-    containerItem,
-    setContainerItem,
-    swapContainerVisible,
-    setSwapContainerVisible,
-  } = useEquipment();
+  const { swapContainerVisible } = useEquipment();
   const { size, movingStyles, animateStart, animateMove, animateFinalize } =
     useAnimateOverlay({ setDraggingItem });
   const {
@@ -78,15 +85,14 @@ export default function SwapGestures({
     scrollTimeout,
     handleScroll,
   } = useScroll();
-  const { handleReassign } = useSwap({
-    draggingItem,
-    startIdx,
-    startSide,
-    hoverContainer,
-    halfLine,
-    swapUser,
-    incrementCountAtIndex,
-  });
+  const { setContainerPage, containerSetItem, containerHover, overlayTimeout } =
+    useContainer({
+      decrementCountAtIndex,
+      draggingItem,
+      setDraggingItem,
+      startIdx,
+      startSide,
+    });
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
@@ -128,42 +134,8 @@ export default function SwapGestures({
     setDraggingItem(item);
   };
 
-  const [containerPage, setContainerPage] = useState(0);
-  const windowHeight = Dimensions.get("window").height;
-  // setting an item while the container overlay is visible
-  const containerYRange = {
-    start: 0.2 * windowHeight,
-    end: 0.7 * windowHeight + 30,
-  };
-  const containerXRange = {
-    start: 0.075 * windowWidth,
-    end: 0.925 * windowWidth,
-  };
-  const containerSetItem = (
-    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
-    if (!containerItem) return;
-    const x = gesture.x;
-    const y = gesture.y;
-    // ensure the user is within the container overlay
-    if (x < containerXRange.start || x > containerXRange.end) return;
-    if (y < containerYRange.start || y > containerYRange.end) return;
-    const row = Math.floor((y - containerYRange.start) / (0.18 * windowHeight));
-    const col = Math.floor(
-      (x - containerXRange.start) / ((windowWidth * 0.85) / 3),
-    );
-    const idx = containerPage * 9 + row * 3 + col;
-    if (idx < 0 || idx > containerItem.equipment.length - 1) return;
-    const item = containerItem.equipment[idx];
-    decrementCountAtIndex(idx, "container");
-    startIdx.current = idx;
-    startSide.current = "container";
-    setDraggingItem(item);
-  };
-
   let prevPosition = "";
   const containerTimeout = useRef<NodeJS.Timeout | null>(null);
-  const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
   const clearTimeouts = () => {
     if (scrollTimeout.current) {
       clearTimeout(scrollTimeout.current);
@@ -176,33 +148,6 @@ export default function SwapGestures({
     if (overlayTimeout.current) {
       clearTimeout(overlayTimeout.current);
       overlayTimeout.current = null;
-    }
-  };
-
-  // when dragging an equipment while the container overlay is visible
-  const containerHover = (
-    gestureState: GestureUpdateEvent<
-      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
-    >,
-  ) => {
-    if (!draggingItem) return;
-    const x = gestureState.x;
-    const y = gestureState.y;
-    if (
-      x < containerXRange.start ||
-      x > containerXRange.end ||
-      y < containerYRange.start ||
-      y > containerYRange.end
-    ) {
-      if (overlayTimeout.current) {
-        return;
-      } else {
-        overlayTimeout.current = setTimeout(() => {
-          setSwapContainerVisible(false);
-          setContainerItem(null);
-          overlayTimeout.current = null;
-        }, 500);
-      }
     }
   };
 
@@ -264,6 +209,48 @@ export default function SwapGestures({
       handleContainer(isTop, index);
     }
     prevPosition = position;
+  };
+
+  const { orgUserStorage } = useUser();
+  // decide where to reassign the equipment
+  const handleReassign = async (
+    gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    if (!draggingItem || startIdx.current == null) return;
+    let countType: ListCounts;
+    if (startSide.current === "top") {
+      countType = "one";
+    } else if (startSide.current === "bottom") {
+      countType = "two";
+    } else {
+      countType = "container";
+    }
+    incrementCountAtIndex(startIdx.current, countType);
+    if (swapContainerVisible) return;
+    // equipment -> container
+    if (draggingItem.type === "equipment" && hoverContainer.current) {
+      console.log("reassigning equipment to container");
+      addEquipmentToContainer(
+        draggingItem as EquipmentObj,
+        hoverContainer.current,
+      );
+      return;
+    }
+    if (!orgUserStorage || !swapUser.current) return;
+    const assignTo =
+      gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
+    // dragging a container
+    if (draggingItem.type === "container") {
+      reassignContainer(draggingItem as ContainerObj, assignTo);
+    } else {
+      // dragging equipment
+      // check if we are moving equipment out of a container
+      if ((draggingItem as EquipmentObj).container != null) {
+        moveOutOfContainer(draggingItem as EquipmentObj, assignTo);
+      } else {
+        reassignEquipment(draggingItem as EquipmentObj, assignTo);
+      }
+    }
   };
 
   const panPressGesture = Gesture.Pan()
