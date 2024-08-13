@@ -3,38 +3,36 @@ import { Dimensions } from "react-native";
 import {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
-  GestureUpdateEvent,
-  PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { ItemObj, ListCounts } from "../../types/ModelTypes";
 
-/*
-  Hook that handles all the logic for dragging equipment
-  when the container overlay is visible
-*/
-export default function useContainer({
+export default function useSet({
+  halfLine,
+  topPage,
+  bottomPage,
+  listOne,
+  listTwo,
   decrementCountAtIndex,
-  draggingItem,
-  setDraggingItem,
-  startIdx,
-  startSide,
 }: {
+  halfLine: React.MutableRefObject<number>;
+  topPage: number;
+  bottomPage: number;
+  listOne: ItemObj[];
+  listTwo: ItemObj[];
   decrementCountAtIndex: (index: number, type: ListCounts) => void;
-  draggingItem: ItemObj | null;
-  setDraggingItem: (item: any) => void;
-  startIdx: React.MutableRefObject<number | null>;
-  startSide: React.MutableRefObject<string | null>;
 }) {
+  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
+  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
+  const startIdx = useRef<number | null>(null);
+  const { containerItem } = useEquipment();
   const [containerPage, setContainerPage] = useState(0);
-  const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
-  const { containerItem, setContainerItem, setSwapContainerVisible } =
-    useEquipment();
-
   // calculate the range of the container overlay
   const windowHeight = Dimensions.get("window").height;
   const windowWidth = Dimensions.get("window").width;
+  const offset = windowWidth / 4;
+  const equipmentWidth = windowWidth / 5;
   const containerYRange = {
     start: 0.2 * windowHeight,
     end: 0.7 * windowHeight + 30,
@@ -42,6 +40,14 @@ export default function useContainer({
   const containerXRange = {
     start: 0.075 * windowWidth,
     end: 0.925 * windowWidth,
+  };
+  const topYRange = {
+    start: 140,
+    end: 140 + equipmentWidth,
+  };
+  const bottomYRange = {
+    start: halfLine.current + 60,
+    end: halfLine.current + 60 + equipmentWidth,
   };
 
   const containerSetItem = (
@@ -66,37 +72,36 @@ export default function useContainer({
     setDraggingItem(item);
   };
 
-  // when dragging an equipment while the container overlay is visible
-  const containerHover = (
-    gestureState: GestureUpdateEvent<
-      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
-    >,
+  const handleSetItem = (
+    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    if (!draggingItem) return;
-    const x = gestureState.x;
-    const y = gestureState.y;
-    if (
-      x < containerXRange.start ||
-      x > containerXRange.end ||
-      y < containerYRange.start ||
-      y > containerYRange.end
-    ) {
-      if (overlayTimeout.current) {
-        return;
-      } else {
-        overlayTimeout.current = setTimeout(() => {
-          setSwapContainerVisible(false);
-          setContainerItem(null);
-          overlayTimeout.current = null;
-        }, 500);
-      }
-    }
+    const y = gesture.y;
+    const isTop = y < halfLine.current;
+    const yRange = isTop ? topYRange : bottomYRange;
+    const horizontalOffset = isTop
+      ? topPage * windowWidth
+      : bottomPage * windowWidth;
+    const list = isTop ? listOne : listTwo;
+    startSide.current = isTop ? "top" : "bottom";
+    const type = isTop ? "one" : "two";
+    if (y < yRange.start || y > yRange.end) return;
+    // check if the user is hovering over an item
+    const idx = Math.floor((gesture.x + horizontalOffset) / offset);
+    // ensure idx is within bounds
+    if (idx < 0 || idx > list.length - 1) return;
+    const item = list[idx];
+    decrementCountAtIndex(idx, type);
+    startIdx.current = idx;
+    setDraggingItem(item);
   };
 
   return {
-    containerSetItem,
-    containerHover,
-    overlayTimeout,
+    draggingItem,
+    setDraggingItem,
+    startSide,
+    startIdx,
     setContainerPage,
+    containerSetItem,
+    handleSetItem,
   };
 }

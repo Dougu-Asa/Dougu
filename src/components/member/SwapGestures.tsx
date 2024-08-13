@@ -1,21 +1,13 @@
-import React, { useRef, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  LayoutChangeEvent,
-} from "react-native";
+import React, { useRef } from "react";
+import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
 import {
   GestureDetector,
   GestureHandlerRootView,
   Gesture,
   PanGestureHandlerEventPayload,
   GestureStateChangeEvent,
-  GestureUpdateEvent,
-  PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
-import Animated, { runOnJS, withSpring } from "react-native-reanimated";
+import Animated, { runOnJS } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import {
@@ -36,12 +28,13 @@ import useItemCounts from "./useItemCounts";
 import useScroll from "./useScroll";
 import {
   addEquipmentToContainer,
+  moveOutOfContainer,
   reassignContainer,
   reassignEquipment,
-  moveOutOfContainer,
 } from "../../helper/SwapUtils";
 import { useUser } from "../../helper/context/UserContext";
-import useContainer from "./useContainer";
+import useSet from "./useSet";
+import useHover from "./useHover";
 
 export default function SwapGestures({
   listOne,
@@ -55,16 +48,11 @@ export default function SwapGestures({
   swapUser: React.MutableRefObject<OrgUserStorage | null>;
 }) {
   // state
-  const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
-  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
-  const startIdx = useRef<number | null>(null);
-  const hoverContainer = useRef<ContainerObj | null>(null);
   const halfLine = useRef<number>(0);
+  const { orgUserStorage } = useUser();
+  const { swapContainerVisible } = useEquipment();
 
   // hooks
-  const { swapContainerVisible } = useEquipment();
-  const { size, movingStyles, animateStart, animateMove, animateFinalize } =
-    useAnimateOverlay({ setDraggingItem });
   const {
     listOneCounts,
     listTwoCounts,
@@ -85,13 +73,35 @@ export default function SwapGestures({
     scrollTimeout,
     handleScroll,
   } = useScroll();
-  const { setContainerPage, containerSetItem, containerHover, overlayTimeout } =
-    useContainer({
-      decrementCountAtIndex,
+  const {
+    draggingItem,
+    setDraggingItem,
+    startSide,
+    startIdx,
+    setContainerPage,
+    containerSetItem,
+    handleSetItem,
+  } = useSet({
+    halfLine,
+    topPage,
+    bottomPage,
+    listOne,
+    listTwo,
+    decrementCountAtIndex,
+  });
+  const { size, movingStyles, animateStart, animateMove, animateFinalize } =
+    useAnimateOverlay({ setDraggingItem });
+  const { handleHover, clearTimeouts, containerHover, hoverContainer } =
+    useHover({
+      halfLine,
       draggingItem,
-      setDraggingItem,
-      startIdx,
-      startSide,
+      topPage,
+      bottomPage,
+      size,
+      listOne,
+      listTwo,
+      handleScroll,
+      scrollTimeout,
     });
 
   const handleLayout = (e: LayoutChangeEvent) => {
@@ -99,119 +109,6 @@ export default function SwapGestures({
     halfLine.current = y;
   };
 
-  const windowWidth = Dimensions.get("window").width;
-  const equipmentWidth = windowWidth / 5;
-  const offset = windowWidth / 4;
-  const topYRange = {
-    start: 140,
-    end: 140 + equipmentWidth,
-  };
-  const bottomYRange = {
-    start: halfLine.current + 60,
-    end: halfLine.current + 60 + equipmentWidth,
-  };
-
-  const handleSetItem = (
-    gesture: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
-  ) => {
-    const y = gesture.y;
-    const isTop = y < halfLine.current;
-    const yRange = isTop ? topYRange : bottomYRange;
-    const horizontalOffset = isTop
-      ? topPage * windowWidth
-      : bottomPage * windowWidth;
-    const list = isTop ? listOne : listTwo;
-    startSide.current = isTop ? "top" : "bottom";
-    const type = isTop ? "one" : "two";
-    if (y < yRange.start || y > yRange.end) return;
-    // check if the user is hovering over an item
-    const idx = Math.floor((gesture.x + horizontalOffset) / offset);
-    // ensure idx is within bounds
-    if (idx < 0 || idx > list.length - 1) return;
-    const item = list[idx];
-    decrementCountAtIndex(idx, type);
-    startIdx.current = idx;
-    setDraggingItem(item);
-  };
-
-  let prevPosition = "";
-  const containerTimeout = useRef<NodeJS.Timeout | null>(null);
-  const clearTimeouts = () => {
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = null;
-    }
-    if (containerTimeout.current) {
-      clearTimeout(containerTimeout.current);
-      containerTimeout.current = null;
-    }
-    if (overlayTimeout.current) {
-      clearTimeout(overlayTimeout.current);
-      overlayTimeout.current = null;
-    }
-  };
-
-  //Determine if an equiment item is hovering over a container item
-  //and change the size of the equipment item accordingl
-  const handleHover = (
-    gestureState: GestureUpdateEvent<
-      PanGestureChangeEventPayload & PanGestureHandlerEventPayload
-    >,
-  ) => {
-    if (!draggingItem) return;
-    const isTop = gestureState.y < halfLine.current;
-    const range = isTop ? topYRange : bottomYRange;
-    const x = gestureState.x;
-    // leftEdge, rightEdge, top-position
-    if (x < 40) {
-      handlePosition("left", isTop);
-    } else if (x > windowWidth - 40) {
-      handlePosition("right", isTop);
-    } else if (gestureState.y < range.start || gestureState.y > range.end) {
-      handlePosition("out", isTop);
-    } else {
-      const horizontalOffset = isTop
-        ? topPage * windowWidth
-        : bottomPage * windowWidth;
-      const position = Math.floor((gestureState.x + horizontalOffset) / offset);
-      handlePosition(`${isTop}-${position}`, isTop, position);
-    }
-  };
-
-  // handles the case where the equipment item is hovering over a container item
-  const handleContainer = (isTop: boolean, index: number) => {
-    const list = isTop ? listOne : listTwo;
-    const item = list[index];
-    if (item && item.type === "container") {
-      if (containerTimeout.current) {
-        return;
-      }
-      containerTimeout.current = setTimeout(() => {
-        size.value = withSpring(0.7);
-        hoverContainer.current = item as ContainerObj;
-        containerTimeout.current = null;
-      }, 500);
-    }
-  };
-
-  // depending on the position of the equipment item, call the appropriate function
-  const handlePosition = (position: string, isTop: boolean, index?: number) => {
-    if (position !== prevPosition) {
-      clearTimeouts();
-      hoverContainer.current = null;
-      size.value = withSpring(1.2);
-    } else if (position === "left" || position === "right") {
-      // if the equipment item is hovering over a scroll area
-      handleScroll(isTop, position);
-    } else {
-      if (draggingItem?.type === "container" || index == null) return;
-      // if the equipment item is hovering over a container item
-      handleContainer(isTop, index);
-    }
-    prevPosition = position;
-  };
-
-  const { orgUserStorage } = useUser();
   // decide where to reassign the equipment
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,

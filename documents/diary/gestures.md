@@ -21,3 +21,13 @@ I incorporated functionality to detect whether an equipment or container has bee
 - Changed scrollview from per item snapToAlign to per screenWidth snap to align (or every 4 items). This was because an automatic scroll per item would require many small scrollTos that are computationally expensive
 - Implemented another JS threaded callback during pan onChange to check for hovering on edges, and to start a timeout if there has been an extended hover
 For the future, I need to implement some sort of UI to show that the page is able to turn.
+
+# 8-10-24 -> 8-12-24
+## Breaking down SwapEquipment
+After my previous failed attempt to breaking down swapEquipment, I began to take it seriously this time and learned about the usage of custom hook components in react. Being able to easily create components that accept state and output state makes it much easier to break down a large file. While my break down of swap Equipment isn't going to be perfectly designed, it will help a lot with maintanability. I broke SwapGestures down into:
+- useAnimateOverlay
+- useItemCounts
+- useScroll
+- useHover
+- useSet
+Ultimately, I have broken the file down, but I definitely believe there is a need for future refactoring. This is because when I wrote the code, I didn't write it with modularity and having each hook handle a specific state in mind. Therefore, a lot of the hooks are interdependent and quite bulky still. In the interest of patience and motivation, I will save this for a later date though.
