@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useLoad } from "../../helper/context/LoadingContext";
 import { useUser } from "../../helper/context/UserContext";
-import { signOut } from "../../helper/Utils";
+import { callSignOut } from "../../helper/Utils";
 
 // Create a custom drawer component to override default
 // react navigation drawer
@@ -20,7 +20,7 @@ export default function CustomDrawerContent({
   const { user, org, resetContext } = useUser();
 
   const handleSignOut = async () => {
-    await signOut(setIsLoading, navigation, resetContext);
+    await callSignOut(setIsLoading, navigation, resetContext);
   };
 
   // Check if there is a current org when the user clicks on the current org button
@@ -51,7 +51,7 @@ export default function CustomDrawerContent({
       }}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>{user!.attributes.name}</Text>
+        <Text style={styles.headerText}>{user!.name}</Text>
       </View>
       <View style={styles.listContainer}>
         <DrawerItem

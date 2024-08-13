@@ -2,7 +2,7 @@ import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { signIn, getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
+import { signIn, fetchUserAttributes } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -51,7 +51,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       setIsLoading(false);
       onChangePassword("");
       onChangeUsername("");
-      //navigation.navigate("SyncScreen", { syncType: "START" });
+      navigation.navigate("SyncScreen", { syncType: "START" });
     } catch (error) {
       handleError("signIn", error as Error, setIsLoading);
     }

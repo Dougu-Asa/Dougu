@@ -51,6 +51,11 @@ export type ResetPasswordScreenProps = NativeStackScreenProps<
   "ResetPassword"
 >;
 
+export type AccessCodeScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "AccessCode"
+>;
+
 // for CreateAcc and Login screens
 export type NavigationOnlyProps = {
   navigation: NavigationProp<RootStackParamList>;
@@ -74,11 +79,6 @@ type CreateOrgNavigation = CompositeNavigationProp<
 export type CreateOrgScreenProps = {
   navigation: CreateOrgNavigation;
 };
-
-export type AccessCodeScreenProps = DrawerScreenProps<
-  DrawerParamList,
-  "AccessCode"
->;
 
 export type MyOrgsScreenProps = DrawerScreenProps<DrawerParamList, "MyOrgs">;
 

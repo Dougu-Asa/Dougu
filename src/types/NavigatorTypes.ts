@@ -14,6 +14,7 @@ export type RootStackParamList = {
     accessCode?: string;
     newOrg?: Organization;
   };
+  AccessCode: { accessCode: string };
   RequestReset: undefined;
   ResetPassword: { email: string };
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
@@ -23,7 +24,6 @@ export type DrawerParamList = {
   MemberTabs: NavigatorScreenParams<TabParamList>;
   JoinOrg: undefined;
   CreateOrg: undefined;
-  AccessCode: { accessCode: string };
   MyOrgs: undefined;
   Profile: undefined;
 };

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import { useState } from "react";
-import { DataStore } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
 
 // project imports
 import { useLoad } from "../../helper/context/LoadingContext";

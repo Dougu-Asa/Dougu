@@ -69,7 +69,7 @@ export default function ScrollRow({
                   {item.type === "equipment" ? (
                     <EquipmentItem
                       item={item as EquipmentObj}
-                      count={countData ? countData[idx] : item.count}
+                      count={countData ? countData[idx] : (item as EquipmentObj).count}
                     />
                   ) : (
                     <ContainerItem

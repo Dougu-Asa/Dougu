@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         };
         console.log("User is logged in");
         setUser(user);
-        //navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+        navigation.navigate("DrawerNav", { screen: "MyOrgs" });
       } catch {
         console.log("No user is logged in");
       }

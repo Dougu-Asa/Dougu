@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { DataStore, AuthModeStrategyType } from 'aws-amplify/datastore';
 import { Amplify } from 'aws-amplify';
-//import "@azure/core-asynciterator-polyfill";
+import "@azure/core-asynciterator-polyfill";
 import { registerRootComponent } from "expo";
 import * as Sentry from "@sentry/react-native";
 

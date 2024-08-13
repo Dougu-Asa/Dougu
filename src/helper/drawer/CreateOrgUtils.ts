@@ -19,7 +19,7 @@ export const validateRequirements = async (name: string, user: UserType) => {
   }
   // check that the user is not a part of more than 5 organizations
   const userOrgs = await DataStore.query(OrgUserStorage, (c) =>
-    c.user.eq(user!.attributes.sub),
+    c.user.eq(user!.id),
   );
   if (userOrgs.length >= 5) {
     Alert.alert("User cannot be a part of more than 5 organizations!");

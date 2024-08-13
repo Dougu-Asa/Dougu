@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/react-native";
 import { Alert } from "react-native";
 import { Dispatch, SetStateAction } from "react";
-import { Auth, DataStore } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
+import { signOut } from "aws-amplify/auth";
 
 /* this function handles errors in the app by stopping the loading indicator, logging the error, and alerting the user */
 export const handleError = (
@@ -22,7 +23,7 @@ export const handleError = (
 };
 
 // function to sign out the user and clear everything
-export const signOut = async (
+export const callSignOut = async (
   setIsLoading: Dispatch<SetStateAction<boolean>>,
   // use any type because multiple navigation types are used
   navigation: any,
@@ -30,7 +31,7 @@ export const signOut = async (
 ) => {
   try {
     setIsLoading(true);
-    await Auth.signOut();
+    await signOut();
     navigation.navigate("Home");
     resetContext();
     await DataStore.clear();

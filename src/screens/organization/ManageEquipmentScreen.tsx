@@ -23,7 +23,7 @@ export default function ManageEquipmentScreen({
   };
 
   const handleCreate = () => {
-    if (org!.manager === user!.attributes.sub) {
+    if (org!.manager === user!.id) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(

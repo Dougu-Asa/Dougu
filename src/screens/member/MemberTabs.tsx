@@ -15,7 +15,7 @@ import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";
 import { TabParamList } from "../../types/NavigatorTypes";
 import OrgStackNavigator from "../organization/OrgStackNavigator";
-import { signOut } from "../../helper/Utils";
+import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
 import EquipmentOverlay from "../../components/member/EquipmentOverlay";
 import EquipmentProvider from "../../helper/context/EquipmentContext";
@@ -85,11 +85,11 @@ export default function MemberTabs({
     const checkUserOrg = async () => {
       if (!contextLoading && (!user || !org || !orgUserStorage)) {
         Alert.alert("Error", "User, org, or orgUserStorage is null.");
-        await signOut(setIsLoading, navigation, resetContext);
+        await callSignOut(setIsLoading, navigation, resetContext);
         return;
       }
       setCurrOrgName(org!.name);
-      if (org!.manager === user!.attributes.sub) {
+      if (org!.manager === user!.id) {
         setIsManager(true);
       }
     };

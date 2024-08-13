@@ -2,7 +2,7 @@ import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { signUp, fetchUserAttributes } from 'aws-amplify/auth';
+import { signUp, fetchUserAttributes, signIn } from 'aws-amplify/auth';
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -60,7 +60,7 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         setIsLoading(false);
         return;
       }
-      const user = await signUp({
+      await signUp({
         username: email, // email is the username
         password: password,
         options: {
@@ -68,9 +68,9 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
             name: username,
             profile: "default",
           },
-          autoSignIn: true,
         },
       });
+      await signIn({ username: email, password: password });
       const attributes = await fetchUserAttributes();
       if (
         !attributes.name ||

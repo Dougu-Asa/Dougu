@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-import { DataStore } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
 
 // project imports
 import { Container, Equipment } from "../../models";
@@ -53,7 +53,7 @@ export default function EquipmentTable({
       setFilteredData(tableData);
     };
 
-    isManager.current = org!.manager === user!.attributes.sub ? true : false;
+    isManager.current = org!.manager === user!.id ? true : false;
     handleGetEquipment();
   }, [itemData, org, user]);
 

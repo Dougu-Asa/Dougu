@@ -44,7 +44,7 @@ export default function CurrMembersDropdown({
             c.organization.name.eq(org!.name),
             c.or((c) => [
               c.type.eq("STORAGE"),
-              c.user.ne(user!.attributes.sub),
+              c.user.ne(user!.id),
             ]),
           ]),
         );

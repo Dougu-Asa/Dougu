@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
@@ -23,7 +24,6 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
   const [name, onChangeName] = React.useState("");
   const { user } = useUser();
-  const token = user!.signInUserSession.idToken.jwtToken;
   var randomstring = require("randomstring");
   const [hasConnection, setHasConnection] = React.useState(false);
 
@@ -58,13 +58,13 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   };
 
   // create an org and orgUserStorage to add to the database
-  const createOrg = async (code: string): Promise<Organization> => {
+  const createOrg = async (token: string, code: string): Promise<Organization> => {
     // Add the org to the database
     const newOrg = await DataStore.save(
       new Organization({
         name: name,
         accessCode: code,
-        manager: user!.attributes.sub,
+        manager: user!.id,
         image: "default",
       }),
     );
@@ -75,14 +75,14 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     return newOrg;
   };
 
-  const createOrgUserStorage = async (org: Organization): Promise<boolean> => {
+  const createOrgUserStorage = async (token: string, org: Organization): Promise<boolean> => {
     // Add the OrgUserStorage to the DB
     const newOrgUserStorage = await DataStore.save(
       new OrgUserStorage({
         organization: org,
         type: UserOrStorage.USER,
-        user: user!.attributes.sub,
-        name: user!.attributes.name,
+        user: user!.id,
+        name: user!.name,
         image: "default",
         group: name,
       }),
@@ -90,7 +90,7 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     if (newOrgUserStorage == null)
       throw new Error("OrgUserStorage not created successfully.");
     // add user to the user group
-    return await addUserToGroup(token, name, user!.attributes.sub);
+    return await addUserToGroup(token, name, user!.id);
   };
 
   // handle verification, creation, and navigation when creating a new Organization
@@ -104,14 +104,18 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         setIsLoading(false);
         return;
       }
+      // Get the user token for authorization to api calls
+      const token = (await fetchAuthSession()).tokens?.idToken?.toString();
+      if (token == null)
+        throw new Error("Token not found");
       // Create the org and orgUserStorage
-      const newOrg = await createOrg(code);
-      const success = await createOrgUserStorage(newOrg);
+      const newOrg = await createOrg(token, code);
+      const success = await createOrgUserStorage(token, newOrg);
       if (!success) {
         throw new Error("User not added to group successfully");
       }
       // use a key to keep track of currentOrg per user
-      const key = user!.attributes.sub + " currOrg";
+      const key = user!.id + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(newOrg));
       onChangeName("");
       setIsLoading(false);
