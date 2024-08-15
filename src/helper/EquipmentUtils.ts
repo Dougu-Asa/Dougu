@@ -167,24 +167,49 @@ const processEquipmentData = (
   return processedEquipmentData;
 };
 
-const getUniqueItemNames = async (orgId: string) => {
-  // get all unique Item names and sort them, storing them in a map of <name, idx>
-  let uniqueItemNames: string[] = [];
-  let uniqueOwnerNames: string[] = [];
-  const nameMap = new Map<string, number>();
-  const equipment = await DataStore.query(Equipment, (c) =>
-    c.organizationEquipmentId.eq(orgId),
-  );
-  const containers = await DataStore.query(Container, (c) =>
-    c.organizationContainersId.eq(orgId),
-  );
-};
-
-const getCSVData = async (orgId: string, data: OrgItem) => {
-  const { uniqueNames, nameMap } = await getUniqueItemNames(orgId);
-  // create a 2D array of the data
-  const csvData = [];
-  // add the headers
-  csvData.push(["Assigned To", ...uniqueNames]);
-  // for each user, add the data
+// get the csv data for the organization to export to google sheets
+type cellContent = string | number;
+export const getCsvData = async (
+  orgItems: Map<string, OrgItem>,
+): Promise<cellContent[][]> => {
+  const counts: { [key: string]: { [key: string]: number } } = {};
+  // get all the unique equipment labels
+  const uniqueLabels: { [key: string]: number } = {};
+  // fill out dictionary with equipment counts for each user
+  orgItems.forEach((value) => {
+    const { assignedToName, data } = value;
+    counts[assignedToName] = {};
+    data.forEach((equip) => {
+      if (equip.type === "equipment") {
+        counts[assignedToName][equip.label] = (equip as EquipmentObj).count;
+        uniqueLabels[equip.label] = 1;
+      } else {
+        // count the container
+        if (!counts[assignedToName][equip.label]) {
+          counts[assignedToName][equip.label] = 0;
+        } else {
+          counts[assignedToName][equip.label] += 1;
+        }
+        uniqueLabels[equip.label] = 1;
+        // count the equipment in the container
+        (equip as ContainerObj).equipment.forEach((equip) => {
+          counts[assignedToName][equip.label] = equip.count;
+          uniqueLabels[equip.label] = 1;
+        });
+      }
+    });
+  });
+  const assignedToNames = Object.keys(counts).sort();
+  const equipmentLabels = Object.keys(uniqueLabels).sort();
+  let csvContent: cellContent[][] = [];
+  // create the header
+  csvContent.push(["Assigned To", ...equipmentLabels]);
+  assignedToNames.forEach((name) => {
+    const row: cellContent[] = [name];
+    equipmentLabels.forEach((label) => {
+      row.push(counts[name][label] || 0);
+    });
+    csvContent.push(row);
+  });
+  return csvContent;
 };
