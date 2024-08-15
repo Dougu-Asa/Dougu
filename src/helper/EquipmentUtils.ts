@@ -69,26 +69,20 @@ export const getOrgItems = async (
 
 export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
   let orgItemsArray: OrgItem[] = [];
-  let orgItemsArrayEmpty: OrgItem[] = [];
   orgItems.forEach((value) => {
     if (value.data.length > 0) {
       orgItemsArray.push(value);
-    } else {
-      orgItemsArrayEmpty.push(value);
     }
   });
   orgItemsArray.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  orgItemsArrayEmpty.sort((a, b) =>
-    collator.compare(a.assignedToName, b.assignedToName),
-  );
-  return orgItemsArray.concat(orgItemsArrayEmpty);
+  return orgItemsArray;
 };
 
 //get the equipment for a user by OrgUserStorage id
 //returns an array of processed equipment objects
-export const getEquipment = async (
+const getEquipment = async (
   orgUserStorage: OrgUserStorage,
 ): Promise<EquipmentObj[] | undefined> => {
   try {
@@ -105,7 +99,7 @@ export const getEquipment = async (
   }
 };
 
-export const getContainers = async (
+const getContainers = async (
   orgUserStorage: OrgUserStorage,
 ): Promise<Map<string, ContainerObj>> => {
   // get all the containers assigned to the user
@@ -132,7 +126,7 @@ export const getContainers = async (
   get duplicates and merge their counts
   using a map to count duplicates and converting to an array
 */
-export const processEquipmentData = (
+const processEquipmentData = (
   equipment: Equipment[],
   orgUserStorage: OrgUserStorage,
 ): EquipmentObj[] => {
@@ -171,4 +165,26 @@ export const processEquipmentData = (
   // Convert the Map back to an array
   const processedEquipmentData = Array.from(equipmentMap.values());
   return processedEquipmentData;
+};
+
+const getUniqueItemNames = async (orgId: string) => {
+  // get all unique Item names and sort them, storing them in a map of <name, idx>
+  let uniqueItemNames: string[] = [];
+  let uniqueOwnerNames: string[] = [];
+  const nameMap = new Map<string, number>();
+  const equipment = await DataStore.query(Equipment, (c) =>
+    c.organizationEquipmentId.eq(orgId),
+  );
+  const containers = await DataStore.query(Container, (c) =>
+    c.organizationContainersId.eq(orgId),
+  );
+};
+
+const getCSVData = async (orgId: string, data: OrgItem) => {
+  const { uniqueNames, nameMap } = await getUniqueItemNames(orgId);
+  // create a 2D array of the data
+  const csvData = [];
+  // add the headers
+  csvData.push(["Assigned To", ...uniqueNames]);
+  // for each user, add the data
 };

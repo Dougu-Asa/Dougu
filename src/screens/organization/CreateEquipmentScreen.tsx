@@ -40,12 +40,12 @@ export default function CreateEquipmentScreen() {
   // ensure all input values are valid
   const verifyValues = () => {
     // check that quantity > 1
-    const quantityCount = index === 0 ? parseInt(quantity) : 1;
+    const quantityCount = parseInt(quantity);
     if (isNaN(quantityCount) || assignUser == null || name === "") {
       throw new Error("Please fill out all fields.");
     }
     if (quantityCount < 1 || quantityCount > 25) {
-      throw new Error("You must make between 1 and 25 equipment at a time.");
+      throw new Error("You must make between 1 and 25 items at a time.");
     }
     return quantityCount;
   };
@@ -73,30 +73,24 @@ export default function CreateEquipmentScreen() {
   };
 
   const CreateContainer = async (
+    quantityCount: number,
     dataOrg: Organization,
     orgUserStorage: OrgUserStorage,
   ) => {
-    const container = await DataStore.query(Container, (c) =>
-      c.and((c) => [
-        c.name.eq(name),
-        c.organizationContainersId.eq(dataOrg.id),
-      ]),
-    );
-    if (container.length > 0) {
-      throw new Error("Container already exists in the organization.");
+    console.log("quantityCount: ", quantityCount);
+    for (let i = 0; i < quantityCount; i++) {
+      await DataStore.save(
+        new Container({
+          name: name,
+          organization: dataOrg,
+          lastUpdatedDate: new Date().toISOString(),
+          assignedTo: orgUserStorage,
+          details: details,
+          color: "#ffffff",
+          group: org!.name,
+        }),
+      );
     }
-    // ensure no container with the same name exists
-    await DataStore.save(
-      new Container({
-        name: name,
-        organization: dataOrg,
-        lastUpdatedDate: new Date().toISOString(),
-        assignedTo: orgUserStorage,
-        details: details,
-        color: "#ffffff",
-        group: org!.name,
-      }),
-    );
     Alert.alert("Container created successfully!");
   };
 
@@ -118,10 +112,10 @@ export default function CreateEquipmentScreen() {
       if (index === 0) {
         await CreateEquipment(quantityCount, dataOrg, orgUserStorage);
       } else {
-        await CreateContainer(dataOrg, orgUserStorage);
+        await CreateContainer(quantityCount, dataOrg, orgUserStorage);
       }
       onChangeName("");
-      onChangeQuantity("0");
+      onChangeQuantity("");
       onChangeDetails("");
       setIsLoading(false);
     } catch (error) {
@@ -187,7 +181,7 @@ export default function CreateEquipmentScreen() {
           <TextInput
             style={styles.input}
             onChangeText={handleNumberChange}
-            value={index === 0 ? quantity.toString() : "1"}
+            value={quantity.toString()}
             placeholder="quantity"
             keyboardType="numeric"
           />
