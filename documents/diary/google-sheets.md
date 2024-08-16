@@ -1,0 +1,6 @@
+# 8-15-24
+## Getting CSV Data
+Today, I setup a system to get the CSV data format that I want to write to google sheets. In the interest of keeping my code simple and consistent, I plan on rewriting the entire spreadsheet on every update, as an organization's data shouldn't be any larger than 2MB, which is free.
+
+## Google Service Account
+After some deliberation, I think my best approach is to create a google service account that will store all the spreadsheets for the organizations in a single drive. This is so that the users won't have to allow google access everytime they use the app, while also keeping the data updated regardless of who makes data changes. My plan is to call an AWS lambda function that requires AWS Cognito tokens to call the service account and make the relevant API calls. Today, I setup creating a very basic spreadsheet though. I simply utilized the service account key and called it locally using the google-auth-library for now. Definitely not going to keep it so local though. `export GOOGLE_APPLICATION_CREDENTIALS="C:\Users\kanel\Documents\GitHub\Dougu\lambda\nodejs\asa-app-417920-ddf937c90832.json"`

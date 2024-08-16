@@ -1,0 +1,16 @@
+{
+  "name": "google-client",
+  "version": "1.0.0",
+  "description": "Used to create google spreadsheets and update them for Dougu",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "Kane Li",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "dotenv": "^16.4.5",
+    "googleapis": "^105.0.0"
+  }
+}
