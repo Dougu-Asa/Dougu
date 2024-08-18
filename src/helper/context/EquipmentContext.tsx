@@ -5,7 +5,7 @@ import { EquipmentObj, ContainerObj, OrgItem } from "../../types/ModelTypes";
 import { EquipmentContextType } from "../../types/ContextTypes";
 import { useUser } from "./UserContext";
 import { getOrgItems } from "../EquipmentUtils";
-import { Equipment, Container } from "../../models";
+import { Equipment, Container, OrgUserStorage } from "../../models";
 
 /* 
   Context only available within MemberTabs that distributes the equipment
@@ -48,10 +48,16 @@ export default function EquipmentProvider({
         handleGetItems();
       },
     );
+    const orgUserStorageSubscription = DataStore.observeQuery(
+      OrgUserStorage,
+    ).subscribe(() => {
+      handleGetItems();
+    });
 
     return () => {
       equipmentSubscription.unsubscribe();
       containerSubscription.unsubscribe();
+      orgUserStorageSubscription.unsubscribe();
     };
   }, [org]);
 

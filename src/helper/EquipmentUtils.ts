@@ -6,6 +6,7 @@ import {
   OrgItem,
   ItemObj,
   ContainerObj,
+  csvSheet,
 } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Utils";
@@ -69,15 +70,21 @@ export const getOrgItems = async (
 
 export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
   let orgItemsArray: OrgItem[] = [];
+  let emptyItemsArray: OrgItem[] = [];
   orgItems.forEach((value) => {
     if (value.data.length > 0) {
       orgItemsArray.push(value);
+    } else {
+      emptyItemsArray.push(value);
     }
   });
   orgItemsArray.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  return orgItemsArray;
+  emptyItemsArray.sort((a, b) =>
+    collator.compare(a.assignedToName, b.assignedToName),
+  );
+  return orgItemsArray.concat(emptyItemsArray);
 };
 
 //get the equipment for a user by OrgUserStorage id
@@ -167,15 +174,8 @@ const processEquipmentData = (
   return processedEquipmentData;
 };
 
-type csvSheet = {
-  header: string[];
-  identityCol: string[];
-  values: number[][];
-};
 // get the csv data for the organization to export to google sheets
-export const getCsvData = async (
-  orgItems: Map<string, OrgItem>,
-): Promise<csvSheet> => {
+export const getCsvData = (orgItems: Map<string, OrgItem>): csvSheet => {
   const counts: { [key: string]: { [key: string]: number } } = {};
   // get all the unique equipment labels
   const uniqueLabels: { [key: string]: number } = {};
@@ -184,20 +184,18 @@ export const getCsvData = async (
     const { assignedToName, data } = value;
     counts[assignedToName] = {};
     data.forEach((equip) => {
+      counts[assignedToName][equip.label] ??= 0;
       if (equip.type === "equipment") {
-        counts[assignedToName][equip.label] = (equip as EquipmentObj).count;
+        counts[assignedToName][equip.label] += (equip as EquipmentObj).count;
         uniqueLabels[equip.label] = 1;
       } else {
         // count the container
-        if (!counts[assignedToName][equip.label]) {
-          counts[assignedToName][equip.label] = 0;
-        } else {
-          counts[assignedToName][equip.label] += 1;
-        }
+        counts[assignedToName][equip.label] += 1;
         uniqueLabels[equip.label] = 1;
         // count the equipment in the container
         (equip as ContainerObj).equipment.forEach((equip) => {
-          counts[assignedToName][equip.label] = equip.count;
+          counts[assignedToName][equip.label] ??= 0;
+          counts[assignedToName][equip.label] += equip.count;
           uniqueLabels[equip.label] = 1;
         });
       }
@@ -205,15 +203,18 @@ export const getCsvData = async (
   });
   const assignedToNames = Object.keys(counts).sort();
   const equipmentLabels = Object.keys(uniqueLabels).sort();
-  const header = ["Assigned To", ...equipmentLabels];
   const identityCol = assignedToNames;
-  let csvContent: number[][] = [];
-  assignedToNames.forEach((name) => {
-    const row: number[] = [];
-    equipmentLabels.forEach((label) => {
-      row.push(counts[name][label] || 0);
+  let csvContent: string[][] = [];
+  // column major order
+  equipmentLabels.forEach((label) => {
+    const col: string[] = [];
+    assignedToNames.forEach((name) => {
+      const countStr = counts[name][label]
+        ? counts[name][label].toString()
+        : "0";
+      col.push(countStr);
     });
-    csvContent.push(row);
+    csvContent.push(col);
   });
-  return { header, identityCol, values: csvContent };
+  return { header: equipmentLabels, identityCol, values: csvContent };
 };

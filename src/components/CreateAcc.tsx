@@ -90,6 +90,7 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       onChangeFirst("");
       onChangeLast("");
       onChangePassword("");
+      onChangeConfirmPassword("");
       onChangeUsername("");
       setIsLoading(false);
       navigation.navigate("SyncScreen", { syncType: "START" });

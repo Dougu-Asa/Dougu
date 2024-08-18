@@ -14,4 +14,7 @@ After playing around with lambda functions and a lot of deliberation, I ultimate
 - AWS Lambda is more vulnerable than one might expect, even on the server don't store credentials
 
 ## Implementing a sheet in react native
-There is no easy build-in implementation of creating a table sheet with a frozen row and a frozen column, but luckily I found a solution [here](https://build.affinity.co/building-a-highly-responsive-sheet-view-with-react-native-51129ec34c63). That works pretty well. Good thing
+There is no easy build-in implementation of creating a table sheet with a frozen row and a frozen column, but luckily I found a solution [here](https://build.affinity.co/building-a-highly-responsive-sheet-view-with-react-native-51129ec34c63). That works pretty well. 
+
+- sheets won't update when I add storages or change the organization data
+- equipment inside of containers aren't counted by the sheets
