@@ -6,6 +6,7 @@ import {
   OrgItem,
   ItemObj,
   ContainerObj,
+  csvSheet,
 } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Utils";
@@ -69,26 +70,26 @@ export const getOrgItems = async (
 
 export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
   let orgItemsArray: OrgItem[] = [];
-  let orgItemsArrayEmpty: OrgItem[] = [];
+  let emptyItemsArray: OrgItem[] = [];
   orgItems.forEach((value) => {
     if (value.data.length > 0) {
       orgItemsArray.push(value);
     } else {
-      orgItemsArrayEmpty.push(value);
+      emptyItemsArray.push(value);
     }
   });
   orgItemsArray.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  orgItemsArrayEmpty.sort((a, b) =>
+  emptyItemsArray.sort((a, b) =>
     collator.compare(a.assignedToName, b.assignedToName),
   );
-  return orgItemsArray.concat(orgItemsArrayEmpty);
+  return orgItemsArray.concat(emptyItemsArray);
 };
 
 //get the equipment for a user by OrgUserStorage id
 //returns an array of processed equipment objects
-export const getEquipment = async (
+const getEquipment = async (
   orgUserStorage: OrgUserStorage,
 ): Promise<EquipmentObj[] | undefined> => {
   try {
@@ -105,7 +106,7 @@ export const getEquipment = async (
   }
 };
 
-export const getContainers = async (
+const getContainers = async (
   orgUserStorage: OrgUserStorage,
 ): Promise<Map<string, ContainerObj>> => {
   // get all the containers assigned to the user
@@ -132,7 +133,7 @@ export const getContainers = async (
   get duplicates and merge their counts
   using a map to count duplicates and converting to an array
 */
-export const processEquipmentData = (
+const processEquipmentData = (
   equipment: Equipment[],
   orgUserStorage: OrgUserStorage,
 ): EquipmentObj[] => {
@@ -171,4 +172,66 @@ export const processEquipmentData = (
   // Convert the Map back to an array
   const processedEquipmentData = Array.from(equipmentMap.values());
   return processedEquipmentData;
+};
+
+// get the csv data for the organization to export to google sheets
+export const getCsvData = (
+  orgItems: Map<string, OrgItem>,
+  showEmpty: boolean,
+  showContainerEquip: boolean,
+): csvSheet => {
+  const counts: { [key: string]: { [key: string]: number } } = {};
+  // get all the unique equipment labels
+  const uniqueLabels: { [key: string]: number } = {};
+  // fill out dictionary with equipment counts for each user
+  orgItems.forEach((value) => {
+    const { assignedToName, data } = value;
+    // skip empty users if showEmpty is false
+    if (!showEmpty && data.length === 0) return;
+    counts[assignedToName] = {};
+    data.forEach((equip) => {
+      counts[assignedToName][equip.label] ??= 0;
+      uniqueLabels[equip.label] ??= 0;
+      if (equip.type === "equipment") {
+        const count = (equip as EquipmentObj).count;
+        counts[assignedToName][equip.label] += count;
+        uniqueLabels[equip.label] += count;
+      } else {
+        // count the container
+        counts[assignedToName][equip.label] += 1;
+        uniqueLabels[equip.label] += 1;
+        // if showContainerEquip is false, don't count the equipment in the container
+        if (!showContainerEquip) return;
+        // count the equipment in the container
+        (equip as ContainerObj).equipment.forEach((equip) => {
+          counts[assignedToName][equip.label] ??= 0;
+          uniqueLabels[equip.label] ??= 0;
+          counts[assignedToName][equip.label] += equip.count;
+          uniqueLabels[equip.label] += equip.count;
+        });
+      }
+    });
+  });
+  const assignedToNames = Object.keys(counts).sort();
+  const equipmentLabels = Object.keys(uniqueLabels).sort();
+  const identityCol = [...assignedToNames, "Total"];
+  let csvContent: string[][] = [];
+  // column major order
+  equipmentLabels.forEach((label) => {
+    const col: string[] = [];
+    assignedToNames.forEach((name) => {
+      const countStr = counts[name][label]
+        ? counts[name][label].toString()
+        : "0";
+      col.push(countStr);
+    });
+    // add the total count for each equipment label
+    col.push(uniqueLabels[label].toString());
+    csvContent.push(col);
+  });
+  return {
+    header: equipmentLabels,
+    identityCol: identityCol,
+    values: csvContent,
+  };
 };

@@ -41,6 +41,7 @@ export type OrgStackParamList = {
   CreateEquipment: undefined;
   UserStorages: { tabParam: string };
   CreateStorage: undefined;
+  Sheet: undefined;
 };
 
 export interface MyHeaderProfileButtonProps {

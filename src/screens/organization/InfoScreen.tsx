@@ -62,11 +62,21 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
           <AntDesign name="right" size={20} />
         </TouchableOpacity>
       </View>
+      <View style={styles.row}>
+        <Text style={styles.rowHeader}>Equipment</Text>
+        <TouchableOpacity
+          style={styles.rightArrow}
+          onPress={() => navigation.navigate("Sheet")}
+        >
+          <Text>View Sheet</Text>
+          <AntDesign name="right" size={20} />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         style={styles.equipmentBtn}
         onPress={() => navigation.navigate("ManageEquipment")}
       >
-        <Text style={styles.eBtnText}>Equipment List</Text>
+        <Text style={styles.eBtnText}>Manage Equipment</Text>
       </TouchableOpacity>
     </View>
   );

@@ -13,7 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.asa.Dougu"
@@ -32,6 +34,13 @@
       "eas": {
         "projectId": "83898b72-1397-4258-b426-c5687090f242"
       }
-    }
+    },
+    "plugins": [
+      ["expo-font",
+      {
+       "fonts": ["./src/assets/Oswald-Font.ttf"]
+      }
+      ]
+    ]
   }
 }

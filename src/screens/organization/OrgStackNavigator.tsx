@@ -4,6 +4,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 import CreateEquipmentScreen from "./CreateEquipmentScreen";
 import ManageEquipmentScreen from "./ManageEquipmentScreen";
+import SheetScreen from "./SheetScreen";
 import UserStorages from "./UserStorages";
 import CreateStorageScreen from "./CreateStorageScreen";
 import InfoScreen from "./InfoScreen";
@@ -48,6 +49,7 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
       <Stack.Screen name="CreateEquipment" component={CreateEquipmentScreen} />
       <Stack.Screen name="UserStorages" component={UserStorages} />
       <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
+      <Stack.Screen name="Sheet" component={SheetScreen} />
     </Stack.Navigator>
   );
 }

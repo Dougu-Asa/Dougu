@@ -42,3 +42,9 @@ export type Position = {
 
 // either listOne, listTwo, or container for the swapEquipment screen
 export type ListCounts = "one" | "two" | "container";
+
+export type csvSheet = {
+  header: string[];
+  identityCol: string[];
+  values: string[][];
+};
