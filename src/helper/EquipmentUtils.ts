@@ -175,13 +175,19 @@ const processEquipmentData = (
 };
 
 // get the csv data for the organization to export to google sheets
-export const getCsvData = (orgItems: Map<string, OrgItem>): csvSheet => {
+export const getCsvData = (
+  orgItems: Map<string, OrgItem>,
+  showEmpty: boolean,
+  showContainerEquip: boolean,
+): csvSheet => {
   const counts: { [key: string]: { [key: string]: number } } = {};
   // get all the unique equipment labels
   const uniqueLabels: { [key: string]: number } = {};
   // fill out dictionary with equipment counts for each user
   orgItems.forEach((value) => {
     const { assignedToName, data } = value;
+    // skip empty users if showEmpty is false
+    if (!showEmpty && data.length === 0) return;
     counts[assignedToName] = {};
     data.forEach((equip) => {
       counts[assignedToName][equip.label] ??= 0;
@@ -194,6 +200,8 @@ export const getCsvData = (orgItems: Map<string, OrgItem>): csvSheet => {
         // count the container
         counts[assignedToName][equip.label] += 1;
         uniqueLabels[equip.label] += 1;
+        // if showContainerEquip is false, don't count the equipment in the container
+        if (!showContainerEquip) return;
         // count the equipment in the container
         (equip as ContainerObj).equipment.forEach((equip) => {
           counts[assignedToName][equip.label] ??= 0;

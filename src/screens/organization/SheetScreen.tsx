@@ -1,172 +1,89 @@
-import React, { memo, useEffect } from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import Animated, {
-  ScrollHandlerProcessed,
-  scrollTo,
-  SharedValue,
-  useAnimatedRef,
-  useAnimatedScrollHandler,
-  useDerivedValue,
-  useSharedValue,
-} from "react-native-reanimated";
-import { useFonts } from "expo-font";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { CheckBox } from "@rneui/themed";
+import { StyleSheet, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { getCsvData } from "../../helper/EquipmentUtils";
-import { ScrollView } from "react-native-gesture-handler";
 import { csvSheet } from "../../types/ModelTypes";
+import Sheet from "../../components/organization/Sheet";
 
-const Cell = memo(function Cell({
-  data,
-  style,
-}: {
-  data: string;
-  style: StyleProp<ViewStyle>;
-}) {
-  return (
-    <View style={style}>
-      <Text style={styles.cellText}>{data}</Text>
-    </View>
-  );
-});
-
-function Col({ data, isIdentity }: { data: string[]; isIdentity: boolean }) {
-  return (
-    <View>
-      {data.map((d, index) => (
-        <Cell
-          data={d}
-          key={index}
-          style={isIdentity ? styles.identityCell : styles.cell}
-        />
-      ))}
-    </View>
-  );
-}
-
-function HeaderView({
-  equipmentLabels,
-  offsetX,
-}: {
-  equipmentLabels: string[];
-  offsetX: SharedValue<number>;
-}) {
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-
-  useDerivedValue(() => {
-    scrollTo(scrollRef, offsetX.value, 0, true);
-  });
-
-  return (
-    <View style={styles.row}>
-      <Cell data={"Assigned To"} key={-1} style={styles.identityCell} />
-      <Animated.ScrollView
-        horizontal={true}
-        ref={scrollRef}
-        showsHorizontalScrollIndicator={false}
-      >
-        {equipmentLabels.map((label, index) => (
-          <Cell data={label} key={index} style={styles.cell} />
-        ))}
-      </Animated.ScrollView>
-    </View>
-  );
-}
-
-function BodyView({
-  identityCol,
-  values,
-  scrollHandler,
-}: {
-  identityCol: string[];
-  values: string[][];
-  scrollHandler: ScrollHandlerProcessed<Record<string, unknown>>;
-}) {
-  return (
-    <View style={styles.body}>
-      <Col data={identityCol} isIdentity={true} />
-      <Animated.FlatList
-        data={values}
-        renderItem={({ item }) => <Col data={item} isIdentity={false} />}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        onScroll={scrollHandler}
-      />
-    </View>
-  );
-}
-
+// sheetScreen. it obtains the csvData and composes the header and body
 export default function SheetScreen() {
   const { itemData } = useEquipment();
   const [data, setData] = React.useState<csvSheet | null>(null);
-  const offsetX = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    offsetX.value = event.contentOffset.x;
-  });
+  const [showEmpty, setShowEmpty] = useState(true);
+  const [showContainerEquip, setShowContainerEquip] = useState(true);
+
+  // on layout, get the user's preferences
+  useLayoutEffect(() => {
+    const getData = async () => {
+      const config = await AsyncStorage.getItem("config");
+      if (config) {
+        const { showEmpty, showContainerEquip } = JSON.parse(config);
+        setShowEmpty(showEmpty);
+        setShowContainerEquip(showContainerEquip);
+      }
+    };
+
+    getData();
+  }, []);
 
   // keep the data up to date
   useEffect(() => {
-    setData(getCsvData(itemData));
-  }, [itemData]);
+    setData(getCsvData(itemData, showEmpty, showContainerEquip));
+  }, [itemData, showContainerEquip, showEmpty]);
 
-  // load the Oswald font
-  const [loaded, error] = useFonts({
-    Oswald: require("../../assets/Oswald-Font.ttf"),
-  });
-  if (!loaded && !error) {
-    return null;
-  }
+  // store the user's preferences and keep them up to date
+  useEffect(() => {
+    const storeData = async () => {
+      await AsyncStorage.setItem(
+        "config",
+        JSON.stringify({
+          showEmpty: showEmpty,
+          showContainerEquip: showContainerEquip,
+        }),
+      );
+    };
+
+    storeData();
+  }, [showEmpty, showContainerEquip]);
 
   return (
     <View style={styles.container}>
-      <HeaderView equipmentLabels={data ? data.header : []} offsetX={offsetX} />
-      <ScrollView>
-        <BodyView
-          identityCol={data ? data.identityCol : []}
-          values={data ? data.values : []}
-          scrollHandler={scrollHandler}
+      <View style={styles.row}>
+        <CheckBox
+          center
+          title="Empty Rows"
+          checked={showEmpty}
+          onPress={() => setShowEmpty(!showEmpty)}
+          textStyle={styles.text}
         />
-      </ScrollView>
+        <CheckBox
+          center
+          title="Container Equipment"
+          checked={showContainerEquip}
+          onPress={() => setShowContainerEquip(!showContainerEquip)}
+          textStyle={styles.text}
+        />
+      </View>
+      <Sheet data={data} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    flexDirection: "row",
-  },
-  cell: {
-    width: 80,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#D3D3D3",
-  },
-  cellText: {
-    fontSize: 10,
-    fontFamily: "Oswald",
-  },
   container: {
-    backgroundColor: "#fff",
     flex: 1,
-    flexDirection: "column",
-  },
-  identityCell: {
-    width: 120,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRightWidth: 2,
-    borderRightColor: "#696969",
-    borderBottomWidth: 1,
-    borderBottomColor: "#D3D3D3",
+    backgroundColor: "#fff",
   },
   row: {
     flexDirection: "row",
-    borderBottomWidth: 2,
-    borderColor: "#696969",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  text: {
+    fontSize: 10,
   },
 });
