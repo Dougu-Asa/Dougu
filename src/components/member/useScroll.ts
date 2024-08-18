@@ -19,7 +19,6 @@ export default function useScroll() {
     if (scrollTimeout.current) {
       return;
     }
-    // make sure nextPage is correct before changing page
     scrollTimeout.current = setTimeout(() => {
       if (position === "left") {
         changePage(currPage - 1);

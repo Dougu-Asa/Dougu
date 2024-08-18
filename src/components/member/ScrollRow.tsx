@@ -8,10 +8,9 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 
-import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import { ItemObj } from "../../types/ModelTypes";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
-import EquipmentItem from "./EquipmentItem";
-import ContainerItem from "./ContainerItem";
+import Item from "./Item";
 
 /*
   Handles an individual user row of equipment, tracking page and displaying.
@@ -66,22 +65,11 @@ export default function ScrollRow({
               const idx = itemIdx++;
               return (
                 <View key={item.id} style={styles.item}>
-                  {item.type === "equipment" ? (
-                    <EquipmentItem
-                      item={item as EquipmentObj}
-                      count={
-                        countData
-                          ? countData[idx]
-                          : (item as EquipmentObj).count
-                      }
-                    />
-                  ) : (
-                    <ContainerItem
-                      item={item as ContainerObj}
-                      swapable={isSwap}
-                      count={countData ? countData[idx] : 1}
-                    />
-                  )}
+                  <Item
+                    data={item}
+                    countData={countData ? countData[idx] : undefined}
+                    swapable={isSwap}
+                  />
                 </View>
               );
             })}

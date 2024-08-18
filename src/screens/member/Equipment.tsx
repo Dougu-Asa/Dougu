@@ -3,12 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // Project imports
-import EquipmentItem from "../../components/member/EquipmentItem";
 import { useUser } from "../../helper/context/UserContext";
-import type { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import ContainerItem from "../../components/member/ContainerItem";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
+import Item from "../../components/member/Item";
 
 /*
   Screen for viewing all equipment assigned to the current user
@@ -31,17 +29,7 @@ export default function EquipmentScreen() {
             <View key={index} style={styles.equipmentRow}>
               {group.map((equip) => (
                 <View key={equip.id} style={styles.equipmentItemContainer}>
-                  {equip.type === "equipment" ? (
-                    <EquipmentItem
-                      item={equip as EquipmentObj}
-                      count={(equip as EquipmentObj).count}
-                    />
-                  ) : (
-                    <ContainerItem
-                      item={equip as ContainerObj}
-                      swapable={false}
-                    />
-                  )}
+                  <Item data={equip} countData={undefined} swapable={false} />
                 </View>
               ))}
             </View>
