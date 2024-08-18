@@ -4,7 +4,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import { EquipmentObj, ContainerObj, OrgItem } from "../../types/ModelTypes";
 import { EquipmentContextType } from "../../types/ContextTypes";
 import { useUser } from "./UserContext";
-import { getOrgItems, getCsvData } from "../EquipmentUtils";
+import { getOrgItems } from "../EquipmentUtils";
 import { Equipment, Container } from "../../models";
 
 /* 
@@ -36,7 +36,6 @@ export default function EquipmentProvider({
     const handleGetItems = async () => {
       const items = await getOrgItems(org!.id);
       setItemData(items);
-      getCsvData(items);
     };
 
     const equipmentSubscription = DataStore.observeQuery(Equipment).subscribe(

@@ -12,3 +12,6 @@ After playing around with lambda functions and a lot of deliberation, I ultimate
 - Oauth2 is a community/group standard that can be used to manage user tokens
 - utilize a service account if you want to have an organization google account that creates files, etc.
 - AWS Lambda is more vulnerable than one might expect, even on the server don't store credentials
+
+## Implementing a sheet in react native
+There is no easy build-in implementation of creating a table sheet with a frozen row and a frozen column, but luckily I found a solution [here](https://build.affinity.co/building-a-highly-responsive-sheet-view-with-react-native-51129ec34c63). That works pretty well. Good thing

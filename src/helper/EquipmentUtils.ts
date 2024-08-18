@@ -167,11 +167,15 @@ const processEquipmentData = (
   return processedEquipmentData;
 };
 
+type csvSheet = {
+  header: string[];
+  identityCol: string[];
+  values: number[][];
+};
 // get the csv data for the organization to export to google sheets
-type cellContent = string | number;
 export const getCsvData = async (
   orgItems: Map<string, OrgItem>,
-): Promise<cellContent[][]> => {
+): Promise<csvSheet> => {
   const counts: { [key: string]: { [key: string]: number } } = {};
   // get all the unique equipment labels
   const uniqueLabels: { [key: string]: number } = {};
@@ -201,15 +205,15 @@ export const getCsvData = async (
   });
   const assignedToNames = Object.keys(counts).sort();
   const equipmentLabels = Object.keys(uniqueLabels).sort();
-  let csvContent: cellContent[][] = [];
-  // create the header
-  csvContent.push(["Assigned To", ...equipmentLabels]);
+  const header = ["Assigned To", ...equipmentLabels];
+  const identityCol = assignedToNames;
+  let csvContent: number[][] = [];
   assignedToNames.forEach((name) => {
-    const row: cellContent[] = [name];
+    const row: number[] = [];
     equipmentLabels.forEach((label) => {
       row.push(counts[name][label] || 0);
     });
     csvContent.push(row);
   });
-  return csvContent;
+  return { header, identityCol, values: csvContent };
 };
