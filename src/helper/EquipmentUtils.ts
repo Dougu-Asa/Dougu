@@ -185,25 +185,28 @@ export const getCsvData = (orgItems: Map<string, OrgItem>): csvSheet => {
     counts[assignedToName] = {};
     data.forEach((equip) => {
       counts[assignedToName][equip.label] ??= 0;
+      uniqueLabels[equip.label] ??= 0;
       if (equip.type === "equipment") {
-        counts[assignedToName][equip.label] += (equip as EquipmentObj).count;
-        uniqueLabels[equip.label] = 1;
+        const count = (equip as EquipmentObj).count;
+        counts[assignedToName][equip.label] += count;
+        uniqueLabels[equip.label] += count;
       } else {
         // count the container
         counts[assignedToName][equip.label] += 1;
-        uniqueLabels[equip.label] = 1;
+        uniqueLabels[equip.label] += 1;
         // count the equipment in the container
         (equip as ContainerObj).equipment.forEach((equip) => {
           counts[assignedToName][equip.label] ??= 0;
+          uniqueLabels[equip.label] ??= 0;
           counts[assignedToName][equip.label] += equip.count;
-          uniqueLabels[equip.label] = 1;
+          uniqueLabels[equip.label] += equip.count;
         });
       }
     });
   });
   const assignedToNames = Object.keys(counts).sort();
   const equipmentLabels = Object.keys(uniqueLabels).sort();
-  const identityCol = assignedToNames;
+  const identityCol = [...assignedToNames, "Total"];
   let csvContent: string[][] = [];
   // column major order
   equipmentLabels.forEach((label) => {
@@ -214,7 +217,13 @@ export const getCsvData = (orgItems: Map<string, OrgItem>): csvSheet => {
         : "0";
       col.push(countStr);
     });
+    // add the total count for each equipment label
+    col.push(uniqueLabels[label].toString());
     csvContent.push(col);
   });
-  return { header: equipmentLabels, identityCol, values: csvContent };
+  return {
+    header: equipmentLabels,
+    identityCol: identityCol,
+    values: csvContent,
+  };
 };
