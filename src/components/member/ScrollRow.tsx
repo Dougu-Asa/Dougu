@@ -1,12 +1,12 @@
-import { ScrollView } from "react-native-gesture-handler";
 import {
   View,
   StyleSheet,
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  FlatList,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { ItemObj } from "../../types/ModelTypes";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
@@ -32,7 +32,7 @@ export default function ScrollRow({
   // data is displayed as pages of 4 items
   const chunkedData = chunkEquipment(listData, 4);
   const windowWidth = Dimensions.get("window").width;
-  const scrollViewRef = React.useRef<ScrollView>(null);
+  const flatListRef = useRef<FlatList<ItemObj[]> | null>(null);
 
   // keep track of the current page
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -45,38 +45,37 @@ export default function ScrollRow({
     if (nextPage == null) return;
     if (nextPage < 0 || nextPage > chunkedData.length - 1) return;
     const scrollValue = nextPage * windowWidth;
-    scrollViewRef.current?.scrollTo({ x: scrollValue });
-  }, [chunkedData.length, nextPage, windowWidth]);
+    flatListRef.current?.scrollToOffset({ offset: scrollValue });
+  }, [chunkedData.length, flatListRef, nextPage, windowWidth]);
 
   let itemIdx = 0;
   return (
-    <>
-      <ScrollView
-        horizontal={true}
-        pagingEnabled={true}
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={8}
-        ref={scrollViewRef}
-      >
-        {chunkedData.map((chunk, rowIdx) => (
-          <View key={rowIdx} style={styles.scrollRow}>
-            {chunk.map((item) => {
-              const idx = itemIdx++;
-              return (
-                <View key={item.id} style={styles.item}>
-                  <Item
-                    data={item}
-                    countData={countData ? countData[idx] : undefined}
-                    swapable={isSwap}
-                  />
-                </View>
-              );
-            })}
-          </View>
-        ))}
-      </ScrollView>
-    </>
+    <FlatList
+      horizontal={true}
+      pagingEnabled={true}
+      showsHorizontalScrollIndicator={false}
+      data={chunkedData}
+      renderItem={({ item }) => (
+        <View style={styles.scrollRow}>
+          {item.map((equip) => {
+            const idx = itemIdx++;
+            return (
+              <View key={equip.id} style={styles.item}>
+                <Item
+                  data={equip}
+                  countData={countData ? countData[idx] : undefined}
+                  swapable={isSwap}
+                />
+              </View>
+            );
+          })}
+        </View>
+      )}
+      keyExtractor={(item, index) => index.toString()}
+      onScroll={handleScroll}
+      scrollEventThrottle={8}
+      ref={flatListRef}
+    />
   );
 }
 
