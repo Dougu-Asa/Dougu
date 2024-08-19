@@ -19,7 +19,7 @@ export default function useHover({
   listOne,
   listTwo,
   handleScroll,
-  scrollTimeout,
+  clearScroll,
 }: {
   halfLine: React.MutableRefObject<number>;
   draggingItem: ItemObj | null;
@@ -29,9 +29,9 @@ export default function useHover({
   listOne: ItemObj[];
   listTwo: ItemObj[];
   handleScroll: (isTop: boolean, position: string) => void;
-  scrollTimeout: React.MutableRefObject<NodeJS.Timeout | null>;
+  clearScroll: () => void;
 }) {
-  let prevPosition = "";
+  const prevPosition = useRef<string | null>(null);
   const containerTimeout = useRef<NodeJS.Timeout | null>(null);
   const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
   const hoverContainer = useRef<ContainerObj | null>(null);
@@ -129,10 +129,6 @@ export default function useHover({
   };
 
   const clearTimeouts = () => {
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = null;
-    }
     if (containerTimeout.current) {
       clearTimeout(containerTimeout.current);
       containerTimeout.current = null;
@@ -145,8 +141,9 @@ export default function useHover({
 
   // depending on the position of the equipment item, call the appropriate function
   const handlePosition = (position: string, isTop: boolean, index?: number) => {
-    if (position !== prevPosition) {
+    if (position !== prevPosition.current) {
       clearTimeouts();
+      clearScroll();
       hoverContainer.current = null;
       size.value = withSpring(1.2);
     } else if (position === "left" || position === "right") {
@@ -157,7 +154,7 @@ export default function useHover({
       // if the equipment item is hovering over a container item
       handleContainer(isTop, index);
     }
-    prevPosition = position;
+    prevPosition.current = position;
   };
 
   return {

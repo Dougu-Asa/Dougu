@@ -70,7 +70,7 @@ export default function SwapGestures({
     bottomPage,
     setBottomPage,
     nextBottomPage,
-    scrollTimeout,
+    clearScroll,
     handleScroll,
   } = useScroll();
   const {
@@ -101,7 +101,7 @@ export default function SwapGestures({
       listOne,
       listTwo,
       handleScroll,
-      scrollTimeout,
+      clearScroll,
     });
 
   const handleLayout = (e: LayoutChangeEvent) => {
@@ -169,6 +169,7 @@ export default function SwapGestures({
       animateFinalize();
       runOnJS(handleReassign)(e);
       runOnJS(clearTimeouts)();
+      runOnJS(clearScroll)();
     })
     .activateAfterLongPress(500);
 
