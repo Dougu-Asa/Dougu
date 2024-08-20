@@ -68,14 +68,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: "#fff",
-    borderWidth: 1,
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    borderBottomWidth: 1,
     width: "100%",
   },
   addIcon: {
