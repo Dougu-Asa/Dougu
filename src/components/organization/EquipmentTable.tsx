@@ -197,12 +197,13 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    height: 50,
+    minHeight: 50,
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
   table: {
     width: "100%",
+    flex: 1,
   },
   text: {
     fontSize: 12,
