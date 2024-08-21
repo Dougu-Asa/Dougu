@@ -1,42 +1,119 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-import { DataStore } from "@aws-amplify/datastore";
+
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 // project imports
-import { Container, Equipment } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
-import { handleError } from "../../helper/Utils";
-import { EquipmentObj, ItemObj } from "../../types/ModelTypes";
+import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { sortOrgItems } from "../../helper/EquipmentUtils";
 import { useEquipment } from "../../helper/context/EquipmentContext";
+import { handleEdit } from "../../helper/EditUtils";
 
 /*
   Component for displaying all equipment in the organization
   in a table format
 */
+function SubEquipmentRow({
+  equipment,
+  isManager,
+}: {
+  equipment: EquipmentObj;
+  isManager: boolean;
+}) {
+  const { setIsLoading } = useLoad();
+
+  return (
+    <View style={styles.row}>
+      <View style={[styles.cell, { flex: 2 }]}>
+        <Entypo name="minus" size={20} />
+      </View>
+      <View style={[styles.cell, { flex: 10 }]}>
+        <Text style={styles.text}>{equipment.assignedToName}</Text>
+      </View>
+      <View style={[styles.cell, { flex: 8 }]}>
+        <Text style={styles.text}>{equipment.label}</Text>
+      </View>
+      <View style={[styles.cell, { flex: 3, alignItems: "center" }]}>
+        <Text style={styles.text}>{equipment.count}</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => handleEdit(equipment, isManager, setIsLoading)}
+      >
+        <Entypo name="dots-three-vertical" size={20} />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function TableRow({ item, isManager }: { item: ItemObj; isManager: boolean }) {
+  const [openContainer, setOpenContainer] = useState(false);
+  const { setIsLoading } = useLoad();
+
+  return (
+    <>
+      <View style={styles.row}>
+        <View style={[styles.cell, { flex: 2 }]}>
+          {item.type === "container" && (
+            <TouchableOpacity
+              style={styles.icon}
+              onPress={() => setOpenContainer(!openContainer)}
+            >
+              {openContainer ? (
+                <Entypo name="chevron-down" size={20} />
+              ) : (
+                <Entypo name="chevron-right" size={20} />
+              )}
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={[styles.cell, { flex: 10 }]}>
+          <Text style={styles.text}>{item.assignedToName}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 8 }]}>
+          <Text style={styles.text}>{item.label}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 3, alignItems: "center" }]}>
+          <Text style={styles.text}>
+            {item.type === "equipment" ? (item as EquipmentObj).count : 1}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.icon}
+          onPress={() => handleEdit(item, isManager, setIsLoading)}
+        >
+          <Entypo name="dots-three-vertical" size={20} />
+        </TouchableOpacity>
+      </View>
+      {item.type === "container" &&
+        openContainer &&
+        (item as ContainerObj).equipment.map((equipment) => (
+          <SubEquipmentRow
+            equipment={equipment}
+            isManager={isManager}
+            key={equipment.id}
+          />
+        ))}
+    </>
+  );
+}
+
 export default function EquipmentTable({
   searchFilter,
 }: {
   searchFilter: string;
 }) {
-  const tableHead = ["Name", "Assigned To", "Quantity", ""];
+  const tableHead = ["", "Location", "Name", "Count", ""];
   // table data is the equipment in the organization
   const [tableData, setTableData] = useState<ItemObj[]>([]);
   // filtered data is the equipment that matches the search filter
   const [filteredData, setFilteredData] = useState<ItemObj[]>([]);
-  const isManager = useRef<boolean>(false);
   const { user, org } = useUser();
   const { itemData } = useEquipment();
-  const { setIsLoading } = useLoad();
+  const isManager = org?.manager === user?.id;
 
   // subscribe to and get all equipment in the organization
   useEffect(() => {
@@ -53,7 +130,6 @@ export default function EquipmentTable({
       setFilteredData(tableData);
     };
 
-    isManager.current = org!.manager === user!.id ? true : false;
     handleGetEquipment();
   }, [itemData, org, user]);
 
@@ -75,103 +151,41 @@ export default function EquipmentTable({
     }
   }, [searchFilter, tableData]);
 
-  // delete equipment from the organization
-  const handleDelete = async (item: ItemObj) => {
-    try {
-      setIsLoading(true);
-      let toDelete;
-      if (item.type === "equipment") {
-        toDelete = await DataStore.query(Equipment, item.id);
-      } else {
-        toDelete = await DataStore.query(Container, item.id);
-      }
-      if (toDelete == null) throw new Error("Item not found");
-      await DataStore.delete(toDelete);
-      setIsLoading(false);
-      Alert.alert("Equipment Deleted Successfully!");
-    } catch (error) {
-      handleError("handleDelete", error as Error, setIsLoading);
-    }
-  };
-
-  // make sure the owner wants to delete the equipment
-  const handleEdit = (equipment: ItemObj) => {
-    if (!isManager.current) {
-      Alert.alert("You must be a manager to edit equipment");
-      return;
-    }
-    Alert.alert(
-      "Delete Equipment",
-      "Would you like to delete this equipment?",
-      [
-        {
-          text: "Delete",
-          onPress: () => handleDelete(equipment),
-          style: "destructive",
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ],
-    );
-  };
-
   return (
     <View style={styles.table}>
       <View style={styles.row}>
-        <Text style={[styles.headerText, { flex: 8 }]}>{tableHead[0]}</Text>
-        <Text style={[styles.headerText, { flex: 10 }]}>{tableHead[1]}</Text>
-        <Text style={[styles.headerText, { flex: 3 }]}>{tableHead[2]}</Text>
-        <Text style={[styles.headerText, { flex: 1 }]}>{tableHead[3]}</Text>
+        <View style={[styles.cell, { flex: 2 }]}>
+          <Text style={styles.headerText}>{tableHead[0]}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 10 }]}>
+          <Text style={styles.headerText}>{tableHead[1]}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 8 }]}>
+          <Text style={styles.headerText}>{tableHead[2]}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 3 }]}>
+          <Text style={styles.headerText}>{tableHead[3]}</Text>
+        </View>
+        <View style={[styles.cell, { flex: 1 }]}>
+          <Text style={styles.headerText}>{tableHead[4]}</Text>
+        </View>
       </View>
-      <ScrollView>
-        {filteredData.map((equipment, index) => (
-          <View key={index} style={styles.row}>
-            <View style={[styles.cell, { flex: 8 }]}>
-              <Text>{equipment.label}</Text>
-            </View>
-            <View style={[styles.cell, { flex: 10 }]}>
-              <Text>{equipment.assignedToName}</Text>
-            </View>
-            <View style={[styles.cell, { flex: 3 }]}>
-              <Text>
-                {equipment.type === "equipment"
-                  ? (equipment as EquipmentObj).count
-                  : 1}
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={styles.icon}
-              onPress={() => handleEdit(equipment)}
-            >
-              <Entypo name="dots-three-vertical" size={20} />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
+      <Animated.FlatList
+        data={filteredData}
+        renderItem={({ item }) => (
+          <TableRow item={item} isManager={isManager} />
+        )}
+        keyExtractor={(item) => item.id}
+        itemLayoutAnimation={LinearTransition}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  table: {
-    flex: 1,
-    width: "100%",
-    borderWidth: 1,
-  },
-  row: {
-    flexDirection: "row",
-    width: "100%",
-    minHeight: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "gray",
-  },
   headerText: {
-    padding: 10,
-    fontWeight: "bold",
-    fontSize: 8,
     color: "gray",
+    fontSize: 12,
   },
   cell: {
     marginLeft: 10,
@@ -180,5 +194,18 @@ const styles = StyleSheet.create({
   icon: {
     justifyContent: "center",
     marginRight: 5,
+  },
+  row: {
+    flexDirection: "row",
+    minHeight: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: "gray",
+  },
+  table: {
+    width: "100%",
+    flex: 1,
+  },
+  text: {
+    fontSize: 12,
   },
 });
