@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import Entypo from "react-native-vector-icons/Entypo";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { itemStyles } from "../../styles/ItemStyles";
+import IconMap from "../../helper/ImageMapping";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -41,7 +41,7 @@ export default function EquipmentItem({
                   itemStyles.equipment,
                 ]}
               >
-                <Entypo name="camera" size={50} color="white" />
+                <IconMap icon={item.image} />
               </Pressable>
             </View>
             <View style={itemStyles.circle}>

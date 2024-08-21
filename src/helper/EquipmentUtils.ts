@@ -97,7 +97,6 @@ const getEquipment = async (
     const equipment = await DataStore.query(Equipment, (c) =>
       c.assignedTo.id.eq(orgUserStorage.id),
     );
-    console.log("equipment: ", equipment);
     // group duplicates and merge their counts
     const equipmentData = processEquipmentData(equipment, orgUserStorage);
     return equipmentData;
@@ -114,13 +113,13 @@ const getContainers = async (
   const containers = await DataStore.query(Container, (c) =>
     c.assignedTo.id.eq(orgUserStorage.id),
   );
-  console.log("containers: ", containers);
   // for each container id, create a map <containerId, containerObj>
   const containerMap = new Map<string, ContainerObj>();
   for (let j = 0; j < containers.length; j++) {
     const containerObj: ContainerObj = {
       id: containers[j].id,
       label: containers[j].name,
+      color: containers[j].color,
       assignedTo: orgUserStorage.id,
       assignedToName: orgUserStorage.name,
       type: "container",
@@ -160,8 +159,10 @@ const processEquipmentData = (
       equipmentMap.set(key, {
         id: equip.id,
         label: equip.name,
+        color: equip.color,
         count: 1,
         type: "equipment",
+        image: equip.image,
         data: [equip.id],
         detailData: [equip.details ? equip.details : ""],
         assignedTo: orgUserStorage.id,

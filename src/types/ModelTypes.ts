@@ -5,6 +5,7 @@ export type EquipmentOrContainer = "equipment" | "container";
 export interface ItemObj {
   id: string;
   label: string;
+  color: string;
   assignedTo: string;
   assignedToName: string;
   type: EquipmentOrContainer;
@@ -12,6 +13,7 @@ export interface ItemObj {
 
 // how equipment data is stored in the app
 export interface EquipmentObj extends ItemObj {
+  image: string;
   count: number;
   data: string[];
   detailData: string[];
