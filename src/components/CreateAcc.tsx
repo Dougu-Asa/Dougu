@@ -66,7 +66,7 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         options: {
           userAttributes: {
             name: username,
-            profile: "default",
+            profile: "miku",
           },
         },
       });

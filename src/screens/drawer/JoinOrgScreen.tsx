@@ -76,7 +76,6 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
         organization: org,
         type: UserOrStorage.USER,
         name: user!.name,
-        image: "default",
         group: org.name,
         user: user!.id,
       }),

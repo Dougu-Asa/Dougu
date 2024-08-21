@@ -65,7 +65,9 @@ export default function CreateEquipmentScreen() {
           assignedTo: orgUserStorage,
           details: details,
           image: "default",
+          color: "#ffffff",
           group: org!.name,
+          containerId: null,
         }),
       );
     }

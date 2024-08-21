@@ -17,12 +17,11 @@ const handleDelete = async (
       toDelete = await DataStore.query(Equipment, item.id);
     } else {
       toDelete = await DataStore.query(Container, item.id);
-      // delete all equipment in the container
-      const equipment = await DataStore.query(Equipment, (c) =>
+      const containerEquipment = await DataStore.query(Equipment, (c) =>
         c.containerId.eq(item.id),
       );
-      for (let i = 0; i < equipment.length; i++) {
-        await DataStore.delete(equipment[i]);
+      for (let i = 0; i < containerEquipment.length; i++) {
+        await DataStore.delete(containerEquipment[i]);
       }
     }
     if (toDelete == null) throw new Error("Item not found");

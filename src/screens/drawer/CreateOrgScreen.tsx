@@ -89,7 +89,6 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
         type: UserOrStorage.USER,
         user: user!.id,
         name: user!.name,
-        image: "default",
         group: name,
       }),
     );

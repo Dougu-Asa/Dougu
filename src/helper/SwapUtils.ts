@@ -60,9 +60,6 @@ export const reassignContainer = async (
     const container = await DataStore.query(Container, item.id);
     if (!swapOrgUserStorage) throw new Error("OrgUserStorage does not exist!");
     if (!container) throw new Error("Container does not exist!");
-    const containerEquipment = await DataStore.query(Equipment, (c) =>
-      c.containerId.eq(item.id),
-    );
     // reassign the container to the new OrgUserStorage
     await DataStore.save(
       Container.copyOf(container, (updated) => {
@@ -71,6 +68,9 @@ export const reassignContainer = async (
       }),
     );
     // reassign all equipment that belong to the container
+    const containerEquipment = await DataStore.query(Equipment, (c) =>
+      c.containerId.eq(container.id),
+    );
     containerEquipment.forEach(async (equip) => {
       await DataStore.save(
         Equipment.copyOf(equip, (updated) => {
