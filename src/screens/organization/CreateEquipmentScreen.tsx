@@ -22,6 +22,8 @@ import {
 import { useLoad } from "../../helper/context/LoadingContext";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
+import EquipmentDisplay from "../../components/member/EquipmentDisplay";
+import ContainerDisplay from "../../components/member/ContainerDisplay";
 
 /*
   Create equipment screen allows a manager to create equipment
@@ -137,6 +139,13 @@ export default function CreateEquipmentScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.rowContainer}>
+        {index === 0 ? (
+          <EquipmentDisplay image={"default"} />
+        ) : (
+          <ContainerDisplay />
+        )}
+      </View>
       <View style={styles.rowContainer}>
         <View style={styles.row1}>
           <Text style={styles.rowHeader}>Name</Text>
