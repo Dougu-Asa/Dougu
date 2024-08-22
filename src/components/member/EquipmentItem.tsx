@@ -32,9 +32,7 @@ export default function EquipmentItem({
       <View style={itemStyles.container}>
         {count > 0 && (
           <>
-            <View style={itemStyles.backDrop}>
-              <EquipmentDisplay image={item.image} />
-            </View>
+            <EquipmentDisplay image={item.image} isMini={false} />
             <View style={itemStyles.circle}>
               <Text style={itemStyles.count}>{count}</Text>
             </View>

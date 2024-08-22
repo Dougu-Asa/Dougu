@@ -3,6 +3,8 @@ import { Dimensions, StyleSheet } from "react-native";
 const width = Dimensions.get("window").width;
 const itemWidth = width / 5;
 const borderRadius = width / 14;
+const miniWidth = width / 22;
+const miniRadius = width / 64;
 
 /*
   Used for EquipmentItem, ContainerItem, and MiniEquipmentItem styling
@@ -42,9 +44,6 @@ export const itemStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   equipment: {
-    width: itemWidth,
-    height: itemWidth,
-    borderRadius: borderRadius,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgb(135, 206, 235)",
@@ -58,6 +57,16 @@ export const itemStyles = StyleSheet.create({
     justifyContent: "flex-start",
     flexBasis: "33.33%",
     alignItems: "center",
+  },
+  size: {
+    width: itemWidth,
+    height: itemWidth,
+    borderRadius: borderRadius,
+  },
+  sizeMini: {
+    width: miniWidth,
+    height: miniWidth,
+    borderRadius: miniRadius,
   },
   table: {
     width: "85%",

@@ -4,8 +4,8 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkEquipment } from "../../helper/EquipmentUtils";
-import MiniEquipmentItem from "./MiniEquipmentItem";
 import { itemStyles } from "../../styles/ItemStyles";
+import EquipmentDisplay from "./EquipmentDisplay";
 
 /*
   ContainerItem is a component that displays a container object with a label and
@@ -64,7 +64,10 @@ export default function ContainerItem({
                               key={equip.id}
                               style={itemStyles.equipmentItemContainer}
                             >
-                              <MiniEquipmentItem item={equip as EquipmentObj} />
+                              <EquipmentDisplay
+                                image={(equip as EquipmentObj).image}
+                                isMini={true}
+                              />
                             </View>
                           ))}
                         </View>

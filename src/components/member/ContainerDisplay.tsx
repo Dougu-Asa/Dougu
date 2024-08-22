@@ -1,15 +1,17 @@
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import { itemStyles } from "../../styles/ItemStyles";
 
 export default function ContainerDisplay() {
   return (
-    <Pressable
-      style={({ pressed }) => [
-        {
-          opacity: pressed ? 0.7 : 1,
-        },
-        itemStyles.containerItem,
-      ]}
-    ></Pressable>
+    <View style={itemStyles.backDrop}>
+      <Pressable
+        style={({ pressed }) => [
+          {
+            opacity: pressed ? 0.7 : 1,
+          },
+          itemStyles.containerItem,
+        ]}
+      ></Pressable>
+    </View>
   );
 }

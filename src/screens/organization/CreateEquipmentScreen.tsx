@@ -141,7 +141,7 @@ export default function CreateEquipmentScreen() {
     <View style={styles.container}>
       <View style={styles.rowContainer}>
         {index === 0 ? (
-          <EquipmentDisplay image={"default"} />
+          <EquipmentDisplay image={"default"} isMini={false} />
         ) : (
           <ContainerDisplay />
         )}

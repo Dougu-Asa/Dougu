@@ -9,16 +9,23 @@ const profileMapping: { [key: string]: any } = {
   miku: require("../assets/userprofiles/miku.jpg"),
 };
 
-const iconMapping: { [key: string]: () => JSX.Element } = {
-  default: () =>
-    createElement(Entypo, { name: "camera", size: iconSize, color: "white" }),
+const iconMapping: { [key: string]: (size: number) => JSX.Element } = {
+  default: (size) =>
+    createElement(Entypo, { name: "camera", size: size, color: "white" }),
 };
 
-export default function IconMap({ icon }: { icon: string }) {
+export default function IconMap({
+  icon,
+  isMini,
+}: {
+  icon: string;
+  isMini: boolean;
+}) {
+  const size = isMini ? iconSize / 6 : iconSize;
   if (icon in iconMapping) {
-    return iconMapping[icon]();
+    return iconMapping[icon](size);
   } else {
-    return iconMapping["default"]();
+    return iconMapping["default"](size);
   }
 }
 
