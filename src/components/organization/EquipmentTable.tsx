@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-
-import Animated, { LinearTransition } from "react-native-reanimated";
 
 // project imports
 import { useUser } from "../../helper/context/UserContext";
@@ -88,15 +92,15 @@ function TableRow({ item, isManager }: { item: ItemObj; isManager: boolean }) {
           <Entypo name="dots-three-vertical" size={20} />
         </TouchableOpacity>
       </View>
-      {item.type === "container" &&
-        openContainer &&
-        (item as ContainerObj).equipment.map((equipment) => (
-          <SubEquipmentRow
-            equipment={equipment}
-            isManager={isManager}
-            key={equipment.id}
-          />
-        ))}
+      {item.type === "container" && openContainer && (
+        <FlatList
+          data={(item as ContainerObj).equipment}
+          renderItem={({ item }) => (
+            <SubEquipmentRow equipment={item} isManager={isManager} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </>
   );
 }
@@ -170,13 +174,12 @@ export default function EquipmentTable({
           <Text style={styles.headerText}>{tableHead[4]}</Text>
         </View>
       </View>
-      <Animated.FlatList
+      <FlatList
         data={filteredData}
         renderItem={({ item }) => (
           <TableRow item={item} isManager={isManager} />
         )}
         keyExtractor={(item) => item.id}
-        itemLayoutAnimation={LinearTransition}
       />
     </View>
   );
