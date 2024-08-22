@@ -8,12 +8,12 @@ import { fetchAuthSession } from "aws-amplify/auth";
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/context/LoadingContext";
-import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
+import { Organization } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
-import { createUserGroup, addUserToGroup } from "../../helper/AWS";
 import { validateRequirements } from "../../helper/drawer/CreateOrgUtils";
+import { createOrg, createOrgUserStorage } from "../../helper/CreateUtils";
 
 /*
   Screen for creating an organization, user enters the name of the org
@@ -57,47 +57,6 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
     }
   };
 
-  // create an org and orgUserStorage to add to the database
-  const createOrg = async (
-    token: string,
-    code: string,
-  ): Promise<Organization> => {
-    // Add the org to the database
-    const newOrg = await DataStore.save(
-      new Organization({
-        name: name,
-        accessCode: code,
-        manager: user!.id,
-        image: "default",
-      }),
-    );
-    if (newOrg == null)
-      throw new Error("Organization not created successfully.");
-    // create a user group for the org
-    await createUserGroup(token, name);
-    return newOrg;
-  };
-
-  const createOrgUserStorage = async (
-    token: string,
-    org: Organization,
-  ): Promise<boolean> => {
-    // Add the OrgUserStorage to the DB
-    const newOrgUserStorage = await DataStore.save(
-      new OrgUserStorage({
-        organization: org,
-        type: UserOrStorage.USER,
-        user: user!.id,
-        name: user!.name,
-        group: name,
-      }),
-    );
-    if (newOrgUserStorage == null)
-      throw new Error("OrgUserStorage not created successfully.");
-    // add user to the user group
-    return await addUserToGroup(token, name, user!.id);
-  };
-
   // handle verification, creation, and navigation when creating a new Organization
   const handleCreate = async () => {
     try {
@@ -113,8 +72,8 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       const token = (await fetchAuthSession()).tokens?.idToken?.toString();
       if (token == null) throw new Error("Token not found");
       // Create the org and orgUserStorage
-      const newOrg = await createOrg(token, code);
-      const success = await createOrgUserStorage(token, newOrg);
+      const newOrg = await createOrg(token, name, code, user!.id);
+      const success = await createOrgUserStorage(token, newOrg, user!);
       if (!success) {
         throw new Error("User not added to group successfully");
       }

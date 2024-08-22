@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Alert,
+  Pressable,
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -13,17 +13,13 @@ import { Tab } from "@rneui/themed";
 
 // project imports
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";
-import {
-  OrgUserStorage,
-  Equipment,
-  Organization,
-  Container,
-} from "../../models";
+import { OrgUserStorage, Organization } from "../../models";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 import ContainerDisplay from "../../components/member/ContainerDisplay";
+import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
 
 /*
   Create equipment screen allows a manager to create equipment
@@ -52,52 +48,6 @@ export default function CreateEquipmentScreen() {
     return quantityCount;
   };
 
-  const CreateEquipment = async (
-    quantityCount: number,
-    dataOrg: Organization,
-    orgUserStorage: OrgUserStorage,
-  ) => {
-    // create however many equipment specified by quantity
-    for (let i = 0; i < quantityCount; i++) {
-      await DataStore.save(
-        new Equipment({
-          name: name,
-          organization: dataOrg,
-          lastUpdatedDate: new Date().toISOString(),
-          assignedTo: orgUserStorage,
-          details: details,
-          image: "default",
-          color: "#ffffff",
-          group: org!.name,
-          containerId: null,
-        }),
-      );
-    }
-    Alert.alert("Equipment created successfully!");
-  };
-
-  const CreateContainer = async (
-    quantityCount: number,
-    dataOrg: Organization,
-    orgUserStorage: OrgUserStorage,
-  ) => {
-    console.log("quantityCount: ", quantityCount);
-    for (let i = 0; i < quantityCount; i++) {
-      await DataStore.save(
-        new Container({
-          name: name,
-          organization: dataOrg,
-          lastUpdatedDate: new Date().toISOString(),
-          assignedTo: orgUserStorage,
-          details: details,
-          color: "#ffffff",
-          group: org!.name,
-        }),
-      );
-    }
-    Alert.alert("Container created successfully!");
-  };
-
   // Create a new equipment and assign it to a user
   const handleCreate = async () => {
     try {
@@ -114,9 +64,21 @@ export default function CreateEquipmentScreen() {
       }
       // index 0 is equipment, index 1 is container
       if (index === 0) {
-        await CreateEquipment(quantityCount, dataOrg, orgUserStorage);
+        await CreateEquipment(
+          quantityCount,
+          name,
+          dataOrg,
+          orgUserStorage,
+          details,
+        );
       } else {
-        await CreateContainer(quantityCount, dataOrg, orgUserStorage);
+        await CreateContainer(
+          quantityCount,
+          name,
+          dataOrg,
+          orgUserStorage,
+          details,
+        );
       }
       onChangeName("");
       onChangeQuantity("");
@@ -139,12 +101,17 @@ export default function CreateEquipmentScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.rowContainer}>
+      <View style={styles.topRow}>
         {index === 0 ? (
           <EquipmentDisplay image={"default"} isMini={false} />
         ) : (
           <ContainerDisplay />
         )}
+      </View>
+      <View style={styles.rowContainer}>
+        <Pressable>
+          <Text style={styles.link}>Edit Item Image</Text>
+        </Pressable>
       </View>
       <View style={styles.rowContainer}>
         <View style={styles.row1}>
@@ -169,7 +136,7 @@ export default function CreateEquipmentScreen() {
             <Tab
               value={index}
               onChange={setIndex}
-              dense
+              dense={true}
               buttonStyle={(active) =>
                 active ? styles.selectedBtn : styles.button
               }
@@ -222,6 +189,25 @@ export default function CreateEquipmentScreen() {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "#f6f6f6",
+    borderRadius: 40,
+    padding: 10,
+  },
+  createBtn: {
+    backgroundColor: "#791111",
+    width: "50%",
+    padding: 10,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 30,
+  },
+  createBtnTxt: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   container: {
     backgroundColor: "#fff",
     height: "100%",
@@ -230,14 +216,22 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 12,
     borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
     padding: 10,
   },
   details: {
     height: 80,
     marginHorizontal: 12,
     borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
     padding: 10,
     marginBottom: 10,
+  },
+  link: {
+    color: "#0000ff",
+    fontSize: 16,
   },
   rowContainer: {
     flexDirection: "row",
@@ -263,32 +257,20 @@ const styles = StyleSheet.create({
     width: "90%",
     marginHorizontal: "auto",
   },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 30,
+  },
   selectedBtn: {
-    backgroundColor: "#000000",
+    backgroundColor: "#333333",
     padding: 10,
+    borderRadius: 40,
   },
   selectedText: {
     color: "#ffffff",
   },
   text: {
     color: "#000000",
-  },
-  button: {
-    backgroundColor: "#f6f6f6",
-    padding: 10,
-  },
-  createBtn: {
-    backgroundColor: "#791111",
-    width: "50%",
-    padding: 10,
-    height: 50,
-    alignSelf: "center",
-    marginTop: 30,
-  },
-  createBtnTxt: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
   },
 });
