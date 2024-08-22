@@ -21,6 +21,7 @@ import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
 import { CreateEquipmentScreenProps } from "../../types/ScreenTypes";
 import ItemImageOverlay from "../../components/organization/ItemImageOverlay";
+import { Hex } from "../../types/ModelTypes";
 /*
   Create equipment screen allows a manager to create equipment
   and assign it to a user/storage.
@@ -33,7 +34,7 @@ export default function CreateEquipmentScreen({
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
   const [icon, setIcon] = useState("default");
-  const [color, setColor] = useState("#000000");
+  const [color, setColor] = useState<Hex>("#87ceeb");
   const [visible, setVisible] = useState(false);
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
@@ -75,6 +76,7 @@ export default function CreateEquipmentScreen({
           dataOrg,
           orgUserStorage,
           details,
+          color,
         );
       } else {
         await CreateContainer(
@@ -108,7 +110,7 @@ export default function CreateEquipmentScreen({
     <View style={styles.container}>
       <View style={styles.topRow}>
         {index === 0 ? (
-          <EquipmentDisplay image={"default"} isMini={false} />
+          <EquipmentDisplay image={"default"} isMini={false} color={color} />
         ) : (
           <ContainerDisplay />
         )}
@@ -191,7 +193,15 @@ export default function CreateEquipmentScreen({
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>
-      <ItemImageOverlay visible={visible} setVisible={setVisible} />
+      <ItemImageOverlay
+        visible={visible}
+        setVisible={setVisible}
+        index={index}
+        color={color}
+        setColor={setColor}
+        icon={icon}
+        setIcon={setIcon}
+      />
     </View>
   );
 }
@@ -207,6 +217,7 @@ const styles = StyleSheet.create({
     width: "50%",
     padding: 10,
     height: 50,
+    borderRadius: 10,
     alignSelf: "center",
     marginTop: 30,
   },

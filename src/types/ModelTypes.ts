@@ -50,3 +50,5 @@ export type csvSheet = {
   identityCol: string[];
   values: string[][];
 };
+
+export type Hex = `#${string}`;

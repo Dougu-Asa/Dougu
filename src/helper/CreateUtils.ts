@@ -4,6 +4,7 @@ import { OrgUserStorage, Equipment, Container, UserOrStorage } from "../models";
 import { Organization } from "../models";
 import { addUserToGroup, createUserGroup } from "./AWS";
 import { UserType } from "../types/ContextTypes";
+import { Hex } from "../types/ModelTypes";
 
 /*
   This file contains all the utility functions for creating new objects in the
@@ -62,6 +63,7 @@ export const CreateEquipment = async (
   dataOrg: Organization,
   orgUserStorage: OrgUserStorage,
   details: string,
+  color: Hex,
 ) => {
   // create however many equipment specified by quantity
   for (let i = 0; i < quantityCount; i++) {
@@ -73,7 +75,7 @@ export const CreateEquipment = async (
         assignedTo: orgUserStorage,
         details: details,
         image: "default",
-        color: "#ffffff",
+        color: color,
         group: dataOrg.name,
         containerId: null,
       }),

@@ -46,7 +46,6 @@ export const itemStyles = StyleSheet.create({
   equipment: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(135, 206, 235)",
   },
   equipmentItemContainer: {
     width: "33.33%",

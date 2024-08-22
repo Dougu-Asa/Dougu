@@ -4,9 +4,11 @@ import { itemStyles } from "../../styles/ItemStyles";
 
 export default function EquipmentDisplay({
   image,
+  color,
   isMini,
 }: {
   image: string;
+  color: string;
   isMini: boolean;
 }) {
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
@@ -17,6 +19,7 @@ export default function EquipmentDisplay({
         style={({ pressed }) => [
           {
             opacity: pressed ? 0.7 : 1,
+            backgroundColor: color,
           },
           itemStyles.equipment,
           sizeStyles,
