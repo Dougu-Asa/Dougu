@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Pressable,
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -20,16 +19,22 @@ import { handleError } from "../../helper/Utils";
 import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
-
+import { CreateEquipmentScreenProps } from "../../types/ScreenTypes";
+import ItemImageOverlay from "../../components/organization/ItemImageOverlay";
 /*
   Create equipment screen allows a manager to create equipment
   and assign it to a user/storage.
 */
-export default function CreateEquipmentScreen() {
+export default function CreateEquipmentScreen({
+  navigation,
+}: CreateEquipmentScreenProps) {
   const [name, onChangeName] = useState("");
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
+  const [icon, setIcon] = useState("default");
+  const [color, setColor] = useState("#000000");
+  const [visible, setVisible] = useState(false);
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
   const { setIsLoading } = useLoad();
@@ -109,9 +114,11 @@ export default function CreateEquipmentScreen() {
         )}
       </View>
       <View style={styles.rowContainer}>
-        <Pressable>
+        <TouchableOpacity
+          onPress={() => setVisible(true) /* TODO: Implement Edit Image */}
+        >
           <Text style={styles.link}>Edit Item Image</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.rowContainer}>
         <View style={styles.row1}>
@@ -184,6 +191,7 @@ export default function CreateEquipmentScreen() {
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>
+      <ItemImageOverlay visible={visible} setVisible={setVisible} />
     </View>
   );
 }
@@ -231,7 +239,7 @@ const styles = StyleSheet.create({
   },
   link: {
     color: "#0000ff",
-    fontSize: 16,
+    fontSize: 14,
   },
   rowContainer: {
     flexDirection: "row",

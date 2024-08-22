@@ -38,9 +38,8 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
       screenOptions={{
         headerTitleAlign: "center",
         headerTitleStyle: {
-          fontSize: 28,
-          fontWeight: "bold",
-          color: "#791111",
+          fontSize: 18,
+          fontWeight: "semibold",
         },
       }}
     >

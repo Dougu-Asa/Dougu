@@ -111,3 +111,8 @@ export type UserStoragesScreenProps = NativeStackScreenProps<
   OrgStackParamList,
   "UserStorages"
 >;
+
+export type CreateEquipmentScreenProps = NativeStackScreenProps<
+  OrgStackParamList,
+  "CreateEquipment"
+>;
