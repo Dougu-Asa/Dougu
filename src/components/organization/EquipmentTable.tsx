@@ -139,15 +139,20 @@ export default function EquipmentTable({
 
   // listen for changes in the search bar
   useEffect(() => {
-    /*filter the equipment based on the search filter,
-    where the equipment label or assigned to name includes the search filter */
     if (searchFilter.length > 0) {
       const filteredData = tableData.filter(
         (equipment) =>
+          // check label
           equipment.label.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          // check assigned to name
           equipment.assignedToName
             .toLowerCase()
-            .includes(searchFilter.toLowerCase()),
+            .includes(searchFilter.toLowerCase()) ||
+          // check inside containers
+          (equipment.type === "container" &&
+            (equipment as ContainerObj).equipment.some((equip) =>
+              equip.label.toLowerCase().includes(searchFilter.toLowerCase()),
+            )),
       );
       setFilteredData(filteredData);
     } else {
