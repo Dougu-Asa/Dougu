@@ -133,7 +133,7 @@ export default function SwapGestures({
       );
       return;
     }
-    if (!orgUserStorage || !swapUser.current) return;
+    if (!orgUserStorage) return;
     const assignTo =
       gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
     // dragging a container
@@ -143,7 +143,7 @@ export default function SwapGestures({
       // dragging equipment
       // check if we are moving equipment out of a container
       if ((draggingItem as EquipmentObj).container != null) {
-        moveOutOfContainer(draggingItem as EquipmentObj, assignTo);
+        moveOutOfContainer(draggingItem as EquipmentObj);
       } else {
         reassignEquipment(draggingItem as EquipmentObj, assignTo);
       }
