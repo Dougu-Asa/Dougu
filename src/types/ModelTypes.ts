@@ -52,3 +52,9 @@ export type csvSheet = {
 };
 
 export type Hex = `#${string}`;
+
+export type svgProps = {
+  width: number;
+  height: number;
+  fill: Hex;
+};

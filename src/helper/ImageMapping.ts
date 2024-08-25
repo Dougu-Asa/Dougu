@@ -1,6 +1,5 @@
-import { createElement } from "react";
-import Entypo from "react-native-vector-icons/Entypo";
 import { Dimensions } from "react-native";
+import Chu from "../assets/equipment/Chu";
 
 const iconSize = Dimensions.get("window").width / 8;
 
@@ -10,8 +9,7 @@ const profileMapping: { [key: string]: any } = {
 };
 
 const iconMapping: { [key: string]: (size: number) => JSX.Element } = {
-  default: (size) =>
-    createElement(Entypo, { name: "camera", size: size, color: "white" }),
+  default: (size) => Chu({ width: size, height: size, fill: "#000000" }),
 };
 
 export default function IconMap({
