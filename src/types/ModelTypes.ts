@@ -5,7 +5,7 @@ export type EquipmentOrContainer = "equipment" | "container";
 export interface ItemObj {
   id: string;
   label: string;
-  color: string;
+  color: Hex;
   assignedTo: string;
   assignedToName: string;
   type: EquipmentOrContainer;

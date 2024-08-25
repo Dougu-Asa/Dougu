@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 import IconMap from "../../helper/ImageMapping";
 import { itemStyles } from "../../styles/ItemStyles";
+import { Hex } from "../../types/ModelTypes";
 
 export default function EquipmentDisplay({
   image,
@@ -8,24 +9,23 @@ export default function EquipmentDisplay({
   isMini,
 }: {
   image: string;
-  color: string;
+  color: Hex;
   isMini: boolean;
 }) {
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
 
   return (
-    <View style={itemStyles.backDrop}>
+    <View>
       <Pressable
         style={({ pressed }) => [
           {
             opacity: pressed ? 0.7 : 1,
-            backgroundColor: color,
           },
           itemStyles.equipment,
           sizeStyles,
         ]}
       >
-        <IconMap icon={image} isMini={isMini} />
+        <IconMap icon={image} isMini={isMini} fillColor={color} />
       </Pressable>
     </View>
   );

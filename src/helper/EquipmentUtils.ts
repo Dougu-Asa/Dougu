@@ -7,6 +7,7 @@ import {
   ItemObj,
   ContainerObj,
   csvSheet,
+  Hex,
 } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Utils";
@@ -119,7 +120,7 @@ const getContainers = async (
     const containerObj: ContainerObj = {
       id: containers[j].id,
       label: containers[j].name,
-      color: containers[j].color,
+      color: containers[j].color as Hex,
       assignedTo: orgUserStorage.id,
       assignedToName: orgUserStorage.name,
       type: "container",
@@ -159,7 +160,7 @@ const processEquipmentData = (
       equipmentMap.set(key, {
         id: equip.id,
         label: equip.name,
-        color: equip.color,
+        color: equip.color as Hex,
         count: 1,
         type: "equipment",
         image: equip.image,
