@@ -1,5 +1,13 @@
 import React from "react";
-import { StyleSheet, Button, View, Text } from "react-native";
+import {
+  StyleSheet,
+  Button,
+  View,
+  Text,
+  FlatList,
+  Image,
+  Dimensions,
+} from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import EquipmentDisplay from "../member/EquipmentDisplay";
 import ContainerDisplay from "../member/ContainerDisplay";
@@ -10,6 +18,8 @@ import ColorPicker, {
   HueSlider,
 } from "reanimated-color-picker";
 import { Hex } from "../../types/ModelTypes";
+import { iconMapping } from "../../helper/ImageMapping";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 /*
     This overlay is what is shown when the user taps
@@ -55,14 +65,26 @@ export default function ItemImageOverlay({
         >
           <View style={styles.topRow}>
             {index === 0 ? (
-              <EquipmentDisplay
-                image={"default"}
-                isMini={false}
-                color={color}
-              />
+              <EquipmentDisplay image={icon} isMini={false} color={color} />
             ) : (
               <ContainerDisplay />
             )}
+          </View>
+          <View style={styles.rowContainer}>
+            <FlatList
+              data={Object.keys(iconMapping)}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => setIcon(item)}>
+                  <Image
+                    source={iconMapping[item]}
+                    style={styles.icon}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal={true}
+            />
           </View>
           <Text style={styles.panelText}>Background Color</Text>
           <View style={styles.mainContainer}>
@@ -88,7 +110,13 @@ export default function ItemImageOverlay({
   );
 }
 
+const size = Dimensions.get("window").width / 6;
 const styles = StyleSheet.create({
+  icon: {
+    width: size,
+    borderWidth: 1,
+    height: size,
+  },
   mainContainer: {
     width: "85%",
     height: "50%",
@@ -120,6 +148,13 @@ const styles = StyleSheet.create({
   pickerContainer: {
     marginTop: 10,
     width: "80%",
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    borderWidth: 1,
   },
   topRow: {
     flexDirection: "row",

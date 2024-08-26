@@ -77,6 +77,7 @@ export default function CreateEquipmentScreen({
           orgUserStorage,
           details,
           color,
+          icon,
         );
       } else {
         await CreateContainer(
@@ -110,7 +111,7 @@ export default function CreateEquipmentScreen({
     <View style={styles.container}>
       <View style={styles.topRow}>
         {index === 0 ? (
-          <EquipmentDisplay image={"default"} isMini={false} color={color} />
+          <EquipmentDisplay image={icon} isMini={false} color={color} />
         ) : (
           <ContainerDisplay />
         )}
