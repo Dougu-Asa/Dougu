@@ -5,6 +5,8 @@ const itemWidth = width / 5;
 const borderRadius = width / 14;
 const miniWidth = width / 22;
 const miniRadius = width / 64;
+const iconSize = width / 8;
+const iconSizeMini = width / 48;
 
 /*
   Used for EquipmentItem, ContainerItem, and MiniEquipmentItem styling
@@ -56,6 +58,12 @@ export const itemStyles = StyleSheet.create({
     justifyContent: "flex-start",
     flexBasis: "33.33%",
     alignItems: "center",
+  },
+  icon: {
+    width: iconSize,
+  },
+  iconMini: {
+    width: iconSizeMini,
   },
   size: {
     width: itemWidth,

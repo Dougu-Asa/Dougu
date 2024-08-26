@@ -38,7 +38,6 @@ export default function ItemImageOverlay({
   };
   const colorPalette = [
     "#f44336",
-    "#C75B2C",
     "#ff9800",
     "#8bc34a",
     "#03a9f4",

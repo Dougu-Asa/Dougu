@@ -1,36 +1,18 @@
-import { Dimensions } from "react-native";
-import Chu from "../assets/equipment/Chu";
-import { Hex } from "../types/ModelTypes";
-
-const iconSize = Dimensions.get("window").width / 5;
+const profilePath = "../assets/userprofiles/";
+const equipmentPath = "../assets/equipment/";
 
 const profileMapping: { [key: string]: any } = {
-  default: require("../assets/userprofiles/default.svg"),
-  miku: require("../assets/userprofiles/miku.jpg"),
+  default: require(`${profilePath}default.svg`),
+  miku: require(`${profilePath}miku.jpg`),
 };
 
 const iconMapping: {
-  [key: string]: (size: number, fillColor: Hex) => JSX.Element;
+  [key: string]: any;
 } = {
-  default: (size, fillColor) =>
-    Chu({ width: size, height: size, fill: fillColor }),
+  default: require(`${equipmentPath}chu.png`),
+  chu: require(`${equipmentPath}chu.png`),
+  nanameStand: require(`${equipmentPath}nanameStand.png`),
+  betaStand: require(`${equipmentPath}betaStand.png`),
 };
-
-export default function IconMap({
-  icon,
-  isMini,
-  fillColor,
-}: {
-  icon: string;
-  isMini: boolean;
-  fillColor: Hex;
-}) {
-  const size = isMini ? iconSize / 6 : iconSize;
-  if (icon in iconMapping) {
-    return iconMapping[icon](size, fillColor);
-  } else {
-    return iconMapping["default"](size, fillColor);
-  }
-}
 
 export { iconMapping, profileMapping };
