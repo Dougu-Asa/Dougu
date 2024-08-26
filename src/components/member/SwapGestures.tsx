@@ -143,7 +143,7 @@ export default function SwapGestures({
       // dragging equipment
       // check if we are moving equipment out of a container
       if ((draggingItem as EquipmentObj).container != null) {
-        moveOutOfContainer(draggingItem as EquipmentObj);
+        moveOutOfContainer(draggingItem as EquipmentObj, assignTo);
       } else {
         reassignEquipment(draggingItem as EquipmentObj, assignTo);
       }

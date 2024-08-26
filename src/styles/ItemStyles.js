@@ -6,7 +6,7 @@ const borderRadius = width / 14;
 const miniWidth = width / 22;
 const miniRadius = width / 64;
 const iconSize = width / 8;
-const iconSizeMini = width / 48;
+const iconSizeMini = width / 36;
 
 /*
   Used for EquipmentItem, ContainerItem, and MiniEquipmentItem styling

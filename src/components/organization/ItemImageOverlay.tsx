@@ -16,6 +16,7 @@ import ColorPicker, {
   Swatches,
   Preview,
   HueSlider,
+  OpacitySlider,
 } from "reanimated-color-picker";
 import { Hex } from "../../types/ModelTypes";
 import { iconMapping } from "../../helper/ImageMapping";
@@ -95,8 +96,9 @@ export default function ItemImageOverlay({
             >
               <View style={styles.panelContainer}>
                 <View style={styles.panel}>
-                  <Panel1 />
                   <Preview hideInitialColor={true} />
+                  <Panel1 />
+                  <OpacitySlider />
                 </View>
                 <HueSlider vertical />
               </View>

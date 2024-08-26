@@ -115,16 +115,23 @@ export const addEquipmentToContainer = async (
 
 // reassign the equipment out of the container
 // Equipment -> Out of Container
-export const moveOutOfContainer = async (item: EquipmentObj) => {
+export const moveOutOfContainer = async (
+  item: EquipmentObj,
+  assignedTo: OrgUserStorage | null,
+) => {
   try {
     // ensure equipment and user exist
     const equip = await DataStore.query(Equipment, item.id);
     if (!equip) throw new Error("Equipment does not exist!");
+    const user = assignedTo ? assignedTo : await equip.assignedTo;
+    const DBUser = await DataStore.query(OrgUserStorage, user.id);
+    if (!DBUser) throw new Error("User does not exist!");
     // equipment is reassigned to the user and removed from the container
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.lastUpdatedDate = new Date().toISOString();
         updated.containerId = null;
+        updated.assignedTo = user;
       }),
     );
     Alert.alert("Equipment Moved Out of Container!");

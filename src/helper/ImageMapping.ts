@@ -11,8 +11,12 @@ const iconMapping: {
 } = {
   default: require(`${equipmentPath}chu.png`),
   chu: require(`${equipmentPath}chu.png`),
+  okedo: require(`${equipmentPath}okedo.png`),
+  shime: require(`${equipmentPath}shime.png`),
   nanameStand: require(`${equipmentPath}nanameStand.png`),
   betaStand: require(`${equipmentPath}betaStand.png`),
+  hachijoStand: require(`${equipmentPath}hachijoStand.png`),
+  okedoStand: require(`${equipmentPath}okedoStand.png`),
 };
 
 export { iconMapping, profileMapping };
