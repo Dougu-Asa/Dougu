@@ -47,35 +47,33 @@ export default function ContainerItem({
           <View style={itemStyles.container}>
             {(count == null || count > 0) && (
               <>
-                <View style={itemStyles.backDrop}>
-                  <Pressable
-                    style={({ pressed }) => [
-                      {
-                        opacity: pressed ? 0.7 : 1,
-                      },
-                      itemStyles.containerItem,
-                    ]}
-                  >
-                    <View style={itemStyles.table}>
-                      {chunkedData.map((row, index) => (
-                        <View key={index} style={itemStyles.equipmentRow}>
-                          {row.map((equip) => (
-                            <View
-                              key={equip.id}
-                              style={itemStyles.equipmentItemContainer}
-                            >
-                              <EquipmentDisplay
-                                image={(equip as EquipmentObj).image}
-                                isMini={true}
-                                color={(equip as EquipmentObj).color}
-                              />
-                            </View>
-                          ))}
-                        </View>
-                      ))}
-                    </View>
-                  </Pressable>
-                </View>
+                <Pressable
+                  style={({ pressed }) => [
+                    {
+                      opacity: pressed ? 0.7 : 1,
+                    },
+                    itemStyles.containerItem,
+                  ]}
+                >
+                  <View style={itemStyles.table}>
+                    {chunkedData.map((row, index) => (
+                      <View key={index} style={itemStyles.equipmentRow}>
+                        {row.map((equip) => (
+                          <View
+                            key={equip.id}
+                            style={itemStyles.equipmentItemContainer}
+                          >
+                            <EquipmentDisplay
+                              image={(equip as EquipmentObj).image}
+                              isMini={true}
+                              color={(equip as EquipmentObj).color}
+                            />
+                          </View>
+                        ))}
+                      </View>
+                    ))}
+                  </View>
+                </Pressable>
                 <Text style={itemStyles.text}>{item.label}</Text>
               </>
             )}
