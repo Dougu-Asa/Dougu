@@ -54,7 +54,7 @@ export const itemStyles = StyleSheet.create({
     alignItems: "center",
   },
   radiusBackground: {
-    borderRadius: borderRadius + 1,
+    borderRadius: borderRadius + 3,
   },
   size: {
     width: itemWidth,
