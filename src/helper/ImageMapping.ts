@@ -21,6 +21,7 @@ const standsPath = "../assets/equipment/taiko/stands/";
 const stands: { [key: string]: ImageSourcePropType } = {
   nanameStand: require(`${standsPath}nanameStand.png`),
   betaStand: require(`${standsPath}betaStand.png`),
+  shimeStand: require(`${standsPath}shimeStand.png`),
   hachijoStand: require(`${standsPath}hachijoStand.png`),
   okedoStand: require(`${standsPath}okedoStand.png`),
   odaikoStand: require(`${standsPath}odaikoStand.png`),
@@ -40,6 +41,18 @@ const clothing: { [key: string]: ImageSourcePropType } = {
 const otherPath = "../assets/equipment/taiko/other/";
 const other: { [key: string]: ImageSourcePropType } = {
   mallet: require(`${otherPath}mallet.png`),
+  chappa: require(`${otherPath}chappa.png`),
+  clave: require(`${otherPath}clave.png`),
+  kane: require(`${otherPath}kane.png`),
+  bachi: require(`${otherPath}bachi.png`),
+  batBachi: require(`${otherPath}batBachi.png`),
+};
+
+const taiko: { [key: string]: { [key: string]: ImageSourcePropType } } = {
+  drums,
+  stands,
+  clothing,
+  other,
 };
 
 const equipmentPath = "../assets/equipment/";
@@ -51,4 +64,4 @@ const iconMapping: { [key: string]: ImageSourcePropType } = {
   default: require(`${equipmentPath}default.png`),
 };
 
-export { iconMapping, profileMapping };
+export { iconMapping, profileMapping, taiko };

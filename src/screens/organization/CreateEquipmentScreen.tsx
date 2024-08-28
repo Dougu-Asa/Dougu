@@ -9,6 +9,7 @@ import React from "react";
 import { useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import { Tab } from "@rneui/themed";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 // project imports
 import CurrMembersDropdown from "../../components/CurrMembersDropdown";

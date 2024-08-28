@@ -1,26 +1,12 @@
 import React from "react";
-import {
-  StyleSheet,
-  Button,
-  View,
-  Text,
-  FlatList,
-  Image,
-  Dimensions,
-} from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { StyleSheet, Button, View } from "react-native";
+
 import EquipmentDisplay from "../member/EquipmentDisplay";
 import ContainerDisplay from "../member/ContainerDisplay";
-import ColorPicker, {
-  Panel1,
-  Swatches,
-  Preview,
-  HueSlider,
-  OpacitySlider,
-} from "reanimated-color-picker";
 import { Hex } from "../../types/ModelTypes";
-import { iconMapping } from "../../helper/ImageMapping";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Overlay, Tab } from "@rneui/themed";
+import IconMenu from "./IconMenu";
+import ColorSelect from "./ColorSelect";
 
 /*
     This overlay is what is shown when the user taps
@@ -44,123 +30,66 @@ export default function ItemImageOverlay({
   icon: string;
   setIcon: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const onSelectColor = ({ hex }: { hex: string }) => {
-    setColor(hex as Hex);
-  };
-  const colorPalette = [
-    "#f44336",
-    "#ff9800",
-    "#8bc34a",
-    "#03a9f4",
-    "#3f51b5",
-    "#9c27b0",
-  ];
+  const [selected, setSelected] = React.useState(0);
 
   return (
-    <>
-      {visible && (
-        <Animated.View
-          style={styles.overlayStyles}
-          entering={FadeIn}
-          exiting={FadeOut}
-        >
-          <View style={styles.topRow}>
-            {index === 0 ? (
-              <EquipmentDisplay image={icon} isMini={false} color={color} />
-            ) : (
-              <ContainerDisplay />
-            )}
-          </View>
-          <View style={styles.rowContainer}>
-            <FlatList
-              data={Object.keys(iconMapping)}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => setIcon(item)}>
-                  <Image
-                    source={iconMapping[item]}
-                    style={styles.icon}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-              horizontal={true}
-            />
-          </View>
-          <Text style={styles.panelText}>Background Color</Text>
-          <View style={styles.mainContainer}>
-            <ColorPicker
-              style={styles.pickerContainer}
-              value={color}
-              onComplete={onSelectColor}
-            >
-              <View style={styles.panelContainer}>
-                <View style={styles.panel}>
-                  <Preview hideInitialColor={true} />
-                  <Panel1 />
-                  <OpacitySlider />
-                </View>
-                <HueSlider vertical />
-              </View>
-              <Swatches colors={colorPalette} />
-            </ColorPicker>
-          </View>
-          <Button onPress={() => setVisible(false)} title="close" />
-        </Animated.View>
-      )}
-    </>
+    <Overlay
+      isVisible={visible}
+      fullScreen={true}
+      animationType="fade"
+      overlayStyle={styles.overlayStyles}
+    >
+      <View style={styles.topRow}>
+        {index === 0 ? (
+          <EquipmentDisplay image={icon} isMini={false} color={color} />
+        ) : (
+          <ContainerDisplay />
+        )}
+      </View>
+      <View style={styles.table}>
+        <View style={styles.header}>
+          <Tab value={selected} onChange={setSelected} dense>
+            <Tab.Item>Icon</Tab.Item>
+            <Tab.Item>Background</Tab.Item>
+          </Tab>
+        </View>
+        <View style={styles.body}>
+          {selected === 0 ? (
+            <IconMenu />
+          ) : (
+            <ColorSelect color={color} setColor={setColor} />
+          )}
+        </View>
+      </View>
+      <Button onPress={() => setVisible(false)} title="close" />
+    </Overlay>
   );
 }
 
-const size = Dimensions.get("window").width / 6;
 const styles = StyleSheet.create({
-  icon: {
-    width: size,
+  body: {
     borderWidth: 1,
-    height: size,
   },
-  mainContainer: {
-    width: "85%",
-    height: "50%",
-    borderRadius: 20,
-    alignItems: "center",
+  header: {
+    flexDirection: "row",
     justifyContent: "center",
-    marginTop: 30,
-    backgroundColor: "#f5f5f5",
+    alignItems: "center",
   },
   overlayStyles: {
-    backgroundColor: "white",
     flex: 1,
-    position: "absolute",
     width: "100%",
     height: "100%",
     alignItems: "center",
   },
-  panel: {
-    width: "85%",
-  },
-  panelContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-  },
-  panelText: {
-    fontSize: 14,
-  },
-  pickerContainer: {
-    marginTop: 10,
-    width: "80%",
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    borderWidth: 1,
+  table: {
+    width: "90%",
+    height: "60%",
+    backgroundColor: "lightgrey",
+    display: "flex",
+    flexDirection: "column",
   },
   topRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 30,
   },
 });
