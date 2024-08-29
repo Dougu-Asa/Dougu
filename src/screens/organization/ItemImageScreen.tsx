@@ -1,44 +1,20 @@
-import React from "react";
-import { StyleSheet, Button, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import EquipmentDisplay from "../../components/member/EquipmentDisplay";
+import ContainerDisplay from "../../components/member/ContainerDisplay";
+import { useItemImage } from "../../helper/context/ItemImageContext";
+import { Tab } from "@rneui/themed";
+import IconMenu from "../../components/organization/IconMenu";
+import ColorSelect from "../../components/organization/ColorSelect";
+import { ItemImageScreenProps } from "../../types/ScreenTypes";
 
-import EquipmentDisplay from "../member/EquipmentDisplay";
-import ContainerDisplay from "../member/ContainerDisplay";
-import { Hex } from "../../types/ModelTypes";
-import { Overlay, Tab } from "@rneui/themed";
-import IconMenu from "./IconMenu";
-import ColorSelect from "./ColorSelect";
-
-/*
-    This overlay is what is shown when the user taps
-    on an equipment item. It displays the equipment item's 
-    stats, counts, and grouped equipment items.
-*/
-export default function ItemImageOverlay({
-  visible,
-  setVisible,
-  index,
-  color,
-  setColor,
-  icon,
-  setIcon,
-}: {
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  index: number;
-  color: Hex;
-  setColor: React.Dispatch<React.SetStateAction<Hex>>;
-  icon: string;
-  setIcon: React.Dispatch<React.SetStateAction<string>>;
-}) {
-  const [selected, setSelected] = React.useState(0);
+export default function ItemImageScreen({ route }: ItemImageScreenProps) {
+  const { index } = route.params;
+  const [selected, setSelected] = useState(0);
+  const { icon, color, setIcon, setColor } = useItemImage();
 
   return (
-    <Overlay
-      isVisible={visible}
-      fullScreen={true}
-      animationType="fade"
-      overlayStyle={styles.overlayStyles}
-    >
+    <View>
       <View style={styles.topRow}>
         {index === 0 ? (
           <EquipmentDisplay image={icon} isMini={false} color={color} />
@@ -66,8 +42,7 @@ export default function ItemImageOverlay({
           )}
         </View>
       </View>
-      <Button onPress={() => setVisible(false)} title="close" />
-    </Overlay>
+    </View>
   );
 }
 
@@ -91,6 +66,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   table: {
+    marginTop: "5%",
     width: "90%",
     height: "60%",
     backgroundColor: "lightgrey",
@@ -101,5 +77,6 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: "row",
     justifyContent: "center",
+    marginTop: "15%",
   },
 });

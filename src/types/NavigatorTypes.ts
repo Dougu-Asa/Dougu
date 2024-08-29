@@ -39,6 +39,7 @@ export type OrgStackParamList = {
   InfoScreen: undefined;
   ManageEquipment: undefined;
   CreateEquipment: undefined;
+  ItemImage: { index: number };
   UserStorages: { tabParam: string };
   CreateStorage: undefined;
   Sheet: undefined;

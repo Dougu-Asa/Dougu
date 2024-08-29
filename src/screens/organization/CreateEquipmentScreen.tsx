@@ -20,8 +20,8 @@ import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
 import { CreateEquipmentScreenProps } from "../../types/ScreenTypes";
-import ItemImageOverlay from "../../components/organization/ItemImageOverlay";
-import { Hex } from "../../types/ModelTypes";
+import { useItemImage } from "../../helper/context/ItemImageContext";
+
 /*
   Create equipment screen allows a manager to create equipment
   and assign it to a user/storage.
@@ -33,9 +33,7 @@ export default function CreateEquipmentScreen({
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
-  const [icon, setIcon] = useState("default");
-  const [color, setColor] = useState<Hex>("#87ceeb");
-  const [visible, setVisible] = useState(false);
+  const { icon, color } = useItemImage();
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
   const { setIsLoading } = useLoad();
@@ -118,7 +116,7 @@ export default function CreateEquipmentScreen({
       </View>
       <View style={styles.rowContainer}>
         <TouchableOpacity
-          onPress={() => setVisible(true) /* TODO: Implement Edit Image */}
+          onPress={() => navigation.navigate("ItemImage", { index: index })}
         >
           <Text style={styles.link}>Edit Item Image</Text>
         </TouchableOpacity>
@@ -194,15 +192,6 @@ export default function CreateEquipmentScreen({
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>
-      <ItemImageOverlay
-        visible={visible}
-        setVisible={setVisible}
-        index={index}
-        color={color}
-        setColor={setColor}
-        icon={icon}
-        setIcon={setIcon}
-      />
     </View>
   );
 }
