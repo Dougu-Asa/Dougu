@@ -20,6 +20,7 @@ export default function ColorSelect({
     setColor(hex as Hex);
   };
   const colorPalette = [
+    "#000000",
     "#f44336",
     "#ff9800",
     "#8bc34a",
@@ -34,14 +35,20 @@ export default function ColorSelect({
         style={styles.picker}
         value={color}
         onComplete={onSelectColor}
+        boundedThumb
       >
         <View style={styles.panelView}>
           <Panel1 style={styles.panel} />
           <HueSlider style={styles.slider} vertical />
           <OpacitySlider style={styles.slider} vertical />
         </View>
-        <InputWidget inputTitleStyle={{ display: "none" }} formats={["HEX"]} />
-        <Swatches colors={colorPalette} />
+        <View style={styles.widgetView}>
+          <InputWidget
+            inputTitleStyle={{ display: "none" }}
+            formats={["HEX"]}
+          />
+          <Swatches colors={colorPalette} />
+        </View>
       </ColorPicker>
     </View>
   );
@@ -53,23 +60,32 @@ const styles = StyleSheet.create({
   panel: {
     borderRadius: borderRadius,
     flex: 10,
+    height: "100%",
   },
   panelView: {
     display: "flex",
     flexDirection: "row",
-    columnGap: 10,
+    columnGap: 15,
+    flexShrink: 4,
+    flexBasis: "60%",
   },
   picker: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
+    width: "90%",
+    height: "90%",
     rowGap: 15,
+    margin: "auto",
   },
   pickerContainer: {
-    margin: "5%",
+    flex: 1,
   },
   slider: {
     borderRadius: borderRadiusSmall,
     flex: 1,
+    height: "100%",
+  },
+  widgetView: {
+    rowGap: 15,
+    flexBasis: "40%",
+    flexGrow: 6,
   },
 });

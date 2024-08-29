@@ -48,7 +48,7 @@ export default function ItemImageOverlay({
       </View>
       <View style={styles.table}>
         <View style={styles.header}>
-          <Tab value={selected} onChange={setSelected} dense>
+          <Tab value={selected} onChange={setSelected} disableIndicator>
             <Tab.Item>Icon</Tab.Item>
             <Tab.Item>Background</Tab.Item>
           </Tab>
@@ -68,12 +68,13 @@ export default function ItemImageOverlay({
 
 const styles = StyleSheet.create({
   body: {
-    borderWidth: 1,
+    flex: 7,
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
   overlayStyles: {
     flex: 1,
@@ -87,6 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: "lightgrey",
     display: "flex",
     flexDirection: "column",
+    borderRadius: 20,
   },
   topRow: {
     flexDirection: "row",
