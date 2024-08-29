@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { chunkEquipment } from "../../helper/EquipmentUtils";
+import { chunkArray } from "../../helper/EquipmentUtils";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import EquipmentItem from "./EquipmentItem";
@@ -44,10 +44,8 @@ export default function SwapContainerOverlay({
     setSwapContainerVisible,
   } = useEquipment();
   // equipment is displayed in a 3x3 grid format
-  const equipmentChunks = chunkEquipment(containerItem?.equipment ?? [], 9);
-  const equipmentChunks3 = equipmentChunks.map((group) =>
-    chunkEquipment(group, 3),
-  );
+  const equipmentChunks = chunkArray(containerItem?.equipment ?? [], 9);
+  const equipmentChunks3 = equipmentChunks.map((group) => chunkArray(group, 3));
   // for the pagination dots
   const [currentPage, setCurrentPage] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);

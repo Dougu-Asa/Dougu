@@ -48,14 +48,19 @@ export default function ItemImageOverlay({
       </View>
       <View style={styles.table}>
         <View style={styles.header}>
-          <Tab value={selected} onChange={setSelected} disableIndicator>
+          <Tab
+            value={selected}
+            onChange={setSelected}
+            disableIndicator
+            containerStyle={styles.tabContainer}
+          >
             <Tab.Item>Icon</Tab.Item>
             <Tab.Item>Background</Tab.Item>
           </Tab>
         </View>
         <View style={styles.body}>
           {selected === 0 ? (
-            <IconMenu />
+            <IconMenu setIcon={setIcon} />
           ) : (
             <ColorSelect color={color} setColor={setColor} />
           )}
@@ -81,6 +86,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     alignItems: "center",
+  },
+  tabContainer: {
+    borderBottomWidth: 1,
   },
   table: {
     width: "90%",

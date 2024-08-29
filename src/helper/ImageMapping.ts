@@ -48,19 +48,16 @@ const other: { [key: string]: ImageSourcePropType } = {
   batBachi: require(`${otherPath}batBachi.png`),
 };
 
-const taiko: { [key: string]: { [key: string]: ImageSourcePropType } } = {
-  drums,
-  stands,
-  clothing,
-  other,
-};
-
-const equipmentPath = "../assets/equipment/";
-const iconMapping: { [key: string]: ImageSourcePropType } = {
+const taiko: { [key: string]: ImageSourcePropType } = {
   ...drums,
   ...stands,
   ...clothing,
   ...other,
+};
+
+const equipmentPath = "../assets/equipment/";
+const iconMapping: { [key: string]: ImageSourcePropType } = {
+  ...taiko,
   default: require(`${equipmentPath}default.png`),
 };
 

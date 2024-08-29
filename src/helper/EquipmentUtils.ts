@@ -26,10 +26,10 @@ export const sortOrgUserStorages = (
 };
 
 // chunk the equipment into groups of size
-export const chunkEquipment = (items: ItemObj[], size: number) =>
+export const chunkArray = <T>(items: T[], size: number) =>
   items.reduce(
     (acc, _, i) => (i % size ? acc : [...acc, items.slice(i, i + size)]),
-    [] as ItemObj[][],
+    [] as T[][],
   );
 
 export const getOrgItems = async (
