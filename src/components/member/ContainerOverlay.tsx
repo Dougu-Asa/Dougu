@@ -63,7 +63,7 @@ export default function ContainerOverlay() {
       {containerVisible && (
         <GestureDetector gesture={tapGesture}>
           <Animated.View
-            style={containerOverlayStyles.backDrop}
+            style={[containerOverlayStyles.backDrop]}
             entering={FadeIn}
             exiting={FadeOut}
           >
@@ -73,7 +73,10 @@ export default function ContainerOverlay() {
               </Text>
             </View>
             <Animated.View
-              style={containerOverlayStyles.itemContainer}
+              style={[
+                containerOverlayStyles.itemContainer,
+                { backgroundColor: containerItem?.color },
+              ]}
               entering={ZoomIn}
               exiting={ZoomOut}
             >

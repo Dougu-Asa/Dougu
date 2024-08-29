@@ -20,7 +20,7 @@ export default function ColorSelect({
     setColor(hex as Hex);
   };
   const colorPalette = [
-    "#000000",
+    "#DEDEDE",
     "#f44336",
     "#ff9800",
     "#8bc34a",

@@ -84,6 +84,7 @@ export default function CreateEquipmentScreen({
           dataOrg,
           orgUserStorage,
           details,
+          color,
         );
       }
       onChangeName("");
@@ -111,7 +112,7 @@ export default function CreateEquipmentScreen({
         {index === 0 ? (
           <EquipmentDisplay image={icon} isMini={false} color={color} />
         ) : (
-          <ContainerDisplay />
+          <ContainerDisplay color={color} />
         )}
       </View>
       <View style={styles.rowContainer}>

@@ -13,7 +13,9 @@ export default function EquipmentDisplay({
   isMini: boolean;
 }) {
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
-  const radius = isMini ? null : itemStyles.radiusBackground;
+  const radius = isMini
+    ? itemStyles.radiusBackgroundMini
+    : itemStyles.radiusBackground;
 
   return (
     <Pressable

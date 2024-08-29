@@ -81,7 +81,10 @@ export default function SwapContainerOverlay({
               </Text>
             </View>
             <Animated.View
-              style={containerOverlayStyles.itemContainer}
+              style={[
+                containerOverlayStyles.itemContainer,
+                { backgroundColor: containerItem?.color },
+              ]}
               entering={ZoomIn}
               exiting={ZoomOut}
             >

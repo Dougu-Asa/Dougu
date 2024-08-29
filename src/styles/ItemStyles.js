@@ -33,7 +33,6 @@ export const itemStyles = StyleSheet.create({
     borderRadius: borderRadius,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(222, 222, 222)",
   },
   count: {
     fontSize: 10,
@@ -55,6 +54,9 @@ export const itemStyles = StyleSheet.create({
   },
   radiusBackground: {
     borderRadius: borderRadius + 3,
+  },
+  radiusBackgroundMini: {
+    borderRadius: miniRadius + 3,
   },
   size: {
     width: itemWidth,

@@ -51,6 +51,7 @@ export default function ContainerItem({
                   style={({ pressed }) => [
                     {
                       opacity: pressed ? 0.7 : 1,
+                      backgroundColor: item.color,
                     },
                     itemStyles.containerItem,
                   ]}

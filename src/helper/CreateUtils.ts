@@ -91,6 +91,7 @@ export const CreateContainer = async (
   dataOrg: Organization,
   orgUserStorage: OrgUserStorage,
   details: string,
+  color: Hex,
 ) => {
   console.log("quantityCount: ", quantityCount);
   for (let i = 0; i < quantityCount; i++) {
@@ -101,7 +102,7 @@ export const CreateContainer = async (
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
         details: details,
-        color: "#ffffff",
+        color: color,
         group: dataOrg.name,
       }),
     );

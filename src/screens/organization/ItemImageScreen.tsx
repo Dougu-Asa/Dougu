@@ -14,13 +14,15 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   const { icon, color, setIcon, setColor } = useItemImage();
 
   return (
-    <View>
+    <View style={styles.screen}>
       <View style={styles.topRow}>
-        {index === 0 ? (
-          <EquipmentDisplay image={icon} isMini={false} color={color} />
-        ) : (
-          <ContainerDisplay />
-        )}
+        <View style={styles.display}>
+          {index === 0 ? (
+            <EquipmentDisplay image={icon} isMini={false} color={color} />
+          ) : (
+            <ContainerDisplay color={color} />
+          )}
+        </View>
       </View>
       <View style={styles.table}>
         <View style={styles.header}>
@@ -30,15 +32,15 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
             disableIndicator
             containerStyle={styles.tabContainer}
           >
-            <Tab.Item>Icon</Tab.Item>
             <Tab.Item>Background</Tab.Item>
+            {index === 0 && <Tab.Item>Icon</Tab.Item>}
           </Tab>
         </View>
         <View style={styles.body}>
           {selected === 0 ? (
-            <IconMenu setIcon={setIcon} />
-          ) : (
             <ColorSelect color={color} setColor={setColor} />
+          ) : (
+            <IconMenu setIcon={setIcon} />
           )}
         </View>
       </View>
@@ -49,6 +51,9 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
 const styles = StyleSheet.create({
   body: {
     flex: 7,
+  },
+  display: {
+    marginTop: 30,
   },
   header: {
     flexDirection: "row",
@@ -62,21 +67,25 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
   },
+  screen: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "white",
+  },
   tabContainer: {
     borderBottomWidth: 1,
   },
   table: {
-    marginTop: "5%",
+    flex: 8,
+    marginBottom: "10%",
     width: "90%",
-    height: "60%",
+    height: "70%",
     backgroundColor: "lightgrey",
     display: "flex",
     flexDirection: "column",
     borderRadius: 20,
   },
   topRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: "15%",
+    flex: 2.5,
   },
 });
