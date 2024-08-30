@@ -20,13 +20,13 @@ export default function ColorSelect({
     setColor(hex as Hex);
   };
   const colorPalette = [
-    "#DEDEDE",
-    "#f44336",
-    "#ff9800",
-    "#8bc34a",
-    "#03a9f4",
-    "#3f51b5",
-    "#9c27b0",
+    "#f27474",
+    "#ebc287",
+    "#acde72",
+    "#a4e3ff",
+    "#99a3d7",
+    "#c587d0",
+    "#c3a07e",
   ];
 
   return (
@@ -45,6 +45,7 @@ export default function ColorSelect({
         <View style={styles.widgetView}>
           <InputWidget
             inputTitleStyle={{ display: "none" }}
+            containerStyle={{ backgroundColor: "white" }}
             formats={["HEX"]}
           />
           <Swatches colors={colorPalette} />

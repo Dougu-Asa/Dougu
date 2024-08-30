@@ -56,7 +56,7 @@ export const itemStyles = StyleSheet.create({
     borderRadius: borderRadius + 3,
   },
   radiusBackgroundMini: {
-    borderRadius: miniRadius + 3,
+    borderRadius: miniRadius + 1,
   },
   size: {
     width: itemWidth,

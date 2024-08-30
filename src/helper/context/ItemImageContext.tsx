@@ -17,10 +17,20 @@ export default function ItemImageProvider({
   children: React.ReactNode;
 }) {
   const [icon, setIcon] = useState("default");
-  const [color, setColor] = useState<Hex>("#87ceeb");
+  const [equipmentColor, setEquipmentColor] = useState<Hex>("#87ceeb");
+  const [containerColor, setContainerColor] = useState<Hex>("#dedede");
 
   return (
-    <ItemImageContext.Provider value={{ icon, setIcon, color, setColor }}>
+    <ItemImageContext.Provider
+      value={{
+        icon,
+        setIcon,
+        equipmentColor,
+        setEquipmentColor,
+        containerColor,
+        setContainerColor,
+      }}
+    >
       {children}
     </ItemImageContext.Provider>
   );

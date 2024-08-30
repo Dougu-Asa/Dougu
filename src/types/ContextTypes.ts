@@ -46,6 +46,8 @@ export type EquipmentContextType = {
 export type ItemImageContextType = {
   icon: string;
   setIcon: Dispatch<SetStateAction<string>>;
-  color: Hex;
-  setColor: Dispatch<SetStateAction<Hex>>;
+  equipmentColor: Hex;
+  setEquipmentColor: Dispatch<SetStateAction<Hex>>;
+  containerColor: Hex;
+  setContainerColor: Dispatch<SetStateAction<Hex>>;
 };
