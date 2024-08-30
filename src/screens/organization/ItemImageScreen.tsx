@@ -8,9 +8,14 @@ import IconMenu from "../../components/organization/IconMenu";
 import ColorSelect from "../../components/organization/ColorSelect";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 
+/*
+  ItemImageScreen is a screen that allows the user to select an icon and color
+  for an equipment or container object.
+*/
 export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   const { index } = route.params;
   const [selected, setSelected] = useState(0);
+  // use a context to share state with CreateEquipmentScreen
   const {
     icon,
     equipmentColor,

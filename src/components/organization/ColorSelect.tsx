@@ -6,9 +6,13 @@ import ColorPicker, {
   OpacitySlider,
   InputWidget,
 } from "reanimated-color-picker";
-
 import { Hex } from "../../types/ModelTypes";
 
+/*
+  ColorSelect allows the user to select a background color for
+  equipment and containers. It is shown in the ItemImageScreen
+  component.
+*/
 export default function ColorSelect({
   color,
   setColor,
@@ -16,9 +20,12 @@ export default function ColorSelect({
   color: Hex;
   setColor: React.Dispatch<React.SetStateAction<Hex>>;
 }) {
+  // triggered when a color is selected
   const onSelectColor = ({ hex }: { hex: string }) => {
     setColor(hex as Hex);
   };
+
+  // color palette for the user to choose from
   const colorPalette = [
     "#f27474",
     "#ebc287",
