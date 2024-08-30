@@ -133,7 +133,7 @@ export default function SwapGestures({
       );
       return;
     }
-    if (!orgUserStorage || !swapUser.current) return;
+    if (!orgUserStorage) return;
     const assignTo =
       gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
     // dragging a container

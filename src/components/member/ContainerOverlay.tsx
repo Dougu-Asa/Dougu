@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { chunkEquipment } from "../../helper/EquipmentUtils";
+import { chunkArray } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
@@ -39,10 +39,8 @@ export default function ContainerOverlay() {
   } = useEquipment();
 
   // equipment is displayed in a 3x3 grid format
-  const equipmentChunks = chunkEquipment(containerItem?.equipment ?? [], 9);
-  const equipmentChunks3 = equipmentChunks.map((group) =>
-    chunkEquipment(group, 3),
-  );
+  const equipmentChunks = chunkArray(containerItem?.equipment ?? [], 9);
+  const equipmentChunks3 = equipmentChunks.map((group) => chunkArray(group, 3));
   // for the pageination dots
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -65,7 +63,7 @@ export default function ContainerOverlay() {
       {containerVisible && (
         <GestureDetector gesture={tapGesture}>
           <Animated.View
-            style={containerOverlayStyles.backDrop}
+            style={[containerOverlayStyles.backDrop]}
             entering={FadeIn}
             exiting={FadeOut}
           >
@@ -75,7 +73,10 @@ export default function ContainerOverlay() {
               </Text>
             </View>
             <Animated.View
-              style={containerOverlayStyles.itemContainer}
+              style={[
+                containerOverlayStyles.itemContainer,
+                { backgroundColor: containerItem?.color },
+              ]}
               entering={ZoomIn}
               exiting={ZoomOut}
             >

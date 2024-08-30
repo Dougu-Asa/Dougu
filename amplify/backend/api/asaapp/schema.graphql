@@ -1,7 +1,5 @@
 # This "input" configures a global authorization rule to enable private access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-
-# SET ID STRINGS TO ID TYPE IN THE FUTURE WHEN WE ADD PROFILE TYPING
 type Organization
   @model
   @auth(
@@ -15,8 +13,8 @@ type Organization
   accessCode: String!
   image: String!
   manager: String!
-  equipment: [Equipment] @hasMany
   UserOrStorages: [OrgUserStorage] @hasMany
+  equipment: [Equipment] @hasMany
   containers: [Container] @hasMany
 }
 
@@ -38,7 +36,6 @@ type OrgUserStorage
   name: String!
   organization: Organization! @belongsTo
   type: UserOrStorage!
-  image: String!
   group: String!
   user: String
   equipment: [Equipment] @hasMany
@@ -78,7 +75,8 @@ type Equipment
   lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
   image: String!
+  color: String!
   group: String!
-  containerId: String
+  containerId: ID
   details: String
 }

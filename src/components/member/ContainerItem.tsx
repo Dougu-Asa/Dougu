@@ -3,9 +3,9 @@ import { View, Text, Pressable } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { chunkEquipment } from "../../helper/EquipmentUtils";
-import MiniEquipmentItem from "./MiniEquipmentItem";
+import { chunkArray } from "../../helper/EquipmentUtils";
 import { itemStyles } from "../../styles/ItemStyles";
+import EquipmentDisplay from "./EquipmentDisplay";
 
 /*
   ContainerItem is a component that displays a container object with a label and
@@ -25,7 +25,7 @@ export default function ContainerItem({
     useEquipment();
   // only display the first 9 equipment items in a 3x3 grid
   const firstNine = item?.equipment.slice(0, 9);
-  const chunkedData = chunkEquipment(firstNine ? firstNine : [], 3);
+  const chunkedData = chunkArray(firstNine ? firstNine : [], 3);
 
   // swapable is a boolean that determines if the container opens the swapContainerOverlay
   // since swapContainerOverlay is only used in the swapEquipment screen
@@ -47,31 +47,34 @@ export default function ContainerItem({
           <View style={itemStyles.container}>
             {(count == null || count > 0) && (
               <>
-                <View style={itemStyles.backDrop}>
-                  <Pressable
-                    style={({ pressed }) => [
-                      {
-                        opacity: pressed ? 0.7 : 1,
-                      },
-                      itemStyles.containerItem,
-                    ]}
-                  >
-                    <View style={itemStyles.table}>
-                      {chunkedData.map((row, index) => (
-                        <View key={index} style={itemStyles.equipmentRow}>
-                          {row.map((equip) => (
-                            <View
-                              key={equip.id}
-                              style={itemStyles.equipmentItemContainer}
-                            >
-                              <MiniEquipmentItem item={equip as EquipmentObj} />
-                            </View>
-                          ))}
-                        </View>
-                      ))}
-                    </View>
-                  </Pressable>
-                </View>
+                <Pressable
+                  style={({ pressed }) => [
+                    {
+                      opacity: pressed ? 0.7 : 1,
+                      backgroundColor: item.color,
+                    },
+                    itemStyles.containerItem,
+                  ]}
+                >
+                  <View style={itemStyles.table}>
+                    {chunkedData.map((row, index) => (
+                      <View key={index} style={itemStyles.equipmentRow}>
+                        {row.map((equip) => (
+                          <View
+                            key={equip.id}
+                            style={itemStyles.equipmentItemContainer}
+                          >
+                            <EquipmentDisplay
+                              image={(equip as EquipmentObj).image}
+                              isMini={true}
+                              color={(equip as EquipmentObj).color}
+                            />
+                          </View>
+                        ))}
+                      </View>
+                    ))}
+                  </View>
+                </Pressable>
                 <Text style={itemStyles.text}>{item.label}</Text>
               </>
             )}

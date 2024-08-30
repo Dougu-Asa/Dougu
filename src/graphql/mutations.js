@@ -12,12 +12,12 @@ export const createOrganization = /* GraphQL */ `
       accessCode
       image
       manager
-      equipment {
+      UserOrStorages {
         nextToken
         startedAt
         __typename
       }
-      UserOrStorages {
+      equipment {
         nextToken
         startedAt
         __typename
@@ -47,12 +47,12 @@ export const updateOrganization = /* GraphQL */ `
       accessCode
       image
       manager
-      equipment {
+      UserOrStorages {
         nextToken
         startedAt
         __typename
       }
-      UserOrStorages {
+      equipment {
         nextToken
         startedAt
         __typename
@@ -82,12 +82,12 @@ export const deleteOrganization = /* GraphQL */ `
       accessCode
       image
       manager
-      equipment {
+      UserOrStorages {
         nextToken
         startedAt
         __typename
       }
-      UserOrStorages {
+      equipment {
         nextToken
         startedAt
         __typename
@@ -128,7 +128,6 @@ export const createOrgUserStorage = /* GraphQL */ `
         __typename
       }
       type
-      image
       group
       user
       equipment {
@@ -174,7 +173,6 @@ export const updateOrgUserStorage = /* GraphQL */ `
         __typename
       }
       type
-      image
       group
       user
       equipment {
@@ -220,7 +218,6 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         __typename
       }
       type
-      image
       group
       user
       equipment {
@@ -270,7 +267,6 @@ export const createContainer = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -322,7 +318,6 @@ export const updateContainer = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -374,7 +369,6 @@ export const deleteContainer = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -426,7 +420,6 @@ export const createEquipment = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -439,6 +432,7 @@ export const createEquipment = /* GraphQL */ `
         __typename
       }
       image
+      color
       group
       containerId
       details
@@ -479,7 +473,6 @@ export const updateEquipment = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -492,6 +485,7 @@ export const updateEquipment = /* GraphQL */ `
         __typename
       }
       image
+      color
       group
       containerId
       details
@@ -532,7 +526,6 @@ export const deleteEquipment = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -545,6 +538,7 @@ export const deleteEquipment = /* GraphQL */ `
         __typename
       }
       image
+      color
       group
       containerId
       details

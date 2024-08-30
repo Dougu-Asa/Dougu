@@ -33,7 +33,6 @@ export const containerOverlayStyles = StyleSheet.create({
     width: width * 0.85,
     height: height * 0.54 + 30,
     borderRadius: 20,
-    backgroundColor: "rgb(240, 240, 240)",
   },
   itemPage: {
     display: "flex",

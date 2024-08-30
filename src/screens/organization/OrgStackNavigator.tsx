@@ -8,8 +8,10 @@ import SheetScreen from "./SheetScreen";
 import UserStorages from "./UserStorages";
 import CreateStorageScreen from "./CreateStorageScreen";
 import InfoScreen from "./InfoScreen";
+import ItemImageScreen from "./ItemImageScreen";
 import { OrgStackParamList } from "../../types/NavigatorTypes";
 import { OrgStackScreenProps } from "../../types/ScreenTypes";
+import ItemImageProvider from "../../helper/context/ItemImageContext";
 
 /*
     Stack navigator for the organization screens.
@@ -34,22 +36,30 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
   }, [navigation, isFocused]);
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerTitleAlign: "center",
-        headerTitleStyle: {
-          fontSize: 28,
-          fontWeight: "bold",
-          color: "#791111",
-        },
-      }}
-    >
-      <Stack.Screen name="InfoScreen" component={InfoScreen} />
-      <Stack.Screen name="ManageEquipment" component={ManageEquipmentScreen} />
-      <Stack.Screen name="CreateEquipment" component={CreateEquipmentScreen} />
-      <Stack.Screen name="UserStorages" component={UserStorages} />
-      <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
-      <Stack.Screen name="Sheet" component={SheetScreen} />
-    </Stack.Navigator>
+    <ItemImageProvider>
+      <Stack.Navigator
+        screenOptions={{
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: "semibold",
+          },
+        }}
+      >
+        <Stack.Screen name="InfoScreen" component={InfoScreen} />
+        <Stack.Screen
+          name="ManageEquipment"
+          component={ManageEquipmentScreen}
+        />
+        <Stack.Screen
+          name="CreateEquipment"
+          component={CreateEquipmentScreen}
+        />
+        <Stack.Screen name="ItemImage" component={ItemImageScreen} />
+        <Stack.Screen name="UserStorages" component={UserStorages} />
+        <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
+        <Stack.Screen name="Sheet" component={SheetScreen} />
+      </Stack.Navigator>
+    </ItemImageProvider>
   );
 }

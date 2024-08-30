@@ -9,12 +9,12 @@ export const getOrganization = /* GraphQL */ `
       accessCode
       image
       manager
-      equipment {
+      UserOrStorages {
         nextToken
         startedAt
         __typename
       }
-      UserOrStorages {
+      equipment {
         nextToken
         startedAt
         __typename
@@ -110,7 +110,6 @@ export const getOrgUserStorage = /* GraphQL */ `
         __typename
       }
       type
-      image
       group
       user
       equipment {
@@ -145,7 +144,6 @@ export const listOrgUserStorages = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -180,7 +178,6 @@ export const syncOrgUserStorages = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -221,7 +218,6 @@ export const getContainer = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -334,7 +330,6 @@ export const getEquipment = /* GraphQL */ `
         id
         name
         type
-        image
         group
         user
         details
@@ -347,6 +342,7 @@ export const getEquipment = /* GraphQL */ `
         __typename
       }
       image
+      color
       group
       containerId
       details
@@ -373,6 +369,7 @@ export const listEquipment = /* GraphQL */ `
         name
         lastUpdatedDate
         image
+        color
         group
         containerId
         details
@@ -409,6 +406,7 @@ export const syncEquipment = /* GraphQL */ `
         name
         lastUpdatedDate
         image
+        color
         group
         containerId
         details

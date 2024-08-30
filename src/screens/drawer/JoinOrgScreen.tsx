@@ -9,11 +9,11 @@ import { fetchAuthSession } from "aws-amplify/auth";
 // project imports
 import { createJoinStyles } from "../../styles/CreateJoinStyles";
 import { useLoad } from "../../helper/context/LoadingContext";
-import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
+import { OrgUserStorage, Organization } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
-import { addUserToGroup } from "../../helper/AWS";
+import { createOrgUserStorage } from "../../helper/CreateUtils";
 /*
   Screen for joining an organization, user enters the access code to join
 */
@@ -67,32 +67,17 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
     }
   };
 
-  // create an orgUserStorage object for the user and the org
-  const createOrgUserStorage = async (org: Organization) => {
-    const token = (await fetchAuthSession()).tokens?.idToken?.toString();
-    if (!token) throw new Error("Token not found");
-    await DataStore.save(
-      new OrgUserStorage({
-        organization: org,
-        type: UserOrStorage.USER,
-        name: user!.name,
-        image: "default",
-        group: org.name,
-        user: user!.id,
-      }),
-    );
-    // add the user to the user group
-    await addUserToGroup(token, org.name, user!.id);
-  };
-
   const handleJoin = async () => {
     try {
       // Query for the org with the access code
       setIsLoading(true);
+      // Get the user token for authorization to api calls
+      const token = (await fetchAuthSession()).tokens?.idToken?.toString();
+      if (token == null) throw new Error("Token not found");
       const org = await checkCode();
       await validate();
       // Create an OrgUserStorage object for the user
-      await createOrgUserStorage(org);
+      await createOrgUserStorage(token, org, user!);
       // update context and async storage
       const key = user!.id + " currOrg";
       await AsyncStorage.setItem(key, JSON.stringify(org));

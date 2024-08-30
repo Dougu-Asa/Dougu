@@ -28,6 +28,7 @@ import { DrawerNavProps } from "../../types/ScreenTypes";
 import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
 import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
+import { profileMapping } from "../../helper/ImageMapping";
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -115,7 +116,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
         onPress={() => navigation.toggleDrawer()}
       >
         <Image
-          source={require("../../assets/userprofiles/miku.jpg")}
+          source={profileMapping[user?.profile || "default"]}
           style={styles.circleImage}
         />
       </TouchableOpacity>

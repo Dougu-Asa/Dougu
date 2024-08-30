@@ -43,7 +43,6 @@ export default function CreateStorageScreen() {
           organization: dataOrg,
           type: UserOrStorage.STORAGE,
           details: details,
-          image: "default",
           group: org!.name,
         }),
       );

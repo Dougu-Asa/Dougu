@@ -5,6 +5,7 @@ export type EquipmentOrContainer = "equipment" | "container";
 export interface ItemObj {
   id: string;
   label: string;
+  color: Hex;
   assignedTo: string;
   assignedToName: string;
   type: EquipmentOrContainer;
@@ -12,6 +13,7 @@ export interface ItemObj {
 
 // how equipment data is stored in the app
 export interface EquipmentObj extends ItemObj {
+  image: string;
   count: number;
   data: string[];
   detailData: string[];
@@ -47,4 +49,12 @@ export type csvSheet = {
   header: string[];
   identityCol: string[];
   values: string[][];
+};
+
+export type Hex = `#${string}`;
+
+export type svgProps = {
+  width: number;
+  height: number;
+  fill: Hex;
 };

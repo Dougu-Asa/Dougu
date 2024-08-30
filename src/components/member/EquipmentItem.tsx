@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
-import Entypo from "react-native-vector-icons/Entypo";
+import { View, Text } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { itemStyles } from "../../styles/ItemStyles";
+import EquipmentDisplay from "./EquipmentDisplay";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -32,18 +32,11 @@ export default function EquipmentItem({
       <View style={itemStyles.container}>
         {count > 0 && (
           <>
-            <View style={itemStyles.backDrop}>
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                  itemStyles.equipment,
-                ]}
-              >
-                <Entypo name="camera" size={50} color="white" />
-              </Pressable>
-            </View>
+            <EquipmentDisplay
+              image={item.image}
+              isMini={false}
+              color={item.color}
+            />
             <View style={itemStyles.circle}>
               <Text style={itemStyles.count}>{count}</Text>
             </View>

@@ -3,16 +3,14 @@ import { Dimensions, StyleSheet } from "react-native";
 const width = Dimensions.get("window").width;
 const itemWidth = width / 5;
 const borderRadius = width / 14;
+const miniWidth = width / 22;
+const miniRadius = width / 64;
 
 /*
   Used for EquipmentItem, ContainerItem, and MiniEquipmentItem styling
 */
 
 export const itemStyles = StyleSheet.create({
-  backDrop: {
-    backgroundColor: "black",
-    borderRadius: borderRadius,
-  },
   circle: {
     backgroundColor: "white",
     width: 35,
@@ -35,19 +33,14 @@ export const itemStyles = StyleSheet.create({
     borderRadius: borderRadius,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(222, 222, 222)",
   },
   count: {
     fontSize: 10,
     fontWeight: "bold",
   },
   equipment: {
-    width: itemWidth,
-    height: itemWidth,
-    borderRadius: borderRadius,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(135, 206, 235)",
   },
   equipmentItemContainer: {
     width: "33.33%",
@@ -58,6 +51,22 @@ export const itemStyles = StyleSheet.create({
     justifyContent: "flex-start",
     flexBasis: "33.33%",
     alignItems: "center",
+  },
+  radiusBackground: {
+    borderRadius: borderRadius + 3,
+  },
+  radiusBackgroundMini: {
+    borderRadius: miniRadius + 1,
+  },
+  size: {
+    width: itemWidth,
+    height: itemWidth,
+    borderRadius: borderRadius,
+  },
+  sizeMini: {
+    width: miniWidth,
+    height: miniWidth,
+    borderRadius: miniRadius,
   },
   table: {
     width: "85%",

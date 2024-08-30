@@ -7,6 +7,7 @@ import {
   ItemObj,
   ContainerObj,
   csvSheet,
+  Hex,
 } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
 import { handleError } from "./Utils";
@@ -25,10 +26,10 @@ export const sortOrgUserStorages = (
 };
 
 // chunk the equipment into groups of size
-export const chunkEquipment = (items: ItemObj[], size: number) =>
+export const chunkArray = <T>(items: T[], size: number) =>
   items.reduce(
     (acc, _, i) => (i % size ? acc : [...acc, items.slice(i, i + size)]),
-    [] as ItemObj[][],
+    [] as T[][],
   );
 
 export const getOrgItems = async (
@@ -119,6 +120,7 @@ const getContainers = async (
     const containerObj: ContainerObj = {
       id: containers[j].id,
       label: containers[j].name,
+      color: containers[j].color as Hex,
       assignedTo: orgUserStorage.id,
       assignedToName: orgUserStorage.name,
       type: "container",
@@ -158,8 +160,10 @@ const processEquipmentData = (
       equipmentMap.set(key, {
         id: equip.id,
         label: equip.name,
+        color: equip.color as Hex,
         count: 1,
         type: "equipment",
+        image: equip.image,
         data: [equip.id],
         detailData: [equip.details ? equip.details : ""],
         assignedTo: orgUserStorage.id,

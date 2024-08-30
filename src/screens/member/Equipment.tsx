@@ -5,7 +5,7 @@ import { ScrollView } from "react-native-gesture-handler";
 // Project imports
 import { useUser } from "../../helper/context/UserContext";
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { chunkEquipment } from "../../helper/EquipmentUtils";
+import { chunkArray } from "../../helper/EquipmentUtils";
 import Item from "../../components/member/Item";
 
 /*
@@ -18,7 +18,7 @@ export default function EquipmentScreen() {
   // Get the equipment assigned to the current user
   const userItems = itemData.get(orgUserStorage!.id);
   const items = userItems?.data || [];
-  const chunkedData = chunkEquipment(items, 3);
+  const chunkedData = chunkArray(items, 3);
 
   return (
     <View style={styles.background}>

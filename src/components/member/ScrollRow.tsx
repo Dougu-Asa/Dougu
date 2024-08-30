@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useRef } from "react";
 
 import { ItemObj } from "../../types/ModelTypes";
-import { chunkEquipment } from "../../helper/EquipmentUtils";
+import { chunkArray } from "../../helper/EquipmentUtils";
 import Item from "./Item";
 
 /*
@@ -30,7 +30,7 @@ export default function ScrollRow({
   nextPage?: number;
 }) {
   // data is displayed as pages of 4 items
-  const chunkedData = chunkEquipment(listData, 4);
+  const chunkedData = chunkArray(listData, 4);
   const windowWidth = Dimensions.get("window").width;
   const flatListRef = useRef<FlatList<ItemObj[]> | null>(null);
 

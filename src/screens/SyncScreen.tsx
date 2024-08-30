@@ -12,9 +12,7 @@ import { useUser } from "../helper/context/UserContext";
   syncs datastore with the backend
 */
 export default function SyncScreen({ route, navigation }: SyncScreenProps) {
-  const { syncType } = route.params;
-  const { accessCode } = route.params;
-  const { newOrg } = route.params;
+  const { syncType, accessCode, newOrg } = route.params;
   const { user, setOrg } = useUser();
 
   // start DataStore and listen for DataStore ready event
