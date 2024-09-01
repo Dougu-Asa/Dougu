@@ -2,7 +2,7 @@ import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { signUp, fetchUserAttributes, signIn } from "aws-amplify/auth";
+import { signUp, signIn } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -11,6 +11,8 @@ import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
 import { styles } from "../styles/LoginCreate";
+import { profileMapping } from "../helper/ImageMapping";
+import { setUserContext } from "../helper/Utils";
 
 /*
   A component that allows the user to create an account
@@ -60,32 +62,21 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         setIsLoading(false);
         return;
       }
+      // get a random profile key to set as user profile
+      var keys = Object.keys(profileMapping);
+      const userProfile = keys[(keys.length * Math.random()) << 0];
       await signUp({
         username: email, // email is the username
         password: password,
         options: {
           userAttributes: {
             name: username,
-            profile: "miku",
+            profile: userProfile,
           },
         },
       });
       await signIn({ username: email, password: password });
-      const attributes = await fetchUserAttributes();
-      if (
-        !attributes.name ||
-        !attributes.email ||
-        !attributes.sub ||
-        !attributes.profile
-      )
-        throw new Error("Missing attributes");
-      const userObj = {
-        name: attributes.name,
-        email: attributes.email,
-        id: attributes.sub,
-        profile: attributes.profile,
-      };
-      setUser(userObj);
+      await setUserContext(setUser);
       onChangeEmail("");
       onChangeFirst("");
       onChangeLast("");

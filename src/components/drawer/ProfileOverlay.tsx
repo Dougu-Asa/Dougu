@@ -7,9 +7,19 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
+import { updateUserAttributes } from "aws-amplify/auth";
+
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
+import { useLoad } from "../../helper/context/LoadingContext";
+import { handleError, setUserContext } from "../../helper/Utils";
+import { useUser } from "../../helper/context/UserContext";
+import { editProfilePictures } from "../../helper/EditUtils";
 
+/* 
+    Dispay a profile menu for choosing a user's profile image
+    when tapping on the profile in the profileScreen
+*/
 export default function ProfileOverlay({
   visible,
   setVisible,
@@ -20,6 +30,29 @@ export default function ProfileOverlay({
   profile: string;
 }) {
   const [profileImage, setProfileImage] = useState<string>(profile);
+  const { setIsLoading } = useLoad();
+  const { user, setUser } = useUser();
+
+  // update user profile attributes in Cognito
+  const handleSet = async (profileData: string) => {
+    try {
+      setIsLoading(true);
+      setProfileImage(profileData);
+      // update user in cognito (server)
+      await updateUserAttributes({
+        userAttributes: {
+          profile: profileData,
+        },
+      });
+      // update user context (local)
+      await setUserContext(setUser);
+      // update orgUserStorages of the user
+      await editProfilePictures(user!.id, profileData);
+      setIsLoading(false);
+    } catch (e) {
+      handleError("handleSet", e as Error, setIsLoading);
+    }
+  };
 
   return (
     <>
@@ -43,7 +76,7 @@ export default function ProfileOverlay({
             exiting={ZoomOut}
           >
             <Pressable onPress={() => {}} style={styles.pressableContainer}>
-              <IconMenu setIcon={setProfileImage} data={profileMapping} />
+              <IconMenu setIcon={handleSet} data={profileMapping} />
             </Pressable>
           </Animated.View>
         </Pressable>

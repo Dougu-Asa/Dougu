@@ -16,6 +16,7 @@ export default function EquipmentDisplay({
   const radius = isMini
     ? itemStyles.radiusBackgroundMini
     : itemStyles.radiusBackground;
+  const icon = image && image in iconMapping ? image : "default";
 
   return (
     <Pressable
@@ -29,11 +30,7 @@ export default function EquipmentDisplay({
         radius,
       ]}
     >
-      <Image
-        source={iconMapping[image || "default"]}
-        style={sizeStyles}
-        resizeMode="cover"
-      />
+      <Image source={iconMapping[icon]} style={sizeStyles} resizeMode="cover" />
     </Pressable>
   );
 }

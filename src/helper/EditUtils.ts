@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { ItemObj } from "../types/ModelTypes";
 import { DataStore } from "@aws-amplify/datastore";
-import { Equipment, Container } from "../models";
+import { Equipment, Container, OrgUserStorage, UserOrStorage } from "../models";
 import { handleError } from "./Utils";
 import { Alert } from "react-native";
 
@@ -54,4 +54,18 @@ export const handleEdit = (
       style: "cancel",
     },
   ]);
+};
+
+export const editProfilePictures = async (userId: string, profile: string) => {
+  const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
+    c.and((c) => [c.user.eq(userId), c.type.eq(UserOrStorage.USER)]),
+  );
+  // for each orgUserStorage, set the profile to the new one
+  orgUserStorages.forEach(async (user) => {
+    await DataStore.save(
+      OrgUserStorage.copyOf(user, (updated) => {
+        updated.profile = profile;
+      }),
+    );
+  });
 };

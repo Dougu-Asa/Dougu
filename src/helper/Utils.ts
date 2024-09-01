@@ -2,7 +2,8 @@ import * as Sentry from "@sentry/react-native";
 import { Alert } from "react-native";
 import { Dispatch, SetStateAction } from "react";
 import { DataStore } from "@aws-amplify/datastore";
-import { signOut } from "aws-amplify/auth";
+import { fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { UserType } from "../types/ContextTypes";
 
 /* this function handles errors in the app by stopping the loading indicator, logging the error, and alerting the user */
 export const handleError = (
@@ -40,4 +41,24 @@ export const callSignOut = async (
     setIsLoading(false);
     handleError("handleSignOut", error as Error, setIsLoading);
   }
+};
+
+export const setUserContext = async (
+  setUser: Dispatch<SetStateAction<UserType | null>>,
+) => {
+  const attributes = await fetchUserAttributes();
+  if (
+    !attributes.name ||
+    !attributes.email ||
+    !attributes.sub ||
+    !attributes.profile
+  )
+    throw new Error("Missing attributes");
+  const userObj = {
+    name: attributes.name,
+    email: attributes.email,
+    id: attributes.sub,
+    profile: attributes.profile,
+  };
+  setUser(userObj);
 };

@@ -26,6 +26,10 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
     setContainerColor,
   } = useItemImage();
 
+  const handleSet = (icon: string) => {
+    setIcon(icon);
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.topRow}>
@@ -76,7 +80,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               setColor={index === 0 ? setEquipmentColor : setContainerColor}
             />
           ) : (
-            <IconMenu setIcon={setIcon} data={taiko} />
+            <IconMenu setIcon={handleSet} data={taiko} />
           )}
         </View>
       </View>

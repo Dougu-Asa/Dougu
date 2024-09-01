@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Dispatch, SetStateAction } from "react";
 import { chunkArray } from "../helper/EquipmentUtils";
 
 /*
@@ -18,7 +17,7 @@ export default function IconMenu({
   setIcon,
   data,
 }: {
-  setIcon: Dispatch<SetStateAction<string>>;
+  setIcon: (data: string) => void;
   data: {
     [key: string]: ImageSourcePropType;
   };

@@ -129,6 +129,7 @@ export const createOrgUserStorage = /* GraphQL */ `
       }
       type
       group
+      profile
       user
       equipment {
         nextToken
@@ -174,6 +175,7 @@ export const updateOrgUserStorage = /* GraphQL */ `
       }
       type
       group
+      profile
       user
       equipment {
         nextToken
@@ -219,6 +221,7 @@ export const deleteOrgUserStorage = /* GraphQL */ `
       }
       type
       group
+      profile
       user
       equipment {
         nextToken
@@ -268,6 +271,7 @@ export const createContainer = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -319,6 +323,7 @@ export const updateContainer = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -370,6 +375,7 @@ export const deleteContainer = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -421,6 +427,7 @@ export const createEquipment = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -474,6 +481,7 @@ export const updateEquipment = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -527,6 +535,7 @@ export const deleteEquipment = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt

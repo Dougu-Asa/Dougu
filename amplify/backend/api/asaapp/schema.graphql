@@ -37,6 +37,7 @@ type OrgUserStorage
   organization: Organization! @belongsTo
   type: UserOrStorage!
   group: String!
+  profile: String!
   user: String
   equipment: [Equipment] @hasMany
   containers: [Container] @hasMany

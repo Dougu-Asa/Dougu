@@ -2,13 +2,13 @@ import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { signIn, fetchUserAttributes } from "aws-amplify/auth";
+import { signIn } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
 import { useUser } from "../helper/context/UserContext";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
-import { handleError } from "../helper/Utils";
+import { handleError, setUserContext } from "../helper/Utils";
 import { styles } from "../styles/LoginCreate";
 
 /*
@@ -39,21 +39,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
     try {
       setIsLoading(true);
       await signIn({ username, password });
-      const attributes = await fetchUserAttributes();
-      if (
-        !attributes.name ||
-        !attributes.email ||
-        !attributes.sub ||
-        !attributes.profile
-      )
-        throw new Error("Missing attributes");
-      const user = {
-        name: attributes.name,
-        email: attributes.email,
-        id: attributes.sub,
-        profile: attributes.profile,
-      };
-      setUser(user);
+      await setUserContext(setUser);
       setIsLoading(false);
       onChangePassword("");
       onChangeUsername("");
