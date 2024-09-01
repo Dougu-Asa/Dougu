@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   circleImage: {
     width: 45,
     height: 45,
-    borderRadius: 35 / 2,
+    borderRadius: 45 / 2,
     padding: 5,
     left: 5,
   },

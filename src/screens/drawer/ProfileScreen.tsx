@@ -12,6 +12,7 @@ import { Button } from "@rneui/themed";
 
 import { useUser } from "../../helper/context/UserContext";
 import { profileMapping } from "../../helper/ImageMapping";
+import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
@@ -23,12 +24,16 @@ const editSize = Dimensions.get("screen").width / 10;
 */
 export default function ProfileScreen() {
   const { user } = useUser();
+  const [visible, setVisible] = React.useState(false);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profile}>
+      <TouchableOpacity
+        style={styles.profile}
+        onPress={() => setVisible(!visible)}
+      >
         <Image
-          source={profileMapping[user?.profile || "default"]}
+          source={profileMapping[user!.profile || "default"]}
           style={styles.profileImage}
         />
         <View style={styles.editButton}>
@@ -38,14 +43,14 @@ export default function ProfileScreen() {
       <TouchableOpacity style={styles.row}>
         <Text style={styles.text}>Name</Text>
         <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user?.name}</Text>
+          <Text style={styles.text}>{user!.name}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.row}>
         <Text style={styles.text}>Email</Text>
         <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user?.email}</Text>
+          <Text style={styles.text}>{user!.email}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
@@ -60,6 +65,11 @@ export default function ProfileScreen() {
         color={"#EEEEEE"}
         buttonStyle={styles.button}
         titleStyle={styles.buttonText}
+      />
+      <ProfileOverlay
+        visible={visible}
+        setVisible={setVisible}
+        profile={user!.profile}
       />
     </View>
   );
