@@ -12,7 +12,7 @@ import { updateUserAttributes } from "aws-amplify/auth";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
 import { useLoad } from "../../helper/context/LoadingContext";
-import { handleError, setUserContext } from "../../helper/Utils";
+import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
 import { editProfilePictures } from "../../helper/EditUtils";
 
@@ -45,8 +45,8 @@ export default function ProfileOverlay({
         },
       });
       // update user context (local)
-      await setUserContext(setUser);
-      // update orgUserStorages of the user
+      const newUser = { ...user!, profile: profileData };
+      setUser(newUser);
       await editProfilePictures(user!.id, profileData);
       setIsLoading(false);
     } catch (e) {
