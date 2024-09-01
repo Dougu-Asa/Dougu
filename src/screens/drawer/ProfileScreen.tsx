@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@rneui/themed";
 
 import { useUser } from "../../helper/context/UserContext";
 import { profileMapping } from "../../helper/ImageMapping";
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
+import EditAttributesOverlay from "../../components/drawer/EditAttributesOverlay";
+import { EditType } from "../../types/ModelTypes";
 
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
@@ -24,7 +26,14 @@ const editSize = Dimensions.get("screen").width / 10;
 */
 export default function ProfileScreen() {
   const { user } = useUser();
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [editType, setEditType] = useState<EditType | null>(null);
+
+  const handleEditAttribute = (type: EditType) => {
+    setEditType(type);
+    setEditVisible(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -40,21 +49,30 @@ export default function ProfileScreen() {
           <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => handleEditAttribute("name")}
+      >
         <Text style={styles.text}>Name</Text>
         <View style={styles.changeBtn}>
           <Text style={styles.text}>{user!.name}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => handleEditAttribute("email")}
+      >
         <Text style={styles.text}>Email</Text>
         <View style={styles.changeBtn}>
           <Text style={styles.text}>{user!.email}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => handleEditAttribute("password")}
+      >
         <Text style={styles.text}>Change Password</Text>
         <View style={styles.changeBtn}>
           <MaterialCommunityIcons name="chevron-right" size={30} />
@@ -70,6 +88,11 @@ export default function ProfileScreen() {
         visible={visible}
         setVisible={setVisible}
         profile={user!.profile}
+      />
+      <EditAttributesOverlay
+        visible={editVisible}
+        setVisible={setEditVisible}
+        type={editType}
       />
     </View>
   );

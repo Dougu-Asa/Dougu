@@ -58,3 +58,5 @@ export type svgProps = {
   height: number;
   fill: Hex;
 };
+
+export type EditType = "name" | "email" | "password";
