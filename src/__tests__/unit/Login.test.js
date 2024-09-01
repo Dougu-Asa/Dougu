@@ -1,9 +1,9 @@
-import { signIn, fetchUserAttributes } from "aws-amplify/auth";
+import { signIn } from "aws-amplify/auth";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
 import { MockUserProvider, MockLoadingProvider } from "../mock/MockProviders";
 import LoginScreen from "../../components/Login";
-import { handleError } from "../../helper/Utils";
+import { handleError, setUserContext } from "../../helper/Utils";
 
 /*
     Test login.tsx file and ensure that the user can sign in successfully
@@ -21,6 +21,7 @@ jest.mock("aws-amplify/auth", () => ({
 
 jest.mock("../../helper/Utils", () => ({
   handleError: jest.fn(),
+  setUserContext: jest.fn(),
 }));
 
 jest.mock("@aws-amplify/datastore", () => ({
@@ -45,15 +46,9 @@ describe("signIn", () => {
   it("signs in a user successfully", async () => {
     const username = "T@gmail.com";
     const password = "Tassword";
-    const mockAttributes = {
-      name: "Test User",
-      email: "testuser@example.com",
-      sub: "user-1",
-      profile: "test-profile",
-    };
 
     signIn.mockResolvedValueOnce({});
-    fetchUserAttributes.mockResolvedValueOnce(mockAttributes);
+    setUserContext.mockResolvedValueOnce();
 
     const { getByTestId } = render(
       <MockLoadingProvider>
@@ -82,7 +77,7 @@ describe("signIn", () => {
       username: username,
       password: password,
     });
-    expect(fetchUserAttributes).toHaveBeenCalled();
+    expect(setUserContext).toHaveBeenCalled();
     expect(handleError).not.toHaveBeenCalled();
   });
 
