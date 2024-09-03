@@ -43,6 +43,7 @@ export default function ProfileOverlay({
       modifyUserAttribute(user!, setUser, "profile", profileData);
       // update OrgUserStorages to match user profile
       await editOrgUserStorages(user!.id, "profile", profileData);
+      setVisible(false);
       setIsLoading(false);
     } catch (e) {
       handleError("handleSet", e as Error, setIsLoading);

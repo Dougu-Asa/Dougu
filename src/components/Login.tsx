@@ -9,7 +9,7 @@ import { useLoad } from "../helper/context/LoadingContext";
 import { useUser } from "../helper/context/UserContext";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { handleError, setUserContext } from "../helper/Utils";
-import { styles } from "../styles/LoginCreate";
+import { loginCreateStyles } from "../styles/LoginCreate";
 
 /*
   A component that allows the user to login to the app 
@@ -50,19 +50,19 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Login</Text>
+    <View style={loginCreateStyles.container}>
+      <Text style={loginCreateStyles.header}>Login</Text>
       <TextInput
-        style={styles.input}
+        style={loginCreateStyles.input}
         onChangeText={onChangeUsername}
         value={username}
         placeholder="email"
         keyboardType="email-address"
         testID="emailInput"
       />
-      <View style={styles.passwordContainer}>
+      <View style={loginCreateStyles.passwordContainer}>
         <TextInput
-          style={styles.pinput}
+          style={loginCreateStyles.pinput}
           onChangeText={onChangePassword}
           secureTextEntry={!showPassword}
           value={password}
@@ -74,12 +74,12 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
           name={showPassword ? "eye" : "eye-off"}
           size={28}
           color="#aaa"
-          style={styles.icon}
+          style={loginCreateStyles.icon}
           onPress={toggleShowPassword}
         />
       </View>
       <Text
-        style={styles.forgotPassword}
+        style={loginCreateStyles.forgotPassword}
         onPress={() => {
           navigation.navigate("RequestReset");
         }}
@@ -87,11 +87,11 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
         Forgot Password?
       </Text>
       <TouchableOpacity
-        style={styles.button}
+        style={loginCreateStyles.button}
         onPress={() => handleSignIn({ username, password })}
         testID="signInButton"
       >
-        <Text style={styles.btnText}>Login</Text>
+        <Text style={loginCreateStyles.btnText}>Login</Text>
       </TouchableOpacity>
     </View>
   );

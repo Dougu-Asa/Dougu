@@ -13,7 +13,8 @@ import { Button } from "@rneui/themed";
 import { useUser } from "../../helper/context/UserContext";
 import { profileMapping } from "../../helper/ImageMapping";
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
-import EditNameOverlay from "../../components/drawer/EditNameOverlay";
+import NameOverlay from "../../components/drawer/NameOverlay";
+import PasswordOverlay from "../../components/drawer/PasswordOverlay";
 
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
@@ -25,14 +26,15 @@ const editSize = Dimensions.get("screen").width / 10;
 */
 export default function ProfileScreen() {
   const { user } = useUser();
-  const [visible, setVisible] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.profile}
-        onPress={() => setVisible(!visible)}
+        onPress={() => setProfileVisible(true)}
       >
         <Image
           source={profileMapping[user!.profile || "default"]}
@@ -56,7 +58,10 @@ export default function ProfileScreen() {
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => setPasswordVisible(true)}
+      >
         <Text style={styles.text}>Change Password</Text>
         <View style={styles.changeBtn}>
           <MaterialCommunityIcons name="chevron-right" size={30} />
@@ -69,11 +74,15 @@ export default function ProfileScreen() {
         titleStyle={styles.buttonText}
       />
       <ProfileOverlay
-        visible={visible}
-        setVisible={setVisible}
+        visible={profileVisible}
+        setVisible={setProfileVisible}
         profile={user!.profile}
       />
-      <EditNameOverlay visible={nameVisible} setVisible={setNameVisible} />
+      <NameOverlay visible={nameVisible} setVisible={setNameVisible} />
+      <PasswordOverlay
+        visible={passwordVisible}
+        setVisible={setPasswordVisible}
+      />
     </View>
   );
 }

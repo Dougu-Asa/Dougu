@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 /*
   styles for Login, CreateAcc, RequestPasswordReset, and ResetPassword
 */
-export const styles = StyleSheet.create({
+export const loginCreateStyles = StyleSheet.create({
   button: {
     height: 50,
     margin: 15,

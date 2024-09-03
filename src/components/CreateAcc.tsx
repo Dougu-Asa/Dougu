@@ -10,7 +10,7 @@ import { useUser } from "../helper/context/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
-import { styles } from "../styles/LoginCreate";
+import { loginCreateStyles } from "../styles/LoginCreate";
 import { profileMapping } from "../helper/ImageMapping";
 import { setUserContext } from "../helper/Utils";
 
@@ -91,18 +91,18 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Create Account</Text>
-      <View style={styles.nameContainer}>
+    <View style={loginCreateStyles.container}>
+      <Text style={loginCreateStyles.header}>Create Account</Text>
+      <View style={loginCreateStyles.nameContainer}>
         <TextInput
-          style={styles.name}
+          style={loginCreateStyles.name}
           onChangeText={onChangeFirst}
           value={first}
           placeholder="first"
           keyboardType="default"
         />
         <TextInput
-          style={styles.name}
+          style={loginCreateStyles.name}
           onChangeText={onChangeLast}
           value={last}
           placeholder="last"
@@ -110,15 +110,15 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         />
       </View>
       <TextInput
-        style={styles.input}
+        style={loginCreateStyles.input}
         onChangeText={onChangeEmail}
         value={email}
         placeholder="email"
         keyboardType="email-address"
       />
-      <View style={styles.passwordContainer}>
+      <View style={loginCreateStyles.passwordContainer}>
         <TextInput
-          style={styles.pinput}
+          style={loginCreateStyles.pinput}
           onChangeText={onChangePassword}
           secureTextEntry={!showPassword}
           value={password}
@@ -129,13 +129,13 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           name={showPassword ? "eye" : "eye-off"}
           size={28}
           color="#aaa"
-          style={styles.icon}
+          style={loginCreateStyles.icon}
           onPress={() => setShowPassword(!showPassword)}
         />
       </View>
-      <View style={styles.passwordContainer}>
+      <View style={loginCreateStyles.passwordContainer}>
         <TextInput
-          style={styles.pinput}
+          style={loginCreateStyles.pinput}
           onChangeText={onChangeConfirmPassword}
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
@@ -146,15 +146,15 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
           name={showConfirmPassword ? "eye" : "eye-off"}
           size={28}
           color="#aaa"
-          style={styles.icon}
+          style={loginCreateStyles.icon}
           onPress={() => setShowConfirmPassword(!showConfirmPassword)}
         />
       </View>
       <TouchableOpacity
-        style={styles.button}
+        style={loginCreateStyles.button}
         onPress={() => handleSignUp({ username, email, password })}
       >
-        <Text style={styles.btnText}>Create</Text>
+        <Text style={loginCreateStyles.btnText}>Create</Text>
       </TouchableOpacity>
     </View>
   );

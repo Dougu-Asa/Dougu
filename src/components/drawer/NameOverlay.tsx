@@ -9,7 +9,7 @@ import {
 } from "../../helper/drawer/ModifyProfileUtils";
 import { useUser } from "../../helper/context/UserContext";
 
-export default function EditNameOverlay({
+export default function NameOverlay({
   visible,
   setVisible,
 }: {
@@ -65,7 +65,7 @@ export default function EditNameOverlay({
           onChangeText={setFirstName}
           value={firstName}
           placeholder="first"
-          style={[styles.name]}
+          style={styles.name}
         />
         <TextInput
           onChangeText={setLastName}
