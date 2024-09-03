@@ -57,6 +57,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
         password={password}
         setPassword={onChangePassword}
         placeHolder="password"
+        testID="passwordInput"
       />
       <Text
         style={loginCreateStyles.forgotPassword}
