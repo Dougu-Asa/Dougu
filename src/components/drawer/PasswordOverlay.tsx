@@ -1,11 +1,11 @@
 import { Overlay, Button } from "@rneui/themed";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { updatePassword } from "aws-amplify/auth";
 
 import { handleError } from "../../helper/Utils";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { loginCreateStyles } from "../../styles/LoginCreate";
+import PasswordInput from "../PasswordInput";
 
 export default function PasswordOverlay({
   visible,
@@ -17,9 +17,6 @@ export default function PasswordOverlay({
   const [currPassword, setCurrPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showCurrPassword, setShowCurrPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // update user profile attributes in Cognito
   const handleSet = async () => {
@@ -68,57 +65,21 @@ export default function PasswordOverlay({
         />
       </View>
       <Text style={loginCreateStyles.header}>Change Password</Text>
-      <View style={loginCreateStyles.passwordContainer}>
-        <TextInput
-          style={loginCreateStyles.pinput}
-          onChangeText={setCurrPassword}
-          secureTextEntry={!showCurrPassword}
-          value={currPassword}
-          placeholder="current password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showCurrPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={loginCreateStyles.icon}
-          onPress={() => setShowCurrPassword(!showCurrPassword)}
-        />
-      </View>
-      <View style={loginCreateStyles.passwordContainer}>
-        <TextInput
-          style={loginCreateStyles.pinput}
-          onChangeText={setNewPassword}
-          secureTextEntry={!showNewPassword}
-          value={newPassword}
-          placeholder="new password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showNewPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={loginCreateStyles.icon}
-          onPress={() => setShowNewPassword(!showNewPassword)}
-        />
-      </View>
-      <View style={loginCreateStyles.passwordContainer}>
-        <TextInput
-          style={loginCreateStyles.pinput}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={!showConfirmPassword}
-          value={confirmPassword}
-          placeholder="confirm password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showConfirmPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={loginCreateStyles.icon}
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
-      </View>
+      <PasswordInput
+        password={currPassword}
+        setPassword={setCurrPassword}
+        placeHolder="current password"
+      />
+      <PasswordInput
+        password={newPassword}
+        setPassword={setNewPassword}
+        placeHolder="new password"
+      />
+      <PasswordInput
+        password={confirmPassword}
+        setPassword={setConfirmPassword}
+        placeHolder="confirm password"
+      />
       <Button
         radius={"md"}
         type="solid"

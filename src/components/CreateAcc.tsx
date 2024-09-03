@@ -1,7 +1,6 @@
 import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { signUp, signIn } from "aws-amplify/auth";
 
 // Project Files
@@ -13,6 +12,7 @@ import { validateRequirements } from "../helper/CreateAccUtils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import { profileMapping } from "../helper/ImageMapping";
 import { setUserContext } from "../helper/Utils";
+import PasswordInput from "./PasswordInput";
 
 /*
   A component that allows the user to create an account
@@ -31,10 +31,6 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
   const [confirmPassword, onChangeConfirmPassword] = React.useState("");
-
-  // Function to toggle the password visibility state
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // username = first + ' ' + last
   useEffect(() => {
@@ -116,40 +112,16 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         placeholder="email"
         keyboardType="email-address"
       />
-      <View style={loginCreateStyles.passwordContainer}>
-        <TextInput
-          style={loginCreateStyles.pinput}
-          onChangeText={onChangePassword}
-          secureTextEntry={!showPassword}
-          value={password}
-          placeholder="password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={loginCreateStyles.icon}
-          onPress={() => setShowPassword(!showPassword)}
-        />
-      </View>
-      <View style={loginCreateStyles.passwordContainer}>
-        <TextInput
-          style={loginCreateStyles.pinput}
-          onChangeText={onChangeConfirmPassword}
-          secureTextEntry={!showConfirmPassword}
-          value={confirmPassword}
-          placeholder="confirm password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showConfirmPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={loginCreateStyles.icon}
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
-      </View>
+      <PasswordInput
+        password={password}
+        setPassword={onChangePassword}
+        placeHolder="password"
+      />
+      <PasswordInput
+        password={confirmPassword}
+        setPassword={onChangeConfirmPassword}
+        placeHolder="confirm password"
+      />
       <TouchableOpacity
         style={loginCreateStyles.button}
         onPress={() => handleSignUp({ username, email, password })}
