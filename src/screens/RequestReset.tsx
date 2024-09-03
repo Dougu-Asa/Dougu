@@ -2,7 +2,7 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import React, { useState } from "react";
 import { resetPassword } from "aws-amplify/auth";
 
-import { styles } from "../styles/LoginCreate";
+import { loginCreateStyles } from "../styles/LoginCreate";
 import { RequestResetScreenProps } from "../types/ScreenTypes";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,21 +25,21 @@ export default function RequestReset({ navigation }: RequestResetScreenProps) {
 
   return (
     <SafeAreaView>
-      <View style={styles.requestContainer}>
-        <Text style={styles.title}>Reset Request</Text>
-        <Text style={styles.subtitle}>
+      <View style={loginCreateStyles.requestContainer}>
+        <Text style={loginCreateStyles.title}>Reset Request</Text>
+        <Text style={loginCreateStyles.subtitle}>
           Enter your email to receive a reset code
         </Text>
         <TextInput
-          style={styles.input}
+          style={loginCreateStyles.input}
           onChangeText={setEmail}
           value={email}
           placeholder="email"
           keyboardType="email-address"
           testID="emailInput"
         />
-        <Pressable style={styles.button} onPress={handleRequest}>
-          <Text style={styles.btnText}>Send Email</Text>
+        <Pressable style={loginCreateStyles.button} onPress={handleRequest}>
+          <Text style={loginCreateStyles.btnText}>Send Email</Text>
         </Pressable>
       </View>
     </SafeAreaView>

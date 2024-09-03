@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import { Text, TextInput, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { styles } from "../styles/LoginCreate";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { confirmResetPassword } from "aws-amplify/auth";
 
 import { ResetPasswordScreenProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
+import { loginCreateStyles } from "../styles/LoginCreate";
+import PasswordInput from "../components/PasswordInput";
 
 export default function ResetPassword({
   route,
@@ -16,8 +16,6 @@ export default function ResetPassword({
   const [code, setCode] = useState("");
   const [password, onChangePassword] = useState("");
   const [confirmPassword, onChangeConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const forgotPasswordSubmit = async (
     email: string,
@@ -53,53 +51,31 @@ export default function ResetPassword({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Change Password</Text>
-      <Text style={styles.subtitle}>Enter Your Confirmation Code</Text>
+    <SafeAreaView style={loginCreateStyles.container}>
+      <Text style={loginCreateStyles.title}>Change Password</Text>
+      <Text style={loginCreateStyles.subtitle}>
+        Enter Your Confirmation Code
+      </Text>
       <TextInput
-        style={styles.input}
+        style={loginCreateStyles.input}
         onChangeText={setCode}
         value={code}
         placeholder="code"
         keyboardType="numeric"
         testID="emailInput"
       />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.pinput}
-          onChangeText={onChangePassword}
-          secureTextEntry={!showPassword}
-          value={password}
-          placeholder="new password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={styles.icon}
-          onPress={() => setShowPassword(!showPassword)}
-        />
-      </View>
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.pinput}
-          onChangeText={onChangeConfirmPassword}
-          secureTextEntry={!showConfirmPassword}
-          value={confirmPassword}
-          placeholder="confirm new password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showConfirmPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={styles.icon}
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
-      </View>
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.btnText}>Reset Password</Text>
+      <PasswordInput
+        password={password}
+        setPassword={onChangePassword}
+        placeHolder="new password"
+      />
+      <PasswordInput
+        password={confirmPassword}
+        setPassword={onChangeConfirmPassword}
+        placeHolder="confirm password"
+      />
+      <Pressable style={loginCreateStyles.button} onPress={handleSubmit}>
+        <Text style={loginCreateStyles.btnText}>Reset Password</Text>
       </Pressable>
     </SafeAreaView>
   );

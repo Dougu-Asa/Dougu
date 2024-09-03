@@ -7,6 +7,10 @@ import { handleError } from "../../helper/Utils";
 import { loginCreateStyles } from "../../styles/LoginCreate";
 import PasswordInput from "../PasswordInput";
 
+/*
+    A component that allows the user to change their password
+    in the profile screen
+*/
 export default function PasswordOverlay({
   visible,
   setVisible,

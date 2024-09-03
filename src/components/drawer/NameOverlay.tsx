@@ -9,6 +9,10 @@ import {
 } from "../../helper/drawer/ModifyProfileUtils";
 import { useUser } from "../../helper/context/UserContext";
 
+/* 
+    A component that allows the user to change their name
+    in the profile screen
+*/
 export default function NameOverlay({
   visible,
   setVisible,

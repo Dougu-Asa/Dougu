@@ -15,6 +15,7 @@ import { profileMapping } from "../../helper/ImageMapping";
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 import NameOverlay from "../../components/drawer/NameOverlay";
 import PasswordOverlay from "../../components/drawer/PasswordOverlay";
+import EmailOverlay from "../../components/drawer/EmailOverlay";
 
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
@@ -28,6 +29,7 @@ export default function ProfileScreen() {
   const { user } = useUser();
   const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
+  const [emailVisible, setEmailVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
@@ -51,7 +53,10 @@ export default function ProfileScreen() {
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => setEmailVisible(true)}
+      >
         <Text style={styles.text}>Email</Text>
         <View style={styles.changeBtn}>
           <Text style={styles.text}>{user!.email}</Text>
@@ -83,6 +88,7 @@ export default function ProfileScreen() {
         visible={passwordVisible}
         setVisible={setPasswordVisible}
       />
+      <EmailOverlay visible={emailVisible} setVisible={setEmailVisible} />
     </View>
   );
 }

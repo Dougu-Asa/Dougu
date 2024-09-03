@@ -1,7 +1,6 @@
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { loginCreateStyles } from "../styles/LoginCreate";
 import { useState } from "react";
-import { View, TextInput } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
 
 export default function PasswordInput({
   password,
@@ -17,9 +16,9 @@ export default function PasswordInput({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View style={loginCreateStyles.passwordContainer}>
+    <View style={styles.passwordContainer}>
       <TextInput
-        style={loginCreateStyles.pinput}
+        style={styles.pinput}
         onChangeText={setPassword}
         secureTextEntry={!showPassword}
         value={password}
@@ -31,9 +30,32 @@ export default function PasswordInput({
         name={showPassword ? "eye" : "eye-off"}
         size={28}
         color="#aaa"
-        style={loginCreateStyles.icon}
+        style={styles.icon}
         onPress={() => setShowPassword(!showPassword)}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  icon: {
+    padding: 5,
+    width: "18%",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderRadius: 10,
+    width: "80%",
+    height: 50,
+    marginTop: "5%",
+  },
+  pinput: {
+    height: 50,
+    margin: "5%",
+    padding: 10,
+    width: "75%",
+  },
+});
