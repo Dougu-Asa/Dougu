@@ -7,14 +7,16 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
-import { updateUserAttributes } from "aws-amplify/auth";
 
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
-import { editProfilePictures } from "../../helper/EditUtils";
+import {
+  modifyUserAttribute,
+  editOrgUserStorages,
+} from "../../helper/drawer/ModifyProfileUtils";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -38,16 +40,9 @@ export default function ProfileOverlay({
     try {
       setIsLoading(true);
       setProfileImage(profileData);
-      // update user in cognito (server)
-      await updateUserAttributes({
-        userAttributes: {
-          profile: profileData,
-        },
-      });
-      // update user context (local)
-      const newUser = { ...user!, profile: profileData };
-      setUser(newUser);
-      await editProfilePictures(user!.id, profileData);
+      modifyUserAttribute(user!, setUser, "profile", profileData);
+      // update OrgUserStorages to match user profile
+      await editOrgUserStorages(user!.id, "profile", profileData);
       setIsLoading(false);
     } catch (e) {
       handleError("handleSet", e as Error, setIsLoading);

@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 
 export const createJoinStyles = StyleSheet.create({
   mainContainer: {
@@ -36,7 +36,7 @@ export const createJoinStyles = StyleSheet.create({
     height: 50,
     margin: 15,
     backgroundColor: "#333333",
-    width: Dimensions.get("window").width * 0.8, //basically vw: 80
+    width: "80%",
   },
   btnText: {
     textAlign: "center",
