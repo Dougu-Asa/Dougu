@@ -30,7 +30,6 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const [last, onChangeLast] = React.useState("");
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
-  const [confirmPassword, onChangeConfirmPassword] = React.useState("");
 
   // username = first + ' ' + last
   useEffect(() => {
@@ -47,7 +46,7 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     email: string;
   }) => {
     try {
-      setIsLoading(true);
+      /*setIsLoading(true);
       const validation = await validateRequirements(
         username,
         email,
@@ -80,7 +79,8 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       onChangeConfirmPassword("");
       onChangeUsername("");
       setIsLoading(false);
-      navigation.navigate("SyncScreen", { syncType: "START" });
+      navigation.navigate("SyncScreen", { syncType: "START" });*/
+      navigation.navigate("VerifyEmail");
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }
@@ -116,11 +116,6 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         password={password}
         setPassword={onChangePassword}
         placeHolder="password"
-      />
-      <PasswordInput
-        password={confirmPassword}
-        setPassword={onChangeConfirmPassword}
-        placeHolder="confirm password"
       />
       <TouchableOpacity
         style={loginCreateStyles.button}

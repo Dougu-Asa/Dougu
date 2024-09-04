@@ -10,6 +10,7 @@ import AccessCodeScreen from "./AccessCodeScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/context/LoadingContext";
+import VerifyEmail from "./VerifyEmail";
 
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,6 +44,7 @@ export default function RootStackNavigator() {
         <Stack.Screen name="RequestReset" component={RequestReset} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="AccessCode" component={AccessCodeScreen} />
+        <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </>

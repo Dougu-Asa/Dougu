@@ -9,6 +9,7 @@ import { Organization } from "../models";
 // Navigator types
 export type RootStackParamList = {
   Home: undefined;
+  VerifyEmail: undefined;
   SyncScreen: {
     syncType: "START" | "CREATE" | "JOIN";
     accessCode?: string;

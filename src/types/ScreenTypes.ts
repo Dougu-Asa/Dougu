@@ -56,6 +56,11 @@ export type AccessCodeScreenProps = NativeStackScreenProps<
   "AccessCode"
 >;
 
+export type VerifyEmailScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "VerifyEmail"
+>;
+
 // for CreateAcc and Login screens
 export type NavigationOnlyProps = {
   navigation: NavigationProp<RootStackParamList>;

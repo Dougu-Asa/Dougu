@@ -59,6 +59,13 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
         placeHolder="password"
         testID="passwordInput"
       />
+      <TouchableOpacity
+        style={loginCreateStyles.button}
+        onPress={() => handleSignIn({ username, password })}
+        testID="signInButton"
+      >
+        <Text style={loginCreateStyles.btnText}>Login</Text>
+      </TouchableOpacity>
       <Text
         style={loginCreateStyles.forgotPassword}
         onPress={() => {
@@ -67,13 +74,6 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       >
         Forgot Password?
       </Text>
-      <TouchableOpacity
-        style={loginCreateStyles.button}
-        onPress={() => handleSignIn({ username, password })}
-        testID="signInButton"
-      >
-        <Text style={loginCreateStyles.btnText}>Login</Text>
-      </TouchableOpacity>
     </View>
   );
 }

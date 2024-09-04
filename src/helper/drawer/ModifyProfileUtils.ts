@@ -9,7 +9,7 @@ import { OrgUserStorage, UserOrStorage } from "../../models";
 export const modifyUserAttribute = async (
   user: UserType,
   setUser: Dispatch<SetStateAction<UserType | null>>,
-  key: string,
+  key: keyof UserType,
   value: string,
 ) => {
   // update user in cognito (server)

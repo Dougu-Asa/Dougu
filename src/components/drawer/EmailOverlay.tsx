@@ -1,6 +1,8 @@
 import { Overlay, Button } from "@rneui/themed";
 import { Dispatch, SetStateAction, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { modifyUserAttribute } from "../../helper/drawer/ModifyProfileUtils";
+import { useUser } from "../../helper/context/UserContext";
 
 export default function EmailOverlay({
   visible,
@@ -10,10 +12,13 @@ export default function EmailOverlay({
   setVisible: Dispatch<SetStateAction<boolean>>;
 }) {
   const [email, setEmail] = useState("");
+  const { user, setUser } = useUser();
 
   // update user profile attributes in Cognito
   const handleSet = async () => {
-    console.log("EmailOverlay handleSet");
+    // set user name in cognito
+    const output = await modifyUserAttribute(user!, setUser, "email", email);
+    console.log(output);
   };
 
   return (
