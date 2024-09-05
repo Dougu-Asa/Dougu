@@ -1,4 +1,7 @@
-import { updateUserAttributes } from "aws-amplify/auth";
+import {
+  UpdateUserAttributesOutput,
+  updateUserAttributes,
+} from "aws-amplify/auth";
 import { DataStore } from "@aws-amplify/datastore";
 
 import { UserType } from "../../types/ContextTypes";
@@ -7,17 +10,24 @@ import { OrgUserStorage, UserOrStorage } from "../../models";
 
 // update user profile attributes in Cognito
 export const modifyUserAttribute = async (
+  key: keyof UserType,
+  value: string,
+): Promise<UpdateUserAttributesOutput> => {
+  // update user in cognito (server)
+  const output = await updateUserAttributes({
+    userAttributes: {
+      [key]: value,
+    },
+  });
+  return output;
+};
+
+export const updateUserContext = async (
   user: UserType,
   setUser: Dispatch<SetStateAction<UserType | null>>,
   key: keyof UserType,
   value: string,
 ) => {
-  // update user in cognito (server)
-  await updateUserAttributes({
-    userAttributes: {
-      [key]: value,
-    },
-  });
   // update user context (local)
   const newUser = { ...user!, [key]: value };
   setUser(newUser);

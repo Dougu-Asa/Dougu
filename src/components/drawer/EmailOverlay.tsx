@@ -1,8 +1,13 @@
 import { Overlay, Button } from "@rneui/themed";
 import { Dispatch, SetStateAction, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import { modifyUserAttribute } from "../../helper/drawer/ModifyProfileUtils";
+import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  modifyUserAttribute,
+  updateUserContext,
+} from "../../helper/drawer/ModifyProfileUtils";
 import { useUser } from "../../helper/context/UserContext";
+import { handleError } from "../../helper/Utils";
+import { confirmUserAttribute } from "aws-amplify/auth";
 
 export default function EmailOverlay({
   visible,
@@ -12,13 +17,33 @@ export default function EmailOverlay({
   setVisible: Dispatch<SetStateAction<boolean>>;
 }) {
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const { user, setUser } = useUser();
 
   // update user profile attributes in Cognito
-  const handleSet = async () => {
-    // set user name in cognito
-    const output = await modifyUserAttribute(user!, setUser, "email", email);
-    console.log(output);
+  const sendCode = async () => {
+    try {
+      const output = await modifyUserAttribute("email", email);
+      console.log(output);
+    } catch (error) {
+      handleError("modifyUserAttribute", error as Error, null);
+      console.log(error);
+    }
+  };
+
+  const verifyEmail = async () => {
+    if (!code) {
+      Alert.alert("Error", "Please enter a code");
+      return;
+    }
+    await confirmUserAttribute({
+      userAttributeKey: "email",
+      confirmationCode: code,
+    });
+    // update user context (local)
+    updateUserContext(user!, setUser, "email", email);
+    setVisible(false);
+    Alert.alert("Email Updated", "Your email has been updated");
   };
 
   return (
@@ -39,11 +64,30 @@ export default function EmailOverlay({
         />
       </View>
       <Text style={styles.header}>Change Email</Text>
+      <View style={[styles.row, { marginTop: "5%" }]}>
+        <TextInput
+          onChangeText={setEmail}
+          value={email}
+          placeholder="new email"
+          style={styles.email}
+          keyboardType="email-address"
+        />
+        <Button
+          radius={"md"}
+          type="solid"
+          title={"Send"}
+          buttonStyle={styles.button}
+          containerStyle={{ width: "15%", marginLeft: "5%" }}
+          titleStyle={{ fontSize: 12 }}
+          onPress={sendCode}
+        />
+      </View>
       <TextInput
-        onChangeText={setEmail}
-        value={email}
-        placeholder="new email"
-        style={styles.email}
+        onChangeText={setCode}
+        value={code}
+        placeholder="verification code"
+        style={styles.code}
+        keyboardType="numeric"
       />
       <Button
         radius={"md"}
@@ -52,7 +96,7 @@ export default function EmailOverlay({
         title="Save"
         buttonStyle={styles.button}
         containerStyle={{ width: "80%" }}
-        onPress={handleSet}
+        onPress={verifyEmail}
       />
     </Overlay>
   );
@@ -62,19 +106,28 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#333333",
     marginTop: "5%",
+    height: 50,
   },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: "10%",
-  },
-  email: {
+  code: {
     width: "80%",
     height: 50,
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginTop: "5%",
+  },
+  email: {
+    width: "60%",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    marginLeft: "10%",
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: "10%",
   },
   row: {
     flexDirection: "row",

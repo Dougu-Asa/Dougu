@@ -6,6 +6,7 @@ import { handleError } from "../../helper/Utils";
 import {
   editOrgUserStorages,
   modifyUserAttribute,
+  updateUserContext,
 } from "../../helper/drawer/ModifyProfileUtils";
 import { useUser } from "../../helper/context/UserContext";
 
@@ -34,9 +35,11 @@ export default function NameOverlay({
   const handleSet = async () => {
     try {
       // set user name in cognito
-      modifyUserAttribute(user!, setUser, "name", username);
+      await modifyUserAttribute("name", username);
       // modify orgUserStorages to match user name
       await editOrgUserStorages(user!.id, "name", username);
+      // update user context (local)
+      updateUserContext(user!, setUser, "name", username);
       setFirstName("");
       setLastName("");
       setVisible(false);
