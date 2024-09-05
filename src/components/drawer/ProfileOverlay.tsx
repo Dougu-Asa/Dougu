@@ -16,6 +16,7 @@ import { useUser } from "../../helper/context/UserContext";
 import {
   modifyUserAttribute,
   editOrgUserStorages,
+  updateUserContext,
 } from "../../helper/drawer/ModifyProfileUtils";
 
 /* 
@@ -40,9 +41,10 @@ export default function ProfileOverlay({
     try {
       setIsLoading(true);
       setProfileImage(profileData);
-      modifyUserAttribute(user!, setUser, "profile", profileData);
-      // update OrgUserStorages to match user profile
+      updateUserContext(user!, setUser, "profile", profileData);
+      modifyUserAttribute("profile", profileData);
       await editOrgUserStorages(user!.id, "profile", profileData);
+      // update OrgUserStorages to match user profile
       setVisible(false);
       setIsLoading(false);
     } catch (e) {

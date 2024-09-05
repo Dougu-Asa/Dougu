@@ -13,12 +13,7 @@ describe("validateRequirements", () => {
   });
 
   it("should return false and display an alert if any field is empty", async () => {
-    const result = await validateRequirements(
-      "",
-      "email",
-      "password",
-      "password",
-    );
+    const result = await validateRequirements("", "email", "password");
     expect(result).toBe(false);
     expect(Alert.alert).toHaveBeenCalledWith(
       "Form Error",
@@ -28,12 +23,7 @@ describe("validateRequirements", () => {
   });
 
   it("should return false and display an alert if password length is less than 8", async () => {
-    const result = await validateRequirements(
-      "username",
-      "email",
-      "pass",
-      "pass",
-    );
+    const result = await validateRequirements("username", "email", "pass");
     expect(result).toBe(false);
     expect(Alert.alert).toHaveBeenCalledWith(
       "Form Error",
@@ -42,28 +32,8 @@ describe("validateRequirements", () => {
     );
   });
 
-  it("should return false and display an alert if password and confirm password do not match", async () => {
-    const result = await validateRequirements(
-      "username",
-      "email",
-      "password",
-      "different",
-    );
-    expect(result).toBe(false);
-    expect(Alert.alert).toHaveBeenCalledWith(
-      "Form Error",
-      "Passwords do not match.",
-      [{ text: "OK" }],
-    );
-  });
-
   it("should return true if all requirements are met", async () => {
-    const result = await validateRequirements(
-      "username",
-      "email",
-      "password",
-      "password",
-    );
+    const result = await validateRequirements("username", "email", "password");
     expect(result).toBe(true);
     expect(Alert.alert).not.toHaveBeenCalled();
   });

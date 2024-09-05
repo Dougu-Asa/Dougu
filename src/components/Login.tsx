@@ -22,13 +22,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
 
-  const handleSignIn = async ({
-    username,
-    password,
-  }: {
-    username: string;
-    password: string;
-  }) => {
+  const handleSignIn = async () => {
     try {
       setIsLoading(true);
       await signIn({ username, password });
@@ -61,7 +55,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       />
       <TouchableOpacity
         style={loginCreateStyles.button}
-        onPress={() => handleSignIn({ username, password })}
+        onPress={handleSignIn}
         testID="signInButton"
       >
         <Text style={loginCreateStyles.btnText}>Login</Text>
