@@ -1,12 +1,57 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 
 import { loginCreateStyles } from "../styles/LoginCreate";
 import { VerifyEmailScreenProps } from "../types/ScreenTypes";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  autoSignIn,
+  confirmSignUp,
+  fetchUserAttributes,
+} from "aws-amplify/auth";
+import { useUser } from "../helper/context/UserContext";
+import { useLoad } from "../helper/context/LoadingContext";
+import { handleError } from "../helper/Utils";
 
-export default function VerifyEmail({ navigation }: VerifyEmailScreenProps) {
+export default function VerifyEmail({
+  navigation,
+  route,
+}: VerifyEmailScreenProps) {
   const [code, setCode] = useState("");
+  const { email } = route.params;
+  const { setUser } = useUser();
+  const { setIsLoading } = useLoad();
+
+  // verify the email and sign in
+  const handleVerify = async () => {
+    try {
+      setIsLoading(true);
+      // verify the email (server)
+      await confirmSignUp({ username: email, confirmationCode: code });
+      await autoSignIn();
+      // update user context (local)
+      const attributes = await fetchUserAttributes();
+      if (
+        !attributes.name ||
+        !attributes.email ||
+        !attributes.sub ||
+        !attributes.profile
+      )
+        throw new Error("Missing attributes");
+      const userObj = {
+        name: attributes.name,
+        email: attributes.email,
+        id: attributes.sub,
+        profile: attributes.profile,
+      };
+      setUser(userObj);
+      // navigate to next screen
+      navigation.navigate("SyncScreen", { syncType: "START" });
+      setIsLoading(false);
+    } catch (error) {
+      handleError("verifyEmail", error as Error, setIsLoading);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -22,9 +67,12 @@ export default function VerifyEmail({ navigation }: VerifyEmailScreenProps) {
           placeholder="code"
           keyboardType="numeric"
         />
-        <Pressable style={loginCreateStyles.button}>
+        <TouchableOpacity
+          style={loginCreateStyles.button}
+          onPress={handleVerify}
+        >
           <Text style={loginCreateStyles.btnText}>Verify</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

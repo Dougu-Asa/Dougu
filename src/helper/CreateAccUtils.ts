@@ -4,15 +4,9 @@ export const validateRequirements = async (
   username: string,
   email: string,
   password: string,
-  confirmPassword: string,
 ) => {
   // check all fields are filled out
-  if (
-    username === "" ||
-    password === "" ||
-    email === "" ||
-    confirmPassword === ""
-  ) {
+  if (username === "" || password === "" || email === "") {
     Alert.alert("Form Error", "Please fill out all fields.", [{ text: "OK" }]);
     return false;
   }
@@ -21,11 +15,6 @@ export const validateRequirements = async (
     Alert.alert("Form Error", "Password must be at least 8 characters long.", [
       { text: "OK" },
     ]);
-    return false;
-  }
-  // ensure password matches confirm password
-  if (password !== confirmPassword) {
-    Alert.alert("Form Error", "Passwords do not match.", [{ text: "OK" }]);
     return false;
   }
   return true;

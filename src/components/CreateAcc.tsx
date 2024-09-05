@@ -1,17 +1,15 @@
 import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
-import { signUp, signIn } from "aws-amplify/auth";
+import { signUp } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
-import { useUser } from "../helper/context/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import { profileMapping } from "../helper/ImageMapping";
-import { setUserContext } from "../helper/Utils";
 import PasswordInput from "./PasswordInput";
 
 /*
@@ -22,7 +20,6 @@ import PasswordInput from "./PasswordInput";
 */
 export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const { setIsLoading } = useLoad();
-  const { setUser } = useUser();
 
   // for the form
   const [email, onChangeEmail] = React.useState("");
@@ -36,23 +33,10 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
     onChangeUsername(first + " " + last);
   }, [first, last]);
 
-  const handleSignUp = async ({
-    username,
-    password,
-    email,
-  }: {
-    username: string;
-    password: string;
-    email: string;
-  }) => {
+  const handleSignUp = async () => {
     try {
-      /*setIsLoading(true);
-      const validation = await validateRequirements(
-        username,
-        email,
-        password,
-        confirmPassword,
-      );
+      setIsLoading(true);
+      const validation = await validateRequirements(username, email, password);
       if (!validation) {
         setIsLoading(false);
         return;
@@ -68,19 +52,16 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
             name: username,
             profile: userProfile,
           },
+          autoSignIn: true,
         },
       });
-      await signIn({ username: email, password: password });
-      await setUserContext(setUser);
       onChangeEmail("");
       onChangeFirst("");
       onChangeLast("");
       onChangePassword("");
-      onChangeConfirmPassword("");
       onChangeUsername("");
       setIsLoading(false);
-      navigation.navigate("SyncScreen", { syncType: "START" });*/
-      navigation.navigate("VerifyEmail");
+      navigation.navigate("VerifyEmail", { email: email });
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }
@@ -117,12 +98,17 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         setPassword={onChangePassword}
         placeHolder="password"
       />
-      <TouchableOpacity
-        style={loginCreateStyles.button}
-        onPress={() => handleSignUp({ username, email, password })}
-      >
+      <TouchableOpacity style={loginCreateStyles.button} onPress={handleSignUp}>
         <Text style={loginCreateStyles.btnText}>Create</Text>
       </TouchableOpacity>
+      <Text
+        style={loginCreateStyles.forgotPassword}
+        onPress={() => {
+          navigation.navigate("VerifyEmail", { email: email });
+        }}
+      >
+        Redo Verify? (reinput email)
+      </Text>
     </View>
   );
 }
