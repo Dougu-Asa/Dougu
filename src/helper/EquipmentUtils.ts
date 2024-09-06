@@ -43,10 +43,9 @@ export const getOrgItems = async (
   // for each orgUserStorage, get the items assigned to it
   for (let i = 0; i < orgUserStorages.length; i++) {
     let userData: ItemObj[] = [];
-    // get all the processed equipmentdata  assigned to the user
-    const equipmentData = await getEquipment(orgUserStorages[i]);
-    // set a container object map for the user
-    const containerMap = await getContainers(orgUserStorages[i]);
+    const { equipmentData, containerMap } = await getEquipmentAndContainers(
+      orgUserStorages[i],
+    );
     // separate equipment that is in a container to part of a containerObj
     equipmentData?.forEach((equip) => {
       if (equip.container && containerMap.has(equip.container)) {
@@ -88,47 +87,46 @@ export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
   return orgItemsArray.concat(emptyItemsArray);
 };
 
-//get the equipment for a user by OrgUserStorage id
-//returns an array of processed equipment objects
-const getEquipment = async (
+// get equipment and containers assigned to the orgUserStorage
+// return the processed equipment data and a map of containers
+const getEquipmentAndContainers = async (
   orgUserStorage: OrgUserStorage,
-): Promise<EquipmentObj[] | undefined> => {
-  try {
-    if (!orgUserStorage) throw new Error("OrgUserStorage does not exist!");
-    const equipment = await DataStore.query(Equipment, (c) =>
-      c.assignedTo.id.eq(orgUserStorage.id),
-    );
-    // group duplicates and merge their counts
-    const equipmentData = processEquipmentData(equipment, orgUserStorage);
-    return equipmentData;
-  } catch (error) {
-    handleError("GetEquipment", error as Error, null);
-    return undefined;
-  }
-};
+): Promise<{
+  equipmentData: EquipmentObj[];
+  containerMap: Map<string, ContainerObj>;
+}> => {
+  if (!orgUserStorage) return { equipmentData: [], containerMap: new Map() };
 
-const getContainers = async (
-  orgUserStorage: OrgUserStorage,
-): Promise<Map<string, ContainerObj>> => {
-  // get all the containers assigned to the user
-  const containers = await DataStore.query(Container, (c) =>
-    c.assignedTo.id.eq(orgUserStorage.id),
-  );
-  // for each container id, create a map <containerId, containerObj>
-  const containerMap = new Map<string, ContainerObj>();
-  for (let j = 0; j < containers.length; j++) {
-    const containerObj: ContainerObj = {
-      id: containers[j].id,
-      label: containers[j].name,
-      color: containers[j].color as Hex,
-      assignedTo: orgUserStorage.id,
-      assignedToName: orgUserStorage.name,
-      type: "container",
-      equipment: [],
-    };
-    containerMap.set(containers[j].id, containerObj);
+  try {
+    const [equipment, containers] = await Promise.all([
+      DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id)),
+      DataStore.query(Container, (c) => c.assignedTo.id.eq(orgUserStorage.id)),
+    ]);
+
+    // Create a map of containers
+    const containerMap = new Map<string, ContainerObj>(
+      containers.map((container) => [
+        container.id,
+        {
+          id: container.id,
+          label: container.name,
+          color: container.color as Hex,
+          assignedTo: orgUserStorage.id,
+          assignedToName: orgUserStorage.name,
+          type: "container",
+          equipment: [],
+        },
+      ]),
+    );
+
+    // Process the equipment data
+    const equipmentData = processEquipmentData(equipment, orgUserStorage);
+
+    return { equipmentData, containerMap };
+  } catch (error) {
+    handleError("GetEquipmentAndContainers", error as Error, null);
+    return { equipmentData: [], containerMap: new Map() };
   }
-  return containerMap;
 };
 
 /*
@@ -142,19 +140,12 @@ const processEquipmentData = (
   const equipmentMap = new Map<string, EquipmentObj>();
   equipment.forEach((equip) => {
     // duplicate
-    let key;
-    if (equip.containerId) {
-      key = equip.name + equip.containerId;
-    } else {
-      key = equip.name;
-    }
-    // if chappa is in the key, print the equip
-    if (equipmentMap.has(key)) {
-      const existingEquip = equipmentMap.get(key);
-      existingEquip!.count += 1;
-      existingEquip!.data.push(equip.id);
-      existingEquip!.detailData.push(equip.details ? equip.details : "");
-      equipmentMap.set(key, existingEquip!);
+    const key = equip.containerId ? equip.name + equip.containerId : equip.name;
+    const existingEquip = equipmentMap.get(key);
+    if (existingEquip) {
+      existingEquip.count += 1;
+      existingEquip.data.push(equip.id);
+      existingEquip.detailData.push(equip.details || "");
     } else {
       // new equipment
       equipmentMap.set(key, {
@@ -165,17 +156,15 @@ const processEquipmentData = (
         type: "equipment",
         image: equip.image,
         data: [equip.id],
-        detailData: [equip.details ? equip.details : ""],
+        detailData: [equip.details || ""],
         assignedTo: orgUserStorage.id,
         assignedToName: orgUserStorage.name,
-        container: equip.containerId ? equip.containerId : null,
+        container: equip.containerId || null,
       });
     }
   });
 
-  // Convert the Map back to an array
-  const processedEquipmentData = Array.from(equipmentMap.values());
-  return processedEquipmentData;
+  return Array.from(equipmentMap.values());
 };
 
 // get the csv data for the organization to export to google sheets
