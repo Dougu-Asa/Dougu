@@ -111,6 +111,7 @@ export const getOrgUserStorage = /* GraphQL */ `
       }
       type
       group
+      profile
       user
       equipment {
         nextToken
@@ -145,6 +146,7 @@ export const listOrgUserStorages = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -179,6 +181,7 @@ export const syncOrgUserStorages = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -219,6 +222,7 @@ export const getContainer = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt
@@ -331,6 +335,7 @@ export const getEquipment = /* GraphQL */ `
         name
         type
         group
+        profile
         user
         details
         createdAt

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 /*
   styles for Login, CreateAcc, RequestPasswordReset, and ResetPassword
 */
-export const styles = StyleSheet.create({
+export const loginCreateStyles = StyleSheet.create({
   button: {
     height: 50,
     margin: 15,
@@ -28,10 +28,6 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: "10%",
   },
-  icon: {
-    padding: 5,
-    width: "18%",
-  },
   input: {
     height: 50,
     marginTop: "5%",
@@ -53,22 +49,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "80%",
     marginTop: "5%",
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "80%",
-    height: 50,
-    marginTop: "5%",
-  },
-  pinput: {
-    height: 50,
-    margin: "5%",
-    padding: 10,
-    width: "75%",
   },
   requestContainer: {
     alignItems: "center",

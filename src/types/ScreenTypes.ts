@@ -41,9 +41,9 @@ export type SyncScreenProps = NativeStackScreenProps<
   "SyncScreen"
 >;
 
-export type RequestResetScreenProps = NativeStackScreenProps<
+export type ResendCodeScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "RequestReset"
+  "ResendCode"
 >;
 
 export type ResetPasswordScreenProps = NativeStackScreenProps<
@@ -54,6 +54,11 @@ export type ResetPasswordScreenProps = NativeStackScreenProps<
 export type AccessCodeScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "AccessCode"
+>;
+
+export type VerifyEmailScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "VerifyEmail"
 >;
 
 // for CreateAcc and Login screens
@@ -82,7 +87,14 @@ export type CreateOrgScreenProps = {
 
 export type MyOrgsScreenProps = DrawerScreenProps<DrawerParamList, "MyOrgs">;
 
+// Composite navigation due to nested navigate
+export type ProfileScreenProps = CompositeNavigationProp<
+  DrawerNavigationProp<DrawerParamList, "Profile">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 // use compositeScreenProps if you need to access screens from multiple navigators
+//(especially parent screens from child)
 export type MemberTabsScreenProps = CompositeScreenProps<
   DrawerScreenProps<DrawerParamList, "MemberTabs">,
   NativeStackScreenProps<RootStackParamList>

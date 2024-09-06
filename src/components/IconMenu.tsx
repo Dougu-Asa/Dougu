@@ -1,13 +1,12 @@
 import {
   FlatList,
   Image,
+  ImageSourcePropType,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { taiko } from "../../helper/ImageMapping";
-import { Dispatch, SetStateAction } from "react";
-import { chunkArray } from "../../helper/EquipmentUtils";
+import { chunkArray } from "../helper/EquipmentUtils";
 
 /*
   IconMenu displays a grid of icons that the user can choose from
@@ -16,11 +15,15 @@ import { chunkArray } from "../../helper/EquipmentUtils";
 */
 export default function IconMenu({
   setIcon,
+  data,
 }: {
-  setIcon: Dispatch<SetStateAction<string>>;
+  setIcon: (data: string) => void;
+  data: {
+    [key: string]: ImageSourcePropType;
+  };
 }) {
   // show the icons in a grid of 4 columns
-  const chunkedKeys = chunkArray(Object.keys(taiko), 4);
+  const chunkedKeys = chunkArray(Object.keys(data), 4);
 
   return (
     <View style={styles.container}>
@@ -35,7 +38,7 @@ export default function IconMenu({
                 onPress={() => setIcon(key)}
               >
                 <Image
-                  source={taiko[key]}
+                  source={data[key]}
                   style={styles.icon}
                   resizeMode="contain"
                 />
@@ -59,6 +62,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexBasis: "25%",
     justifyContent: "center",
+    aspectRatio: 1,
   },
   icon: {
     margin: "auto",

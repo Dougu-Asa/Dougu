@@ -1,15 +1,14 @@
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useState } from "react";
-import { signIn, fetchUserAttributes } from "aws-amplify/auth";
+import { signIn } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
 import { useUser } from "../helper/context/UserContext";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
-import { handleError } from "../helper/Utils";
-import { styles } from "../styles/LoginCreate";
+import { handleError, setUserContext } from "../helper/Utils";
+import { loginCreateStyles } from "../styles/LoginCreate";
+import PasswordInput from "./PasswordInput";
 
 /*
   A component that allows the user to login to the app 
@@ -23,37 +22,11 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
 
-  // Function to toggle the password visibility state
-  const [showPassword, setShowPassword] = useState(false);
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleSignIn = async ({
-    username,
-    password,
-  }: {
-    username: string;
-    password: string;
-  }) => {
+  const handleSignIn = async () => {
     try {
       setIsLoading(true);
       await signIn({ username, password });
-      const attributes = await fetchUserAttributes();
-      if (
-        !attributes.name ||
-        !attributes.email ||
-        !attributes.sub ||
-        !attributes.profile
-      )
-        throw new Error("Missing attributes");
-      const user = {
-        name: attributes.name,
-        email: attributes.email,
-        id: attributes.sub,
-        profile: attributes.profile,
-      };
-      setUser(user);
+      await setUserContext(setUser);
       setIsLoading(false);
       onChangePassword("");
       onChangeUsername("");
@@ -64,49 +37,37 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Login</Text>
+    <View style={loginCreateStyles.container}>
+      <Text style={loginCreateStyles.header}>Login</Text>
       <TextInput
-        style={styles.input}
+        style={loginCreateStyles.input}
         onChangeText={onChangeUsername}
         value={username}
         placeholder="email"
         keyboardType="email-address"
         testID="emailInput"
       />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.pinput}
-          onChangeText={onChangePassword}
-          secureTextEntry={!showPassword}
-          value={password}
-          placeholder="password"
-          keyboardType="default"
-          testID="passwordInput"
-        />
-        <MaterialCommunityIcons
-          name={showPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={styles.icon}
-          onPress={toggleShowPassword}
-        />
-      </View>
+      <PasswordInput
+        password={password}
+        setPassword={onChangePassword}
+        placeHolder="password"
+        testID="passwordInput"
+      />
+      <TouchableOpacity
+        style={loginCreateStyles.button}
+        onPress={handleSignIn}
+        testID="signInButton"
+      >
+        <Text style={loginCreateStyles.btnText}>Login</Text>
+      </TouchableOpacity>
       <Text
-        style={styles.forgotPassword}
+        style={loginCreateStyles.forgotPassword}
         onPress={() => {
-          navigation.navigate("RequestReset");
+          navigation.navigate("ResendCode", { type: "reset" });
         }}
       >
         Forgot Password?
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleSignIn({ username, password })}
-        testID="signInButton"
-      >
-        <Text style={styles.btnText}>Login</Text>
-      </TouchableOpacity>
     </View>
   );
 }

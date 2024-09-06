@@ -187,6 +187,13 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "profile": {
+                    "name": "profile",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "user": {
                     "name": "user",
                     "isArray": false,
@@ -600,5 +607,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "30334733e60e8591efc9632ebc73d709"
+    "version": "18333224eabd72d58fda41a15afdf393"
 };

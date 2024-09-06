@@ -3,8 +3,16 @@ import { ImageSourcePropType } from "react-native";
 const profilePath = "../assets/userprofiles/";
 
 const profileMapping: { [key: string]: ImageSourcePropType } = {
-  default: require(`${profilePath}default.svg`),
-  miku: require(`${profilePath}miku.jpg`),
+  miku: require(`${profilePath}miku.png`),
+  zote: require(`${profilePath}zote.png`),
+  jiji: require(`${profilePath}jiji.png`),
+  sadaharu: require(`${profilePath}sadaharu.png`),
+  pikachu: require(`${profilePath}pikachu.png`),
+  kai: require(`${profilePath}kai.png`),
+  saitama: require(`${profilePath}saitama.png`),
+  redTaiko: require(`${profilePath}redTaiko.png`),
+  blueTaiko: require(`${profilePath}blueTaiko.png`),
+  default: require(`${profilePath}default.png`),
 };
 
 const drumsPath = "../assets/equipment/taiko/drums/";

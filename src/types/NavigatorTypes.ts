@@ -9,13 +9,14 @@ import { Organization } from "../models";
 // Navigator types
 export type RootStackParamList = {
   Home: undefined;
+  VerifyEmail: { email: string };
   SyncScreen: {
     syncType: "START" | "CREATE" | "JOIN";
     accessCode?: string;
     newOrg?: Organization;
   };
   AccessCode: { accessCode: string };
-  RequestReset: undefined;
+  ResendCode: { type: "reset" | "verify" };
   ResetPassword: { email: string };
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
 };

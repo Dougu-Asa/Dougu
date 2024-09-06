@@ -1,16 +1,16 @@
 import { View, TextInput, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { signUp, fetchUserAttributes, signIn } from "aws-amplify/auth";
+import React, { useEffect } from "react";
+import { signUp } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
-import { useUser } from "../helper/context/UserContext";
 import { handleError } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
-import { styles } from "../styles/LoginCreate";
+import { loginCreateStyles } from "../styles/LoginCreate";
+import { profileMapping } from "../helper/ImageMapping";
+import PasswordInput from "./PasswordInput";
 
 /*
   A component that allows the user to create an account
@@ -20,7 +20,6 @@ import { styles } from "../styles/LoginCreate";
 */
 export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const { setIsLoading } = useLoad();
-  const { setUser } = useUser();
 
   // for the form
   const [email, onChangeEmail] = React.useState("");
@@ -28,90 +27,59 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const [last, onChangeLast] = React.useState("");
   const [username, onChangeUsername] = React.useState("");
   const [password, onChangePassword] = React.useState("");
-  const [confirmPassword, onChangeConfirmPassword] = React.useState("");
-
-  // Function to toggle the password visibility state
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // username = first + ' ' + last
   useEffect(() => {
     onChangeUsername(first + " " + last);
   }, [first, last]);
 
-  const handleSignUp = async ({
-    username,
-    password,
-    email,
-  }: {
-    username: string;
-    password: string;
-    email: string;
-  }) => {
+  const handleSignUp = async () => {
     try {
       setIsLoading(true);
-      const validation = await validateRequirements(
-        username,
-        email,
-        password,
-        confirmPassword,
-      );
+      const validation = await validateRequirements(username, email, password);
       if (!validation) {
         setIsLoading(false);
         return;
       }
+      // get a random profile key to set as user profile
+      var keys = Object.keys(profileMapping);
+      const userProfile = keys[(keys.length * Math.random()) << 0];
       await signUp({
         username: email, // email is the username
         password: password,
         options: {
           userAttributes: {
             name: username,
-            profile: "miku",
+            profile: userProfile,
           },
+          autoSignIn: true,
         },
       });
-      await signIn({ username: email, password: password });
-      const attributes = await fetchUserAttributes();
-      if (
-        !attributes.name ||
-        !attributes.email ||
-        !attributes.sub ||
-        !attributes.profile
-      )
-        throw new Error("Missing attributes");
-      const userObj = {
-        name: attributes.name,
-        email: attributes.email,
-        id: attributes.sub,
-        profile: attributes.profile,
-      };
-      setUser(userObj);
       onChangeEmail("");
       onChangeFirst("");
       onChangeLast("");
       onChangePassword("");
-      onChangeConfirmPassword("");
       onChangeUsername("");
       setIsLoading(false);
-      navigation.navigate("SyncScreen", { syncType: "START" });
+      navigation.navigate("VerifyEmail", { email: email });
     } catch (error) {
       handleError("handleSignUp", error as Error, setIsLoading);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Create Account</Text>
-      <View style={styles.nameContainer}>
+    <View style={loginCreateStyles.container}>
+      <Text style={loginCreateStyles.header}>Create Account</Text>
+      <View style={loginCreateStyles.nameContainer}>
         <TextInput
-          style={styles.name}
+          style={loginCreateStyles.name}
           onChangeText={onChangeFirst}
           value={first}
           placeholder="first"
           keyboardType="default"
         />
         <TextInput
-          style={styles.name}
+          style={loginCreateStyles.name}
           onChangeText={onChangeLast}
           value={last}
           placeholder="last"
@@ -119,52 +87,28 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
         />
       </View>
       <TextInput
-        style={styles.input}
+        style={loginCreateStyles.input}
         onChangeText={onChangeEmail}
         value={email}
         placeholder="email"
         keyboardType="email-address"
       />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.pinput}
-          onChangeText={onChangePassword}
-          secureTextEntry={!showPassword}
-          value={password}
-          placeholder="password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={styles.icon}
-          onPress={() => setShowPassword(!showPassword)}
-        />
-      </View>
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.pinput}
-          onChangeText={onChangeConfirmPassword}
-          secureTextEntry={!showConfirmPassword}
-          value={confirmPassword}
-          placeholder="confirm password"
-          keyboardType="default"
-        />
-        <MaterialCommunityIcons
-          name={showConfirmPassword ? "eye" : "eye-off"}
-          size={28}
-          color="#aaa"
-          style={styles.icon}
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleSignUp({ username, email, password })}
-      >
-        <Text style={styles.btnText}>Create</Text>
+      <PasswordInput
+        password={password}
+        setPassword={onChangePassword}
+        placeHolder="password"
+      />
+      <TouchableOpacity style={loginCreateStyles.button} onPress={handleSignUp}>
+        <Text style={loginCreateStyles.btnText}>Create</Text>
       </TouchableOpacity>
+      <Text
+        style={loginCreateStyles.forgotPassword}
+        onPress={() => {
+          navigation.navigate("ResendCode", { type: "verify" });
+        }}
+      >
+        Resend Code
+      </Text>
     </View>
   );
 }

@@ -49,6 +49,7 @@ export const createOrgUserStorage = async (
       user: user!.id,
       name: user!.name,
       group: org.name,
+      profile: user.profile,
     }),
   );
   if (newOrgUserStorage == null)

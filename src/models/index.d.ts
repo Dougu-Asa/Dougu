@@ -59,6 +59,7 @@ type EagerOrgUserStorage = {
   readonly organization: Organization;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly group: string;
+  readonly profile: string;
   readonly user?: string | null;
   readonly equipment?: (Equipment | null)[] | null;
   readonly containers?: (Container | null)[] | null;
@@ -78,6 +79,7 @@ type LazyOrgUserStorage = {
   readonly organization: AsyncItem<Organization>;
   readonly type: UserOrStorage | keyof typeof UserOrStorage;
   readonly group: string;
+  readonly profile: string;
   readonly user?: string | null;
   readonly equipment: AsyncCollection<Equipment>;
   readonly containers: AsyncCollection<Container>;
