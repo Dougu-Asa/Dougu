@@ -41,7 +41,6 @@ export default function ResetPassword({
       "ValidUsername",
       email,
       password,
-      confirmPassword,
     );
     if (!validation) {
       return;

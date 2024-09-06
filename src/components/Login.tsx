@@ -63,7 +63,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       <Text
         style={loginCreateStyles.forgotPassword}
         onPress={() => {
-          navigation.navigate("RequestReset");
+          navigation.navigate("ResendCode", { type: "reset" });
         }}
       >
         Forgot Password?

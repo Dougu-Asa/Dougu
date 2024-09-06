@@ -16,7 +16,7 @@ export type RootStackParamList = {
     newOrg?: Organization;
   };
   AccessCode: { accessCode: string };
-  RequestReset: undefined;
+  ResendCode: { type: "reset" | "verify" };
   ResetPassword: { email: string };
   DrawerNav: NavigatorScreenParams<DrawerParamList>;
 };

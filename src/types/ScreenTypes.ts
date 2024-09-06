@@ -41,9 +41,9 @@ export type SyncScreenProps = NativeStackScreenProps<
   "SyncScreen"
 >;
 
-export type RequestResetScreenProps = NativeStackScreenProps<
+export type ResendCodeScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "RequestReset"
+  "ResendCode"
 >;
 
 export type ResetPasswordScreenProps = NativeStackScreenProps<

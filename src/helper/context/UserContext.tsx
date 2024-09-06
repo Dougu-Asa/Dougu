@@ -39,7 +39,7 @@ export default function UserProvider({
     };
 
     getOrgUserStorage();
-  }, [user, org]);
+  }, [org, user]);
 
   // cleans up the context upon signing out
   const resetContext = () => {

@@ -31,7 +31,6 @@ export default function PasswordOverlay({
         return;
       }
       // check password length
-      // check password length
       if (newPassword.length < 8) {
         Alert.alert(
           "Form Error",

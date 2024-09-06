@@ -42,7 +42,7 @@ Login issues:
   The problem: DataStore.clear() and DataStore.start() are long-waiting asynchronous operation, which you can't just await. So I created a loading page and added its handling to loading context.
 
 ## Profile Bug
-There appears to be a bug where after the very initial login, if the userContext updates too slowly when changing the profileImage, there is an error thrown that datastore query was called during clear. This only occurs if the userContext is slow to update, and on the very first login. Refreshes or faster updates will fix it, I'm not sure why.
+There appears to be a bug where after the very initial login, if the userContext updates too slowly when changing the profileImage, there is an error thrown that datastore query was called during clear. This only occurs if the userContext is slow to update, and on the very first login. Refreshes or faster updates will fix it, I'm not sure why. After further investigation, I believe this is occuring because queries to OrgUserStorage of Amplify are occurring simultaneously. Updating the userContext refreshes the OrgUserStorage, and setting the profile image also changes the OrgUserStorage profiles of that user.
 
 Things to test:
 

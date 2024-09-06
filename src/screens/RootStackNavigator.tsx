@@ -4,7 +4,7 @@ import { StatusBar } from "react-native";
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
 import SyncScreen from "./SyncScreen";
-import RequestReset from "./RequestReset";
+import ResendCode from "./ResendCode";
 import ResetPassword from "./ResetPassword";
 import AccessCodeScreen from "./AccessCodeScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
@@ -41,7 +41,7 @@ export default function RootStackNavigator() {
           component={SyncScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="RequestReset" component={RequestReset} />
+        <Stack.Screen name="ResendCode" component={ResendCode} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="AccessCode" component={AccessCodeScreen} />
         <Stack.Screen name="VerifyEmail" component={VerifyEmail} />

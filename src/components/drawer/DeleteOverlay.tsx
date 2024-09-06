@@ -6,7 +6,13 @@ import { deleteUser } from "aws-amplify/auth";
 import { useUser } from "../../helper/context/UserContext";
 import { editOrgUserStorages } from "../../helper/drawer/ModifyProfileUtils";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
+import { handleError } from "../../helper/Utils";
+import { useLoad } from "../../helper/context/LoadingContext";
 
+/*
+    A component that allows the user to delete their account
+    in the profile screen
+*/
 export default function DeleteOverlay({
   visible,
   setVisible,
@@ -17,20 +23,28 @@ export default function DeleteOverlay({
   navigation: ProfileScreenProps;
 }) {
   const [email, setEmail] = useState("");
-  const { user } = useUser();
+  const { user, resetContext } = useUser();
+  const { setIsLoading } = useLoad();
 
   const handleDelete = async () => {
-    // verify that the email matches the user's email
-    if (email !== user?.email) {
-      Alert.alert("Email does not match", "Please try again");
-      return;
+    try {
+      setIsLoading(true);
+      // verify that the email matches the user's email
+      if (email !== user?.email) {
+        Alert.alert("Email does not match", "Please try again");
+        return;
+      }
+      // mark user's orguserstorages as deleted
+      const deletedName = user.name + " (deleted)";
+      await editOrgUserStorages(user!.id, "name", deletedName);
+      // delete the user
+      await deleteUser();
+      resetContext();
+      setIsLoading(false);
+      navigation.navigate("Home");
+    } catch (e) {
+      handleError("handleDelete", e as Error, setIsLoading);
     }
-    // mark user's orguserstorages as deleted
-    const deletedName = user.name + " (deleted)";
-    await editOrgUserStorages(user!.id, "name", deletedName);
-    // delete the user
-    await deleteUser();
-    navigation.navigate("Home");
   };
 
   return (

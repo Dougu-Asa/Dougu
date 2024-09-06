@@ -104,10 +104,10 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       <Text
         style={loginCreateStyles.forgotPassword}
         onPress={() => {
-          navigation.navigate("VerifyEmail", { email: email });
+          navigation.navigate("ResendCode", { type: "verify" });
         }}
       >
-        Redo Verify? (reinput email)
+        Resend Code
       </Text>
     </View>
   );

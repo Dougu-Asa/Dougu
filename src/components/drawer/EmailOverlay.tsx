@@ -9,6 +9,11 @@ import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { confirmUserAttribute } from "aws-amplify/auth";
 
+/*
+    A component that allows the user to change their email
+    in the profile screen. The user must verify their new email
+    by entering a code sent to their email.
+*/
 export default function EmailOverlay({
   visible,
   setVisible,
@@ -23,8 +28,8 @@ export default function EmailOverlay({
   // update user profile attributes in Cognito
   const sendCode = async () => {
     try {
-      const output = await modifyUserAttribute("email", email);
-      console.log(output);
+      await modifyUserAttribute("email", email);
+      Alert.alert("Verification Code Sent", "Please check your email");
     } catch (error) {
       handleError("modifyUserAttribute", error as Error, null);
       console.log(error);
@@ -32,18 +37,22 @@ export default function EmailOverlay({
   };
 
   const verifyEmail = async () => {
-    if (!code) {
-      Alert.alert("Error", "Please enter a code");
-      return;
+    try {
+      if (!code) {
+        Alert.alert("Error", "Please enter a code");
+        return;
+      }
+      await confirmUserAttribute({
+        userAttributeKey: "email",
+        confirmationCode: code,
+      });
+      // update user context (local)
+      updateUserContext(user!, setUser, "email", email);
+      setVisible(false);
+      Alert.alert("Email Updated", "Your email has been updated");
+    } catch (e) {
+      handleError("verifyEmail", e as Error, null);
     }
-    await confirmUserAttribute({
-      userAttributeKey: "email",
-      confirmationCode: code,
-    });
-    // update user context (local)
-    updateUserContext(user!, setUser, "email", email);
-    setVisible(false);
-    Alert.alert("Email Updated", "Your email has been updated");
   };
 
   return (
