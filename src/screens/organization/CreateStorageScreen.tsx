@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Image,
+  Dimensions,
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -15,12 +17,19 @@ import { useLoad } from "../../helper/context/LoadingContext";
 import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
+import { profileMapping } from "../../helper/ImageMapping";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 
 /*
   Create storage screen allows a manager to create storage.
   A storage is a non-user entity where equipment can be assigned.
 */
+const profileSize = Dimensions.get("screen").width / 4;
+const editSize = Dimensions.get("screen").width / 10;
 export default function CreateStorageScreen() {
+  const [profileVisible, setProfileVisible] = useState(false);
+  const [profile, setProfile] = useState("default");
   const [name, onChangeName] = useState("");
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
@@ -44,7 +53,7 @@ export default function CreateStorageScreen() {
           type: UserOrStorage.STORAGE,
           details: details,
           group: org!.name,
-          profile: "default",
+          profile: profile,
         }),
       );
       setIsLoading(false);
@@ -58,7 +67,16 @@ export default function CreateStorageScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.rowContainer, { marginTop: 20 }]}>
+      <TouchableOpacity
+        style={styles.profile}
+        onPress={() => setProfileVisible(true)}
+      >
+        <Image source={profileMapping[profile]} style={styles.profileImage} />
+        <View style={styles.editButton}>
+          <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
+        </View>
+      </TouchableOpacity>
+      <View style={styles.rowContainer}>
         <View style={styles.row1}>
           <Text style={styles.rowHeader}>Name</Text>
         </View>
@@ -72,7 +90,6 @@ export default function CreateStorageScreen() {
           />
         </View>
       </View>
-
       <View style={styles.rowContainer}>
         <View style={styles.row1}>
           <Text style={styles.rowHeader}>Details</Text>
@@ -91,6 +108,12 @@ export default function CreateStorageScreen() {
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>
+      <ProfileOverlay
+        visible={profileVisible}
+        setVisible={setProfileVisible}
+        profile={profile}
+        setProfile={setProfile}
+      />
     </View>
   );
 }
@@ -99,6 +122,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     height: "100%",
+    alignItems: "center",
   },
   input: {
     height: 40,
@@ -111,6 +135,29 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  editButton: {
+    width: editSize,
+    height: editSize,
+    borderRadius: editSize / 2,
+    backgroundColor: "#D3D3D3",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    right: -5,
+    bottom: -5,
+    borderColor: "white",
+    borderWidth: 5,
+  },
+  profile: {
+    width: profileSize,
+    marginTop: "5%",
+    marginBottom: "5%",
+  },
+  profileImage: {
+    width: profileSize,
+    height: profileSize,
+    borderRadius: profileSize / 2,
   },
   rowContainer: {
     flexDirection: "row",

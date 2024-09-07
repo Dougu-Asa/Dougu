@@ -74,11 +74,10 @@ export default function UserStorages({
 
     setOrgName(org!.name);
     getManager();
-    const subscription = DataStore.observeQuery(OrgUserStorage).subscribe(
-      () => {
-        getData();
-      },
-    );
+    const subscription = DataStore.observe(OrgUserStorage).subscribe(() => {
+      getData();
+    });
+    getData();
 
     return () => subscription.unsubscribe();
   }, [org, tab, user]);

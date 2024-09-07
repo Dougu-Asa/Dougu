@@ -7,7 +7,7 @@ import { Tab } from "@rneui/themed";
 import IconMenu from "../../components/IconMenu";
 import ColorSelect from "../../components/organization/ColorSelect";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
-import { taiko } from "../../helper/ImageMapping";
+import { iconMapping } from "../../helper/ImageMapping";
 
 /*
   ItemImageScreen is a screen that allows the user to select an icon and color
@@ -80,7 +80,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               setColor={index === 0 ? setEquipmentColor : setContainerColor}
             />
           ) : (
-            <IconMenu setIcon={handleSet} data={taiko} />
+            <IconMenu setIcon={handleSet} data={iconMapping} />
           )}
         </View>
       </View>

@@ -27,10 +27,12 @@ export default function ProfileOverlay({
   visible,
   setVisible,
   profile,
+  setProfile,
 }: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   profile: string;
+  setProfile?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [profileImage, setProfileImage] = useState<string>(profile);
   const { setIsLoading } = useLoad();
@@ -38,9 +40,13 @@ export default function ProfileOverlay({
 
   // update user profile attributes in Cognito
   const handleSet = async (profileData: string) => {
+    setProfileImage(profileData);
+    if (setProfile) {
+      setProfile(profileData);
+      return;
+    }
     try {
       setIsLoading(true);
-      setProfileImage(profileData);
       updateUserContext(user!, setUser, "profile", profileData);
       modifyUserAttribute("profile", profileData);
       await editOrgUserStorages(user!.id, "profile", profileData);
