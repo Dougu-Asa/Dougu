@@ -15,45 +15,42 @@ const profileMapping: { [key: string]: ImageSourcePropType } = {
   default: require(`${profilePath}default.png`),
 };
 
-const drumsPath = "../assets/equipment/taiko/drums/";
+const taikoPath = "../assets/equipment/taiko/";
 const drums: { [key: string]: ImageSourcePropType } = {
-  chu: require(`${drumsPath}chu.png`),
-  shime: require(`${drumsPath}shime.png`),
-  okedo: require(`${drumsPath}okedo.png`),
-  ohira: require(`${drumsPath}ohira.png`),
-  odaiko: require(`${drumsPath}odaiko.png`),
-  tire: require(`${drumsPath}tire.png`),
+  chu: require(`${taikoPath}chu.png`),
+  shime: require(`${taikoPath}shime.png`),
+  okedo: require(`${taikoPath}okedo.png`),
+  ohira: require(`${taikoPath}ohira.png`),
+  odaiko: require(`${taikoPath}odaiko.png`),
+  tire: require(`${taikoPath}tire.png`),
 };
 
-const standsPath = "../assets/equipment/taiko/stands/";
 const stands: { [key: string]: ImageSourcePropType } = {
-  nanameStand: require(`${standsPath}nanameStand.png`),
-  betaStand: require(`${standsPath}betaStand.png`),
-  shimeStand: require(`${standsPath}shimeStand.png`),
-  hachijoStand: require(`${standsPath}hachijoStand.png`),
-  okedoStand: require(`${standsPath}okedoStand.png`),
-  odaikoStand: require(`${standsPath}odaikoStand.png`),
-  yataiStand: require(`${standsPath}yataiStand.png`),
-  chair: require(`${standsPath}chair.png`),
+  nanameStand: require(`${taikoPath}nanameStand.png`),
+  betaStand: require(`${taikoPath}betaStand.png`),
+  shimeStand: require(`${taikoPath}shimeStand.png`),
+  hachijoStand: require(`${taikoPath}hachijoStand.png`),
+  okedoStand: require(`${taikoPath}okedoStand.png`),
+  odaikoStand: require(`${taikoPath}odaikoStand.png`),
+  yataiStand: require(`${taikoPath}yataiStand.png`),
+  chair: require(`${taikoPath}chair.png`),
 };
 
-const clothingPath = "../assets/equipment/taiko/clothing/";
 const clothing: { [key: string]: ImageSourcePropType } = {
-  happi: require(`${clothingPath}happi.png`),
-  haori: require(`${clothingPath}haori.png`),
-  hakama: require(`${clothingPath}hakama.png`),
-  hachimakiBlack: require(`${clothingPath}hachimakiBlack.png`),
-  hachimakiWhite: require(`${clothingPath}hachimakiWhite.png`),
+  happi: require(`${taikoPath}happi.png`),
+  haori: require(`${taikoPath}haori.png`),
+  hakama: require(`${taikoPath}hakama.png`),
+  hachimakiBlack: require(`${taikoPath}hachimakiBlack.png`),
+  hachimakiWhite: require(`${taikoPath}hachimakiWhite.png`),
 };
 
-const otherPath = "../assets/equipment/taiko/other/";
 const other: { [key: string]: ImageSourcePropType } = {
-  mallet: require(`${otherPath}mallet.png`),
-  chappa: require(`${otherPath}chappa.png`),
-  clave: require(`${otherPath}clave.png`),
-  kane: require(`${otherPath}kane.png`),
-  bachi: require(`${otherPath}bachi.png`),
-  batBachi: require(`${otherPath}batBachi.png`),
+  mallet: require(`${taikoPath}mallet.png`),
+  chappa: require(`${taikoPath}chappa.png`),
+  clave: require(`${taikoPath}clave.png`),
+  kane: require(`${taikoPath}kane.png`),
+  bachi: require(`${taikoPath}bachi.png`),
+  batBachi: require(`${taikoPath}batBachi.png`),
 };
 
 const taiko: { [key: string]: ImageSourcePropType } = {

@@ -1,5 +1,4 @@
 import { DataStore } from "@aws-amplify/datastore";
-import { Alert } from "react-native";
 
 import { OrgUserStorage, Equipment, Container } from "../models";
 import { ContainerObj, EquipmentObj } from "../types/ModelTypes";
@@ -37,8 +36,6 @@ export const reassignEquipment = async (
         updated.lastUpdatedDate = new Date().toISOString();
       }),
     );
-    // update container
-    Alert.alert("Swap Successful!");
   } catch (e) {
     handleError("Swap Equipment", e as Error, null);
   }
@@ -79,7 +76,6 @@ export const reassignContainer = async (
         }),
       );
     });
-    Alert.alert("Swap Successful!");
   } catch (e) {
     handleError("Swap Container", e as Error, null);
   }
@@ -107,7 +103,6 @@ export const addEquipmentToContainer = async (
         updated.assignedTo = contanierUser;
       }),
     );
-    Alert.alert("Added Equipment to Container!");
   } catch (e) {
     handleError("addEquipmentToContainer", e as Error, null);
   }
@@ -134,7 +129,6 @@ export const moveOutOfContainer = async (
         updated.assignedTo = user;
       }),
     );
-    Alert.alert("Equipment Moved Out of Container!");
   } catch (e) {
     handleError("Move Out of Container", e as Error, null);
   }

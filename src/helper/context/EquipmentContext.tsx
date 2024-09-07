@@ -38,21 +38,19 @@ export default function EquipmentProvider({
       setItemData(items);
     };
 
-    const equipmentSubscription = DataStore.observeQuery(Equipment).subscribe(
-      () => {
-        handleGetItems();
-      },
-    );
-    const containerSubscription = DataStore.observeQuery(Container).subscribe(
-      () => {
-        handleGetItems();
-      },
-    );
-    const orgUserStorageSubscription = DataStore.observeQuery(
+    const equipmentSubscription = DataStore.observe(Equipment).subscribe(() => {
+      handleGetItems();
+    });
+    const containerSubscription = DataStore.observe(Container).subscribe(() => {
+      handleGetItems();
+    });
+    const orgUserStorageSubscription = DataStore.observe(
       OrgUserStorage,
     ).subscribe(() => {
       handleGetItems();
     });
+
+    handleGetItems();
 
     return () => {
       equipmentSubscription.unsubscribe();
