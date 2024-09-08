@@ -75,7 +75,7 @@ export default function CreateEquipmentScreen({
           orgUserStorage,
           details,
           equipmentColor,
-          icon,
+          iconUri,
         );
       } else {
         await CreateContainer(

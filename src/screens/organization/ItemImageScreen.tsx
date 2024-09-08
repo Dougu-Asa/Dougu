@@ -22,7 +22,6 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
     iconUri,
     equipmentColor,
     containerColor,
-    handleSet,
     setEquipmentColor,
     setContainerColor,
   } = useItemImage();
@@ -88,9 +87,9 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               setColor={index === 0 ? setEquipmentColor : setContainerColor}
             />
           ) : selected === 1 ? (
-            <IconMenu setIcon={handleSet} data={iconMapping} />
+            <IconMenu data={iconMapping} />
           ) : selected === 2 ? (
-            <UploadImage setImageUri={handleSet} />
+            <UploadImage />
           ) : null}
         </View>
       </View>
