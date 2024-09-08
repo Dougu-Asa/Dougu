@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { OrgUserStorage, Organization } from "../models";
 import { EquipmentObj, OrgItem, ContainerObj, Hex } from "./ModelTypes";
+import { ImageSourcePropType } from "react-native";
 
 /*
     Defines the types for the context objects used in the app.
@@ -44,8 +45,8 @@ export type EquipmentContextType = {
 };
 
 export type ItemImageContextType = {
-  icon: string;
-  setIcon: Dispatch<SetStateAction<string>>;
+  iconUri: ImageSourcePropType;
+  handleSet: (image: string) => void;
   equipmentColor: Hex;
   setEquipmentColor: Dispatch<SetStateAction<Hex>>;
   containerColor: Hex;

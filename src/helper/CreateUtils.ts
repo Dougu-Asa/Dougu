@@ -21,6 +21,7 @@ export const createOrg = async (
   code: string,
   userId: string,
 ): Promise<Organization> => {
+  await createUserGroup(token, name);
   // Add the org to the database
   const newOrg = await DataStore.save(
     new Organization({
@@ -32,7 +33,6 @@ export const createOrg = async (
   );
   if (newOrg == null) throw new Error("Organization not created successfully.");
   // create a user group for the org
-  await createUserGroup(token, name);
   return newOrg;
 };
 
@@ -41,6 +41,7 @@ export const createOrgUserStorage = async (
   org: Organization,
   user: UserType,
 ): Promise<boolean> => {
+  await addUserToGroup(token, org.name, user!.id);
   // Add the OrgUserStorage to the DB
   const newOrgUserStorage = await DataStore.save(
     new OrgUserStorage({
@@ -55,7 +56,7 @@ export const createOrgUserStorage = async (
   if (newOrgUserStorage == null)
     throw new Error("OrgUserStorage not created successfully.");
   // add user to the user group
-  return await addUserToGroup(token, org.name, user!.id);
+  return true;
 };
 
 export const CreateEquipment = async (

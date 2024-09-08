@@ -40,7 +40,8 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.0.3",
     "reanimated-color-picker": "^3.0.4",
-    "ws": "^8.17.1"
+    "ws": "^8.17.1",
+    "expo-image-picker": "~15.0.7"
   },
   "devDependencies": {
     "@eslint/compat": "^1.1.1",

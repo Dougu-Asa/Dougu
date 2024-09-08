@@ -6,6 +6,7 @@ import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Tab } from "@rneui/themed";
 import IconMenu from "../../components/IconMenu";
 import ColorSelect from "../../components/organization/ColorSelect";
+import UploadImage from "../../components/organization/UploadImage";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 
@@ -18,17 +19,13 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   const [selected, setSelected] = useState(0);
   // use a context to share state with CreateEquipmentScreen
   const {
-    icon,
+    iconUri,
     equipmentColor,
     containerColor,
-    setIcon,
+    handleSet,
     setEquipmentColor,
     setContainerColor,
   } = useItemImage();
-
-  const handleSet = (icon: string) => {
-    setIcon(icon);
-  };
 
   return (
     <View style={styles.screen}>
@@ -36,7 +33,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
         <View style={styles.display}>
           {index === 0 ? (
             <EquipmentDisplay
-              image={icon}
+              imageUri={iconUri}
               isMini={false}
               color={equipmentColor}
             />
@@ -52,7 +49,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
             onChange={setSelected}
             iconPosition="left"
             indicatorStyle={[
-              index === 0 ? { width: "50%" } : { width: "100%" },
+              index === 0 ? { width: "33%" } : { width: "100%" },
               { backgroundColor: "black" },
             ]}
             titleStyle={{ color: "black" }}
@@ -61,15 +58,26 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               borderTopRightRadius: 20,
             }}
           >
-            <Tab.Item icon={{ name: "brush", type: "ionicon", color: "black" }}>
-              Color
-            </Tab.Item>
+            <Tab.Item
+              icon={{ name: "brush", type: "ionicon", color: "black" }}
+            ></Tab.Item>
             {index === 0 && (
               <Tab.Item
-                icon={{ name: "camera", type: "font-awesome", color: "black" }}
-              >
-                Icon
-              </Tab.Item>
+                icon={{
+                  name: "camera",
+                  type: "font-awesome",
+                  color: "black",
+                }}
+              ></Tab.Item>
+            )}
+            {index === 0 && (
+              <Tab.Item
+                icon={{
+                  name: "file",
+                  type: "font-awesome",
+                  color: "black",
+                }}
+              ></Tab.Item>
             )}
           </Tab>
         </View>
@@ -79,9 +87,11 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               color={index === 0 ? equipmentColor : containerColor}
               setColor={index === 0 ? setEquipmentColor : setContainerColor}
             />
-          ) : (
+          ) : selected === 1 ? (
             <IconMenu setIcon={handleSet} data={iconMapping} />
-          )}
+          ) : selected === 2 ? (
+            <UploadImage setImageUri={handleSet} />
+          ) : null}
         </View>
       </View>
     </View>
