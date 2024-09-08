@@ -1,13 +1,14 @@
 import { Image, ImageSourcePropType, Pressable } from "react-native";
 import { itemStyles } from "../../styles/ItemStyles";
 import { Hex } from "../../types/ModelTypes";
+import { iconMapping } from "../../helper/ImageMapping";
 
 export default function EquipmentDisplay({
-  imageUri,
+  image,
   color,
   isMini,
 }: {
-  imageUri: ImageSourcePropType;
+  image: string;
   color: Hex;
   isMini: boolean;
 }) {
@@ -15,6 +16,8 @@ export default function EquipmentDisplay({
   const radius = isMini
     ? itemStyles.radiusBackgroundMini
     : itemStyles.radiusBackground;
+  const imageUri: ImageSourcePropType =
+    image in iconMapping ? iconMapping[image] : { uri: image };
 
   return (
     <Pressable

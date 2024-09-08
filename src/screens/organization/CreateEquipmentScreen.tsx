@@ -33,7 +33,7 @@ export default function CreateEquipmentScreen({
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
-  const { iconUri, equipmentColor, containerColor } = useItemImage();
+  const { image, equipmentColor, containerColor } = useItemImage();
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
   const { setIsLoading } = useLoad();
@@ -75,7 +75,7 @@ export default function CreateEquipmentScreen({
           orgUserStorage,
           details,
           equipmentColor,
-          iconUri,
+          image,
         );
       } else {
         await CreateContainer(
@@ -111,7 +111,7 @@ export default function CreateEquipmentScreen({
       <View style={styles.topRow}>
         {index === 0 ? (
           <EquipmentDisplay
-            imageUri={iconUri}
+            image={image}
             isMini={false}
             color={equipmentColor}
           />

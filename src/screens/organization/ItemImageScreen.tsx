@@ -19,7 +19,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   const [selected, setSelected] = useState(0);
   // use a context to share state with CreateEquipmentScreen
   const {
-    iconUri,
+    image,
     equipmentColor,
     containerColor,
     setEquipmentColor,
@@ -32,7 +32,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
         <View style={styles.display}>
           {index === 0 ? (
             <EquipmentDisplay
-              imageUri={iconUri}
+              image={image}
               isMini={false}
               color={equipmentColor}
             />

@@ -5,7 +5,6 @@ import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { itemStyles } from "../../styles/ItemStyles";
 import EquipmentDisplay from "./EquipmentDisplay";
-import { iconMapping } from "../../helper/ImageMapping";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -34,7 +33,7 @@ export default function EquipmentItem({
         {count > 0 && (
           <>
             <EquipmentDisplay
-              imageUri={iconMapping[item.image]}
+              image={item.image}
               isMini={false}
               color={item.color}
             />

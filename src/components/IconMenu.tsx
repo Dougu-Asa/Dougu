@@ -23,7 +23,7 @@ export default function IconMenu({
 }) {
   // show the icons in a grid of 4 columns
   const chunkedKeys = chunkArray(Object.keys(data), 4);
-  const { handleSet } = useItemImage();
+  const { setImage } = useItemImage();
 
   return (
     <View style={styles.container}>
@@ -35,7 +35,7 @@ export default function IconMenu({
               <TouchableOpacity
                 key={key}
                 style={styles.iconContainer}
-                onPress={() => handleSet(key)}
+                onPress={() => setImage(key)}
               >
                 <Image
                   source={data[key]}

@@ -1,8 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Hex } from "../../types/ModelTypes";
 import { ItemImageContextType } from "../../types/ContextTypes";
-import { ImageSourcePropType } from "react-native";
-import { iconMapping } from "../ImageMapping";
 
 const ItemImageContext = React.createContext<ItemImageContextType | undefined>(
   undefined,
@@ -18,25 +16,15 @@ export default function ItemImageProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [iconUri, setIconUri] = useState<ImageSourcePropType>(
-    iconMapping["default"],
-  );
+  const [image, setImage] = useState<string>("default");
   const [equipmentColor, setEquipmentColor] = useState<Hex>("#87ceeb");
   const [containerColor, setContainerColor] = useState<Hex>("#dedede");
-
-  const handleSet = (image: string) => {
-    if (image in iconMapping) {
-      setIconUri(iconMapping[image]);
-    } else {
-      setIconUri({ uri: image });
-    }
-  };
 
   return (
     <ItemImageContext.Provider
       value={{
-        iconUri,
-        handleSet,
+        image,
+        setImage,
         equipmentColor,
         setEquipmentColor,
         containerColor,

@@ -1,6 +1,11 @@
 import { useState } from "react";
-import { Button, Image, View, StyleSheet } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import { Button, View, StyleSheet } from "react-native";
+import {
+  launchImageLibraryAsync,
+  launchCameraAsync,
+  MediaTypeOptions,
+} from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import { getUrl, uploadData } from "aws-amplify/storage";
 import { useUser } from "../../helper/context/UserContext";
 import { useItemImage } from "../../helper/context/ItemImageContext";
@@ -12,36 +17,51 @@ import { useItemImage } from "../../helper/context/ItemImageContext";
 export default function UploadImage() {
   const [imageName, setImageName] = useState<string | null | undefined>(null);
   const { org } = useUser();
-  const { iconUri, handleSet } = useItemImage();
+  const { image, setImage } = useItemImage();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let result = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      // compress the image (for cost savings)
+      const manipResult = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 100 } }],
+        { compress: 0.4, format: ImageManipulator.SaveFormat.PNG },
+      );
+      setImage(manipResult.uri);
+      setImageName(result.assets[0].fileName);
+    }
+  };
+
+  const takePhoto = async () => {
+    let result = await launchCameraAsync({
+      mediaTypes: MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.4,
     });
 
     console.log(result);
-
     if (!result.canceled) {
-      handleSet(result.assets[0].uri);
+      setImage(result.assets[0].uri);
       setImageName(result.assets[0].fileName);
     }
   };
 
   const uploadImage = async () => {
-    if (typeof iconUri !== "object" || !("uri" in iconUri)) {
-      console.log("Cannot fetch local image URI");
-      return;
-    }
     try {
-      const imageUri = iconUri.uri;
-      const image = await fetch(String(imageUri)).then((r) => r.blob());
+      const imageUri = image;
+      const imageData = await fetch(String(imageUri)).then((r) => r.blob());
       const result = await uploadData({
         path: `public/${org!.id}/equipment/${imageName}`,
-        data: image,
+        data: imageData,
       }).result;
       console.log("Succeeded: ", result);
     } catch (error) {
@@ -49,7 +69,7 @@ export default function UploadImage() {
     }
   };
 
-  const imageKey = "486c84a4-0b8f-4a21-9d5b-758c20e8e86f.jpeg";
+  const imageKey = "c780d0eb-8a0b-42c0-8cce-93f990b4bebe.jpeg";
   const loadImage = async () => {
     try {
       const getUrlResult = await getUrl({
@@ -60,16 +80,17 @@ export default function UploadImage() {
       });
       console.log("signed URL: ", getUrlResult.url);
       console.log("URL expires at: ", getUrlResult.expiresAt);
-      handleSet(getUrlResult.url.toString());
+      setImage(getUrlResult.url.toString());
     } catch (error) {
       console.log("Error : ", error);
+      setImage("bad");
     }
   };
 
   return (
     <View style={styles.pickerContainer}>
-      {iconUri && <Image source={iconUri} style={styles.image} />}
       <Button title="Pick image" onPress={pickImage} />
+      <Button title="Take photo" onPress={takePhoto} />
       <Button title="Upload image" onPress={uploadImage} />
       <Button title="Load image" onPress={loadImage} />
     </View>

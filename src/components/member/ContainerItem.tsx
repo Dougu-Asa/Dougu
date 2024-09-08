@@ -6,7 +6,6 @@ import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
 import { itemStyles } from "../../styles/ItemStyles";
 import EquipmentDisplay from "./EquipmentDisplay";
-import { iconMapping } from "../../helper/ImageMapping";
 
 /*
   ContainerItem is a component that displays a container object with a label and
@@ -66,7 +65,7 @@ export default function ContainerItem({
                             style={itemStyles.equipmentItemContainer}
                           >
                             <EquipmentDisplay
-                              imageUri={iconMapping[equip.image]}
+                              image={(equip as EquipmentObj).image}
                               isMini={true}
                               color={(equip as EquipmentObj).color}
                             />

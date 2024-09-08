@@ -63,6 +63,7 @@ const taiko: { [key: string]: ImageSourcePropType } = {
 
 const iconMapping: { [key: string]: ImageSourcePropType } = {
   ...taiko,
+  nowifi: require(`${equipmentPath}nowifi.png`),
   default: require(`${equipmentPath}default.png`),
 };
 
