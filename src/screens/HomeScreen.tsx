@@ -6,7 +6,7 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { fetchUserAttributes } from "aws-amplify/auth";
+import { getCurrentUser } from "aws-amplify/auth";
 
 // Project Files
 import { useUser } from "../helper/context/UserContext";
@@ -15,6 +15,7 @@ import CreateAccScreen from "../components/CreateAcc";
 import { HomeScreenProps } from "../types/ScreenTypes";
 import { useLoad } from "../helper/context/LoadingContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* 
   HomeScreen is the first screen that the user sees when they open the app. 
@@ -30,23 +31,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     // Checks if a user is currently logged in. If so, navigates to the MemberTabs screen
     const checkCurrentUser = async () => {
       try {
-        const attributes = await fetchUserAttributes();
-        if (
-          !attributes.name ||
-          !attributes.email ||
-          !attributes.sub ||
-          !attributes.profile
-        )
-          throw new Error("Missing attributes");
-        const user = {
-          name: attributes.name,
-          email: attributes.email,
-          id: attributes.sub,
-          profile: attributes.profile,
-        };
-        console.log("User is logged in");
-        setUser(user);
-        navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+        const { username } = await getCurrentUser();
+        const userString = await AsyncStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        if (user && username && username === user.id) {
+          setUser(user);
+          navigation.navigate("DrawerNav", { screen: "MyOrgs" });
+        } else console.log("User is not logged in");
       } catch {
         console.log("No user is logged in");
       }

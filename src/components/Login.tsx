@@ -1,6 +1,6 @@
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import React from "react";
-import { signIn } from "aws-amplify/auth";
+import { signIn, signOut } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
@@ -9,6 +9,10 @@ import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { handleError, setUserContext } from "../helper/Utils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import PasswordInput from "./PasswordInput";
+
+interface CustomError extends Error {
+  underlyingError?: string;
+}
 
 /*
   A component that allows the user to login to the app 
@@ -25,6 +29,7 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
+      await signOut();
       await signIn({ username, password });
       await setUserContext(setUser);
       setIsLoading(false);
@@ -32,7 +37,12 @@ export default function LoginScreen({ navigation }: NavigationOnlyProps) {
       onChangeUsername("");
       navigation.navigate("SyncScreen", { syncType: "START" });
     } catch (error) {
-      handleError("signIn", error as Error, setIsLoading);
+      const customError = error as CustomError;
+      // we want to display the underlying error message for clarity
+      if (customError.underlyingError) {
+        customError.message = customError.underlyingError;
+      }
+      handleError("signIn", customError, setIsLoading);
     }
   };
 

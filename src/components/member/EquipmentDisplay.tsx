@@ -28,7 +28,6 @@ export default function EquipmentDisplay({
   useEffect(() => {
     const getImageUri = async () => {
       try {
-        console.log("Getting image: ", image);
         const getUrlResult = await getUrl({
           path: `public/${org!.id}/equipment/${image}`,
           options: {
@@ -36,8 +35,8 @@ export default function EquipmentDisplay({
           },
         });
         setImageUri({ uri: getUrlResult.url.toString() });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.log("Error getting image: ", error);
         setImageUri(iconMapping["default"]);
       }
     };
