@@ -66,7 +66,7 @@ export const CreateEquipment = async (
   orgUserStorage: OrgUserStorage,
   details: string,
   color: Hex,
-  icon: string,
+  image: string,
 ) => {
   // create however many equipment specified by quantity
   for (let i = 0; i < quantityCount; i++) {
@@ -77,7 +77,7 @@ export const CreateEquipment = async (
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
         details: details,
-        image: icon,
+        image: image,
         color: color,
         group: dataOrg.name,
         containerId: null,

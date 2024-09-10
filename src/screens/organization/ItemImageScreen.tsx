@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Tab } from "@rneui/themed";
@@ -9,6 +8,7 @@ import ColorSelect from "../../components/organization/ColorSelect";
 import UploadImage from "../../components/organization/UploadImage";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 import { iconMapping } from "../../helper/ImageMapping";
+import ItemImageDisplay from "../../components/organization/ItemImageDisplay";
 
 /*
   ItemImageScreen is a screen that allows the user to select an icon and color
@@ -19,7 +19,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   const [selected, setSelected] = useState(0);
   // use a context to share state with CreateEquipmentScreen
   const {
-    image,
+    imageSource,
     equipmentColor,
     containerColor,
     setEquipmentColor,
@@ -31,9 +31,8 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
       <View style={styles.topRow}>
         <View style={styles.display}>
           {index === 0 ? (
-            <EquipmentDisplay
-              image={image}
-              isMini={false}
+            <ItemImageDisplay
+              imageSource={imageSource}
               color={equipmentColor}
             />
           ) : (

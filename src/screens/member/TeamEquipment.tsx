@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { ScrollView } from "react-native-gesture-handler";
 
 // project imports
 import { useUser } from "../../helper/context/UserContext";
@@ -30,14 +29,16 @@ export default function TeamEquipmentScreen() {
 
   return (
     <View style={{ backgroundColor: "white", minHeight: "100%" }}>
-      <ScrollView>
-        {orgItems.map((orgItem, index) => (
-          <View style={styles.userContainer} key={index}>
+      <FlatList
+        data={orgItems}
+        keyExtractor={(orgItem, index) => index.toString()}
+        renderItem={({ item: orgItem }) => (
+          <View style={styles.userContainer}>
             <Text style={styles.scrollText}>{orgItem.assignedToName}</Text>
             <ScrollRow listData={orgItem.data} isSwap={false} />
           </View>
-        ))}
-      </ScrollView>
+        )}
+      />
     </View>
   );
 }

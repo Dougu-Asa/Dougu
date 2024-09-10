@@ -1,0 +1,1 @@
+- I chose to lazily render the image keys into URIs inside of each equipmentDisplay component. This is to prevent loading all the images from showing the rest of the data.
