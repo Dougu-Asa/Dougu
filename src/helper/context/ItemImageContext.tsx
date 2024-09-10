@@ -18,12 +18,12 @@ export default function ItemImageProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [imageSource, setImageSource] = useState<ImageSourcePropType>(
+  const [imageSource, setImageSource] = useState<ImageSourcePropType | null>(
     iconMapping["default"],
   );
+  const [imageKey, setImageKey] = useState<string>("default");
   const [equipmentColor, setEquipmentColor] = useState<Hex>("#87ceeb");
   const [containerColor, setContainerColor] = useState<Hex>("#dedede");
-  const [imageKey, setImageKey] = useState<string>("default");
 
   return (
     <ItemImageContext.Provider

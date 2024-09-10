@@ -20,8 +20,8 @@ import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
 import { CreateEquipmentScreenProps } from "../../types/ScreenTypes";
 import { useItemImage } from "../../helper/context/ItemImageContext";
-import ItemImageDisplay from "../../components/organization/ItemImageDisplay";
 import { uploadImage } from "../../helper/AWS";
+import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 
 /*
   Create equipment screen allows a manager to create equipment
@@ -72,9 +72,8 @@ export default function CreateEquipmentScreen({
       if (index === 0) {
         // if imageSource is an uploaded image, upload it to S3
         // don't promise.all because we don't want to make equipment if image fails
-        console.log("imageSource: ", imageSource);
-        console.log("imageKey: ", imageKey);
-        await uploadImage(imageSource, imageKey, org!.id);
+        const path = `public/${org!.id}/equipment/${imageKey}`;
+        await uploadImage(imageSource, path);
         await CreateEquipment(
           quantityCount,
           name,
@@ -107,7 +106,12 @@ export default function CreateEquipmentScreen({
     <View style={styles.container}>
       <View style={styles.topRow}>
         {index === 0 ? (
-          <ItemImageDisplay imageSource={imageSource} color={equipmentColor} />
+          <EquipmentDisplay
+            image="none"
+            isMini={false}
+            color={equipmentColor}
+            imageSource={imageSource}
+          />
         ) : (
           <ContainerDisplay color={containerColor} />
         )}

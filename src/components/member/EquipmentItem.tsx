@@ -36,6 +36,7 @@ export default function EquipmentItem({
               image={item.image}
               isMini={false}
               color={item.color}
+              imageSource={null}
             />
             <View style={itemStyles.circle}>
               <Text style={itemStyles.count}>{count}</Text>

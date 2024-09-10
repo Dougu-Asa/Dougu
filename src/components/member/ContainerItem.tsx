@@ -68,6 +68,7 @@ export default function ContainerItem({
                               image={(equip as EquipmentObj).image}
                               isMini={true}
                               color={(equip as EquipmentObj).color}
+                              imageSource={null}
                             />
                           </View>
                         ))}

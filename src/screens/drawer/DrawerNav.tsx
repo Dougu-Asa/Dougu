@@ -1,11 +1,5 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import {
-  TouchableOpacity,
-  Image,
-  Alert,
-  StyleSheet,
-  BackHandler,
-} from "react-native";
+import { TouchableOpacity, Alert, BackHandler } from "react-native";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
@@ -28,7 +22,7 @@ import { DrawerNavProps } from "../../types/ScreenTypes";
 import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
 import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
-import { profileMapping } from "../../helper/ImageMapping";
+import ProfileDisplay from "../../components/ProfileDisplay";
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -112,12 +106,14 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   function MyHeaderProfileButton({ navigation }: MyHeaderProfileButtonProps) {
     return (
       <TouchableOpacity
-        style={styles.profile}
+        style={{ left: 20 }}
         onPress={() => navigation.toggleDrawer()}
       >
-        <Image
-          source={profileMapping[user?.profile || "default"]}
-          style={styles.circleImage}
+        <ProfileDisplay
+          userId={user!.id}
+          profileKey={user!.profile}
+          profileSource={null}
+          size={45}
         />
       </TouchableOpacity>
     );
@@ -147,16 +143,3 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
     </Drawer.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  profile: {
-    left: 20,
-  },
-  circleImage: {
-    width: 45,
-    height: 45,
-    borderRadius: 45 / 2,
-    padding: 5,
-    left: 5,
-  },
-});

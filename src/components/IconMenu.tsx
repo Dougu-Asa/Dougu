@@ -7,7 +7,6 @@ import {
   View,
 } from "react-native";
 import { chunkArray } from "../helper/EquipmentUtils";
-import { useItemImage } from "../helper/context/ItemImageContext";
 
 /*
   IconMenu displays a grid of icons that the user can choose from
@@ -16,20 +15,15 @@ import { useItemImage } from "../helper/context/ItemImageContext";
 */
 export default function IconMenu({
   data,
+  handleSet,
 }: {
   data: {
     [key: string]: ImageSourcePropType;
   };
+  handleSet: (imageKey: string) => void;
 }) {
   // show the icons in a grid of 4 columns
   const chunkedKeys = chunkArray(Object.keys(data), 4);
-  const { setImageSource, setImageKey } = useItemImage();
-
-  const handleSet = (imageKey: string) => {
-    // key isn't always the same as the image source
-    setImageSource(data[imageKey]);
-    setImageKey(imageKey);
-  };
 
   return (
     <View style={styles.container}>

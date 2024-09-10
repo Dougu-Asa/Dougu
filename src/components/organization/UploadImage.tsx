@@ -1,4 +1,10 @@
-import { View, StyleSheet, Alert, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  Text,
+  ImageSourcePropType,
+} from "react-native";
 import {
   launchImageLibraryAsync,
   launchCameraAsync,
@@ -7,17 +13,21 @@ import {
   ImagePickerAsset,
 } from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Button } from "@rneui/themed";
+import { Dispatch, SetStateAction } from "react";
 
 /*
-  ColorSelect allows the user to select a background color for
-  equipment and containers. It is shown in the ItemImageScreen
-  component.
+  UploadImage is a component that allows the user to upload an image
+  for an equipment object. These images are uploaded to and retrived
+  from AWS S3.
 */
-export default function UploadImage() {
-  const { setImageSource, setImageKey } = useItemImage();
-
+export default function UploadImage({
+  setImageSource,
+  setImageKey,
+}: {
+  setImageSource: Dispatch<SetStateAction<ImageSourcePropType | null>>;
+  setImageKey: Dispatch<SetStateAction<string>>;
+}) {
   // set the image source and key after compressing the image
   const setImage = async (asset: ImagePickerAsset) => {
     if (!asset.fileName) return;
@@ -71,7 +81,7 @@ export default function UploadImage() {
     <View style={styles.container}>
       <Text style={styles.header}>Upload Image</Text>
       <Text style={styles.text}>
-        Upload an image for your equipment icon. Uploaded images will appear as
+        You can use custom images for your items. Uploaded images will appear as
         default images when there is no internet.
       </Text>
       <Button

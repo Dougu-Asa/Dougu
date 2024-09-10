@@ -1,5 +1,4 @@
 import {
-  Image,
   StyleSheet,
   View,
   Dimensions,
@@ -13,7 +12,6 @@ import { Button } from "@rneui/themed";
 import { DataStore } from "@aws-amplify/datastore";
 
 import { useUser } from "../../helper/context/UserContext";
-import { profileMapping } from "../../helper/ImageMapping";
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 import NameOverlay from "../../components/drawer/NameOverlay";
 import PasswordOverlay from "../../components/drawer/PasswordOverlay";
@@ -21,6 +19,7 @@ import EmailOverlay from "../../components/drawer/EmailOverlay";
 import DeleteOverlay from "../../components/drawer/DeleteOverlay";
 import { Organization } from "../../models";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
+import ProfileDisplay from "../../components/ProfileDisplay";
 
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
@@ -36,6 +35,7 @@ export default function ProfileScreen({
   navigation: ProfileScreenProps;
 }) {
   const { user } = useUser();
+  const [profileKey, setProfileKey] = useState(user!.profile);
   const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
@@ -63,9 +63,11 @@ export default function ProfileScreen({
         style={styles.profile}
         onPress={() => setProfileVisible(true)}
       >
-        <Image
-          source={profileMapping[user!.profile || "default"]}
-          style={styles.profileImage}
+        <ProfileDisplay
+          userId={user!.id}
+          profileKey={profileKey}
+          size={profileSize}
+          profileSource={null}
         />
         <View style={styles.editButton}>
           <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
@@ -107,7 +109,8 @@ export default function ProfileScreen({
       <ProfileOverlay
         visible={profileVisible}
         setVisible={setProfileVisible}
-        profile={user!.profile}
+        profileKey={profileKey}
+        setProfileKey={setProfileKey}
       />
       <NameOverlay visible={nameVisible} setVisible={setNameVisible} />
       <PasswordOverlay
@@ -161,11 +164,6 @@ const styles = StyleSheet.create({
     width: profileSize,
     marginTop: "5%",
     marginBottom: "5%",
-  },
-  profileImage: {
-    width: profileSize,
-    height: profileSize,
-    borderRadius: profileSize / 2,
   },
   row: {
     width: "100%",

@@ -45,8 +45,8 @@ export type EquipmentContextType = {
 };
 
 export type ItemImageContextType = {
-  imageSource: ImageSourcePropType;
-  setImageSource: Dispatch<SetStateAction<ImageSourcePropType>>;
+  imageSource: ImageSourcePropType | null;
+  setImageSource: Dispatch<SetStateAction<ImageSourcePropType | null>>;
   imageKey: string;
   setImageKey: Dispatch<SetStateAction<string>>;
   equipmentColor: Hex;

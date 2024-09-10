@@ -1,4 +1,4 @@
-import { uploadData } from "aws-amplify/storage";
+import { getUrl, uploadData } from "aws-amplify/storage";
 import { ImageSourcePropType } from "react-native";
 
 /*
@@ -51,17 +51,76 @@ export const addUserToGroup = async (
   return true;
 };
 
-// uploads an image to S3
+// uploads an equipment image to S3
 export const uploadImage = async (
-  imageSource: ImageSourcePropType,
-  imageKey: string,
-  orgId: string,
+  imageSource: ImageSourcePropType | null,
+  path: string,
 ) => {
-  if (typeof imageSource != "object" || !("uri" in imageSource)) return;
+  if (!imageSource || typeof imageSource != "object" || !("uri" in imageSource))
+    throw new Error("Invalid image source");
   const imageUri = imageSource.uri;
   const imageData = await fetch(String(imageUri)).then((r) => r.blob());
   await uploadData({
-    path: `public/${orgId}/equipment/${imageKey}`,
+    path: path,
     data: imageData,
   }).result;
+};
+
+export const uploadProfile = async (
+  imageSource: ImageSourcePropType | null,
+  profileKey: string,
+) => {
+  if (!imageSource || typeof imageSource != "object" || !("uri" in imageSource))
+    throw new Error("Invalid image source");
+  const imageUri = imageSource.uri;
+  const imageData = await fetch(String(imageUri)).then((r) => r.blob());
+  await uploadData({
+    path: ({ identityId }) => `protected/${identityId}/profile/${profileKey}`,
+    data: imageData,
+  }).result;
+};
+
+// get a signed URL for an image in S3
+// set the image uri
+export const getImageUri = async (
+  imageKey: string,
+  path: string,
+  mapping: { [key: string]: ImageSourcePropType },
+) => {
+  if (mapping[imageKey]) {
+    return mapping[imageKey];
+  }
+  try {
+    const getUrlResult = await getUrl({
+      path: path,
+      options: {
+        validateObjectExistence: true, // Check if object exists before creating a URL
+      },
+    });
+    return { uri: getUrlResult.url.toString() };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return mapping["default"];
+  }
+};
+
+export const getProfileUri = async (
+  imageKey: string,
+  mapping: { [key: string]: ImageSourcePropType },
+) => {
+  if (mapping[imageKey]) {
+    return mapping[imageKey];
+  }
+  try {
+    const getUrlResult = await getUrl({
+      path: ({ identityId }) => `protected/${identityId}/profile/${imageKey}`,
+      options: {
+        validateObjectExistence: true, // Check if object exists before creating a URL
+      },
+    });
+    return { uri: getUrlResult.url.toString() };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return mapping["default"];
+  }
 };

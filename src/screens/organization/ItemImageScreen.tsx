@@ -8,7 +8,7 @@ import ColorSelect from "../../components/organization/ColorSelect";
 import UploadImage from "../../components/organization/UploadImage";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 import { iconMapping } from "../../helper/ImageMapping";
-import ItemImageDisplay from "../../components/organization/ItemImageDisplay";
+import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 
 /*
   ItemImageScreen is a screen that allows the user to select an icon and color
@@ -20,20 +20,30 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   // use a context to share state with CreateEquipmentScreen
   const {
     imageSource,
+    setImageSource,
+    setImageKey,
     equipmentColor,
     containerColor,
     setEquipmentColor,
     setContainerColor,
   } = useItemImage();
 
+  const handleSet = (imageKey: string) => {
+    // key isn't always the same as the image source
+    setImageSource(iconMapping[imageKey]);
+    setImageKey(imageKey);
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.topRow}>
         <View style={styles.display}>
           {index === 0 ? (
-            <ItemImageDisplay
-              imageSource={imageSource}
+            <EquipmentDisplay
+              image="none"
+              isMini={false}
               color={equipmentColor}
+              imageSource={imageSource}
             />
           ) : (
             <ContainerDisplay color={containerColor} />
@@ -86,9 +96,12 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
               setColor={index === 0 ? setEquipmentColor : setContainerColor}
             />
           ) : selected === 1 ? (
-            <IconMenu data={iconMapping} />
+            <IconMenu data={iconMapping} handleSet={handleSet} />
           ) : selected === 2 ? (
-            <UploadImage />
+            <UploadImage
+              setImageSource={setImageSource}
+              setImageKey={setImageKey}
+            />
           ) : null}
         </View>
       </View>

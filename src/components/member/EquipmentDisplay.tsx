@@ -3,17 +3,19 @@ import { itemStyles } from "../../styles/ItemStyles";
 import { Hex } from "../../types/ModelTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import { useEffect, useState } from "react";
-import { getUrl } from "@aws-amplify/storage";
 import { useUser } from "../../helper/context/UserContext";
+import { getImageUri } from "../../helper/AWS";
 
 export default function EquipmentDisplay({
   image,
   color,
   isMini,
+  imageSource,
 }: {
   image: string;
   color: Hex;
   isMini: boolean;
+  imageSource: ImageSourcePropType | null;
 }) {
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
   const radius = isMini
@@ -26,27 +28,16 @@ export default function EquipmentDisplay({
 
   // set the image uri
   useEffect(() => {
-    const getImageUri = async () => {
-      try {
-        const getUrlResult = await getUrl({
-          path: `public/${org!.id}/equipment/${image}`,
-          options: {
-            validateObjectExistence: true, // Check if object exists before creating a URL
-          },
-        });
-        setImageUri({ uri: getUrlResult.url.toString() });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
-        setImageUri(iconMapping["default"]);
-      }
-    };
-
-    if (image in iconMapping) {
-      setImageUri(iconMapping[image]);
-    } else {
-      getImageUri();
+    if (imageSource) {
+      setImageUri(imageSource);
+      return;
     }
-  }, [image, org]);
+    const path = `public/${org!.id}/equipment/${image}`;
+    const fetchImageUri = getImageUri(image, path, iconMapping);
+    fetchImageUri.then((uri) => {
+      setImageUri(uri);
+    });
+  }, [image, imageSource, org]);
 
   return (
     <Pressable
