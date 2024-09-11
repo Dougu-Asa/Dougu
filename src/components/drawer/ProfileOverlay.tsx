@@ -26,7 +26,7 @@ import {
 import { Tab } from "@rneui/themed";
 import UploadImage from "../organization/UploadImage";
 import ProfileDisplay from "../ProfileDisplay";
-import { uploadProfile } from "../../helper/AWS";
+import { uploadImage } from "../../helper/AWS";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -71,7 +71,8 @@ export default function ProfileOverlay({
       setIsLoading(true);
       // if we are using profilesource, we need to upload it to S3
       if (profileSource) {
-        await uploadProfile(profileSource, profileKey);
+        const path = `public/profiles/${user!.id}/profile.jpeg`;
+        await uploadImage(profileSource, path);
       }
       updateUserContext(user!, setUser, "profile", profileKey);
       modifyUserAttribute("profile", profileKey);
@@ -96,10 +97,10 @@ export default function ProfileOverlay({
             style={styles.profile}
           >
             <ProfileDisplay
-              userId={user!.id}
               profileKey={profileKey}
               size={profileSize}
               profileSource={profileSource}
+              userId={user!.id}
             />
           </Animated.View>
           <Animated.View

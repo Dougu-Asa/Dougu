@@ -30,13 +30,15 @@ export default function EquipmentDisplay({
   useEffect(() => {
     if (imageSource) {
       setImageUri(imageSource);
-      return;
+    } else if (image in iconMapping) {
+      setImageUri(iconMapping[image]);
+    } else {
+      const path = `public/${org!.id}/equipment/${image}`;
+      const fetchImageUri = getImageUri(path, iconMapping);
+      fetchImageUri.then((uri) => {
+        setImageUri(uri);
+      });
     }
-    const path = `public/${org!.id}/equipment/${image}`;
-    const fetchImageUri = getImageUri(image, path, iconMapping);
-    fetchImageUri.then((uri) => {
-      setImageUri(uri);
-    });
   }, [image, imageSource, org]);
 
   return (

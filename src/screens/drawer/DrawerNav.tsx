@@ -103,21 +103,20 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   }
 
   //Left profile icon
-  function MyHeaderProfileButton({ navigation }: MyHeaderProfileButtonProps) {
+  const MyHeaderProfileButton = ({
+    navigation,
+  }: MyHeaderProfileButtonProps) => {
     return (
-      <TouchableOpacity
-        style={{ left: 20 }}
-        onPress={() => navigation.toggleDrawer()}
-      >
+      <TouchableOpacity style={{ left: 20 }} onPress={navigation.toggleDrawer}>
         <ProfileDisplay
-          userId={user!.id}
-          profileKey={user!.profile}
+          userId={user.id}
+          profileKey={user.profile}
           profileSource={null}
           size={45}
         />
       </TouchableOpacity>
     );
-  }
+  };
 
   return (
     <Drawer.Navigator

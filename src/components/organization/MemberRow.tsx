@@ -8,7 +8,6 @@ import { OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
-import { profileMapping } from "../../helper/ImageMapping";
 import ProfileDisplay from "../ProfileDisplay";
 
 /* 
@@ -24,11 +23,6 @@ export default function MemberRow({
 }) {
   const { setIsLoading } = useLoad();
   const { user, org } = useUser();
-  // ensure a valid profile value
-  const profile =
-    item && item.profile && item.profile in profileMapping
-      ? item.profile
-      : "default";
 
   // delete an orgUserStorage associated with the user
   // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
@@ -48,6 +42,7 @@ export default function MemberRow({
 
   // make sure the owner wants to delete the equipment
   const handleEdit = () => {
+    console.log("item", item);
     if (org!.manager !== user!.id) {
       Alert.alert("You must be a manager to edit users/storages");
       return;
@@ -73,10 +68,10 @@ export default function MemberRow({
     <View style={userStorage.row}>
       <View style={userStorage.profile}>
         <ProfileDisplay
-          userId={item ? item.profile : "NULL ERROR"}
-          profileKey={profile}
+          profileKey={item ? item.profile : "default"}
           size={36}
           profileSource={null}
+          userId={item?.user}
         />
       </View>
       <View style={userStorage.nameRow}>
