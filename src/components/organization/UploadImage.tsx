@@ -83,24 +83,33 @@ export default function UploadImage({
         You can use custom images for your items. Uploaded images will appear as
         default images when there is no internet.
       </Text>
-      <Button
-        title="Select from gallery"
-        titleStyle={{ fontWeight: "500" }}
-        radius={"md"}
-        size="lg"
-        buttonStyle={styles.button}
-        containerStyle={styles.buttonContainer}
-        onPress={pickImage}
-      />
-      <Button
-        title="Take Photo"
-        titleStyle={{ fontWeight: "500" }}
-        radius={"md"}
-        size="lg"
-        buttonStyle={styles.button}
-        containerStyle={styles.buttonContainer}
-        onPress={takePhoto}
-      />
+      <View style={styles.row}>
+        <Button
+          buttonStyle={styles.button}
+          containerStyle={styles.buttonContainer}
+          icon={{ name: "image", type: "ionicon", color: "white", size: 50 }}
+          iconPosition="top"
+          onPress={pickImage}
+          radius={"lg"}
+          title="Gallery"
+          titleStyle={{ fontWeight: "500" }}
+        />
+        <Button
+          buttonStyle={styles.button}
+          containerStyle={styles.buttonContainer}
+          icon={{
+            name: "camera",
+            type: "font-awesome",
+            color: "white",
+            size: 50,
+          }}
+          iconPosition="top"
+          onPress={takePhoto}
+          radius={"lg"}
+          title="Camera"
+          titleStyle={{ fontWeight: "500" }}
+        />
+      </View>
     </View>
   );
 }
@@ -110,7 +119,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#791111",
   },
   buttonContainer: {
-    width: "80%",
+    width: "40%",
     margin: 10,
   },
   container: {
@@ -122,6 +131,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     marginTop: "10%",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
   },
   text: {
     textAlign: "center",

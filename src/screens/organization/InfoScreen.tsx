@@ -30,11 +30,16 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
         source={require("../../assets/asayake.png")}
         style={styles.circleImage}
       />
-      <View style={styles.nonBtnRow}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("OrgImage", { key: org!.image })}
+      >
+        <Text style={styles.link}>Edit Org Image</Text>
+      </TouchableOpacity>
+      <View style={styles.row}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Name</Text>
         <Text style={{ flex: 3 }}>{org!.name}</Text>
       </View>
-      <View style={styles.nonBtnRow}>
+      <View style={styles.row}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Access Code</Text>
         <Text style={{ flex: 3 }}>{org!.accessCode}</Text>
       </View>
@@ -94,36 +99,37 @@ const styles = StyleSheet.create({
     borderRadius: 100 / 2,
     marginTop: 20,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-    margin: 20,
-  },
-  rowHeader: {
-    fontWeight: "bold",
-    flex: 2,
-  },
-  nonBtnRow: {
-    flexDirection: "row",
-    width: "90%",
-    margin: 20,
-  },
-  rightArrow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "50%",
-    flex: 3,
-  },
   equipmentBtn: {
     backgroundColor: "#EEEEEE",
     height: 50,
     width: "50%",
     justifyContent: "center",
     borderRadius: 10,
+    marginTop: 20,
   },
   eBtnText: {
     alignSelf: "center",
     fontWeight: "bold",
+  },
+  link: {
+    color: "#0000ff",
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "90%",
+    margin: 15,
+  },
+  rowHeader: {
+    fontWeight: "bold",
+    flex: 2,
+  },
+  rightArrow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "50%",
+    flex: 3,
   },
 });
