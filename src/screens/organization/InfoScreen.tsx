@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
@@ -12,21 +12,9 @@ import { useHeader } from "../../helper/context/HeaderContext";
   storages, and equipment.
 */
 export default function InfoScreen({ navigation }: InfoScreenProps) {
-  const [orgName, setOrgName] = useState("");
-  const [accessCode, setAccessCode] = useState("");
-  const { user, org } = useUser();
+  const { org } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
-
-  // get the accesscode, orgName, and check if the user is the manager
-  useEffect(() => {
-    const getOrgInfo = async () => {
-      setOrgName(org!.name);
-      setAccessCode(org!.accessCode);
-    };
-
-    getOrgInfo();
-  }, [org, user]);
 
   useEffect(() => {
     if (isFocused) {
@@ -44,11 +32,11 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
       />
       <View style={styles.nonBtnRow}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Name</Text>
-        <Text style={{ flex: 3 }}>{orgName}</Text>
+        <Text style={{ flex: 3 }}>{org!.name}</Text>
       </View>
       <View style={styles.nonBtnRow}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Access Code</Text>
-        <Text style={{ flex: 3 }}>{accessCode}</Text>
+        <Text style={{ flex: 3 }}>{org!.accessCode}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.rowHeader}>Members</Text>

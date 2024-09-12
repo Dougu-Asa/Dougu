@@ -13,7 +13,7 @@ import { Dimensions } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 // project imports
-import { OrgUserStorage, UserOrStorage } from "../../models";
+import { OrgUserStorage } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import MemberRow from "../../components/organization/MemberRow";
 import { UserStoragesScreenProps } from "../../types/ScreenTypes";
@@ -28,36 +28,18 @@ export default function UserStorages({
   route,
   navigation,
 }: UserStoragesScreenProps) {
+  const { user, org } = useUser();
   const { tabParam } = route.params;
-  const [orgName, setOrgName] = useState("");
-  const [manager, setManager] = useState<OrgUserStorage | null>(null);
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
-  const { user, org } = useUser();
+
   // update our data everytime the tab or data changes
   useEffect(() => {
-    const getManager = async () => {
-      const managerOrgUserStorage = await DataStore.query(OrgUserStorage, (c) =>
-        c.and((c) => [
-          c.user.eq(org!.manager),
-          c.organization.name.eq(org!.name),
-          c.type.eq(UserOrStorage.USER),
-        ]),
-      );
-      if (managerOrgUserStorage.length <= 0)
-        throw new Error("Manager not found");
-      setManager(managerOrgUserStorage[0]);
-    };
-
     const getData = async () => {
       let data;
       if (tab === "Members") {
         data = await DataStore.query(OrgUserStorage, (c) =>
-          c.and((c) => [
-            c.organization.name.eq(org!.name),
-            c.user.ne(org!.manager),
-            c.type.eq("USER"),
-          ]),
+          c.and((c) => [c.organization.name.eq(org!.name), c.type.eq("USER")]),
         );
       } else {
         data = await DataStore.query(OrgUserStorage, (c) =>
@@ -71,15 +53,13 @@ export default function UserStorages({
       setCurrData(data);
     };
 
-    setOrgName(org!.name);
-    getManager();
     const subscription = DataStore.observe(OrgUserStorage).subscribe(() => {
       getData();
     });
     getData();
 
     return () => subscription.unsubscribe();
-  }, [org, tab, user]);
+  }, [org, tab]);
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {
@@ -91,7 +71,7 @@ export default function UserStorages({
   return (
     <View style={styles.container}>
       <LinearGradient colors={["#791111", "#550c0c"]} style={styles.header}>
-        <Text style={styles.headerText}>{orgName}</Text>
+        <Text style={styles.headerText}>{org!.name}</Text>
       </LinearGradient>
       <View style={styles.tab}>
         <TouchableOpacity
@@ -125,11 +105,8 @@ export default function UserStorages({
         </TouchableOpacity>
       </View>
       <ScrollView style={{ width: Dimensions.get("window").width }}>
-        {tab === "Members" ? (
-          <MemberRow item={manager} isManager={true} />
-        ) : null}
         {currData.map((item, index) => (
-          <MemberRow key={index} item={item} isManager={false} />
+          <MemberRow key={index} item={item} />
         ))}
         {tab === "Storages" ? (
           <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>

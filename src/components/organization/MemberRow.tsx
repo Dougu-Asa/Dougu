@@ -14,15 +14,10 @@ import ProfileDisplay from "../ProfileDisplay";
     Single row from the UserStorages list. Each 
     row contains the user's name and a delete button
 */
-export default function MemberRow({
-  item,
-  isManager,
-}: {
-  item: OrgUserStorage | null;
-  isManager: boolean;
-}) {
+export default function MemberRow({ item }: { item: OrgUserStorage | null }) {
   const { setIsLoading } = useLoad();
   const { user, org } = useUser();
+  const isManager = org!.manager === item?.user;
 
   // delete an orgUserStorage associated with the user
   // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
@@ -49,7 +44,7 @@ export default function MemberRow({
     }
     Alert.alert(
       "Delete " + item?.name + "?",
-      "Would you like to delete this equipment? \n WARNING: Deleting will remove all associated equipment and data.",
+      "Would you like to delete this user/storage? \n WARNING: Deleting will remove all associated equipment and data.",
       [
         {
           text: "Delete",
