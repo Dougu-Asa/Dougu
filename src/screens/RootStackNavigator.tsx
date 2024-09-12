@@ -11,6 +11,7 @@ import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/context/LoadingContext";
 import VerifyEmail from "./VerifyEmail";
+import HeaderProvider from "../helper/context/HeaderContext";
 
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -20,7 +21,7 @@ export default function RootStackNavigator() {
   const { isLoading } = useLoad();
 
   return (
-    <>
+    <HeaderProvider>
       <StatusBar barStyle="dark-content" />
       <Stack.Navigator
         initialRouteName="Home"
@@ -47,6 +48,6 @@ export default function RootStackNavigator() {
         <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
-    </>
+    </HeaderProvider>
   );
 }

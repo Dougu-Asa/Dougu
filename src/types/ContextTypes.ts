@@ -29,6 +29,13 @@ export type LoadingContextType = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
+export type HeaderContextType = {
+  infoFocus: boolean;
+  setInfoFocus: Dispatch<SetStateAction<boolean>>;
+  orgStackFocus: boolean;
+  setOrgStackFocus: Dispatch<SetStateAction<boolean>>;
+};
+
 export type EquipmentContextType = {
   itemData: Map<string, OrgItem>;
   equipmentItem: EquipmentObj | null;

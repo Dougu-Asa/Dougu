@@ -1,5 +1,5 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { TouchableOpacity, Alert, BackHandler } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
@@ -14,15 +14,13 @@ import ProfileScreen from "./ProfileScreen";
 import { OrgUserStorage, Organization } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
-import {
-  MyHeaderProfileButtonProps,
-  DrawerParamList,
-} from "../../types/NavigatorTypes";
+import { DrawerParamList } from "../../types/NavigatorTypes";
 import { DrawerNavProps } from "../../types/ScreenTypes";
 import CustomDrawerContent from "../../components/drawer/CustomDrawerContent";
 import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
-import ProfileDisplay from "../../components/ProfileDisplay";
+import MyHeaderProfileButton from "../../components/drawer/HeaderProfileButton";
+import { useHeader } from "../../helper/context/HeaderContext";
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -35,6 +33,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   const isFocused = useIsFocused();
   const { user, setOrg, resetContext } = useUser();
   const { setIsLoading } = useLoad();
+  const { infoFocus, orgStackFocus } = useHeader();
 
   // Override android backbutton by adding a listener
   // This prevents returning to home without signing out
@@ -102,22 +101,6 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
     return null;
   }
 
-  //Left profile icon
-  const MyHeaderProfileButton = ({
-    navigation,
-  }: MyHeaderProfileButtonProps) => {
-    return (
-      <TouchableOpacity style={{ left: 20 }} onPress={navigation.toggleDrawer}>
-        <ProfileDisplay
-          userId={user.id}
-          profileKey={user.profile}
-          profileSource={null}
-          size={45}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <Drawer.Navigator
       screenOptions={({ navigation }) => ({
@@ -130,6 +113,7 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
         },
         headerTitle: "Dougu",
         swipeEnabled: false,
+        headerShown: infoFocus || !orgStackFocus,
       })}
       initialRouteName="MyOrgs"
       drawerContent={(props) => <CustomDrawerContent {...props} />}

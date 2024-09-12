@@ -1,6 +1,4 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useLayoutEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
 
 import CreateEquipmentScreen from "./CreateEquipmentScreen";
 import ManageEquipmentScreen from "./ManageEquipmentScreen";
@@ -12,6 +10,9 @@ import ItemImageScreen from "./ItemImageScreen";
 import { OrgStackParamList } from "../../types/NavigatorTypes";
 import { OrgStackScreenProps } from "../../types/ScreenTypes";
 import ItemImageProvider from "../../helper/context/ItemImageContext";
+import { useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useHeader } from "../../helper/context/HeaderContext";
 
 /*
     Stack navigator for the organization screens.
@@ -21,19 +22,15 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
   // Create a stack navigator to handle navigation throughout the app
   const Stack = createNativeStackNavigator<OrgStackParamList>();
   const isFocused = useIsFocused();
+  const { setOrgStackFocus } = useHeader();
 
-  // prevent double headers by removing the parent header on focus
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isFocused) {
-      navigation.getParent()?.setOptions({
-        headerShown: false,
-      });
+      setOrgStackFocus(true);
     } else {
-      navigation.getParent()?.setOptions({
-        headerShown: true,
-      });
+      setOrgStackFocus(false);
     }
-  }, [navigation, isFocused]);
+  }, [isFocused, setOrgStackFocus]);
 
   return (
     <ItemImageProvider>
@@ -46,7 +43,11 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
           },
         }}
       >
-        <Stack.Screen name="InfoScreen" component={InfoScreen} />
+        <Stack.Screen
+          name="InfoScreen"
+          component={InfoScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="ManageEquipment"
           component={ManageEquipmentScreen}
