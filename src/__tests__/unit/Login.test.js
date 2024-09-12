@@ -1,4 +1,4 @@
-import { signIn } from "aws-amplify/auth";
+import { signIn, signOut } from "aws-amplify/auth";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
 import { MockUserProvider, MockLoadingProvider } from "../mock/MockProviders";
@@ -15,6 +15,7 @@ const mockNavigation = {
 };
 
 jest.mock("aws-amplify/auth", () => ({
+  signOut: jest.fn(),
   signIn: jest.fn(),
   fetchUserAttributes: jest.fn(),
 }));
@@ -47,6 +48,7 @@ describe("signIn", () => {
     const username = "T@gmail.com";
     const password = "Tassword";
 
+    signOut.mockResolvedValueOnce({});
     signIn.mockResolvedValueOnce({});
     setUserContext.mockResolvedValueOnce();
 
@@ -86,6 +88,7 @@ describe("signIn", () => {
     const password = null;
     const error = new Error("sign in failed");
 
+    signOut.mockResolvedValueOnce({});
     signIn.mockRejectedValueOnce(error);
 
     const { getByTestId } = render(

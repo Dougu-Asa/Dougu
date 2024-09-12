@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
+import { useIsFocused } from "@react-navigation/native";
+import { useHeader } from "../../helper/context/HeaderContext";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -13,6 +15,8 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgName, setOrgName] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const { user, org } = useUser();
+  const { setInfoFocus } = useHeader();
+  const isFocused = useIsFocused();
 
   // get the accesscode, orgName, and check if the user is the manager
   useEffect(() => {
@@ -23,6 +27,14 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
 
     getOrgInfo();
   }, [org, user]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setInfoFocus(true);
+    } else {
+      setInfoFocus(false);
+    }
+  }, [isFocused, setInfoFocus]);
 
   return (
     <View style={styles.container}>

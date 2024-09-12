@@ -5,12 +5,13 @@ import { signUp } from "aws-amplify/auth";
 
 // Project Files
 import { useLoad } from "../helper/context/LoadingContext";
-import { handleError } from "../helper/Utils";
+import { handleError, setUserContext } from "../helper/Utils";
 import { NavigationOnlyProps } from "../types/ScreenTypes";
 import { validateRequirements } from "../helper/CreateAccUtils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import { profileMapping } from "../helper/ImageMapping";
 import PasswordInput from "./PasswordInput";
+import { useUser } from "../helper/context/UserContext";
 
 /*
   A component that allows the user to create an account
@@ -20,6 +21,7 @@ import PasswordInput from "./PasswordInput";
 */
 export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
   const { setIsLoading } = useLoad();
+  const { setUser } = useUser();
 
   // for the form
   const [email, onChangeEmail] = React.useState("");
@@ -60,6 +62,7 @@ export default function CreateAccScreen({ navigation }: NavigationOnlyProps) {
       onChangeLast("");
       onChangePassword("");
       onChangeUsername("");
+      setUserContext(setUser);
       setIsLoading(false);
       navigation.navigate("VerifyEmail", { email: email });
     } catch (error) {

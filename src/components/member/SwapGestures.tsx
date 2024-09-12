@@ -35,6 +35,7 @@ import {
 import { useUser } from "../../helper/context/UserContext";
 import useSet from "./useSet";
 import useHover from "./useHover";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 export default function SwapGestures({
   listOne,
@@ -51,6 +52,7 @@ export default function SwapGestures({
   const halfLine = useRef<number>(0);
   const { orgUserStorage } = useUser();
   const { swapContainerVisible } = useEquipment();
+  const { setIsLoading } = useLoad();
 
   // hooks
   const {
@@ -130,6 +132,7 @@ export default function SwapGestures({
       addEquipmentToContainer(
         draggingItem as EquipmentObj,
         hoverContainer.current,
+        setIsLoading,
       );
       return;
     }
@@ -138,14 +141,18 @@ export default function SwapGestures({
       gestureEvent.y < halfLine.current ? orgUserStorage : swapUser.current;
     // dragging a container
     if (draggingItem.type === "container") {
-      reassignContainer(draggingItem as ContainerObj, assignTo);
+      reassignContainer(draggingItem as ContainerObj, assignTo, setIsLoading);
     } else {
       // dragging equipment
       // check if we are moving equipment out of a container
       if ((draggingItem as EquipmentObj).container != null) {
-        moveOutOfContainer(draggingItem as EquipmentObj, assignTo);
+        moveOutOfContainer(
+          draggingItem as EquipmentObj,
+          assignTo,
+          setIsLoading,
+        );
       } else {
-        reassignEquipment(draggingItem as EquipmentObj, assignTo);
+        reassignEquipment(draggingItem as EquipmentObj, assignTo, setIsLoading);
       }
     }
   };

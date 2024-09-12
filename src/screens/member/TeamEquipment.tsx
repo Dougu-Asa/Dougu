@@ -1,12 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { ScrollView } from "react-native-gesture-handler";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import React from "react";
 
 // project imports
-import { useUser } from "../../helper/context/UserContext";
 import { sortOrgItems } from "../../helper/EquipmentUtils";
-import type { OrgItem } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import ScrollRow from "../../components/member/ScrollRow";
 
@@ -15,29 +11,21 @@ import ScrollRow from "../../components/member/ScrollRow";
   Groups equipment by the orgUserStorage it is assigned to
 */
 export default function TeamEquipmentScreen() {
-  const [orgItems, setOrgItems] = useState<OrgItem[]>([]);
-  const { org } = useUser();
   const { itemData } = useEquipment();
-
-  useEffect(() => {
-    const handleGetItems = async () => {
-      const items = sortOrgItems(itemData);
-      setOrgItems(items);
-    };
-
-    handleGetItems();
-  }, [itemData, org]);
+  const orgItems = sortOrgItems(itemData);
 
   return (
     <View style={{ backgroundColor: "white", minHeight: "100%" }}>
-      <ScrollView>
-        {orgItems.map((orgItem, index) => (
-          <View style={styles.userContainer} key={index}>
+      <FlatList
+        data={orgItems}
+        keyExtractor={(orgItem, index) => index.toString()}
+        renderItem={({ item: orgItem }) => (
+          <View style={styles.userContainer}>
             <Text style={styles.scrollText}>{orgItem.assignedToName}</Text>
             <ScrollRow listData={orgItem.data} isSwap={false} />
           </View>
-        ))}
-      </ScrollView>
+        )}
+      />
     </View>
   );
 }

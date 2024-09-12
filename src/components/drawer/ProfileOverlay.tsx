@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { StyleSheet, Image, Dimensions, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  ImageSourcePropType,
+} from "react-native";
 import { profileMapping } from "../../helper/ImageMapping";
 import Animated, {
   FadeIn,
@@ -18,6 +23,10 @@ import {
   editOrgUserStorages,
   updateUserContext,
 } from "../../helper/drawer/ModifyProfileUtils";
+import { Tab } from "@rneui/themed";
+import UploadImage from "../organization/UploadImage";
+import ProfileDisplay from "../ProfileDisplay";
+import { uploadImage } from "../../helper/AWS";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -26,35 +35,52 @@ import {
 export default function ProfileOverlay({
   visible,
   setVisible,
-  profile,
-  setProfile,
+  profileKey,
+  setProfileKey,
 }: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  profile: string;
-  setProfile?: React.Dispatch<React.SetStateAction<string>>;
+  profileKey: string;
+  setProfileKey: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const [profileImage, setProfileImage] = useState<string>(profile);
   const { setIsLoading } = useLoad();
   const { user, setUser } = useUser();
+  const [selected, setSelected] = useState(0);
+  const [profileSource, setProfileSource] =
+    useState<ImageSourcePropType | null>(null);
+  const profileSize = Dimensions.get("screen").width / 4;
 
   // update user profile attributes in Cognito
   const handleSet = async (profileData: string) => {
-    setProfileImage(profileData);
-    if (setProfile) {
-      setProfile(profileData);
-      return;
-    }
+    setProfileSource(null);
+    setProfileKey(profileData);
+  };
+
+  const handleClose = async () => {
+    await updateProfile();
+    setVisible(false);
+    setSelected(0);
+  };
+
+  const updateProfile = async () => {
     try {
+      // don't update if the profile is the same
+      if (user?.profile === profileKey) {
+        return;
+      }
       setIsLoading(true);
-      updateUserContext(user!, setUser, "profile", profileData);
-      modifyUserAttribute("profile", profileData);
-      await editOrgUserStorages(user!.id, "profile", profileData);
+      // if we are using profilesource, we need to upload it to S3
+      if (profileSource) {
+        const path = `public/profiles/${user!.id}/profile.jpeg`;
+        await uploadImage(profileSource, path);
+      }
+      updateUserContext(user!, setUser, "profile", profileKey);
+      modifyUserAttribute("profile", profileKey);
       // update OrgUserStorages to match user profile
-      setVisible(false);
+      await editOrgUserStorages(user!.id, "profile", profileKey);
       setIsLoading(false);
     } catch (e) {
-      handleError("handleSet", e as Error, setIsLoading);
+      handleError("updateProfile", e as Error, setIsLoading);
     }
   };
 
@@ -62,13 +88,19 @@ export default function ProfileOverlay({
     <>
       {visible && (
         <Pressable
-          onPress={() => setVisible(false)}
+          onPress={handleClose}
           style={containerOverlayStyles.backDrop}
         >
-          <Animated.View entering={FadeIn} exiting={FadeOut}>
-            <Image
-              source={profileMapping[profileImage]}
-              style={styles.profileImage}
+          <Animated.View
+            entering={FadeIn}
+            exiting={FadeOut}
+            style={styles.profile}
+          >
+            <ProfileDisplay
+              profileKey={profileKey}
+              size={profileSize}
+              profileSource={profileSource}
+              userId={user!.id}
             />
           </Animated.View>
           <Animated.View
@@ -80,7 +112,32 @@ export default function ProfileOverlay({
             exiting={ZoomOut}
           >
             <Pressable onPress={() => {}} style={styles.pressableContainer}>
-              <IconMenu setIcon={handleSet} data={profileMapping} />
+              <Tab
+                value={selected}
+                onChange={setSelected}
+                iconPosition="left"
+                indicatorStyle={[{ backgroundColor: "black", width: "50%" }]}
+                titleStyle={{ color: "black" }}
+                containerStyle={{
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                }}
+              >
+                <Tab.Item
+                  icon={{ name: "camera", type: "ionicon", color: "black" }}
+                ></Tab.Item>
+                <Tab.Item
+                  icon={{ name: "file", type: "font-awesome", color: "black" }}
+                ></Tab.Item>
+              </Tab>
+              {selected === 0 ? (
+                <IconMenu data={profileMapping} handleSet={handleSet} />
+              ) : (
+                <UploadImage
+                  setImageSource={setProfileSource}
+                  setImageKey={setProfileKey}
+                />
+              )}
             </Pressable>
           </Animated.View>
         </Pressable>
@@ -89,10 +146,16 @@ export default function ProfileOverlay({
   );
 }
 
-const profileSize = Dimensions.get("screen").width / 4;
 const styles = StyleSheet.create({
   backDrop: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
+  },
+  button: {
+    backgroundColor: "#791111",
+  },
+  buttonContainer: {
+    width: "80%",
+    margin: 10,
   },
   overlay: {
     backgroundColor: "#D3D3D3",
@@ -104,10 +167,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  profileImage: {
-    width: profileSize,
-    height: profileSize,
-    borderRadius: profileSize / 2,
+  profile: {
     marginTop: "5%",
   },
 });

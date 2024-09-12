@@ -111,8 +111,8 @@ export default function CreateStorageScreen() {
       <ProfileOverlay
         visible={profileVisible}
         setVisible={setProfileVisible}
-        profile={profile}
-        setProfile={setProfile}
+        profileKey={profile}
+        setProfileKey={setProfile}
       />
     </View>
   );

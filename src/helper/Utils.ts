@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import { fetchUserAttributes, signOut } from "aws-amplify/auth";
 import { UserType } from "../types/ContextTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* this function handles errors in the app by stopping the loading indicator, logging the error, and alerting the user */
 export const handleError = (
@@ -60,5 +61,7 @@ export const setUserContext = async (
     id: attributes.sub,
     profile: attributes.profile,
   };
+  // save an async storage of the user
+  await AsyncStorage.setItem("user", JSON.stringify(userObj));
   setUser(userObj);
 };

@@ -34,7 +34,6 @@ export default function UserStorages({
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
   const { user, org } = useUser();
-
   // update our data everytime the tab or data changes
   useEffect(() => {
     const getManager = async () => {

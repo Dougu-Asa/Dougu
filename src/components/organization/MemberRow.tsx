@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { DataStore } from "@aws-amplify/datastore";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -15,7 +8,7 @@ import { OrgUserStorage } from "../../models";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
-import { profileMapping } from "../../helper/ImageMapping";
+import ProfileDisplay from "../ProfileDisplay";
 
 /* 
     Single row from the UserStorages list. Each 
@@ -30,11 +23,6 @@ export default function MemberRow({
 }) {
   const { setIsLoading } = useLoad();
   const { user, org } = useUser();
-  // ensure a valid profile value
-  const profile =
-    item && item.profile && item.profile in profileMapping
-      ? item.profile
-      : "default";
 
   // delete an orgUserStorage associated with the user
   // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
@@ -54,6 +42,7 @@ export default function MemberRow({
 
   // make sure the owner wants to delete the equipment
   const handleEdit = () => {
+    console.log("item", item);
     if (org!.manager !== user!.id) {
       Alert.alert("You must be a manager to edit users/storages");
       return;
@@ -78,9 +67,11 @@ export default function MemberRow({
   return (
     <View style={userStorage.row}>
       <View style={userStorage.profile}>
-        <Image
-          source={profileMapping[profile]}
-          style={userStorage.profileImage}
+        <ProfileDisplay
+          profileKey={item ? item.profile : "default"}
+          size={36}
+          profileSource={null}
+          userId={item?.user}
         />
       </View>
       <View style={userStorage.nameRow}>
@@ -121,11 +112,6 @@ const userStorage = StyleSheet.create({
     padding: 10,
     flex: 1,
     marginLeft: 10,
-  },
-  profileImage: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
   },
   name: {
     fontSize: 14,

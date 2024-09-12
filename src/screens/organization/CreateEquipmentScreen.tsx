@@ -16,11 +16,12 @@ import { OrgUserStorage, Organization } from "../../models";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
-import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { CreateContainer, CreateEquipment } from "../../helper/CreateUtils";
 import { CreateEquipmentScreenProps } from "../../types/ScreenTypes";
 import { useItemImage } from "../../helper/context/ItemImageContext";
+import { uploadImage } from "../../helper/AWS";
+import EquipmentDisplay from "../../components/member/EquipmentDisplay";
 
 /*
   Create equipment screen allows a manager to create equipment
@@ -33,7 +34,8 @@ export default function CreateEquipmentScreen({
   const [quantity, onChangeQuantity] = useState<string>("");
   const [assignUser, setAssignUser] = useState<OrgUserStorage | null>(null);
   const [details, onChangeDetails] = useState("");
-  const { icon, equipmentColor, containerColor } = useItemImage();
+  const { imageSource, imageKey, equipmentColor, containerColor } =
+    useItemImage();
   // index 0 is equipment, index 1 is container
   const [index, setIndex] = useState(0);
   const { setIsLoading } = useLoad();
@@ -68,6 +70,10 @@ export default function CreateEquipmentScreen({
       }
       // index 0 is equipment, index 1 is container
       if (index === 0) {
+        // if imageSource is an uploaded image, upload it to S3
+        // don't promise.all because we don't want to make equipment if image fails
+        const path = `public/${org!.id}/equipment/${imageKey}`;
+        await uploadImage(imageSource, path);
         await CreateEquipment(
           quantityCount,
           name,
@@ -75,7 +81,7 @@ export default function CreateEquipmentScreen({
           orgUserStorage,
           details,
           equipmentColor,
-          icon,
+          imageKey,
         );
       } else {
         await CreateContainer(
@@ -96,24 +102,15 @@ export default function CreateEquipmentScreen({
     }
   };
 
-  // update the quantity of equipment
-  const handleNumberChange = (text: string) => {
-    onChangeQuantity(text);
-  };
-
-  // update the user to assign the equipment to
-  const handleUserChange = (user: OrgUserStorage | null) => {
-    setAssignUser(user);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
         {index === 0 ? (
           <EquipmentDisplay
-            image={icon}
-            isMini={false}
+            item={null}
             color={equipmentColor}
+            isMini={false}
+            imageSource={imageSource}
           />
         ) : (
           <ContainerDisplay color={containerColor} />
@@ -171,7 +168,7 @@ export default function CreateEquipmentScreen({
         <View style={styles.row2}>
           <TextInput
             style={styles.input}
-            onChangeText={handleNumberChange}
+            onChangeText={onChangeQuantity}
             value={quantity.toString()}
             placeholder="quantity"
             keyboardType="numeric"
@@ -193,7 +190,7 @@ export default function CreateEquipmentScreen({
           />
         </View>
       </View>
-      <CurrMembersDropdown setUser={handleUserChange} isCreate={true} />
+      <CurrMembersDropdown setUser={setAssignUser} isCreate={true} />
       <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
         <Text style={styles.createBtnTxt}> Create </Text>
       </TouchableOpacity>

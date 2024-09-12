@@ -14,13 +14,13 @@ import { chunkArray } from "../helper/EquipmentUtils";
   component.
 */
 export default function IconMenu({
-  setIcon,
   data,
+  handleSet,
 }: {
-  setIcon: (data: string) => void;
   data: {
     [key: string]: ImageSourcePropType;
   };
+  handleSet: (imageKey: string) => void;
 }) {
   // show the icons in a grid of 4 columns
   const chunkedKeys = chunkArray(Object.keys(data), 4);
@@ -35,7 +35,7 @@ export default function IconMenu({
               <TouchableOpacity
                 key={key}
                 style={styles.iconContainer}
-                onPress={() => setIcon(key)}
+                onPress={() => handleSet(key)}
               >
                 <Image
                   source={data[key]}

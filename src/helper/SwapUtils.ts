@@ -2,6 +2,7 @@ import { DataStore } from "@aws-amplify/datastore";
 
 import { OrgUserStorage, Equipment, Container } from "../models";
 import { ContainerObj, EquipmentObj } from "../types/ModelTypes";
+import { Dispatch, SetStateAction } from "react";
 import { handleError } from "./Utils";
 
 /* 
@@ -18,9 +19,11 @@ import { handleError } from "./Utils";
 export const reassignEquipment = async (
   item: EquipmentObj,
   assignedTo: OrgUserStorage | null,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  if (!assignedTo || item.assignedTo === assignedTo.id) return;
+  setIsLoading(true);
   try {
-    if (!assignedTo || item.assignedTo === assignedTo.id) return;
     // ensure equipment and user exist
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
@@ -36,9 +39,10 @@ export const reassignEquipment = async (
         updated.lastUpdatedDate = new Date().toISOString();
       }),
     );
-  } catch (e) {
-    handleError("Swap Equipment", e as Error, null);
+  } catch (error) {
+    handleError("ReassgnEquipment", error as Error, setIsLoading);
   }
+  setIsLoading(false);
 };
 
 // reassign the container to the new OrgUserStorage by the id passed in
@@ -46,9 +50,11 @@ export const reassignEquipment = async (
 export const reassignContainer = async (
   item: ContainerObj,
   assignedTo: OrgUserStorage | null,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  if (!assignedTo || item.assignedTo === assignedTo.id) return;
+  setIsLoading(true);
   try {
-    if (!assignedTo || item.assignedTo === assignedTo.id) return;
     // ensure container and user exist
     const swapOrgUserStorage = await DataStore.query(
       OrgUserStorage,
@@ -76,9 +82,10 @@ export const reassignContainer = async (
         }),
       );
     });
-  } catch (e) {
-    handleError("Swap Container", e as Error, null);
+  } catch (error) {
+    handleError("ReassignContainer", error as Error, setIsLoading);
   }
+  setIsLoading(false);
 };
 
 // reassign the equipment to the container by the id passed in
@@ -86,9 +93,11 @@ export const reassignContainer = async (
 export const addEquipmentToContainer = async (
   item: EquipmentObj,
   containerItem: ContainerObj,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  if (item.container === containerItem.id) return;
+  setIsLoading(true);
   try {
-    if (item.container === containerItem.id) return;
     // ensure equipment and container exist
     const equip = await DataStore.query(Equipment, item.id);
     const container = await DataStore.query(Container, containerItem.id);
@@ -103,9 +112,10 @@ export const addEquipmentToContainer = async (
         updated.assignedTo = contanierUser;
       }),
     );
-  } catch (e) {
-    handleError("addEquipmentToContainer", e as Error, null);
+  } catch (error) {
+    handleError("AddEquipmentToContainer", error as Error, setIsLoading);
   }
+  setIsLoading(false);
 };
 
 // reassign the equipment out of the container
@@ -113,7 +123,9 @@ export const addEquipmentToContainer = async (
 export const moveOutOfContainer = async (
   item: EquipmentObj,
   assignedTo: OrgUserStorage | null,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  setIsLoading(true);
   try {
     // ensure equipment and user exist
     const equip = await DataStore.query(Equipment, item.id);
@@ -129,7 +141,8 @@ export const moveOutOfContainer = async (
         updated.assignedTo = user;
       }),
     );
-  } catch (e) {
-    handleError("Move Out of Container", e as Error, null);
+  } catch (error) {
+    handleError("MoveOutOfContainer", error as Error, setIsLoading);
   }
+  setIsLoading(false);
 };

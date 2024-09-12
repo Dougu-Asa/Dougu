@@ -1,3 +1,6 @@
+import { getUrl, uploadData } from "aws-amplify/storage";
+import { ImageSourcePropType } from "react-native";
+
 /*
     Call an AWS API Gateway endpoint that uses a lambda function
     to create a user group and add a user to the group.
@@ -46,4 +49,39 @@ export const addUserToGroup = async (
     throw new Error("Failed to add user to group");
   }
   return true;
+};
+
+// uploads an equipment image to S3
+export const uploadImage = async (
+  imageSource: ImageSourcePropType | null,
+  path: string,
+) => {
+  if (!imageSource || typeof imageSource != "object" || !("uri" in imageSource))
+    throw new Error("Invalid image source");
+  const imageUri = imageSource.uri;
+  const imageData = await fetch(String(imageUri)).then((r) => r.blob());
+  await uploadData({
+    path: path,
+    data: imageData,
+  }).result;
+};
+
+// get a signed URL for an image in S3
+// set the image uri
+export const getImageUri = async (
+  path: string,
+  mapping: { [key: string]: ImageSourcePropType },
+) => {
+  try {
+    const getUrlResult = await getUrl({
+      path: path,
+      options: {
+        validateObjectExistence: true, // Check if object exists before creating a URL
+      },
+    });
+    return { uri: getUrlResult.url.toString() };
+  } catch (error) {
+    console.log("Error getting image uri", error);
+    return mapping["default"];
+  }
 };

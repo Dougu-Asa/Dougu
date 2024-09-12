@@ -21,5 +21,11 @@ export type AmplifyDependentResourcesAttributes = {
     "userPoolGroups": {
       "asaUsersGroupRole": "string"
     }
+  },
+  "storage": {
+    "douguStorage": {
+      "BucketName": "string",
+      "Region": "string"
+    }
   }
 }
