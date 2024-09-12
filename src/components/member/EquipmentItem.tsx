@@ -32,12 +32,7 @@ export default function EquipmentItem({
       <View style={itemStyles.container}>
         {count > 0 && (
           <>
-            <EquipmentDisplay
-              image={item.image}
-              isMini={false}
-              color={item.color}
-              imageSource={null}
-            />
+            <EquipmentDisplay item={item} isMini={false} color={item.color} />
             <View style={itemStyles.circle}>
               <Text style={itemStyles.count}>{count}</Text>
             </View>

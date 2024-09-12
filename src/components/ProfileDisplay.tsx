@@ -1,4 +1,5 @@
-import { Image, ImageSourcePropType } from "react-native";
+import { ImageSourcePropType } from "react-native";
+import { Image } from "expo-image";
 import { profileMapping } from "../helper/ImageMapping";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../helper/AWS";

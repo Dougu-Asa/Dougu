@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from "react-native";
 import { OrgUserStorage } from "../models";
 
 export type EquipmentOrContainer = "equipment" | "container";
@@ -18,6 +19,7 @@ export interface EquipmentObj extends ItemObj {
   data: string[];
   detailData: string[];
   container: string | null;
+  uri?: ImageSourcePropType;
 }
 
 export interface ContainerObj extends ItemObj {

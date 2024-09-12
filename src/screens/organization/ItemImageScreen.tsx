@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
+
 import ContainerDisplay from "../../components/member/ContainerDisplay";
 import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Tab } from "@rneui/themed";
@@ -40,9 +41,9 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
         <View style={styles.display}>
           {index === 0 ? (
             <EquipmentDisplay
-              image="none"
-              isMini={false}
+              item={null}
               color={equipmentColor}
+              isMini={false}
               imageSource={imageSource}
             />
           ) : (

@@ -107,9 +107,9 @@ export default function CreateEquipmentScreen({
       <View style={styles.topRow}>
         {index === 0 ? (
           <EquipmentDisplay
-            image="none"
-            isMini={false}
+            item={null}
             color={equipmentColor}
+            isMini={false}
             imageSource={imageSource}
           />
         ) : (

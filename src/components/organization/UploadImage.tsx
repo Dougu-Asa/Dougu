@@ -69,7 +69,7 @@ export default function UploadImage({
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.4,
+      quality: 1,
     });
 
     if (!result.canceled) {
