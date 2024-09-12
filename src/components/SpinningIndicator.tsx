@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   circle: {
     width: 150,
     height: 150,
-    borderRadius: 75, // half of the width and height
+    borderRadius: 75,
     backgroundColor: "#791111",
   },
 });
