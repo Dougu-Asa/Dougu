@@ -7,6 +7,10 @@ import { useUser } from "../../helper/context/UserContext";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../../helper/AWS";
 
+/*
+  EquipmentDisplay displays the image of an equipment object. It can either
+  use a stored image uri or fetch the image from AWS S3.
+*/
 export default function EquipmentDisplay({
   item,
   color,

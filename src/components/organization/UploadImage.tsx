@@ -18,8 +18,7 @@ import { Dispatch, SetStateAction } from "react";
 
 /*
   UploadImage is a component that allows the user to upload an image
-  for an equipment object. These images are uploaded to and retrived
-  from AWS S3.
+  for an equipment object. These images will be uploaded to AWS S3. 
 */
 export default function UploadImage({
   setImageSource,

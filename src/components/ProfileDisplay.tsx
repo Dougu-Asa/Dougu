@@ -4,6 +4,10 @@ import { profileMapping } from "../helper/ImageMapping";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../helper/AWS";
 
+/*
+  ProfileDisplay displays the profile image of a user. It can either
+  use a stored image uri or fetch the image from AWS S3.
+*/
 export default function ProfileDisplay({
   profileKey,
   profileSource,
