@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 import { OrgUserStorage, Organization } from "../models";
 import { EquipmentObj, OrgItem, ContainerObj, Hex } from "./ModelTypes";
 import { ImageSourcePropType } from "react-native";
@@ -21,6 +21,7 @@ export type UserContextType = {
   org: Organization | null;
   setOrg: Dispatch<SetStateAction<Organization | null>>;
   orgUserStorage: OrgUserStorage | null;
+  isManager: RefObject<boolean>;
   contextLoading: boolean;
   resetContext: () => void; // doesn't take a param, doesn't return anything
 };

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageSourcePropType,
+  Alert,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
@@ -22,7 +23,7 @@ import { itemDisplayStyles } from "../../styles/ItemDisplay";
   storages, and equipment.
 */
 export default function InfoScreen({ navigation }: InfoScreenProps) {
-  const { org } = useUser();
+  const { org, isManager } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
   const [orgImageUri, setOrgImageUri] = useState<ImageSourcePropType>(
@@ -46,14 +47,22 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
     }
   }, [isFocused, org, setInfoFocus]);
 
+  const handleOrgImage = () => {
+    if (isManager.current) {
+      navigation.navigate("OrgImage", { imageSource: orgImageUri });
+    } else {
+      Alert.alert(
+        "Permission Error",
+        "You do not have permission to change the org image",
+        [{ text: "OK" }],
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={orgImageUri} style={itemDisplayStyles.image} />
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("OrgImage", { imageSource: orgImageUri })
-        }
-      >
+      <TouchableOpacity onPress={handleOrgImage}>
         <Text style={styles.link}>Edit Org Image</Text>
       </TouchableOpacity>
       <View style={styles.row}>

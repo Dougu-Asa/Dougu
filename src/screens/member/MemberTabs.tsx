@@ -32,19 +32,18 @@ export default function MemberTabs({
   navigation,
   route,
 }: MemberTabsScreenProps) {
-  const [currOrgName, setCurrOrgName] = useState("");
-  const [isManager, setIsManager] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const isFocused = useIsFocused();
-  const { user, org, orgUserStorage, contextLoading, resetContext } = useUser();
+  const { user, org, orgUserStorage, isManager, contextLoading, resetContext } =
+    useUser();
   const { setIsLoading } = useLoad();
 
   // set the header title and right icon, a crown is shown if the user is the manager
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: currOrgName,
+      headerTitle: org!.name,
       headerRight: () => {
-        if (isManager) {
+        if (isManager.current) {
           return (
             <MaterialCommunityIcons
               name="crown"
@@ -56,7 +55,7 @@ export default function MemberTabs({
         } else return null;
       },
     });
-  }, [navigation, currOrgName, isManager]);
+  }, [isManager, navigation, org]);
 
   // listen for keyboard events and hide the tab bar when the keyboard is visible
   useLayoutEffect(() => {
@@ -88,22 +87,18 @@ export default function MemberTabs({
         await callSignOut(setIsLoading, navigation, resetContext);
         return;
       }
-      setCurrOrgName(org!.name);
-      if (org!.manager === user!.id) {
-        setIsManager(true);
-      }
     };
 
     if (isFocused) checkUserOrg();
   }, [
-    org,
-    user,
-    isFocused,
-    orgUserStorage,
-    navigation,
-    resetContext,
     contextLoading,
+    isFocused,
+    navigation,
+    org,
+    orgUserStorage,
+    resetContext,
     setIsLoading,
+    user,
   ]);
 
   if (contextLoading) {
