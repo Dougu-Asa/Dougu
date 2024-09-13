@@ -1,34 +1,49 @@
 import { ImageSourcePropType, StyleSheet, View } from "react-native";
-import { OrgImageScreenProps } from "../../types/ScreenTypes";
-import { useState } from "react";
-import { Image } from "expo-image";
+import { Dispatch, SetStateAction, useState } from "react";
 import UploadImage from "../../components/organization/UploadImage";
 import { Button } from "@rneui/themed";
+import { useUser } from "../../helper/context/UserContext";
+import { useLoad } from "../../helper/context/LoadingContext";
+import { uploadImage } from "../../helper/AWS";
+import { handleError } from "../../helper/Utils";
+import { OrgImageScreenProps } from "../../types/ScreenTypes";
+import { Image } from "expo-image";
+import { itemDisplayStyles } from "../../styles/ItemDisplay";
 
 export default function OrgImageScreen({ route }: OrgImageScreenProps) {
-  const { key } = route.params;
-  const [imageKey, setImageKey] = useState<string>(key);
-  const [imageSource, setImageSource] = useState<ImageSourcePropType | null>(
-    require("../../assets/asayake.png"),
-  );
+  const { imageSource } = route.params;
+  const { org } = useUser();
+  const { setIsLoading } = useLoad();
+  const [imageUri, setImageUri] = useState<ImageSourcePropType>(imageSource);
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     // upload the image to AWS S3
+    try {
+      if (imageSource) {
+        setIsLoading(true);
+        const path = `public/${org!.id}/orgImage.jpeg`;
+        await uploadImage(imageUri, path);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      handleError("handleUpload", error as Error, setIsLoading);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Image source={imageSource} style={styles.image} />
+      <Image source={imageUri} style={itemDisplayStyles.image} />
       <View style={styles.uploadContainer}>
         <UploadImage
-          setImageSource={setImageSource}
-          setImageKey={setImageKey}
+          setImageSource={
+            setImageUri as Dispatch<SetStateAction<ImageSourcePropType | null>>
+          }
         />
       </View>
       <Button
         buttonStyle={styles.button}
         containerStyle={styles.buttonContainer}
-        icon={{ name: "upload", type: "antdesign", color: "white" }}
+        icon={{ name: "upload", type: "antdesign", color: "white", size: 30 }}
         onPress={handleUpload}
         title="Upload"
         titleStyle={{ fontWeight: "500" }}

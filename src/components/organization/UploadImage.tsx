@@ -25,7 +25,7 @@ export default function UploadImage({
   setImageKey,
 }: {
   setImageSource: Dispatch<SetStateAction<ImageSourcePropType | null>>;
-  setImageKey: Dispatch<SetStateAction<string>>;
+  setImageKey?: Dispatch<SetStateAction<string>>;
 }) {
   // set the image source and key after compressing the image
   const setImage = async (asset: ImagePickerAsset) => {
@@ -33,11 +33,11 @@ export default function UploadImage({
     // compress the image (for cost savings)
     const manipResult = await ImageManipulator.manipulateAsync(
       asset.uri,
-      [{ resize: { width: 100 } }],
-      { compress: 0.4, format: ImageManipulator.SaveFormat.PNG },
+      [{ resize: { width: 150 } }],
+      { compress: 0, format: ImageManipulator.SaveFormat.PNG },
     );
     setImageSource({ uri: manipResult.uri });
-    setImageKey(asset.fileName);
+    if (setImageKey) setImageKey(asset.fileName);
   };
 
   // pick an image from the gallery

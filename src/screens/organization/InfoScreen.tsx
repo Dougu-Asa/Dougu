@@ -1,10 +1,20 @@
-import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ImageSourcePropType,
+} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
+import { getImageUri } from "../../helper/AWS";
+import { orgMapping } from "../../helper/ImageMapping";
+import { Image } from "expo-image";
+import { itemDisplayStyles } from "../../styles/ItemDisplay";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -15,23 +25,34 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   const { org } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
+  const [orgImageUri, setOrgImageUri] = useState<ImageSourcePropType>(
+    orgMapping["default"],
+  );
 
   useEffect(() => {
+    const fetchImageUri = async () => {
+      const path = `public/${org!.id}/orgImage.jpeg`;
+      const fetchImageUri = getImageUri(path, orgMapping);
+      fetchImageUri.then((uri) => {
+        setOrgImageUri(uri);
+      });
+    };
+
     if (isFocused) {
       setInfoFocus(true);
+      fetchImageUri();
     } else {
       setInfoFocus(false);
     }
-  }, [isFocused, setInfoFocus]);
+  }, [isFocused, org, setInfoFocus]);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../assets/asayake.png")}
-        style={styles.circleImage}
-      />
+      <Image source={orgImageUri} style={itemDisplayStyles.image} />
       <TouchableOpacity
-        onPress={() => navigation.navigate("OrgImage", { key: org!.image })}
+        onPress={() =>
+          navigation.navigate("OrgImage", { imageSource: orgImageUri })
+        }
       >
         <Text style={styles.link}>Edit Org Image</Text>
       </TouchableOpacity>
@@ -92,12 +113,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "#fff",
-  },
-  circleImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 100 / 2,
-    marginTop: 20,
   },
   equipmentBtn: {
     backgroundColor: "#EEEEEE",

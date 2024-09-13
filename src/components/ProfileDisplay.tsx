@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { profileMapping } from "../helper/ImageMapping";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../helper/AWS";
+import { useUser } from "../helper/context/UserContext";
 
 /*
   ProfileDisplay displays the profile image of a user. It can either
@@ -22,6 +23,8 @@ export default function ProfileDisplay({
   const [imageUri, setImageUri] = useState<ImageSourcePropType>(
     profileMapping["default"],
   );
+  const { user } = useUser();
+
   useEffect(() => {
     if (profileSource) {
       setImageUri(profileSource);
@@ -32,9 +35,12 @@ export default function ProfileDisplay({
       const fetchImageUri = getImageUri(path, profileMapping);
       fetchImageUri.then((uri) => {
         setImageUri(uri);
+        if (userId === user!.id) {
+          user!.profileUri = uri;
+        }
       });
     }
-  }, [profileKey, profileSource, userId]);
+  }, [profileKey, profileSource, user, userId]);
 
   return (
     <Image
