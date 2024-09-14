@@ -59,7 +59,7 @@ export default function ProfileScreen({
           userId={user!.id}
           profileKey={profileKey}
           size={100}
-          profileSource={null}
+          profileSource={user?.profileUri ? user?.profileUri : null}
         />
         <View style={profileStyles.editButton}>
           <MaterialCommunityIcons name="pencil" size={editIconSize} />

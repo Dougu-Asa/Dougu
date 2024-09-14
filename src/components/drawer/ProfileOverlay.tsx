@@ -99,7 +99,7 @@ export default function ProfileOverlay({
             <ProfileDisplay
               profileKey={profileKey}
               size={profileSize}
-              profileSource={profileSource}
+              profileSource={profileSource || user?.profileUri || null}
               userId={user!.id}
             />
           </Animated.View>

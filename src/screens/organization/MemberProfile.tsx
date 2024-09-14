@@ -113,7 +113,7 @@ export default function MemberProfile({ route }: MemberProfileScreenProps) {
     <View style={profileStyles.container}>
       <View style={profileStyles.profile}>
         <ProfileDisplay
-          userId={member.id}
+          userId={member.user}
           profileKey={member.profile}
           size={100}
           profileSource={null}
