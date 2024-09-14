@@ -63,7 +63,7 @@ export default function UserStorages({
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {
-    if (!isManager.current)
+    if (!isManager)
       Alert.alert(
         "Authorization Error",
         "You do not have permission to create storages",
@@ -110,7 +110,7 @@ export default function UserStorages({
       </View>
       <ScrollView style={{ width: Dimensions.get("window").width }}>
         {currData.map((item, index) => (
-          <MemberRow key={index} item={item} />
+          <MemberRow key={index} navigation={navigation} item={item} />
         ))}
         {tab === "Storages" ? (
           <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>

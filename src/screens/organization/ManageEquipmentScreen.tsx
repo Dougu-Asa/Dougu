@@ -23,7 +23,7 @@ export default function ManageEquipmentScreen({
   };
 
   const handleCreate = () => {
-    if (isManager.current) {
+    if (isManager) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(

@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  TouchableOpacity,
-  Text,
-  Alert,
-} from "react-native";
+import { View, TouchableOpacity, Text, Alert, Dimensions } from "react-native";
 import React, { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@rneui/themed";
@@ -20,9 +13,7 @@ import DeleteOverlay from "../../components/drawer/DeleteOverlay";
 import { Organization } from "../../models";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
 import ProfileDisplay from "../../components/ProfileDisplay";
-
-const profileSize = Dimensions.get("screen").width / 4;
-const editSize = Dimensions.get("screen").width / 10;
+import { profileStyles } from "../../styles/ProfileStyles";
 
 /*
   Displays user information and provides access for
@@ -34,6 +25,7 @@ export default function ProfileScreen({
 }: {
   navigation: ProfileScreenProps;
 }) {
+  const editIconSize = Dimensions.get("screen").width / 18;
   const { user } = useUser();
   const [profileKey, setProfileKey] = useState(user!.profile);
   const [profileVisible, setProfileVisible] = useState(false);
@@ -58,52 +50,55 @@ export default function ProfileScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={profileStyles.container}>
       <TouchableOpacity
-        style={styles.profile}
+        style={profileStyles.profile}
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
           userId={user!.id}
           profileKey={profileKey}
-          size={profileSize}
+          size={100}
           profileSource={null}
         />
-        <View style={styles.editButton}>
-          <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
+        <View style={profileStyles.editButton}>
+          <MaterialCommunityIcons name="pencil" size={editIconSize} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row} onPress={() => setNameVisible(true)}>
-        <Text style={styles.text}>Name</Text>
-        <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user!.name}</Text>
+      <TouchableOpacity
+        style={profileStyles.row}
+        onPress={() => setNameVisible(true)}
+      >
+        <Text style={profileStyles.text}>Name</Text>
+        <View style={profileStyles.changeBtn}>
+          <Text style={profileStyles.text}>{user!.name}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.row}
+        style={profileStyles.row}
         onPress={() => setEmailVisible(true)}
       >
-        <Text style={styles.text}>Email</Text>
-        <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user!.email}</Text>
+        <Text style={profileStyles.text}>Email</Text>
+        <View style={profileStyles.changeBtn}>
+          <Text style={profileStyles.text}>{user!.email}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.row}
+        style={profileStyles.row}
         onPress={() => setPasswordVisible(true)}
       >
-        <Text style={styles.text}>Change Password</Text>
-        <View style={styles.changeBtn}>
+        <Text style={profileStyles.text}>Change Password</Text>
+        <View style={profileStyles.changeBtn}>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <Button
         title="Delete Account"
         color={"#EEEEEE"}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
+        buttonStyle={profileStyles.button}
+        titleStyle={profileStyles.buttonText}
         onPress={verifyDelete}
       />
       <ProfileOverlay
@@ -126,49 +121,3 @@ export default function ProfileScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "red",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  changeBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  editButton: {
-    width: editSize,
-    height: editSize,
-    borderRadius: editSize / 2,
-    backgroundColor: "#D3D3D3",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    right: -5,
-    bottom: -5,
-    borderColor: "white",
-    borderWidth: 5,
-  },
-  text: {
-    fontSize: 16,
-  },
-  profile: {
-    width: profileSize,
-    marginTop: "5%",
-    marginBottom: "5%",
-  },
-  row: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 15,
-  },
-});

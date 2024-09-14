@@ -124,6 +124,12 @@ export type UserStoragesScreenProps = NativeStackScreenProps<
   "UserStorages"
 >;
 
+export type UserStoragesNavigationProps = NativeStackNavigationProp<
+  OrgStackParamList,
+  "UserStorages",
+  undefined
+>;
+
 export type CreateEquipmentScreenProps = NativeStackScreenProps<
   OrgStackParamList,
   "CreateEquipment"
@@ -137,4 +143,9 @@ export type ItemImageScreenProps = NativeStackScreenProps<
 export type OrgImageScreenProps = NativeStackScreenProps<
   OrgStackParamList,
   "OrgImage"
+>;
+
+export type MemberProfileScreenProps = NativeStackScreenProps<
+  OrgStackParamList,
+  "MemberProfile"
 >;

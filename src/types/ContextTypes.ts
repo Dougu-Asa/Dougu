@@ -21,7 +21,8 @@ export type UserContextType = {
   org: Organization | null;
   setOrg: Dispatch<SetStateAction<Organization | null>>;
   orgUserStorage: OrgUserStorage | null;
-  isManager: RefObject<boolean>;
+  isManager: boolean;
+  setIsManager: Dispatch<SetStateAction<boolean>>;
   contextLoading: boolean;
   resetContext: () => void; // doesn't take a param, doesn't return anything
 };

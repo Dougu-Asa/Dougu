@@ -48,7 +48,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   }, [isFocused, org, setInfoFocus]);
 
   const handleOrgImage = () => {
-    if (isManager.current) {
+    if (isManager) {
       navigation.navigate("OrgImage", { imageSource: orgImageUri });
     } else {
       Alert.alert(

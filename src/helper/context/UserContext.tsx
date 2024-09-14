@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
 import { Organization, OrgUserStorage, UserOrStorage } from "../../models";
@@ -21,7 +21,7 @@ export default function UserProvider({
     null,
   );
   const [contextLoading, setIsContextLoading] = useState<boolean>(true);
-  const isManager = useRef<boolean>(false);
+  const [isManager, setIsManager] = useState<boolean>(false);
 
   // When the user and org are set, get the user's organization object
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function UserProvider({
         ]),
       );
       setOrgUserStorage(orgUser[0]);
-      isManager.current = user.id === org.manager;
+      setIsManager(user.id === org.manager);
       setIsContextLoading(false);
     };
 
@@ -60,6 +60,7 @@ export default function UserProvider({
         setOrg,
         orgUserStorage,
         isManager,
+        setIsManager,
         contextLoading,
         resetContext,
       }}

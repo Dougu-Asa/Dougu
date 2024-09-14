@@ -43,7 +43,7 @@ export default function MemberTabs({
     navigation.setOptions({
       headerTitle: org!.name,
       headerRight: () => {
-        if (isManager.current) {
+        if (isManager) {
           return (
             <MaterialCommunityIcons
               name="crown"
