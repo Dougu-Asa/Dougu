@@ -15,7 +15,7 @@ export default function MyHeaderProfileButton({
       <ProfileDisplay
         userId={user!.id}
         profileKey={user!.profile}
-        profileSource={user!.profileUri || null}
+        profileSource={null}
         size={45}
       />
     </TouchableOpacity>

@@ -22,6 +22,7 @@ export default function MemberRow({
   const { org } = useUser();
   // check if the member that this row represents is a manager
   const memberManager = org!.manager === item?.user;
+  const memberId = item?.type === "USER" ? item.user : item?.id;
 
   const viewProfile = () => {
     if (!item) return;
@@ -35,7 +36,7 @@ export default function MemberRow({
           profileKey={item ? item.profile : "default"}
           size={36}
           profileSource={null}
-          userId={item?.user}
+          userId={memberId}
         />
       </View>
       <View style={userStorage.nameRow}>

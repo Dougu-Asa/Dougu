@@ -1,4 +1,11 @@
-import { View, TouchableOpacity, Text, Alert, Dimensions } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Alert,
+  Dimensions,
+  ImageSourcePropType,
+} from "react-native";
 import React, { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@rneui/themed";
@@ -14,6 +21,14 @@ import { Organization } from "../../models";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
 import ProfileDisplay from "../../components/ProfileDisplay";
 import { profileStyles } from "../../styles/ProfileStyles";
+import { uploadImage } from "../../helper/AWS";
+import {
+  editOrgUserStorages,
+  modifyUserAttribute,
+  updateUserContext,
+} from "../../helper/drawer/ModifyProfileUtils";
+import { handleError } from "../../helper/Utils";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 /*
   Displays user information and provides access for
@@ -26,13 +41,16 @@ export default function ProfileScreen({
   navigation: ProfileScreenProps;
 }) {
   const editIconSize = Dimensions.get("screen").width / 18;
-  const { user } = useUser();
-  const [profileKey, setProfileKey] = useState(user!.profile);
+  const { user, setUser } = useUser();
   const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
+  const { setIsLoading } = useLoad();
+  const [profileSource, setProfileSource] =
+    useState<ImageSourcePropType | null>(null);
+  const [profileKey, setProfileKey] = useState<string>(user!.profile);
 
   // organization managers must transfer ownership before deleting account
   const verifyDelete = async () => {
@@ -49,6 +67,29 @@ export default function ProfileScreen({
     }
   };
 
+  // update user profile with new profile source and key
+  const updateProfile = async () => {
+    try {
+      // don't update if the profile is the same
+      if (user?.profile === profileKey) {
+        return;
+      }
+      setIsLoading(true);
+      // if we are using profilesource, we need to upload it to S3
+      if (profileSource) {
+        const path = `public/profiles/${user!.id}/profile.jpeg`;
+        await uploadImage(profileSource, path);
+      }
+      updateUserContext(user!, setUser, "profile", profileKey);
+      modifyUserAttribute("profile", profileKey);
+      // update OrgUserStorages to match user profile
+      await editOrgUserStorages(user!.id, "profile", profileKey);
+      setIsLoading(false);
+    } catch (e) {
+      handleError("updateProfile", e as Error, setIsLoading);
+    }
+  };
+
   return (
     <View style={profileStyles.container}>
       <TouchableOpacity
@@ -59,11 +100,21 @@ export default function ProfileScreen({
           userId={user!.id}
           profileKey={profileKey}
           size={100}
-          profileSource={user?.profileUri ? user?.profileUri : null}
+          profileSource={profileSource}
         />
         <View style={profileStyles.editButton}>
           <MaterialCommunityIcons name="pencil" size={editIconSize} />
         </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={updateProfile}>
+        <Text
+          style={{
+            color: "#0000ff",
+            fontSize: 14,
+          }}
+        >
+          Save Profile
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={profileStyles.row}
@@ -104,6 +155,8 @@ export default function ProfileScreen({
       <ProfileOverlay
         visible={profileVisible}
         setVisible={setProfileVisible}
+        profileSource={profileSource}
+        setProfileSource={setProfileSource}
         profileKey={profileKey}
         setProfileKey={setProfileKey}
       />

@@ -12,21 +12,12 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
+import ProfileDisplay from "../ProfileDisplay";
 
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
-import { useLoad } from "../../helper/context/LoadingContext";
-import { handleError } from "../../helper/Utils";
-import { useUser } from "../../helper/context/UserContext";
-import {
-  modifyUserAttribute,
-  editOrgUserStorages,
-  updateUserContext,
-} from "../../helper/drawer/ModifyProfileUtils";
 import { Tab } from "@rneui/themed";
 import UploadImage from "../organization/UploadImage";
-import ProfileDisplay from "../ProfileDisplay";
-import { uploadImage } from "../../helper/AWS";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -35,53 +26,35 @@ import { uploadImage } from "../../helper/AWS";
 export default function ProfileOverlay({
   visible,
   setVisible,
+  profileSource,
+  setProfileSource,
   profileKey,
   setProfileKey,
+  userId,
 }: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  profileSource: ImageSourcePropType | null;
+  setProfileSource: React.Dispatch<
+    React.SetStateAction<ImageSourcePropType | null>
+  >;
   profileKey: string;
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
+  userId?: string;
 }) {
-  const { setIsLoading } = useLoad();
-  const { user, setUser } = useUser();
-  const [selected, setSelected] = useState(0);
-  const [profileSource, setProfileSource] =
-    useState<ImageSourcePropType | null>(null);
   const profileSize = Dimensions.get("screen").width / 4;
+  const [selected, setSelected] = useState(0);
 
   // update user profile attributes in Cognito
   const handleSet = async (profileData: string) => {
+    console.log("ProfileOverlay: handleSet: profileData: ", profileData);
     setProfileSource(null);
     setProfileKey(profileData);
   };
 
   const handleClose = async () => {
-    await updateProfile();
     setVisible(false);
     setSelected(0);
-  };
-
-  const updateProfile = async () => {
-    try {
-      // don't update if the profile is the same
-      if (user?.profile === profileKey) {
-        return;
-      }
-      setIsLoading(true);
-      // if we are using profilesource, we need to upload it to S3
-      if (profileSource) {
-        const path = `public/profiles/${user!.id}/profile.jpeg`;
-        await uploadImage(profileSource, path);
-      }
-      updateUserContext(user!, setUser, "profile", profileKey);
-      modifyUserAttribute("profile", profileKey);
-      // update OrgUserStorages to match user profile
-      await editOrgUserStorages(user!.id, "profile", profileKey);
-      setIsLoading(false);
-    } catch (e) {
-      handleError("updateProfile", e as Error, setIsLoading);
-    }
   };
 
   return (
@@ -98,9 +71,9 @@ export default function ProfileOverlay({
           >
             <ProfileDisplay
               profileKey={profileKey}
+              profileSource={profileSource}
               size={profileSize}
-              profileSource={profileSource || user?.profileUri || null}
-              userId={user!.id}
+              userId={userId}
             />
           </Animated.View>
           <Animated.View
