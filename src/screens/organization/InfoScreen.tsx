@@ -1,10 +1,22 @@
-import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ImageSourcePropType,
+  Alert,
+} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
+import { getImageUri } from "../../helper/AWS";
+import { orgMapping } from "../../helper/ImageMapping";
+import { Image } from "expo-image";
+import { itemDisplayStyles } from "../../styles/ItemDisplay";
+import { useImage } from "../../helper/context/ImageContext";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -12,29 +24,59 @@ import { useHeader } from "../../helper/context/HeaderContext";
   storages, and equipment.
 */
 export default function InfoScreen({ navigation }: InfoScreenProps) {
-  const { org } = useUser();
+  const { org, isManager } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
+  const { imageMap } = useImage();
+  const [orgImageUri, setOrgImageUri] = useState<ImageSourcePropType>(
+    orgMapping["default"],
+  );
 
   useEffect(() => {
+    const fetchImageUri = async () => {
+      const path = `public/${org!.id}/orgImage.jpeg`;
+      if (imageMap.has(org!.id)) {
+        setOrgImageUri(imageMap.get(org!.id)!);
+      } else {
+        const fetchUri = getImageUri(path, orgMapping);
+        fetchUri.then((uri) => {
+          setOrgImageUri(uri);
+          imageMap.set(org!.id, uri);
+        });
+      }
+    };
+
     if (isFocused) {
       setInfoFocus(true);
+      fetchImageUri();
     } else {
       setInfoFocus(false);
     }
-  }, [isFocused, setInfoFocus]);
+  }, [imageMap, isFocused, org, setInfoFocus]);
+
+  const handleOrgImage = () => {
+    if (isManager) {
+      navigation.navigate("OrgImage", { imageSource: orgImageUri });
+    } else {
+      Alert.alert(
+        "Permission Error",
+        "You do not have permission to change the org image",
+        [{ text: "OK" }],
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../assets/asayake.png")}
-        style={styles.circleImage}
-      />
-      <View style={styles.nonBtnRow}>
+      <Image source={orgImageUri} style={itemDisplayStyles.image} />
+      <TouchableOpacity onPress={handleOrgImage}>
+        <Text style={styles.link}>Edit Org Image</Text>
+      </TouchableOpacity>
+      <View style={styles.row}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Name</Text>
         <Text style={{ flex: 3 }}>{org!.name}</Text>
       </View>
-      <View style={styles.nonBtnRow}>
+      <View style={styles.row}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Access Code</Text>
         <Text style={{ flex: 3 }}>{org!.accessCode}</Text>
       </View>
@@ -88,42 +130,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  circleImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 100 / 2,
-    marginTop: 20,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-    margin: 20,
-  },
-  rowHeader: {
-    fontWeight: "bold",
-    flex: 2,
-  },
-  nonBtnRow: {
-    flexDirection: "row",
-    width: "90%",
-    margin: 20,
-  },
-  rightArrow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "50%",
-    flex: 3,
-  },
   equipmentBtn: {
     backgroundColor: "#EEEEEE",
     height: 50,
     width: "50%",
     justifyContent: "center",
     borderRadius: 10,
+    marginTop: 20,
   },
   eBtnText: {
     alignSelf: "center",
     fontWeight: "bold",
+  },
+  link: {
+    color: "#0000ff",
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "90%",
+    margin: 15,
+  },
+  rowHeader: {
+    fontWeight: "bold",
+    flex: 2,
+  },
+  rightArrow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "50%",
+    flex: 3,
   },
 });

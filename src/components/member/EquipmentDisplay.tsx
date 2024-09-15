@@ -6,6 +6,7 @@ import { iconMapping } from "../../helper/ImageMapping";
 import { useUser } from "../../helper/context/UserContext";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../../helper/AWS";
+import { useImage } from "../../helper/context/ImageContext";
 
 /*
   EquipmentDisplay displays the image of an equipment object. It can either
@@ -31,6 +32,7 @@ export default function EquipmentDisplay({
     iconMapping["default"],
   );
   const { org } = useUser();
+  const { imageMap } = useImage();
 
   // set the image uri
   useEffect(() => {
@@ -38,18 +40,17 @@ export default function EquipmentDisplay({
     const image = item.image;
     if (image in iconMapping) {
       setImageUri(iconMapping[image]);
-    } else if (item.uri) {
-      // if we previously fetched the uri, use that
-      setImageUri(item.uri);
+    } else if (imageMap.has(image)) {
+      setImageUri(imageMap.get(image)!);
     } else {
       const path = `public/${org!.id}/equipment/${image}`;
       const fetchImageUri = getImageUri(path, iconMapping);
       fetchImageUri.then((uri) => {
         setImageUri(uri);
-        item.uri = uri;
+        imageMap.set(image, uri);
       });
     }
-  }, [item, org]);
+  }, [imageMap, item, org]);
 
   return (
     <Pressable

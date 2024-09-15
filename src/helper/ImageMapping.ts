@@ -66,4 +66,8 @@ const iconMapping: { [key: string]: ImageSourcePropType } = {
   default: require(`${equipmentPath}default.png`),
 };
 
-export { iconMapping, profileMapping };
+const orgMapping: { [key: string]: ImageSourcePropType } = {
+  default: require("../assets/asayake.png"),
+};
+
+export { iconMapping, profileMapping, orgMapping };

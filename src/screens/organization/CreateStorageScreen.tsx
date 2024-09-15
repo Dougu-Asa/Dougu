@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  Image,
   Dimensions,
+  ImageSourcePropType,
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -17,9 +17,10 @@ import { useLoad } from "../../helper/context/LoadingContext";
 import { OrgUserStorage, Organization, UserOrStorage } from "../../models";
 import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
-import { profileMapping } from "../../helper/ImageMapping";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
+import ProfileDisplay from "../../components/ProfileDisplay";
+import { uploadImage } from "../../helper/AWS";
 
 /*
   Create storage screen allows a manager to create storage.
@@ -28,8 +29,10 @@ import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 const profileSize = Dimensions.get("screen").width / 4;
 const editSize = Dimensions.get("screen").width / 10;
 export default function CreateStorageScreen() {
+  const [profileSource, setProfileSource] =
+    useState<ImageSourcePropType | null>(null);
+  const [profileKey, setProfileKey] = useState<string>("default");
   const [profileVisible, setProfileVisible] = useState(false);
-  const [profile, setProfile] = useState("default");
   const [name, onChangeName] = useState("");
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
@@ -46,16 +49,21 @@ export default function CreateStorageScreen() {
       // create the storage
       const dataOrg = await DataStore.query(Organization, org!.id);
       if (dataOrg == null) throw new Error("Organization not found.");
-      await DataStore.save(
+      const storage = await DataStore.save(
         new OrgUserStorage({
           name: name,
           organization: dataOrg,
           type: UserOrStorage.STORAGE,
           details: details,
           group: org!.name,
-          profile: profile,
+          profile: profileKey,
         }),
       );
+      // upload the profile image
+      if (profileSource) {
+        const path = `public/profiles/${storage.id}/profile.jpeg`;
+        await uploadImage(profileSource, path);
+      }
       setIsLoading(false);
       onChangeName("");
       onChangeDetails("");
@@ -71,7 +79,12 @@ export default function CreateStorageScreen() {
         style={styles.profile}
         onPress={() => setProfileVisible(true)}
       >
-        <Image source={profileMapping[profile]} style={styles.profileImage} />
+        <ProfileDisplay
+          profileSource={profileSource}
+          profileKey={profileKey}
+          size={profileSize}
+          userId={null}
+        />
         <View style={styles.editButton}>
           <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
         </View>
@@ -111,8 +124,10 @@ export default function CreateStorageScreen() {
       <ProfileOverlay
         visible={profileVisible}
         setVisible={setProfileVisible}
-        profileKey={profile}
-        setProfileKey={setProfile}
+        profileSource={profileSource}
+        setProfileSource={setProfileSource}
+        profileKey={profileKey}
+        setProfileKey={setProfileKey}
       />
     </View>
   );
@@ -153,11 +168,6 @@ const styles = StyleSheet.create({
     width: profileSize,
     marginTop: "5%",
     marginBottom: "5%",
-  },
-  profileImage: {
-    width: profileSize,
-    height: profileSize,
-    borderRadius: profileSize / 2,
   },
   rowContainer: {
     flexDirection: "row",

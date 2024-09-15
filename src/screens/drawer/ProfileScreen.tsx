@@ -1,10 +1,10 @@
 import {
-  StyleSheet,
   View,
-  Dimensions,
   TouchableOpacity,
   Text,
   Alert,
+  Dimensions,
+  ImageSourcePropType,
 } from "react-native";
 import React, { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -20,9 +20,15 @@ import DeleteOverlay from "../../components/drawer/DeleteOverlay";
 import { Organization } from "../../models";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
 import ProfileDisplay from "../../components/ProfileDisplay";
-
-const profileSize = Dimensions.get("screen").width / 4;
-const editSize = Dimensions.get("screen").width / 10;
+import { profileStyles } from "../../styles/ProfileStyles";
+import { uploadImage } from "../../helper/AWS";
+import {
+  editOrgUserStorages,
+  modifyUserAttribute,
+  updateUserContext,
+} from "../../helper/drawer/ModifyProfileUtils";
+import { handleError } from "../../helper/Utils";
+import { useLoad } from "../../helper/context/LoadingContext";
 
 /*
   Displays user information and provides access for
@@ -34,13 +40,17 @@ export default function ProfileScreen({
 }: {
   navigation: ProfileScreenProps;
 }) {
-  const { user } = useUser();
-  const [profileKey, setProfileKey] = useState(user!.profile);
+  const editIconSize = Dimensions.get("screen").width / 18;
+  const { user, setUser } = useUser();
   const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
+  const { setIsLoading } = useLoad();
+  const [profileSource, setProfileSource] =
+    useState<ImageSourcePropType | null>(null);
+  const [profileKey, setProfileKey] = useState<string>(user!.profile);
 
   // organization managers must transfer ownership before deleting account
   const verifyDelete = async () => {
@@ -57,58 +67,98 @@ export default function ProfileScreen({
     }
   };
 
+  // update user profile with new profile source and key
+  const updateProfile = async () => {
+    try {
+      // don't update if the profile is the same
+      if (user?.profile === profileKey) {
+        return;
+      }
+      setIsLoading(true);
+      // if we are using profilesource, we need to upload it to S3
+      if (profileSource) {
+        const path = `public/profiles/${user!.id}/profile.jpeg`;
+        await uploadImage(profileSource, path);
+      }
+      updateUserContext(user!, setUser, "profile", profileKey);
+      modifyUserAttribute("profile", profileKey);
+      // update OrgUserStorages to match user profile
+      await editOrgUserStorages(user!.id, "profile", profileKey);
+      setIsLoading(false);
+    } catch (e) {
+      handleError("updateProfile", e as Error, setIsLoading);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={profileStyles.container}>
       <TouchableOpacity
-        style={styles.profile}
+        style={profileStyles.profile}
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
           userId={user!.id}
           profileKey={profileKey}
-          size={profileSize}
-          profileSource={null}
+          size={100}
+          profileSource={profileSource}
         />
-        <View style={styles.editButton}>
-          <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
+        <View style={profileStyles.editButton}>
+          <MaterialCommunityIcons name="pencil" size={editIconSize} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.row} onPress={() => setNameVisible(true)}>
-        <Text style={styles.text}>Name</Text>
-        <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user!.name}</Text>
+      <TouchableOpacity onPress={updateProfile}>
+        {user?.profile !== profileKey ? (
+          <Text
+            style={{
+              color: "#0000ff",
+              fontSize: 14,
+            }}
+          >
+            Save Profile
+          </Text>
+        ) : null}
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={profileStyles.row}
+        onPress={() => setNameVisible(true)}
+      >
+        <Text style={profileStyles.text}>Name</Text>
+        <View style={profileStyles.changeBtn}>
+          <Text style={profileStyles.text}>{user!.name}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.row}
+        style={profileStyles.row}
         onPress={() => setEmailVisible(true)}
       >
-        <Text style={styles.text}>Email</Text>
-        <View style={styles.changeBtn}>
-          <Text style={styles.text}>{user!.email}</Text>
+        <Text style={profileStyles.text}>Email</Text>
+        <View style={profileStyles.changeBtn}>
+          <Text style={profileStyles.text}>{user!.email}</Text>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.row}
+        style={profileStyles.row}
         onPress={() => setPasswordVisible(true)}
       >
-        <Text style={styles.text}>Change Password</Text>
-        <View style={styles.changeBtn}>
+        <Text style={profileStyles.text}>Change Password</Text>
+        <View style={profileStyles.changeBtn}>
           <MaterialCommunityIcons name="chevron-right" size={30} />
         </View>
       </TouchableOpacity>
       <Button
         title="Delete Account"
         color={"#EEEEEE"}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
+        buttonStyle={profileStyles.button}
+        titleStyle={profileStyles.buttonText}
         onPress={verifyDelete}
       />
       <ProfileOverlay
         visible={profileVisible}
         setVisible={setProfileVisible}
+        profileSource={profileSource}
+        setProfileSource={setProfileSource}
         profileKey={profileKey}
         setProfileKey={setProfileKey}
       />
@@ -126,49 +176,3 @@ export default function ProfileScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "red",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  changeBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  editButton: {
-    width: editSize,
-    height: editSize,
-    borderRadius: editSize / 2,
-    backgroundColor: "#D3D3D3",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    right: -5,
-    bottom: -5,
-    borderColor: "white",
-    borderWidth: 5,
-  },
-  text: {
-    fontSize: 16,
-  },
-  profile: {
-    width: profileSize,
-    marginTop: "5%",
-    marginBottom: "5%",
-  },
-  row: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 15,
-  },
-});

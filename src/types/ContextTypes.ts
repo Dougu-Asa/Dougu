@@ -14,12 +14,18 @@ export type UserType = {
   profile: string;
 };
 
+export type ImageContextType = {
+  imageMap: Map<string, ImageSourcePropType>;
+};
+
 export type UserContextType = {
   user: UserType | null;
   setUser: Dispatch<SetStateAction<UserType | null>>;
   org: Organization | null;
   setOrg: Dispatch<SetStateAction<Organization | null>>;
   orgUserStorage: OrgUserStorage | null;
+  isManager: boolean;
+  setIsManager: Dispatch<SetStateAction<boolean>>;
   contextLoading: boolean;
   resetContext: () => void; // doesn't take a param, doesn't return anything
 };

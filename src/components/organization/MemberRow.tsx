@@ -1,62 +1,32 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
-import { DataStore } from "@aws-amplify/datastore";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { OrgUserStorage } from "../../models";
-import { useLoad } from "../../helper/context/LoadingContext";
-import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
 import ProfileDisplay from "../ProfileDisplay";
+import { UserStoragesNavigationProps } from "../../types/ScreenTypes";
 
 /* 
     Single row from the UserStorages list. Each 
     row contains the user's name and a delete button
 */
-export default function MemberRow({ item }: { item: OrgUserStorage | null }) {
-  const { setIsLoading } = useLoad();
-  const { user, org } = useUser();
-  const isManager = org!.manager === item?.user;
+export default function MemberRow({
+  navigation,
+  item,
+}: {
+  navigation: UserStoragesNavigationProps;
+  item: OrgUserStorage | null;
+}) {
+  const { org } = useUser();
+  // check if the member that this row represents is a manager
+  const memberManager = org!.manager === item?.user;
+  const memberId = item?.type === "USER" ? item.user : item?.id;
 
-  // delete an orgUserStorage associated with the user
-  // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true);
-      if (item == null) throw new Error("User/Storage not found");
-      const orgUserStorage = await DataStore.query(OrgUserStorage, item.id);
-      if (orgUserStorage == null) throw new Error("User/Storage not found");
-      await DataStore.delete(orgUserStorage);
-      setIsLoading(false);
-      Alert.alert("User/Storage Deleted Successfully!");
-    } catch (e) {
-      handleError("handleDelete", e as Error, setIsLoading);
-    }
-  };
-
-  // make sure the owner wants to delete the equipment
-  const handleEdit = () => {
-    console.log("item", item);
-    if (org!.manager !== user!.id) {
-      Alert.alert("You must be a manager to edit users/storages");
-      return;
-    }
-    Alert.alert(
-      "Delete " + item?.name + "?",
-      "Would you like to delete this user/storage? \n WARNING: Deleting will remove all associated equipment and data.",
-      [
-        {
-          text: "Delete",
-          onPress: () => handleDelete(),
-          style: "destructive",
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ],
-    );
+  const viewProfile = () => {
+    if (!item) return;
+    navigation.navigate("MemberProfile", { member: item });
   };
 
   return (
@@ -66,12 +36,12 @@ export default function MemberRow({ item }: { item: OrgUserStorage | null }) {
           profileKey={item ? item.profile : "default"}
           size={36}
           profileSource={null}
-          userId={item?.user}
+          userId={memberId}
         />
       </View>
       <View style={userStorage.nameRow}>
         <Text style={userStorage.name}>{item ? item.name : "NULL ERROR"}</Text>
-        {isManager ? (
+        {memberManager ? (
           <MaterialCommunityIcons
             name="crown"
             color={"#791111"}
@@ -80,8 +50,8 @@ export default function MemberRow({ item }: { item: OrgUserStorage | null }) {
           />
         ) : null}
       </View>
-      {!isManager ? ( //let's not delete the manager...
-        <TouchableOpacity style={userStorage.icon} onPress={handleEdit}>
+      {!memberManager ? ( //let's not delete the manager...
+        <TouchableOpacity style={userStorage.icon} onPress={viewProfile}>
           <Entypo name="dots-three-horizontal" size={24} />
         </TouchableOpacity>
       ) : null}

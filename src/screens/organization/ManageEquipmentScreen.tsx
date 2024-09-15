@@ -15,7 +15,7 @@ import { useUser } from "../../helper/context/UserContext";
 export default function ManageEquipmentScreen({
   navigation,
 }: ManageEquipmentScreenProps) {
-  const { user, org } = useUser();
+  const { isManager } = useUser();
   const [search, setSearch] = useState("");
 
   const updateSearch = (search: string) => {
@@ -23,7 +23,7 @@ export default function ManageEquipmentScreen({
   };
 
   const handleCreate = () => {
-    if (org!.manager === user!.id) {
+    if (isManager) {
       navigation.navigate("CreateEquipment");
     } else {
       Alert.alert(

@@ -7,6 +7,12 @@ import { ResendCodeScreenProps } from "../types/ScreenTypes";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { handleError } from "../helper/Utils";
 
+/* 
+  Resend code is used for either resetting a password or
+  resending a create account verification code. The user
+  enters their email and receives a code while being 
+  directed to the next screen.
+*/
 export default function ResendCode({
   navigation,
   route,

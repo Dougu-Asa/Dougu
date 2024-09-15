@@ -13,6 +13,8 @@ import ItemImageProvider from "../../helper/context/ItemImageContext";
 import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
+import OrgImageScreen from "./OrgImageScreen";
+import MemberProfile from "./MemberProfile";
 
 /*
     Stack navigator for the organization screens.
@@ -60,6 +62,8 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
         <Stack.Screen name="UserStorages" component={UserStorages} />
         <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
         <Stack.Screen name="Sheet" component={SheetScreen} />
+        <Stack.Screen name="OrgImage" component={OrgImageScreen} />
+        <Stack.Screen name="MemberProfile" component={MemberProfile} />
       </Stack.Navigator>
     </ItemImageProvider>
   );

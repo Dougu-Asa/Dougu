@@ -28,7 +28,7 @@ export default function UserStorages({
   route,
   navigation,
 }: UserStoragesScreenProps) {
-  const { user, org } = useUser();
+  const { org, isManager } = useUser();
   const { tabParam } = route.params;
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
@@ -63,8 +63,12 @@ export default function UserStorages({
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {
-    if (org!.manager !== user!.id)
-      Alert.alert("You need to be a manager to create a storage!");
+    if (!isManager)
+      Alert.alert(
+        "Authorization Error",
+        "You do not have permission to create storages",
+        [{ text: "OK" }],
+      );
     else navigation.navigate("CreateStorage");
   };
 
@@ -106,7 +110,7 @@ export default function UserStorages({
       </View>
       <ScrollView style={{ width: Dimensions.get("window").width }}>
         {currData.map((item, index) => (
-          <MemberRow key={index} item={item} />
+          <MemberRow key={index} navigation={navigation} item={item} />
         ))}
         {tab === "Storages" ? (
           <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>

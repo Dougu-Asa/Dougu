@@ -13,6 +13,11 @@ import { useUser } from "../helper/context/UserContext";
 import { useLoad } from "../helper/context/LoadingContext";
 import { handleError } from "../helper/Utils";
 
+/*
+  VerifyEmail screen is for when users sign up and
+  need to verify their email. This screen allows them
+  to enter the code sent to their email.
+*/
 export default function VerifyEmail({
   navigation,
   route,
