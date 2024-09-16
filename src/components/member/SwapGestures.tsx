@@ -10,12 +10,7 @@ import {
 import Animated, { runOnJS } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import {
-  ContainerObj,
-  EquipmentObj,
-  ItemObj,
-  ListCounts,
-} from "../../types/ModelTypes";
+import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
@@ -24,7 +19,6 @@ import ScrollRow from "./ScrollRow";
 import SwapContainerOverlay from "./SwapContainerOverlay";
 import { Divider } from "@rneui/base";
 import useAnimateOverlay from "./useAnimateOverlay";
-import useItemCounts from "./useItemCounts";
 import useScroll from "./useScroll";
 import {
   addEquipmentToContainer,
@@ -51,20 +45,9 @@ export default function SwapGestures({
   // state
   const halfLine = useRef<number>(0);
   const { orgUserStorage } = useUser();
-  const { swapContainerVisible } = useEquipment();
+  const { swapContainerVisible, containerItem } = useEquipment();
   const { setIsLoading } = useLoad();
 
-  // hooks
-  const {
-    listOneCounts,
-    listTwoCounts,
-    containerCounts,
-    incrementCountAtIndex,
-    decrementCountAtIndex,
-  } = useItemCounts({
-    listOne,
-    listTwo,
-  });
   const {
     topPage,
     setTopPage,
@@ -89,7 +72,6 @@ export default function SwapGestures({
     bottomPage,
     listOne,
     listTwo,
-    decrementCountAtIndex,
   });
   const { size, movingStyles, animateStart, animateMove, animateFinalize } =
     useAnimateOverlay({ setDraggingItem });
@@ -116,15 +98,16 @@ export default function SwapGestures({
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     if (!draggingItem || startIdx.current == null) return;
-    let countType: ListCounts;
+    let item: ItemObj;
     if (startSide.current === "top") {
-      countType = "one";
+      item = listOne[startIdx.current];
     } else if (startSide.current === "bottom") {
-      countType = "two";
+      item = listTwo[startIdx.current];
     } else {
-      countType = "container";
+      if (!containerItem) return;
+      item = containerItem?.equipment[startIdx.current];
     }
-    incrementCountAtIndex(startIdx.current, countType);
+    item.count += 1;
     if (swapContainerVisible) return;
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {
@@ -195,7 +178,6 @@ export default function SwapGestures({
             <ScrollRow
               listData={listOne}
               isSwap={true}
-              countData={listOneCounts}
               setPage={setTopPage}
               nextPage={nextTopPage}
             />
@@ -208,15 +190,11 @@ export default function SwapGestures({
             <ScrollRow
               listData={listTwo}
               isSwap={true}
-              countData={listTwoCounts}
               setPage={setBottomPage}
               nextPage={nextBottomPage}
             />
           </View>
-          <SwapContainerOverlay
-            setContainerPage={setContainerPage}
-            containerCounts={containerCounts}
-          />
+          <SwapContainerOverlay setContainerPage={setContainerPage} />
         </View>
       </GestureDetector>
       <Animated.View style={[styles.floatingItem, movingStyles]}>

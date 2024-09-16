@@ -6,7 +6,7 @@ import {
 } from "react-native-gesture-handler";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { ItemObj, ListCounts } from "../../types/ModelTypes";
+import { ItemObj } from "../../types/ModelTypes";
 
 export default function useSet({
   halfLine,
@@ -14,14 +14,12 @@ export default function useSet({
   bottomPage,
   listOne,
   listTwo,
-  decrementCountAtIndex,
 }: {
   halfLine: React.MutableRefObject<number>;
   topPage: number;
   bottomPage: number;
   listOne: ItemObj[];
   listTwo: ItemObj[];
-  decrementCountAtIndex: (index: number, type: ListCounts) => void;
 }) {
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
   const startSide = useRef<"top" | "bottom" | "container" | null>(null);
@@ -66,7 +64,7 @@ export default function useSet({
     const idx = containerPage * 9 + row * 3 + col;
     if (idx < 0 || idx > containerItem.equipment.length - 1) return;
     const item = containerItem.equipment[idx];
-    decrementCountAtIndex(idx, "container");
+    item.count -= 1;
     startIdx.current = idx;
     startSide.current = "container";
     setDraggingItem(item);
@@ -83,14 +81,13 @@ export default function useSet({
       : bottomPage * windowWidth;
     const list = isTop ? listOne : listTwo;
     startSide.current = isTop ? "top" : "bottom";
-    const type = isTop ? "one" : "two";
     if (y < yRange.start || y > yRange.end) return;
     // check if the user is hovering over an item
     const idx = Math.floor((gesture.x + horizontalOffset) / offset);
     // ensure idx is within bounds
     if (idx < 0 || idx > list.length - 1) return;
     const item = list[idx];
-    decrementCountAtIndex(idx, type);
+    item.count -= 1;
     startIdx.current = idx;
     setDraggingItem(item);
   };

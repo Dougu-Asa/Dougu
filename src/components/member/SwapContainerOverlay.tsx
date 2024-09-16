@@ -32,10 +32,8 @@ import PaginationDots from "./PaginationDots";
 */
 export default function SwapContainerOverlay({
   setContainerPage,
-  containerCounts,
 }: {
   setContainerPage: React.Dispatch<React.SetStateAction<number>>;
-  containerCounts: number[];
 }) {
   const {
     containerItem,
@@ -65,7 +63,6 @@ export default function SwapContainerOverlay({
     setContainerPage(pageIndex);
   };
 
-  let itemIdx = 0;
   return (
     <>
       {swapContainerVisible && (
@@ -104,22 +101,19 @@ export default function SwapContainerOverlay({
                           key={`r${index}`}
                           style={containerOverlayStyles.equipmentRow}
                         >
-                          {row.map((equip) => {
-                            const idx = itemIdx++;
-                            return (
-                              <View
-                                key={equip.id}
-                                style={
-                                  containerOverlayStyles.equipmentItemContainer
-                                }
-                              >
-                                <EquipmentItem
-                                  item={equip as EquipmentObj}
-                                  count={containerCounts[idx]}
-                                />
-                              </View>
-                            );
-                          })}
+                          {row.map((equip) => (
+                            <View
+                              key={equip.id}
+                              style={
+                                containerOverlayStyles.equipmentItemContainer
+                              }
+                            >
+                              <EquipmentItem
+                                item={equip as EquipmentObj}
+                                count={equip.count}
+                              />
+                            </View>
+                          ))}
                         </View>
                       ))}
                     </View>

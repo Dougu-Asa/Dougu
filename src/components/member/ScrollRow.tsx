@@ -19,13 +19,11 @@ import Item from "./Item";
 export default function ScrollRow({
   listData,
   isSwap,
-  countData,
   setPage,
   nextPage,
 }: {
   listData: ItemObj[];
   isSwap: boolean;
-  countData?: number[];
   setPage?: React.Dispatch<React.SetStateAction<number>>;
   nextPage?: number;
 }) {
@@ -48,7 +46,6 @@ export default function ScrollRow({
     flatListRef.current?.scrollToOffset({ offset: scrollValue });
   }, [chunkedData.length, flatListRef, nextPage, windowWidth]);
 
-  let itemIdx = 0;
   return (
     <FlatList
       horizontal={true}
@@ -57,18 +54,11 @@ export default function ScrollRow({
       data={chunkedData}
       renderItem={({ item }) => (
         <View style={styles.scrollRow}>
-          {item.map((equip) => {
-            const idx = itemIdx++;
-            return (
-              <View key={equip.id} style={styles.item}>
-                <Item
-                  data={equip}
-                  countData={countData ? countData[idx] : undefined}
-                  swapable={isSwap}
-                />
-              </View>
-            );
-          })}
+          {item.map((equip) => (
+            <View key={equip.id} style={styles.item}>
+              <Item data={equip} swapable={isSwap} />
+            </View>
+          ))}
         </View>
       )}
       keyExtractor={(item, index) => index.toString()}

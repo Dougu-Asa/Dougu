@@ -111,6 +111,7 @@ const getEquipmentAndContainers = async (
           id: container.id,
           label: container.name,
           color: container.color as Hex,
+          count: 1,
           assignedTo: orgUserStorage.id,
           assignedToName: orgUserStorage.name,
           type: "container",
