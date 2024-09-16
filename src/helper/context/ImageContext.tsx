@@ -5,10 +5,10 @@ import { ImageContextType } from "../../types/ContextTypes";
 const ImageContext = createContext<ImageContextType | undefined>(undefined);
 
 /* 
-    Context that stores a map of string: ImageSourcePropType
+    Context that stores a map<string, ImageSourcePropType>
     to be used throughout the app. This allows for a single
     source of truth for all images, and to prevent multiple
-    fetches of the same image
+    fetches of the same image key
 */
 export default function ImageProvider({ children }: { children: ReactNode }) {
   const imageMap = useRef<Map<string, ImageSourcePropType>>(new Map());
