@@ -12,7 +12,10 @@ export type UserType = {
   email: string;
   id: string;
   profile: string;
-  profileUri?: ImageSourcePropType;
+};
+
+export type ImageContextType = {
+  imageMap: Map<string, ImageSourcePropType>;
 };
 
 export type UserContextType = {

@@ -73,6 +73,7 @@ export const getImageUri = async (
   mapping: { [key: string]: ImageSourcePropType },
 ) => {
   try {
+    console.log("Getting image uri for path", path);
     const getUrlResult = await getUrl({
       path: path,
       options: {

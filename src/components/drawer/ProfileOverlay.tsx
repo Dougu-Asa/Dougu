@@ -47,7 +47,6 @@ export default function ProfileOverlay({
 
   // update user profile attributes in Cognito
   const handleSet = async (profileData: string) => {
-    console.log("ProfileOverlay: handleSet: profileData: ", profileData);
     setProfileSource(null);
     setProfileKey(profileData);
   };

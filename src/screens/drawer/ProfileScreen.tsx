@@ -107,14 +107,16 @@ export default function ProfileScreen({
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={updateProfile}>
-        <Text
-          style={{
-            color: "#0000ff",
-            fontSize: 14,
-          }}
-        >
-          Save Profile
-        </Text>
+        {user?.profile !== profileKey ? (
+          <Text
+            style={{
+              color: "#0000ff",
+              fontSize: 14,
+            }}
+          >
+            Save Profile
+          </Text>
+        ) : null}
       </TouchableOpacity>
       <TouchableOpacity
         style={profileStyles.row}

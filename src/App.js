@@ -8,6 +8,7 @@ import * as Sentry from "@sentry/react-native";
 // Project Files
 import LoadingProvider from "./helper/context/LoadingContext";
 import UserProvider from "./helper/context/UserContext";
+import ImageProvider from "./helper/context/ImageContext";
 import amplifyconfig from "./amplifyconfiguration.json";
 import RootStackNavigator from "./screens/RootStackNavigator";
 
@@ -38,7 +39,9 @@ function App() {
     <NavigationContainer>
       <LoadingProvider>
         <UserProvider>
-          <RootStackNavigator />
+          <ImageProvider>
+            <RootStackNavigator />
+          </ImageProvider>
         </UserProvider>
       </LoadingProvider>
     </NavigationContainer>

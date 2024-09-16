@@ -16,6 +16,7 @@ import { getImageUri } from "../../helper/AWS";
 import { orgMapping } from "../../helper/ImageMapping";
 import { Image } from "expo-image";
 import { itemDisplayStyles } from "../../styles/ItemDisplay";
+import { useImage } from "../../helper/context/ImageContext";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -26,6 +27,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   const { org, isManager } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
+  const { imageMap } = useImage();
   const [orgImageUri, setOrgImageUri] = useState<ImageSourcePropType>(
     orgMapping["default"],
   );
@@ -33,10 +35,15 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   useEffect(() => {
     const fetchImageUri = async () => {
       const path = `public/${org!.id}/orgImage.jpeg`;
-      const fetchImageUri = getImageUri(path, orgMapping);
-      fetchImageUri.then((uri) => {
-        setOrgImageUri(uri);
-      });
+      if (imageMap.has(org!.id)) {
+        setOrgImageUri(imageMap.get(org!.id)!);
+      } else {
+        const fetchUri = getImageUri(path, orgMapping);
+        fetchUri.then((uri) => {
+          setOrgImageUri(uri);
+          imageMap.set(org!.id, uri);
+        });
+      }
     };
 
     if (isFocused) {
@@ -45,7 +52,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
     } else {
       setInfoFocus(false);
     }
-  }, [isFocused, org, setInfoFocus]);
+  }, [imageMap, isFocused, org, setInfoFocus]);
 
   const handleOrgImage = () => {
     if (isManager) {
