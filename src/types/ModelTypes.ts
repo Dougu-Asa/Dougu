@@ -1,14 +1,13 @@
 import { OrgUserStorage } from "../models";
 
-export type EquipmentOrContainer = "equipment" | "container";
-
+// equipment and containers are based on this interface
 export interface ItemObj {
   id: string;
   label: string;
   color: Hex;
   assignedTo: string;
   assignedToName: string;
-  type: EquipmentOrContainer;
+  type: "equipment" | "container";
 }
 
 // how equipment data is stored in the app
@@ -20,10 +19,12 @@ export interface EquipmentObj extends ItemObj {
   container: string | null;
 }
 
+// how container data is stored in the app
 export interface ContainerObj extends ItemObj {
   equipment: EquipmentObj[];
 }
 
+// how equipmentdata is stored in the app
 export interface OrgItem {
   assignedToName: string;
   data: ItemObj[];
@@ -45,16 +46,12 @@ export type Position = {
 // either listOne, listTwo, or container for the swapEquipment screen
 export type ListCounts = "one" | "two" | "container";
 
+// for sheetScreen inside OrgStackNavigator
 export type csvSheet = {
   header: string[];
   identityCol: string[];
   values: string[][];
 };
 
+// equipment item background colors should be Hex
 export type Hex = `#${string}`;
-
-export type svgProps = {
-  width: number;
-  height: number;
-  fill: Hex;
-};

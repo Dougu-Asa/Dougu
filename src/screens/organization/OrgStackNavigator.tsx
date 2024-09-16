@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CreateEquipmentScreen from "./CreateEquipmentScreen";
 import ManageEquipmentScreen from "./ManageEquipmentScreen";
 import SheetScreen from "./SheetScreen";
-import UserStorages from "./UserStorages";
 import CreateStorageScreen from "./CreateStorageScreen";
 import InfoScreen from "./InfoScreen";
 import ItemImageScreen from "./ItemImageScreen";
@@ -14,7 +13,8 @@ import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
 import OrgImageScreen from "./OrgImageScreen";
-import MemberProfile from "./MemberProfile";
+import UserStoragesScreen from "./UserStoragesScreen";
+import MemberProfileScreen from "./MemberProfileScreen";
 
 /*
     Stack navigator for the organization screens.
@@ -59,11 +59,11 @@ export default function OrgStackNavigator({ navigation }: OrgStackScreenProps) {
           component={CreateEquipmentScreen}
         />
         <Stack.Screen name="ItemImage" component={ItemImageScreen} />
-        <Stack.Screen name="UserStorages" component={UserStorages} />
+        <Stack.Screen name="UserStorages" component={UserStoragesScreen} />
         <Stack.Screen name="CreateStorage" component={CreateStorageScreen} />
         <Stack.Screen name="Sheet" component={SheetScreen} />
         <Stack.Screen name="OrgImage" component={OrgImageScreen} />
-        <Stack.Screen name="MemberProfile" component={MemberProfile} />
+        <Stack.Screen name="MemberProfile" component={MemberProfileScreen} />
       </Stack.Navigator>
     </ItemImageProvider>
   );

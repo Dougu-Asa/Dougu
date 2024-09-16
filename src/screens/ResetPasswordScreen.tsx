@@ -8,7 +8,7 @@ import { validateRequirements } from "../helper/CreateAccUtils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import PasswordInput from "../components/PasswordInput";
 
-export default function ResetPassword({
+export default function ResetPasswordScreen({
   route,
   navigation,
 }: ResetPasswordScreenProps) {

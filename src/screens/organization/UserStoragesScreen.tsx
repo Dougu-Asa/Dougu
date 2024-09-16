@@ -24,7 +24,7 @@ import { sortOrgUserStorages } from "../../helper/EquipmentUtils";
   It has two tabs: Members and Storages, where each tab displays
   its respective data
 */
-export default function UserStorages({
+export default function UserStoragesScreen({
   route,
   navigation,
 }: UserStoragesScreenProps) {

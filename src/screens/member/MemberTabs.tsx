@@ -7,9 +7,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Alert, Keyboard } from "react-native";
 
 // project imports
-import EquipmentScreen from "./Equipment";
-import SwapEquipmentScreen from "./SwapEquipment";
-import TeamEquipmentScreen from "./TeamEquipment";
+import EquipmentScreen from "./EquipmentScreen";
+import SwapEquipmentScreen from "./SwapEquipmentScreen";
+import TeamEquipmentScreen from "./TeamEquipmentScreen";
 import { useUser } from "../../helper/context/UserContext";
 import { MemberTabsScreenProps } from "../../types/ScreenTypes";
 import SpinningIndicator from "../../components/SpinningIndicator";

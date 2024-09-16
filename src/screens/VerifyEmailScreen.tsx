@@ -18,7 +18,7 @@ import { handleError } from "../helper/Utils";
   need to verify their email. This screen allows them
   to enter the code sent to their email.
 */
-export default function VerifyEmail({
+export default function VerifyEmailScreen({
   navigation,
   route,
 }: VerifyEmailScreenProps) {

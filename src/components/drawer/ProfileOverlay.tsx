@@ -17,7 +17,7 @@ import ProfileDisplay from "../ProfileDisplay";
 import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
 import { Tab } from "@rneui/themed";
-import UploadImage from "../organization/UploadImage";
+import UploadImage from "../UploadImage";
 
 /* 
     Dispay a profile menu for choosing a user's profile image

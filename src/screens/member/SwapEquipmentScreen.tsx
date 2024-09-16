@@ -11,7 +11,7 @@ import { useEquipment } from "../../helper/context/EquipmentContext";
   Screen for swapping equipment between the current user and another user.
   This section mainly focuses on getting and passing down the equipment info
 */
-export default function SwapEquipment() {
+export default function SwapEquipmentScreen() {
   const { orgUserStorage } = useUser();
   const { itemData } = useEquipment();
   let swapUser = useRef<OrgUserStorage | null>(null);

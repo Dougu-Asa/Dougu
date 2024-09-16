@@ -1,6 +1,6 @@
 import { ImageSourcePropType, StyleSheet, View } from "react-native";
 import { Dispatch, SetStateAction, useState } from "react";
-import UploadImage from "../../components/organization/UploadImage";
+import UploadImage from "../../components/UploadImage";
 import { Button } from "@rneui/themed";
 import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";

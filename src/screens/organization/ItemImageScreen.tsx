@@ -6,7 +6,7 @@ import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Tab } from "@rneui/themed";
 import IconMenu from "../../components/IconMenu";
 import ColorSelect from "../../components/organization/ColorSelect";
-import UploadImage from "../../components/organization/UploadImage";
+import UploadImage from "../../components/UploadImage";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import EquipmentDisplay from "../../components/member/EquipmentDisplay";

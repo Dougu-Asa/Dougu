@@ -9,7 +9,9 @@ import { Organization, OrgUserStorage } from "../../models";
 import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
 
-export default function MemberProfile({ route }: MemberProfileScreenProps) {
+export default function MemberProfileScreen({
+  route,
+}: MemberProfileScreenProps) {
   const { member } = route.params;
   const { setIsLoading } = useLoad();
   const { org, setOrg, isManager, setIsManager } = useUser();
