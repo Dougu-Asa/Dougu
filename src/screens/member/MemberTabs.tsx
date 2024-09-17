@@ -28,10 +28,7 @@ const Tab = createMaterialTopTabNavigator<TabParamList>();
   MemberTabs is the tab navigator for a user. It holds all the screens
   that a user can navigate to while they are a member of an organization.
 */
-export default function MemberTabs({
-  navigation,
-  route,
-}: MemberTabsScreenProps) {
+export default function MemberTabs({ navigation }: MemberTabsScreenProps) {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const isFocused = useIsFocused();
   const { user, org, orgUserStorage, isManager, contextLoading, resetContext } =
@@ -78,8 +75,8 @@ export default function MemberTabs({
     };
   }, []);
 
-  // check if the user is the manager of the organization
-  // after verifying the user, org, and orgUserStorage are not null
+  // verify that the user, org, and orgUserStorage are not null
+  // (all screens in the tab navigator require these values)
   useEffect(() => {
     const checkUserOrg = async () => {
       if (!contextLoading && (!user || !org || !orgUserStorage)) {

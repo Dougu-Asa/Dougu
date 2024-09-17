@@ -88,6 +88,7 @@ export default function SwapGestures({
       clearScroll,
     });
 
+  // on layout of the top scrollRow, its bottom is the halfline
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
     halfLine.current = y;
@@ -98,6 +99,7 @@ export default function SwapGestures({
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
     if (!draggingItem || startIdx.current == null) return;
+    // set count back to original
     let item: ItemObj;
     if (startSide.current === "top") {
       item = listOne[startIdx.current];
@@ -111,7 +113,6 @@ export default function SwapGestures({
     if (swapContainerVisible) return;
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {
-      console.log("reassigning equipment to container");
       addEquipmentToContainer(
         draggingItem as EquipmentObj,
         hoverContainer.current,

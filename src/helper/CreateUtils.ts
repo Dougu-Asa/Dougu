@@ -21,6 +21,7 @@ export const createOrg = async (
   code: string,
   userId: string,
 ): Promise<Organization> => {
+  // create a user group for the org
   await createUserGroup(token, name);
   // Add the org to the database
   const newOrg = await DataStore.save(
@@ -41,6 +42,7 @@ export const createOrgUserStorage = async (
   org: Organization,
   user: UserType,
 ): Promise<boolean> => {
+  // add user to cognito user group
   await addUserToGroup(token, org.name, user!.id);
   // Add the OrgUserStorage to the DB
   const newOrgUserStorage = await DataStore.save(
@@ -95,7 +97,6 @@ export const CreateContainer = async (
   details: string,
   color: Hex,
 ) => {
-  console.log("quantityCount: ", quantityCount);
   for (let i = 0; i < quantityCount; i++) {
     await DataStore.save(
       new Container({

@@ -97,10 +97,10 @@ export default function ProfileScreen({
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
+          isMini={false}
           userId={user!.id}
           profileKey={profileKey}
-          size={100}
-          profileSource={profileSource}
+          source={profileSource}
         />
         <View style={profileStyles.editButton}>
           <MaterialCommunityIcons name="pencil" size={editIconSize} />

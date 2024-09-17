@@ -74,7 +74,7 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
       // Create the org and orgUserStorage
       const newOrg = await createOrg(token, name, code, user!.id);
       const success = await createOrgUserStorage(token, newOrg, user!);
-      if (!success) {
+      if (!success || !newOrg) {
         throw new Error("User not added to group successfully");
       }
       // use a key to keep track of currentOrg per user

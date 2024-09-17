@@ -20,6 +20,7 @@ import { handleEdit } from "../../helper/EditUtils";
   Component for displaying all equipment in the organization
   in a table format
 */
+// row for sub equipment of a container
 function SubEquipmentRow({
   equipment,
   isManager,
@@ -28,7 +29,6 @@ function SubEquipmentRow({
   isManager: boolean;
 }) {
   const { setIsLoading } = useLoad();
-
   return (
     <View style={styles.row}>
       <View style={[styles.cell, { flex: 2 }]}>
@@ -53,6 +53,7 @@ function SubEquipmentRow({
   );
 }
 
+// row for equipment or container
 function TableRow({ item, isManager }: { item: ItemObj; isManager: boolean }) {
   const [openContainer, setOpenContainer] = useState(false);
   const { setIsLoading } = useLoad();

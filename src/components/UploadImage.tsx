@@ -81,8 +81,8 @@ export default function UploadImage({
     <View style={styles.container}>
       <Text style={styles.header}>Upload Image</Text>
       <Text style={styles.text}>
-        You can use custom images for your items. Uploaded images will appear as
-        default images when there is no internet.
+        You can use custom images for your items. Just select an image from your
+        gallery or take a photo.
       </Text>
       <View style={styles.row}>
         <Button

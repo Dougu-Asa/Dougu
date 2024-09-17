@@ -59,6 +59,7 @@ export default function SyncScreen({ route, navigation }: SyncScreenProps) {
     handleDataStore();
     const listener = Hub.listen("datastore", async (hubData) => {
       const { event } = hubData.payload;
+      // once DataStore is ready, navigate to the correct screen
       if (event === "ready") {
         setTimeout(() => {
           handleNavigation();

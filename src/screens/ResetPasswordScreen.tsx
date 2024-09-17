@@ -23,12 +23,11 @@ export default function ResetPasswordScreen({
     newPassword: string,
   ) => {
     try {
-      const data = await confirmResetPassword({
+      await confirmResetPassword({
         username: email,
         confirmationCode: code,
         newPassword: newPassword,
       });
-      console.log(data);
       Alert.alert("Success", "Password has been reset");
     } catch (err) {
       Alert.alert("Error", (err as Error).message);
