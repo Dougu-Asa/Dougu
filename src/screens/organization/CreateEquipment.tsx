@@ -73,7 +73,7 @@ export default function CreateEquipmentScreen({
         // if imageSource is an uploaded image, upload it to S3
         // don't promise.all because we don't want to make equipment if image fails
         const path = `public/${org!.id}/equipment/${imageKey}`;
-        if (imageSource) await uploadImage(imageSource, path);
+        await uploadImage(imageSource, path);
         await CreateEquipment(
           quantityCount,
           name,

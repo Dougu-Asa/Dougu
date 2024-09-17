@@ -36,7 +36,8 @@ export default function UploadImage({
       [{ resize: { width: 150 } }],
       { compress: 0, format: ImageManipulator.SaveFormat.PNG },
     );
-    setImageSource({ uri: manipResult.uri });
+    setImageSource(manipResult);
+    console.log("manipResult", manipResult);
     if (setImageKey) setImageKey(asset.fileName);
   };
 

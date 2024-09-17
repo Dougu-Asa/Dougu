@@ -13,10 +13,10 @@ export default function MyHeaderProfileButton({
   return (
     <TouchableOpacity style={{ left: 20 }} onPress={navigation.toggleDrawer}>
       <ProfileDisplay
-        userId={user!.id}
+        isMini={true}
         profileKey={user!.profile}
-        profileSource={null}
-        size={45}
+        source={null}
+        userId={user!.id}
       />
     </TouchableOpacity>
   );

@@ -1,5 +1,5 @@
 import { ImageSourcePropType, StyleSheet, View } from "react-native";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import UploadImage from "../../components/UploadImage";
 import { Button } from "@rneui/themed";
 import { useUser } from "../../helper/context/UserContext";
@@ -8,18 +8,18 @@ import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
 import { OrgImageScreenProps } from "../../types/ScreenTypes";
 import { Image } from "expo-image";
-import { itemDisplayStyles } from "../../styles/ItemDisplay";
+import { displayStyles } from "../../styles/Display";
+import { orgMapping } from "../../helper/ImageMapping";
 
 export default function OrgImageScreen({ route }: OrgImageScreenProps) {
-  const { imageSource } = route.params;
   const { org } = useUser();
   const { setIsLoading } = useLoad();
-  const [imageUri, setImageUri] = useState<ImageSourcePropType>(imageSource);
+  const [imageUri, setImageUri] = useState<ImageSourcePropType | null>(null);
 
   const handleUpload = async () => {
     // upload the image to AWS S3
     try {
-      if (imageSource) {
+      if (imageUri) {
         setIsLoading(true);
         const path = `public/${org!.id}/orgImage.jpeg`;
         await uploadImage(imageUri, path);
@@ -32,13 +32,13 @@ export default function OrgImageScreen({ route }: OrgImageScreenProps) {
 
   return (
     <View style={styles.container}>
-      <Image source={imageUri} style={itemDisplayStyles.image} />
+      <Image
+        source={imageUri}
+        style={displayStyles.image}
+        placeholder={orgMapping["default"]}
+      />
       <View style={styles.uploadContainer}>
-        <UploadImage
-          setImageSource={
-            setImageUri as Dispatch<SetStateAction<ImageSourcePropType | null>>
-          }
-        />
+        <UploadImage setImageSource={setImageUri} />
       </View>
       <Button
         buttonStyle={styles.button}

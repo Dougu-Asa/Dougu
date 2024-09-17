@@ -68,10 +68,7 @@ export const uploadImage = async (
 
 // get a signed URL for an image in S3
 // set the image uri
-export const getImageUri = async (
-  path: string,
-  mapping: { [key: string]: ImageSourcePropType },
-) => {
+export const getImageUri = async (path: string) => {
   try {
     console.log("Getting image uri for path", path);
     const getUrlResult = await getUrl({
@@ -80,9 +77,9 @@ export const getImageUri = async (
         validateObjectExistence: true, // Check if object exists before creating a URL
       },
     });
-    return { uri: getUrlResult.url.toString() };
+    return getUrlResult.url.toString();
   } catch (error) {
     console.log("Error getting image uri", error);
-    return mapping["default"];
+    return null;
   }
 };

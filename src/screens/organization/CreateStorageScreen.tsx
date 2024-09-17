@@ -8,7 +8,7 @@ import {
   Dimensions,
   ImageSourcePropType,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
@@ -37,6 +37,12 @@ export default function CreateStorageScreen() {
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
   const { org } = useUser();
+
+  useEffect(() => {
+    console.log("CHANGE");
+    console.log("profileSource", profileSource);
+    console.log("profileKey", profileKey);
+  }, [profileKey, profileSource]);
 
   // Create a new storage
   const handleCreate = async () => {
@@ -80,9 +86,9 @@ export default function CreateStorageScreen() {
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
-          profileSource={profileSource}
+          isMini={false}
           profileKey={profileKey}
-          size={profileSize}
+          source={profileSource}
           userId={null}
         />
         <View style={styles.editButton}>

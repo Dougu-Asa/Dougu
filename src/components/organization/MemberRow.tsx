@@ -33,9 +33,9 @@ export default function MemberRow({
     <View style={userStorage.row}>
       <View style={userStorage.profile}>
         <ProfileDisplay
+          isMini={true}
           profileKey={item ? item.profile : "default"}
-          size={36}
-          profileSource={null}
+          source={null}
           userId={memberId}
         />
       </View>

@@ -115,10 +115,10 @@ export default function MemberProfileScreen({
     <View style={profileStyles.container}>
       <View style={profileStyles.profile}>
         <ProfileDisplay
+          isMini={false}
           userId={member.user}
           profileKey={member.profile}
-          size={100}
-          profileSource={null}
+          source={null}
         />
       </View>
       <View style={profileStyles.centerRow}>

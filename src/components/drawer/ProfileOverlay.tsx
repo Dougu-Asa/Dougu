@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  ImageSourcePropType,
-} from "react-native";
+import { StyleSheet, Pressable, ImageSourcePropType } from "react-native";
 import { profileMapping } from "../../helper/ImageMapping";
 import Animated, {
   FadeIn,
@@ -42,7 +37,6 @@ export default function ProfileOverlay({
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
   userId?: string;
 }) {
-  const profileSize = Dimensions.get("screen").width / 4;
   const [selected, setSelected] = useState(0);
 
   // update user profile attributes in Cognito
@@ -69,9 +63,9 @@ export default function ProfileOverlay({
             style={styles.profile}
           >
             <ProfileDisplay
+              isMini={false}
               profileKey={profileKey}
-              profileSource={profileSource}
-              size={profileSize}
+              source={profileSource}
               userId={userId}
             />
           </Animated.View>
