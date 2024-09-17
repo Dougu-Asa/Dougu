@@ -3,14 +3,12 @@ import { DataStore } from "@aws-amplify/datastore";
 import { Container, Equipment } from "../models";
 import {
   EquipmentObj,
-  OrgItem,
-  ItemObj,
   ContainerObj,
   csvSheet,
   Hex,
+  UserStorageData,
 } from "../types/ModelTypes";
 import { OrgUserStorage } from "../models";
-import { handleError } from "./Utils";
 
 // speed up localCompare sorting by using a collator
 const collator = new Intl.Collator("en", {
@@ -32,145 +30,9 @@ export const chunkArray = <T>(items: T[], size: number) =>
     [] as T[][],
   );
 
-export const getOrgItems = async (
-  orgId: string,
-): Promise<Map<string, OrgItem>> => {
-  // every orgUserStorage has a list of items assigned to it
-  let orgItems = new Map<string, OrgItem>();
-  const orgUserStorages = await DataStore.query(OrgUserStorage, (c) =>
-    c.organizationUserOrStoragesId.eq(orgId),
-  );
-  // for each orgUserStorage, get the items assigned to it
-  for (let i = 0; i < orgUserStorages.length; i++) {
-    let userData: ItemObj[] = [];
-    const { equipmentData, containerMap } = await getEquipmentAndContainers(
-      orgUserStorages[i],
-    );
-    // separate equipment that is in a container to part of a containerObj
-    equipmentData?.forEach((equip) => {
-      if (equip.container && containerMap.has(equip.container)) {
-        containerMap.get(equip.container)!.equipment.push(equip);
-      } else {
-        userData.push(equip);
-      }
-    });
-    // add each containerObj to userData
-    containerMap.forEach((value) => {
-      userData.push(value);
-    });
-    // sort the array by name
-    userData.sort((a, b) => collator.compare(a.label, b.label));
-    orgItems.set(orgUserStorages[i].id, {
-      assignedToName: orgUserStorages[i].name,
-      data: userData,
-    });
-  }
-  return orgItems;
-};
-
-export const sortOrgItems = (orgItems: Map<string, OrgItem>): OrgItem[] => {
-  let orgItemsArray: OrgItem[] = [];
-  let emptyItemsArray: OrgItem[] = [];
-  orgItems.forEach((value) => {
-    if (value.data.length > 0) {
-      orgItemsArray.push(value);
-    } else {
-      emptyItemsArray.push(value);
-    }
-  });
-  orgItemsArray.sort((a, b) =>
-    collator.compare(a.assignedToName, b.assignedToName),
-  );
-  emptyItemsArray.sort((a, b) =>
-    collator.compare(a.assignedToName, b.assignedToName),
-  );
-  return orgItemsArray.concat(emptyItemsArray);
-};
-
-// get equipment and containers assigned to the orgUserStorage
-// return the processed equipment data and a map of containers
-const getEquipmentAndContainers = async (
-  orgUserStorage: OrgUserStorage,
-): Promise<{
-  equipmentData: EquipmentObj[];
-  containerMap: Map<string, ContainerObj>;
-}> => {
-  if (!orgUserStorage) return { equipmentData: [], containerMap: new Map() };
-
-  try {
-    const [equipment, containers] = await Promise.all([
-      DataStore.query(Equipment, (c) => c.assignedTo.id.eq(orgUserStorage.id)),
-      DataStore.query(Container, (c) => c.assignedTo.id.eq(orgUserStorage.id)),
-    ]);
-
-    // Create a map of containers
-    const containerMap = new Map<string, ContainerObj>(
-      containers.map((container) => [
-        container.id,
-        {
-          id: container.id,
-          label: container.name,
-          color: container.color as Hex,
-          count: 1,
-          assignedTo: orgUserStorage.id,
-          assignedToName: orgUserStorage.name,
-          type: "container",
-          equipment: [],
-        },
-      ]),
-    );
-
-    // Process the equipment data
-    const equipmentData = processEquipmentData(equipment, orgUserStorage);
-
-    return { equipmentData, containerMap };
-  } catch (error) {
-    handleError("GetEquipmentAndContainers", error as Error, null);
-    return { equipmentData: [], containerMap: new Map() };
-  }
-};
-
-/*
-  get duplicates and merge their counts
-  using a map to count duplicates and converting to an array
-*/
-const processEquipmentData = (
-  equipment: Equipment[],
-  orgUserStorage: OrgUserStorage,
-): EquipmentObj[] => {
-  const equipmentMap = new Map<string, EquipmentObj>();
-  equipment.forEach((equip) => {
-    // duplicate
-    const key = equip.containerId ? equip.name + equip.containerId : equip.name;
-    const existingEquip = equipmentMap.get(key);
-    if (existingEquip) {
-      existingEquip.count += 1;
-      existingEquip.data.push(equip.id);
-      existingEquip.detailData.push(equip.details || "");
-    } else {
-      // new equipment
-      equipmentMap.set(key, {
-        id: equip.id,
-        label: equip.name,
-        color: equip.color as Hex,
-        count: 1,
-        type: "equipment",
-        image: equip.image,
-        data: [equip.id],
-        detailData: [equip.details || ""],
-        assignedTo: orgUserStorage.id,
-        assignedToName: orgUserStorage.name,
-        container: equip.containerId || null,
-      });
-    }
-  });
-
-  return Array.from(equipmentMap.values());
-};
-
 // get the csv data for the organization to export to google sheets
 export const getCsvData = (
-  orgItems: Map<string, OrgItem>,
+  orgItems: Map<string, UserStorageData>,
   showEmpty: boolean,
   showContainerEquip: boolean,
 ): csvSheet => {
@@ -179,7 +41,8 @@ export const getCsvData = (
   const uniqueLabels: { [key: string]: number } = {};
   // fill out dictionary with equipment counts for each user
   orgItems.forEach((value) => {
-    const { assignedToName, data } = value;
+    const assignedToName = value.assignedTo.name;
+    const data = value.data;
     // skip empty users if showEmpty is false
     if (!showEmpty && data.length === 0) return;
     counts[assignedToName] = {};
@@ -228,4 +91,121 @@ export const getCsvData = (
     identityCol: identityCol,
     values: csvContent,
   };
+};
+
+const processEquipmentData = (
+  equipment: Equipment[],
+  orgUserStorageMap: Map<string, OrgUserStorage>,
+): EquipmentObj[] => {
+  const equipmentMap = new Map<string, EquipmentObj>();
+  equipment.forEach((equip) => {
+    const orgUserStorage = orgUserStorageMap.get(equip.assignedToId);
+    if (!orgUserStorage) throw new Error("OrgUserStorage not found");
+    const orgUserStorageName = orgUserStorage.name;
+    // duplicate
+    const key = equip.containerId
+      ? orgUserStorageName + equip.name + equip.containerId
+      : orgUserStorageName + equip.name;
+    const existingEquip = equipmentMap.get(key);
+    if (existingEquip) {
+      existingEquip.count += 1;
+      existingEquip.data.push(equip.id);
+      existingEquip.detailData.push(equip.details || "");
+    } else {
+      // new equipment
+      equipmentMap.set(key, {
+        id: equip.id,
+        label: equip.name,
+        color: equip.color as Hex,
+        count: 1,
+        type: "equipment",
+        image: equip.image,
+        data: [equip.id],
+        detailData: [equip.details || ""],
+        assignedTo: orgUserStorage,
+        container: equip.containerId || null,
+      });
+    }
+  });
+
+  return Array.from(equipmentMap.values());
+};
+
+export const getOrgData = async (
+  orgId: string,
+): Promise<Map<string, UserStorageData>> => {
+  let orgData: Map<string, UserStorageData> = new Map();
+  const [orgUserStorages, equipment, containers] = await Promise.all([
+    DataStore.query(OrgUserStorage, (c) =>
+      c.organizationUserOrStoragesId.eq(orgId),
+    ),
+    DataStore.query(Equipment, (c) => c.organizationEquipmentId.eq(orgId)),
+    DataStore.query(Container, (c) => c.organizationContainersId.eq(orgId)),
+  ]);
+  const orgUserStorageMap = new Map<string, OrgUserStorage>();
+  orgUserStorages.forEach((storage) => {
+    orgUserStorageMap.set(storage.id, storage);
+    orgData.set(storage.id, { assignedTo: storage, data: [] });
+  });
+  const containerMap = new Map<string, ContainerObj>();
+  containers.forEach((container) => {
+    const assignedTo = orgUserStorageMap.get(container.assignedToId);
+    if (!assignedTo) throw new Error("OrgUserStorage not found");
+    containerMap.set(container.id, {
+      id: container.id,
+      label: container.name,
+      color: container.color as Hex,
+      count: 1,
+      assignedTo: assignedTo,
+      equipment: [],
+      type: "container",
+    });
+  });
+  const equipmentData = processEquipmentData(equipment, orgUserStorageMap);
+  // separate equipment that is in a container to part of a containerObj
+  equipmentData?.forEach((equip) => {
+    if (!equip.assignedTo) throw new Error("Equipment has no assignedTo");
+    if (equip.container && containerMap.has(equip.container)) {
+      const container = containerMap.get(equip.container);
+      if (!container) throw new Error("Container not found");
+      container.equipment.push(equip);
+    } else {
+      const dataObj = orgData.get(equip.assignedTo.id);
+      if (!dataObj) throw new Error("OrgData not found");
+      dataObj.data.push(equip);
+    }
+  });
+  // add each containerObj to userData
+  containerMap.forEach((container) => {
+    if (!container.assignedTo) throw new Error("Container has no assignedTo");
+    const dataObj = orgData.get(container.assignedTo.id);
+    if (!dataObj) throw new Error("OrgData not found");
+    dataObj.data.push(container);
+  });
+  // sort the item data inside each UserStorageData
+  orgData.forEach((value) => {
+    value.data.sort((a, b) => collator.compare(a.label, b.label));
+  });
+  return orgData;
+};
+
+export const sortOrgItems = (
+  orgItems: Map<string, UserStorageData>,
+): UserStorageData[] => {
+  let orgItemsArray: UserStorageData[] = [];
+  let emptyItemsArray: UserStorageData[] = [];
+  orgItems.forEach((value) => {
+    if (value.data.length > 0) {
+      orgItemsArray.push(value);
+    } else {
+      emptyItemsArray.push(value);
+    }
+  });
+  orgItemsArray.sort((a, b) =>
+    collator.compare(a.assignedTo.name, b.assignedTo.name),
+  );
+  emptyItemsArray.sort((a, b) =>
+    collator.compare(a.assignedTo.name, b.assignedTo.name),
+  );
+  return orgItemsArray.concat(emptyItemsArray);
 };

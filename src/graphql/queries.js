@@ -7,7 +7,6 @@ export const getOrganization = /* GraphQL */ `
       id
       name
       accessCode
-      image
       manager
       UserOrStorages {
         nextToken
@@ -44,7 +43,6 @@ export const listOrganizations = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -76,7 +74,6 @@ export const syncOrganizations = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -100,7 +97,6 @@ export const getOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -207,7 +203,6 @@ export const getContainer = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -233,6 +228,7 @@ export const getContainer = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       color
       group
       details
@@ -258,6 +254,7 @@ export const listContainers = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        assignedToId
         color
         group
         details
@@ -293,6 +290,7 @@ export const syncContainers = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        assignedToId
         color
         group
         details
@@ -320,7 +318,6 @@ export const getEquipment = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -346,6 +343,7 @@ export const getEquipment = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       image
       color
       group
@@ -373,6 +371,7 @@ export const listEquipment = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        assignedToId
         image
         color
         group
@@ -410,6 +409,7 @@ export const syncEquipment = /* GraphQL */ `
         id
         name
         lastUpdatedDate
+        assignedToId
         image
         color
         group

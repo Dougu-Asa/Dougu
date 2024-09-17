@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Text,
   View,
@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { DataStore } from "@aws-amplify/datastore";
 import { Dimensions } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -18,6 +17,8 @@ import { useUser } from "../../helper/context/UserContext";
 import MemberRow from "../../components/organization/MemberRow";
 import { UserStoragesScreenProps } from "../../types/ScreenTypes";
 import { sortOrgUserStorages } from "../../helper/EquipmentUtils";
+import { useEquipment } from "../../helper/context/EquipmentContext";
+import { UserStorageData } from "../../types/ModelTypes";
 
 /*
   Screen for viewing all members and storages in an organization
@@ -29,37 +30,31 @@ export default function UserStoragesScreen({
   navigation,
 }: UserStoragesScreenProps) {
   const { org, isManager } = useUser();
+  const { itemData } = useEquipment();
   const { tabParam } = route.params;
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
+  const orgUserStorages = useMemo(() => {
+    return Object.values(itemData).map(
+      (data: UserStorageData) => data.assignedTo,
+    );
+  }, [itemData]);
 
   // update our data everytime the tab or data changes
   useEffect(() => {
     const getData = async () => {
       let data;
       if (tab === "Members") {
-        data = await DataStore.query(OrgUserStorage, (c) =>
-          c.and((c) => [c.organization.name.eq(org!.name), c.type.eq("USER")]),
-        );
+        data = orgUserStorages.filter((item) => item.type === "USER");
       } else {
-        data = await DataStore.query(OrgUserStorage, (c) =>
-          c.and((c) => [
-            c.organization.name.eq(org!.name),
-            c.type.eq("STORAGE"),
-          ]),
-        );
+        data = orgUserStorages.filter((item) => item.type === "STORAGE");
       }
       data = sortOrgUserStorages(data);
       setCurrData(data);
     };
 
-    const subscription = DataStore.observe(OrgUserStorage).subscribe(() => {
-      getData();
-    });
     getData();
-
-    return () => subscription.unsubscribe();
-  }, [org, tab]);
+  }, [orgUserStorages, tab]);
 
   // create a storage, only managers can create storages
   const handleCreate = async () => {

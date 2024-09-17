@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { OrgUserStorage, Organization } from "../models";
-import { EquipmentObj, OrgItem, ContainerObj, Hex } from "./ModelTypes";
+import { EquipmentObj, ContainerObj, Hex, UserStorageData } from "./ModelTypes";
 import { ImageSourcePropType } from "react-native";
 
 /*
@@ -48,7 +48,7 @@ export type HeaderContextType = {
 
 // used to store all data related to an organization
 export type EquipmentContextType = {
-  itemData: Map<string, OrgItem>;
+  itemData: Map<string, UserStorageData>;
   equipmentItem: EquipmentObj | null;
   setEquipmentItem: Dispatch<SetStateAction<EquipmentObj | null>>;
   containerItem: ContainerObj | null;

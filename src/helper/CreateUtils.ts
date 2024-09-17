@@ -29,7 +29,6 @@ export const createOrg = async (
       name: name,
       accessCode: code,
       manager: userId,
-      image: "default",
     }),
   );
   if (newOrg == null) throw new Error("Organization not created successfully.");
@@ -78,6 +77,7 @@ export const CreateEquipment = async (
         organization: dataOrg,
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
+        assignedToId: orgUserStorage.id,
         details: details,
         image: image,
         color: color,
@@ -104,6 +104,7 @@ export const CreateContainer = async (
         organization: dataOrg,
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
+        assignedToId: orgUserStorage.id,
         details: details,
         color: color,
         group: dataOrg.name,

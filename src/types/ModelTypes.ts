@@ -6,8 +6,7 @@ export interface ItemObj {
   label: string;
   color: Hex;
   count: number;
-  assignedTo: string;
-  assignedToName: string;
+  assignedTo: OrgUserStorage;
   type: "equipment" | "container";
 }
 
@@ -27,6 +26,11 @@ export interface ContainerObj extends ItemObj {
 // how equipmentdata is stored in the app
 export interface OrgItem {
   assignedToName: string;
+  data: ItemObj[];
+}
+
+export interface UserStorageData {
+  assignedTo: OrgUserStorage;
   data: ItemObj[];
 }
 

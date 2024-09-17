@@ -24,13 +24,6 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "image": {
-                    "name": "image",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
                 "manager": {
                     "name": "manager",
                     "isArray": false,
@@ -353,6 +346,13 @@ export const schema = {
                         ]
                     }
                 },
+                "assignedToId": {
+                    "name": "assignedToId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "color": {
                     "name": "color",
                     "isArray": false,
@@ -494,6 +494,13 @@ export const schema = {
                         ]
                     }
                 },
+                "assignedToId": {
+                    "name": "assignedToId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "image": {
                     "name": "image",
                     "isArray": false,
@@ -607,5 +614,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "18333224eabd72d58fda41a15afdf393"
+    "version": "b1a3e1103ec51e22434fbfc58cff676b"
 };

@@ -12,7 +12,6 @@ type Organization
   name: String!
   accessCode: String!
   manager: String!
-  image: String!
   UserOrStorages: [OrgUserStorage] @hasMany
   equipment: [Equipment] @hasMany
   containers: [Container] @hasMany
@@ -76,6 +75,7 @@ type Equipment
   organization: Organization! @belongsTo
   lastUpdatedDate: AWSDateTime!
   assignedTo: OrgUserStorage! @belongsTo
+  assignedToId: ID!
   image: String!
   color: String!
   group: String!

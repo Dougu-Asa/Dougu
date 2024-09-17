@@ -21,7 +21,8 @@ export const reassignEquipment = async (
   assignedTo: OrgUserStorage | null,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
-  if (!assignedTo || item.assignedTo === assignedTo.id) return;
+  console.log("reassignEquipment");
+  if (!assignedTo || item.assignedTo.id === assignedTo.id) return;
   setIsLoading(true);
   try {
     // ensure equipment and user exist
@@ -36,6 +37,7 @@ export const reassignEquipment = async (
     await DataStore.save(
       Equipment.copyOf(equip, (updated) => {
         updated.assignedTo = swapOrgUserStorage;
+        updated.assignedToId = swapOrgUserStorage.id;
         updated.lastUpdatedDate = new Date().toISOString();
       }),
     );
@@ -52,7 +54,7 @@ export const reassignContainer = async (
   assignedTo: OrgUserStorage | null,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
-  if (!assignedTo || item.assignedTo === assignedTo.id) return;
+  if (!assignedTo || item.assignedTo.id === assignedTo.id) return;
   setIsLoading(true);
   try {
     // ensure container and user exist
@@ -67,6 +69,7 @@ export const reassignContainer = async (
     await DataStore.save(
       Container.copyOf(container, (updated) => {
         updated.assignedTo = swapOrgUserStorage;
+        updated.assignedToId = swapOrgUserStorage.id;
         updated.lastUpdatedDate = new Date().toISOString();
       }),
     );
@@ -78,6 +81,7 @@ export const reassignContainer = async (
       await DataStore.save(
         Equipment.copyOf(equip, (updated) => {
           updated.assignedTo = swapOrgUserStorage;
+          updated.assignedToId = swapOrgUserStorage.id;
           updated.lastUpdatedDate = new Date().toISOString();
         }),
       );
@@ -110,6 +114,7 @@ export const addEquipmentToContainer = async (
         updated.lastUpdatedDate = new Date().toISOString();
         updated.containerId = container.id;
         updated.assignedTo = contanierUser;
+        updated.assignedToId = contanierUser.id;
       }),
     );
   } catch (error) {
@@ -139,6 +144,7 @@ export const moveOutOfContainer = async (
         updated.lastUpdatedDate = new Date().toISOString();
         updated.containerId = null;
         updated.assignedTo = user;
+        updated.assignedToId = user.id;
       }),
     );
   } catch (error) {
