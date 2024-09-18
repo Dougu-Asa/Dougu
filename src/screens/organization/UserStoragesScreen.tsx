@@ -35,7 +35,7 @@ export default function UserStoragesScreen({
   const [tab, setTab] = useState(tabParam);
   const [currData, setCurrData] = useState<OrgUserStorage[]>([]);
   const orgUserStorages = useMemo(() => {
-    return Object.values(itemData).map(
+    return Array.from(itemData.values()).map(
       (data: UserStorageData) => data.assignedTo,
     );
   }, [itemData]);

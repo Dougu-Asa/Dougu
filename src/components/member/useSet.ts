@@ -22,7 +22,6 @@ export default function useSet({
   listTwo: ItemObj[];
 }) {
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
-  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
   const startIdx = useRef<number | null>(null);
   const { containerItem } = useEquipment();
   const [containerPage, setContainerPage] = useState(0);
@@ -66,7 +65,6 @@ export default function useSet({
     const item = containerItem.equipment[idx];
     item.count -= 1;
     startIdx.current = idx;
-    startSide.current = "container";
     setDraggingItem(item);
   };
 
@@ -80,7 +78,6 @@ export default function useSet({
       ? topPage * windowWidth
       : bottomPage * windowWidth;
     const list = isTop ? listOne : listTwo;
-    startSide.current = isTop ? "top" : "bottom";
     if (y < yRange.start || y > yRange.end) return;
     // check if the user is hovering over an item
     const idx = Math.floor((gesture.x + horizontalOffset) / offset);
@@ -95,7 +92,6 @@ export default function useSet({
   return {
     draggingItem,
     setDraggingItem,
-    startSide,
     startIdx,
     setContainerPage,
     containerSetItem,

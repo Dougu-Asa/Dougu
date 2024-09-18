@@ -45,7 +45,7 @@ export default function SwapGestures({
   // state
   const halfLine = useRef<number>(0);
   const { orgUserStorage } = useUser();
-  const { swapContainerVisible, containerItem } = useEquipment();
+  const { swapContainerVisible } = useEquipment();
   const { setIsLoading } = useLoad();
 
   const {
@@ -61,7 +61,6 @@ export default function SwapGestures({
   const {
     draggingItem,
     setDraggingItem,
-    startSide,
     startIdx,
     setContainerPage,
     containerSetItem,
@@ -100,16 +99,7 @@ export default function SwapGestures({
   ) => {
     if (!draggingItem || startIdx.current == null) return;
     // set count back to original
-    let item: ItemObj;
-    if (startSide.current === "top") {
-      item = listOne[startIdx.current];
-    } else if (startSide.current === "bottom") {
-      item = listTwo[startIdx.current];
-    } else {
-      if (!containerItem) return;
-      item = containerItem?.equipment[startIdx.current];
-    }
-    item.count += 1;
+    draggingItem.count += 1;
     if (swapContainerVisible) return;
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {

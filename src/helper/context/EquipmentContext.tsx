@@ -42,7 +42,7 @@ export default function EquipmentProvider({
   useEffect(() => {
     const handleGetItems = async () => {
       try {
-        console.log("GETTING ITEMS");
+        console.log("handleGetItems");
         const items = await getOrgData(org!.id);
         setItemData(items);
       } catch (error) {
@@ -74,7 +74,7 @@ export default function EquipmentProvider({
   // select a new default id for the equipment item passed in
   const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
     // find the equipment object in the equipmentData map
-    const orgItem = itemData.get(item.assignedTo.name);
+    const orgItem = itemData.get(item.assignedTo.id);
     if (!orgItem) return;
     let newOrgItem: UserStorageData | undefined;
     if (item.container) {
