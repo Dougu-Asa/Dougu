@@ -13,15 +13,12 @@ export default function Item({
   return (
     <>
       {data.type === "equipment" ? (
-        <EquipmentItem
-          item={data as EquipmentObj}
-          count={(data as EquipmentObj).count}
-        />
+        <EquipmentItem item={data as EquipmentObj} count={data.count} />
       ) : (
         <ContainerItem
           item={data as ContainerObj}
           swapable={swapable}
-          count={1}
+          count={data.count}
         />
       )}
     </>

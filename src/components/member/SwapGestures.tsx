@@ -48,6 +48,7 @@ export default function SwapGestures({
   const { swapContainerVisible } = useEquipment();
   const { setIsLoading } = useLoad();
 
+  // handle scrollRow scrolling
   const {
     topPage,
     setTopPage,
@@ -58,10 +59,10 @@ export default function SwapGestures({
     clearScroll,
     handleScroll,
   } = useScroll();
+  // handle setting the dragging item
   const {
     draggingItem,
     setDraggingItem,
-    startIdx,
     setContainerPage,
     containerSetItem,
     handleSetItem,
@@ -72,8 +73,10 @@ export default function SwapGestures({
     listOne,
     listTwo,
   });
+  // handle the overlay animation
   const { size, movingStyles, animateStart, animateMove, animateFinalize } =
     useAnimateOverlay({ setDraggingItem });
+  // handle item hovering
   const { handleHover, clearTimeouts, containerHover, hoverContainer } =
     useHover({
       halfLine,
@@ -97,7 +100,7 @@ export default function SwapGestures({
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    if (!draggingItem || startIdx.current == null) return;
+    if (!draggingItem) return;
     // set count back to original
     draggingItem.count += 1;
     if (swapContainerVisible) return;

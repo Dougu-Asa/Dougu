@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Dimensions } from "react-native";
 import {
   GestureStateChangeEvent,
@@ -22,7 +22,6 @@ export default function useSet({
   listTwo: ItemObj[];
 }) {
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
-  const startIdx = useRef<number | null>(null);
   const { containerItem } = useEquipment();
   const [containerPage, setContainerPage] = useState(0);
   // calculate the range of the container overlay
@@ -64,7 +63,6 @@ export default function useSet({
     if (idx < 0 || idx > containerItem.equipment.length - 1) return;
     const item = containerItem.equipment[idx];
     item.count -= 1;
-    startIdx.current = idx;
     setDraggingItem(item);
   };
 
@@ -85,14 +83,12 @@ export default function useSet({
     if (idx < 0 || idx > list.length - 1) return;
     const item = list[idx];
     item.count -= 1;
-    startIdx.current = idx;
     setDraggingItem(item);
   };
 
   return {
     draggingItem,
     setDraggingItem,
-    startIdx,
     setContainerPage,
     containerSetItem,
     handleSetItem,
