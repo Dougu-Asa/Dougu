@@ -8,7 +8,7 @@ import {
   Dimensions,
   ImageSourcePropType,
 } from "react-native";
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
@@ -37,12 +37,6 @@ export default function CreateStorageScreen() {
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
   const { org } = useUser();
-
-  useEffect(() => {
-    console.log("CHANGE");
-    console.log("profileSource", profileSource);
-    console.log("profileKey", profileKey);
-  }, [profileKey, profileSource]);
 
   // Create a new storage
   const handleCreate = async () => {

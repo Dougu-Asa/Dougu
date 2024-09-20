@@ -38,6 +38,13 @@ export type LoadingContextType = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
+// tracks whether the user is online or not, and starts a background process
+// to sync data when the user comes back online
+export type NetworkContextType = {
+  isConnected: boolean;
+  setIsConnected: Dispatch<SetStateAction<boolean>>;
+};
+
 //used for custom header logic in InfoScreen of MemberTabs
 export type HeaderContextType = {
   infoFocus: boolean;

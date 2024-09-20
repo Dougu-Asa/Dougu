@@ -1,8 +1,7 @@
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 // project imports
@@ -14,6 +13,7 @@ import { handleError } from "../../helper/Utils";
 import { CreateOrgScreenProps } from "../../types/ScreenTypes";
 import { validateRequirements } from "../../helper/drawer/CreateOrgUtils";
 import { createOrg, createOrgUserStorage } from "../../helper/CreateUtils";
+import { useNetwork } from "../../helper/context/NetworkContext";
 
 /*
   Screen for creating an organization, user enters the name of the org
@@ -22,21 +22,10 @@ import { createOrg, createOrgUserStorage } from "../../helper/CreateUtils";
 */
 export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
   const { setIsLoading } = useLoad();
-  const [name, onChangeName] = React.useState("");
+  const [name, onChangeName] = useState("");
   const { user } = useUser();
   var randomstring = require("randomstring");
-  const [hasConnection, setHasConnection] = React.useState(false);
-
-  // ensure network connection since api calls are made
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      setHasConnection(state.isConnected!);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const { isConnected } = useNetwork();
 
   // generate codes and check if they are unique. If not, generate another
   const generateCode = async () => {
@@ -94,7 +83,7 @@ export default function CreateOrgScreen({ navigation }: CreateOrgScreenProps) {
 
   return (
     <View style={createJoinStyles.mainContainer}>
-      {hasConnection ? (
+      {isConnected ? (
         <View style={createJoinStyles.container}>
           <Text style={createJoinStyles.title}>Create Org</Text>
           <Text style={createJoinStyles.subtitle}>

@@ -43,7 +43,9 @@
     "ws": "^8.17.1",
     "expo-image-picker": "~15.0.7",
     "expo-image-manipulator": "~12.0.5",
-    "expo-image": "~1.12.15"
+    "expo-image": "~1.12.15",
+    "expo-background-fetch": "~12.0.1",
+    "expo-task-manager": "~11.8.2"
   },
   "devDependencies": {
     "@eslint/compat": "^1.1.1",

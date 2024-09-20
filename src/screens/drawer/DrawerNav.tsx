@@ -21,6 +21,7 @@ import { callSignOut } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
 import MyHeaderProfileButton from "../../components/drawer/HeaderProfileButton";
 import { useHeader } from "../../helper/context/HeaderContext";
+import NetworkProvider from "../../helper/context/NetworkContext";
 
 /* 
     DrawerNav is the main form of navigation for the app.
@@ -102,27 +103,29 @@ export default function DrawerNav({ navigation }: DrawerNavProps) {
   }
 
   return (
-    <Drawer.Navigator
-      screenOptions={({ navigation }) => ({
-        headerLeft: () => <MyHeaderProfileButton navigation={navigation} />,
-        headerTitleAlign: "center",
-        headerTitleStyle: {
-          fontSize: 28,
-          fontWeight: "bold",
-          color: "#791111",
-        },
-        headerTitle: "Dougu",
-        swipeEnabled: false,
-        headerShown: infoFocus || !orgStackFocus,
-      })}
-      initialRouteName="MyOrgs"
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-    >
-      <Drawer.Screen name="MemberTabs" component={MemberTabs} />
-      <Drawer.Screen name="JoinOrg" component={JoinOrgScreen} />
-      <Drawer.Screen name="CreateOrg" component={CreateOrgScreen} />
-      <Drawer.Screen name="MyOrgs" component={MyOrgsScreen} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-    </Drawer.Navigator>
+    <NetworkProvider>
+      <Drawer.Navigator
+        screenOptions={({ navigation }) => ({
+          headerLeft: () => <MyHeaderProfileButton navigation={navigation} />,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 28,
+            fontWeight: "bold",
+            color: "#791111",
+          },
+          headerTitle: "Dougu",
+          swipeEnabled: false,
+          headerShown: infoFocus || !orgStackFocus,
+        })}
+        initialRouteName="MyOrgs"
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+      >
+        <Drawer.Screen name="MemberTabs" component={MemberTabs} />
+        <Drawer.Screen name="JoinOrg" component={JoinOrgScreen} />
+        <Drawer.Screen name="CreateOrg" component={CreateOrgScreen} />
+        <Drawer.Screen name="MyOrgs" component={MyOrgsScreen} />
+        <Drawer.Screen name="Profile" component={ProfileScreen} />
+      </Drawer.Navigator>
+    </NetworkProvider>
   );
 }
