@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/react-native";
+//import * as Sentry from "@sentry/react-native";
 import { Alert } from "react-native";
 import { Dispatch, SetStateAction } from "react";
 import { DataStore } from "@aws-amplify/datastore";
@@ -18,8 +18,8 @@ export const handleError = (
   }
   if (setIsLoading) setIsLoading(false);
   console.log(`Error in ${methodName}: ${error}`);
-  Sentry.setTag("methodName", methodName);
-  Sentry.captureException(error);
+  //Sentry.setTag("methodName", methodName);
+  //Sentry.captureException(error);
   Alert.alert(`Error in ${methodName}`, error.message, [{ text: "OK" }]);
   return error;
 };

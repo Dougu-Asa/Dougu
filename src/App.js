@@ -3,7 +3,6 @@ import { DataStore, AuthModeStrategyType } from "aws-amplify/datastore";
 import { Amplify } from "aws-amplify";
 import "@azure/core-asynciterator-polyfill";
 import { registerRootComponent } from "expo";
-import * as Sentry from "@sentry/react-native";
 
 // Project Files
 import LoadingProvider from "./helper/context/LoadingContext";
@@ -15,17 +14,6 @@ import RootStackNavigator from "./screens/RootStackNavigator";
   Entry point into the application, and attaches the necessary providers and navigators
   to be used throughout the entire app 
 */
-
-// Use sentry to track and log errors throughout the app
-Sentry.init({
-  dsn: "https://dc0105cfe4212e7f682ce47529bc0c51@o4507486458871808.ingest.us.sentry.io/4507486460051456",
-  tracesSampleRate: 1.0,
-  _experiments: {
-    profilesSampleRate: 1.0,
-  },
-  // temporary disable for development
-  enabled: false,
-});
 
 // Configure amplify, which connects our app to the backend
 Amplify.configure(amplifyconfig);
@@ -45,6 +33,4 @@ function App() {
   );
 }
 
-// Wrap sentry for features, export registerRootComponent for new App.js location
-const WrappedApp = Sentry.wrap(App);
-export default registerRootComponent(WrappedApp);
+export default registerRootComponent(App);
