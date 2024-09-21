@@ -35,7 +35,7 @@ export default function OrgStackNavigator() {
   }, [isFocused, setOrgStackFocus]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }} >
+    <SafeAreaView style={{ flex: 1 }}>
       <ItemImageProvider>
         <Stack.Navigator
           screenOptions={{

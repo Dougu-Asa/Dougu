@@ -4,7 +4,7 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
-import { itemStyles } from "../../styles/ItemStyles";
+import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
 import EquipmentDisplay from "./EquipmentDisplay";
 
 /*
@@ -26,6 +26,7 @@ export default function ContainerItem({
   // only display the first 9 equipment items in a 3x3 grid
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkArray(firstNine ? firstNine : [], 3);
+  const itemStyles = useResponsiveStyles();
 
   // swapable is a boolean that determines if the container opens the swapContainerOverlay
   // since swapContainerOverlay is only used in the swapEquipment screen

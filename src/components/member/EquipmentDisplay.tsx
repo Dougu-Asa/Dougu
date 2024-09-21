@@ -1,6 +1,6 @@
 import { ImageSourcePropType, Pressable } from "react-native";
 import { Image } from "expo-image";
-import { itemStyles } from "../../styles/ItemStyles";
+import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
 import { Hex } from "../../types/ModelTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import { useUser } from "../../helper/context/UserContext";
@@ -22,6 +22,7 @@ export default function EquipmentDisplay({
   isMini: boolean;
   source: ImageSourcePropType | null;
 }) {
+  const itemStyles = useResponsiveStyles();
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
   const radius = isMini
     ? itemStyles.radiusBackgroundMini

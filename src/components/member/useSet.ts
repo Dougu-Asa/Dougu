@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Dimensions } from "react-native";
 import {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
@@ -9,12 +8,16 @@ import { useEquipment } from "../../helper/context/EquipmentContext";
 import { ItemObj } from "../../types/ModelTypes";
 
 export default function useSet({
+  windowWidth,
+  windowHeight,
   halfLine,
   topPage,
   bottomPage,
   listOne,
   listTwo,
 }: {
+  windowWidth: number;
+  windowHeight: number;
   halfLine: React.MutableRefObject<number>;
   topPage: number;
   bottomPage: number;
@@ -25,8 +28,6 @@ export default function useSet({
   const { containerItem } = useEquipment();
   const [containerPage, setContainerPage] = useState(0);
   // calculate the range of the container overlay
-  const windowHeight = Dimensions.get("window").height;
-  const windowWidth = Dimensions.get("window").width;
   const offset = windowWidth / 4;
   const equipmentWidth = windowWidth / 5;
   const containerYRange = {

@@ -3,8 +3,8 @@ import { View, Text } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { itemStyles } from "../../styles/ItemStyles";
 import EquipmentDisplay from "./EquipmentDisplay";
+import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
 
 /*
   EquipmentItem is a component that displays an equipment object with a label and
@@ -19,6 +19,7 @@ export default function EquipmentItem({
   count: number;
 }) {
   const { setVisible, setEquipmentItem } = useEquipment();
+  const itemStyles = useResponsiveStyles();
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
