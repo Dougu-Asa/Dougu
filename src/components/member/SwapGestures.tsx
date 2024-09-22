@@ -30,7 +30,7 @@ import { useUser } from "../../helper/context/UserContext";
 import useSet from "./useSet";
 import useHover from "./useHover";
 import { useLoad } from "../../helper/context/LoadingContext";
-import useConstants from "./useValues";
+import { useDimensions } from "../../helper/context/DimensionsContext";
 
 export default function SwapGestures({
   listOne,
@@ -48,9 +48,8 @@ export default function SwapGestures({
   const { orgUserStorage } = useUser();
   const { swapContainerVisible } = useEquipment();
   const { setIsLoading } = useLoad();
+  const { windowWidth, windowHeight } = useDimensions();
 
-  // calculate our screenSize
-  const { windowWidth, windowHeight } = useConstants();
   // handle scrollRow scrolling
   const {
     topPage,

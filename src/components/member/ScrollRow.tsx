@@ -1,7 +1,5 @@
 import {
   View,
-  StyleSheet,
-  Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
   FlatList,
@@ -11,6 +9,8 @@ import React, { useEffect, useRef } from "react";
 import { ItemObj } from "../../types/ModelTypes";
 import { chunkArray } from "../../helper/EquipmentUtils";
 import Item from "./Item";
+import { useDimensions } from "../../helper/context/DimensionsContext";
+import { useScrollRowStyles } from "../../styles/ScrollRowStyles";
 
 /*
   Handles an individual user row of equipment, tracking page and displaying.
@@ -29,8 +29,9 @@ export default function ScrollRow({
 }) {
   // data is displayed as pages of 4 items
   const chunkedData = chunkArray(listData, 4);
-  const windowWidth = Dimensions.get("window").width;
   const flatListRef = useRef<FlatList<ItemObj[]> | null>(null);
+  const { windowWidth } = useDimensions();
+  const styles = useScrollRowStyles();
 
   // keep track of the current page
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -68,15 +69,3 @@ export default function ScrollRow({
     />
   );
 }
-
-const equipmentSpacing = Dimensions.get("window").width / 25;
-const styles = StyleSheet.create({
-  item: {
-    marginLeft: equipmentSpacing,
-  },
-  scrollRow: {
-    flex: 1,
-    flexDirection: "row",
-    minWidth: Dimensions.get("window").width,
-  },
-});

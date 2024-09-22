@@ -11,9 +11,9 @@ import {
   GestureUpdateEvent,
   PanGestureChangeEventPayload,
 } from "react-native-gesture-handler";
-import { Dimensions } from "react-native";
 
 import { Position, EquipmentObj } from "../../types/ModelTypes";
+import { useDimensions } from "../../helper/context/DimensionsContext";
 
 /*
   This hook hanndles animations for the overlay that apperas when an 
@@ -26,7 +26,7 @@ export default function useAnimateOverlay({
 }: {
   setDraggingItem: (item: EquipmentObj | null) => void;
 }) {
-  const equipmentWidth = Dimensions.get("window").width / 5;
+  const { windowWidth } = useDimensions();
   const size = useSharedValue(1);
   const draggingOffset = useSharedValue<Position>({
     x: 0,
@@ -48,7 +48,7 @@ export default function useAnimateOverlay({
   ) => {
     "worklet";
     size.value = withSpring(1.2);
-    const halfEquipment = equipmentWidth / 2;
+    const halfEquipment = windowWidth / 10;
     draggingOffset.value = {
       x: gesture.x - halfEquipment,
       y: gesture.y - halfEquipment,

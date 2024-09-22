@@ -1,11 +1,11 @@
 import { ImageSourcePropType, Pressable } from "react-native";
 import { Image } from "expo-image";
-import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
 import { Hex } from "../../types/ModelTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import { useUser } from "../../helper/context/UserContext";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../../helper/AWS";
+import { useItemStyles } from "../../styles/ItemStyles";
 
 /*
   EquipmentDisplay displays the image of an equipment object. It can either
@@ -22,7 +22,7 @@ export default function EquipmentDisplay({
   isMini: boolean;
   source: ImageSourcePropType | null;
 }) {
-  const itemStyles = useResponsiveStyles();
+  const itemStyles = useItemStyles();
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
   const radius = isMini
     ? itemStyles.radiusBackgroundMini

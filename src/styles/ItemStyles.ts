@@ -1,23 +1,12 @@
-import { useEffect, useState } from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { useDimensions } from "../helper/context/DimensionsContext";
 
-export const useResponsiveStyles = () => {
-  const [windowDimensions, setWindowDimensions] = useState(
-    Dimensions.get("window"),
-  );
-
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener("change", ({ window }) => {
-      setWindowDimensions({ window });
-    });
-    return () => subscription?.remove();
-  });
-
-  const width = windowDimensions.width;
-  const itemWidth = width / 5;
-  const borderRadius = width / 14;
-  const miniWidth = width / 22;
-  const miniRadius = width / 64;
+export const useItemStyles = () => {
+  const { windowWidth } = useDimensions();
+  const itemWidth = windowWidth / 5;
+  const borderRadius = windowWidth / 14;
+  const miniWidth = windowWidth / 22;
+  const miniRadius = windowWidth / 64;
 
   const styles = StyleSheet.create({
     circle: {

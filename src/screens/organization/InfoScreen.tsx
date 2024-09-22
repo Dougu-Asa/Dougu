@@ -15,7 +15,7 @@ import { useHeader } from "../../helper/context/HeaderContext";
 import { getImageUri } from "../../helper/AWS";
 import { orgMapping } from "../../helper/ImageMapping";
 import { Image } from "expo-image";
-import { displayStyles } from "../../styles/Display";
+import { useDisplaytyles } from "../../styles/Display";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -29,6 +29,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   const [orgSource, setOrgSource] = useState<ImageSourcePropType>(
     orgMapping["default"],
   );
+  const displayStyles = useDisplaytyles();
 
   useEffect(() => {
     const checkCache = async () => {

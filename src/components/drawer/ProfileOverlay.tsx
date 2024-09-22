@@ -9,10 +9,10 @@ import Animated, {
 } from "react-native-reanimated";
 import ProfileDisplay from "../ProfileDisplay";
 
-import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
 import { Tab } from "@rneui/themed";
 import UploadImage from "../UploadImage";
+import { useContainerStyles } from "../../styles/ContainerOverlay";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -37,6 +37,7 @@ export default function ProfileOverlay({
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
   userId?: string;
 }) {
+  const containerOverlayStyles = useContainerStyles();
   const [selected, setSelected] = useState(0);
 
   // update user profile attributes in Cognito

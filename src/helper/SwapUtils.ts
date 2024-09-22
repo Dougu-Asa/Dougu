@@ -21,7 +21,6 @@ export const reassignEquipment = async (
   assignedTo: OrgUserStorage | null,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
-  console.log("reassignEquipment");
   if (!assignedTo || item.assignedTo.id === assignedTo.id) return;
   setIsLoading(true);
   try {

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
@@ -22,8 +21,9 @@ import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
 import EquipmentItem from "./EquipmentItem";
 import { EquipmentObj } from "../../types/ModelTypes";
-import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import PaginationDots from "./PaginationDots";
+import { useContainerStyles } from "../../styles/ContainerOverlay";
+import { useDimensions } from "../../helper/context/DimensionsContext";
 
 /*
     This overlay is what is shown when the user taps
@@ -37,6 +37,8 @@ export default function ContainerOverlay() {
     containerItem,
     setContainerItem,
   } = useEquipment();
+  const containerOverlayStyles = useContainerStyles();
+  const { windowWidth } = useDimensions();
 
   // equipment is displayed in a 3x3 grid format
   const equipmentChunks = chunkArray(containerItem?.equipment ?? [], 9);
@@ -53,7 +55,7 @@ export default function ContainerOverlay() {
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const pageIndex = Math.round(
-      event.nativeEvent.contentOffset.x / Dimensions.get("window").width,
+      event.nativeEvent.contentOffset.x / windowWidth,
     );
     setCurrentPage(pageIndex);
   };

@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { profileMapping } from "../helper/ImageMapping";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../helper/AWS";
-import { displayStyles } from "../styles/Display";
+import { useDisplaytyles } from "../styles/Display";
 
 /*
   ProfileDisplay displays the profile image of a user. It can either
@@ -23,6 +23,7 @@ export default function ProfileDisplay({
   const [profileSource, setProfileSource] = useState<ImageSourcePropType>(
     profileMapping["default"],
   );
+  const displayStyles = useDisplaytyles();
   const styles = isMini ? displayStyles.profileMini : displayStyles.profile;
 
   useEffect(() => {

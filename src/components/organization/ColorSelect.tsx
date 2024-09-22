@@ -1,4 +1,4 @@
-import { StyleSheet, View, Dimensions } from "react-native";
+import { View } from "react-native";
 import ColorPicker, {
   Panel1,
   Swatches,
@@ -7,6 +7,7 @@ import ColorPicker, {
   InputWidget,
 } from "reanimated-color-picker";
 import { Hex } from "../../types/ModelTypes";
+import { useColorSelect } from "../../styles/ColorSelectStyles";
 
 /*
   ColorSelect allows the user to select a background color for
@@ -20,6 +21,8 @@ export default function ColorSelect({
   color: Hex;
   setColor: React.Dispatch<React.SetStateAction<Hex>>;
 }) {
+  const styles = useColorSelect();
+
   // triggered when a color is selected
   const onSelectColor = ({ hex }: { hex: string }) => {
     setColor(hex as Hex);
@@ -61,39 +64,3 @@ export default function ColorSelect({
     </View>
   );
 }
-
-const borderRadius = Dimensions.get("window").width / 20;
-const borderRadiusSmall = Dimensions.get("window").width / 40;
-const styles = StyleSheet.create({
-  panel: {
-    borderRadius: borderRadius,
-    flex: 10,
-    height: "100%",
-  },
-  panelView: {
-    display: "flex",
-    flexDirection: "row",
-    columnGap: 15,
-    flexShrink: 4,
-    flexBasis: "60%",
-  },
-  picker: {
-    width: "90%",
-    height: "90%",
-    rowGap: 15,
-    margin: "auto",
-  },
-  pickerContainer: {
-    flex: 1,
-  },
-  slider: {
-    borderRadius: borderRadiusSmall,
-    flex: 1,
-    height: "100%",
-  },
-  widgetView: {
-    rowGap: 15,
-    flexBasis: "40%",
-    flexGrow: 6,
-  },
-});

@@ -6,15 +6,15 @@ import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
-import { OrgImageScreenProps } from "../../types/ScreenTypes";
 import { Image } from "expo-image";
-import { displayStyles } from "../../styles/Display";
+import { useDisplaytyles } from "../../styles/Display";
 import { orgMapping } from "../../helper/ImageMapping";
 
-export default function OrgImageScreen({ route }: OrgImageScreenProps) {
+export default function OrgImageScreen() {
   const { org } = useUser();
   const { setIsLoading } = useLoad();
   const [imageUri, setImageUri] = useState<ImageSourcePropType | null>(null);
+  const displayStyles = useDisplaytyles();
 
   const handleUpload = async () => {
     // upload the image to AWS S3

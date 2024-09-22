@@ -38,6 +38,12 @@ export type LoadingContextType = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
+// tracks the dimensions of the window for responsive design
+export type DimensionsContextType = {
+  windowWidth: number;
+  windowHeight: number;
+};
+
 // tracks whether the user is online or not, and starts a background process
 // to sync data when the user comes back online
 export type NetworkContextType = {

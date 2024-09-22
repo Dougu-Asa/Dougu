@@ -1,9 +1,9 @@
 import { Pressable } from "react-native";
-import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
 import { Hex } from "../../types/ModelTypes";
+import { useItemStyles } from "../../styles/ItemStyles";
 
 export default function ContainerDisplay({ color }: { color: Hex }) {
-  const itemStyles = useResponsiveStyles();
+  const itemStyles = useItemStyles();
 
   return (
     <Pressable

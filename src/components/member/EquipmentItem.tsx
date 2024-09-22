@@ -4,8 +4,7 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import EquipmentDisplay from "./EquipmentDisplay";
-import { useResponsiveStyles } from "../../styles/ResponsiveStyles";
-
+import { useItemStyles } from "../../styles/ItemStyles";
 /*
   EquipmentItem is a component that displays an equipment object with a label and
   a count. It is used in the DraggableEquipment component to display the equipment
@@ -19,7 +18,7 @@ export default function EquipmentItem({
   count: number;
 }) {
   const { setVisible, setEquipmentItem } = useEquipment();
-  const itemStyles = useResponsiveStyles();
+  const itemStyles = useItemStyles();
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {

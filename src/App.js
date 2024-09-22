@@ -5,6 +5,7 @@ import "@azure/core-asynciterator-polyfill";
 import { registerRootComponent } from "expo";
 
 // Project Files
+import DimensionsProvider from "./helper/context/DimensionsContext";
 import LoadingProvider from "./helper/context/LoadingContext";
 import UserProvider from "./helper/context/UserContext";
 import amplifyconfig from "./amplifyconfiguration.json";
@@ -25,9 +26,11 @@ function App() {
   return (
     <NavigationContainer>
       <LoadingProvider>
-        <UserProvider>
-          <RootStackNavigator />
-        </UserProvider>
+        <DimensionsProvider>
+          <UserProvider>
+            <RootStackNavigator />
+          </UserProvider>
+        </DimensionsProvider>
       </LoadingProvider>
     </NavigationContainer>
   );
