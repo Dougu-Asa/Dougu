@@ -6,15 +6,12 @@ import { useUser } from "../../helper/context/UserContext";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
-import { Image } from "expo-image";
-import { useDisplaytyles } from "../../styles/Display";
-import { orgMapping } from "../../helper/ImageMapping";
+import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
 
 export default function OrgImageScreen() {
   const { org } = useUser();
   const { setIsLoading } = useLoad();
   const [imageUri, setImageUri] = useState<ImageSourcePropType | null>(null);
-  const displayStyles = useDisplaytyles();
 
   const handleUpload = async () => {
     // upload the image to AWS S3
@@ -32,11 +29,7 @@ export default function OrgImageScreen() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={imageUri}
-        style={displayStyles.image}
-        placeholder={orgMapping["default"]}
-      />
+      <OrgImageDisplay imageSource={imageUri} />
       <View style={styles.uploadContainer}>
         <UploadImage setImageSource={setImageUri} />
       </View>

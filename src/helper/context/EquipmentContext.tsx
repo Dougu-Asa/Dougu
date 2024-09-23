@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
 import {
@@ -38,18 +38,18 @@ export default function EquipmentProvider({
     useState<boolean>(false);
   const { org } = useUser();
 
+  const handleGetItems = useCallback(async () => {
+    try {
+      console.log("handleGetItems");
+      const items = await getOrgData(org!.id);
+      setItemData(items);
+    } catch (error) {
+      handleError("handleGetItems", error as Error, null);
+    }
+  }, [org]);
+
   // subscribe to and get all equipment in the organization
   useEffect(() => {
-    const handleGetItems = async () => {
-      try {
-        console.log("handleGetItems");
-        const items = await getOrgData(org!.id);
-        setItemData(items);
-      } catch (error) {
-        handleError("handleGetItems", error as Error, null);
-      }
-    };
-
     const equipmentSubscription = DataStore.observe(Equipment).subscribe(() => {
       handleGetItems();
     });
@@ -69,7 +69,7 @@ export default function EquipmentProvider({
       containerSubscription.unsubscribe();
       orgUserStorageSubscription.unsubscribe();
     };
-  }, [org]);
+  }, [handleGetItems]);
 
   // select a new default id for the equipment item passed in
   const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
