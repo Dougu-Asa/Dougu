@@ -7,13 +7,14 @@ import { useUser } from "../../helper/context/UserContext";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
 import Item from "../../components/member/Item";
-
+import { useMyEquipmentStyles } from "../../styles/MyEquipmentStyles";
 /*
   Screen for viewing all equipment assigned to the current user
 */
 export default function EquipmentScreen() {
   const { orgUserStorage } = useUser();
   const { itemData } = useEquipment();
+  const styles = useMyEquipmentStyles();
 
   // Get the equipment assigned to the current user
   const userItems = itemData.get(orgUserStorage!.id);
@@ -39,36 +40,3 @@ export default function EquipmentScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  background: {
-    backgroundColor: "#fff",
-    height: "100%",
-    width: "100%",
-  },
-  container: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginVertical: 20,
-    color: "#000",
-  },
-  equipmentRow: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "90%",
-    marginBottom: 20,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  equipmentItemContainer: {
-    flexBasis: "33.33%",
-    alignItems: "center",
-  },
-});
