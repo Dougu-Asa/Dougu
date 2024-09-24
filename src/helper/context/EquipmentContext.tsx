@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  createContext,
+} from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
 import {
@@ -18,7 +24,7 @@ import { handleError } from "../Utils";
   to share equipmentData, we ensure consistency and also custom selection of 
   which equipment id you'd like to swap
 */
-const EquipmentContext = React.createContext<EquipmentContextType | undefined>(
+const EquipmentContext = createContext<EquipmentContextType | undefined>(
   undefined,
 );
 

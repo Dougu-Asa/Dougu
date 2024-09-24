@@ -35,6 +35,7 @@ export default function ProfileDisplay({
         const fetchPath = `public/profiles/${userId}/profile.jpeg`;
         const fetchImageUri = await getImageUri(fetchPath);
         if (fetchImageUri) setProfileSource({ uri: fetchImageUri });
+        else setProfileSource(profileMapping["default"]);
       }
     };
 

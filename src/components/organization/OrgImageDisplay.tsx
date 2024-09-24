@@ -34,6 +34,7 @@ export default function OrgImageDisplay({
         const fetchPath = `public/${org!.id}/orgImage.jpeg`;
         const fetchImageUri = await getImageUri(fetchPath);
         if (fetchImageUri) setOrgSource({ uri: fetchImageUri });
+        else setOrgSource(orgMapping["default"]);
       }
     };
 

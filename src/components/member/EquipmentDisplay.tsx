@@ -42,6 +42,7 @@ export default function EquipmentDisplay({
         const fetchPath = `public/${org!.id}/equipment/${imageKey}`;
         const fetchImageUri = await getImageUri(fetchPath);
         if (fetchImageUri) setImageSource({ uri: fetchImageUri });
+        else setImageSource(iconMapping["default"]);
       }
     };
 

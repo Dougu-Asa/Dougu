@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "jsx": "react-native"
+  },
   "extends": "@tsconfig/react-native/tsconfig.json",
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/screens/HomeScreen.tsx"],
   "exclude": [
