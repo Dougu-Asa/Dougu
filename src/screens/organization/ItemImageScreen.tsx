@@ -6,7 +6,7 @@ import { useItemImage } from "../../helper/context/ItemImageContext";
 import { Tab } from "@rneui/themed";
 import IconMenu from "../../components/IconMenu";
 import ColorSelect from "../../components/organization/ColorSelect";
-import UploadImage from "../../components/organization/UploadImage";
+import UploadImage from "../../components/UploadImage";
 import { ItemImageScreenProps } from "../../types/ScreenTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import EquipmentDisplay from "../../components/member/EquipmentDisplay";
@@ -21,6 +21,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
   // use a context to share state with CreateEquipmentScreen
   const {
     imageSource,
+    imageKey,
     setImageSource,
     setImageKey,
     equipmentColor,
@@ -31,7 +32,7 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
 
   const handleSet = (imageKey: string) => {
     // key isn't always the same as the image source
-    setImageSource(iconMapping[imageKey]);
+    setImageSource(null);
     setImageKey(imageKey);
   };
 
@@ -41,10 +42,10 @@ export default function ItemImageScreen({ route }: ItemImageScreenProps) {
         <View style={styles.display}>
           {index === 0 ? (
             <EquipmentDisplay
-              item={null}
               color={equipmentColor}
+              imageKey={imageKey}
               isMini={false}
-              imageSource={imageSource}
+              source={imageSource}
             />
           ) : (
             <ContainerDisplay color={containerColor} />

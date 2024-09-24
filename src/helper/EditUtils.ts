@@ -5,31 +5,41 @@ import { Equipment, Container } from "../models";
 import { handleError } from "./Utils";
 import { Alert } from "react-native";
 
-// delete equipment from the organization
-const handleDelete = async (
+const deleteContainer = async (
   item: ItemObj,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setIsLoading(true);
-    let toDelete;
-    if (item.type === "equipment") {
-      toDelete = await DataStore.query(Equipment, item.id);
-    } else {
-      toDelete = await DataStore.query(Container, item.id);
-      const containerEquipment = await DataStore.query(Equipment, (c) =>
-        c.containerId.eq(item.id),
-      );
-      for (let i = 0; i < containerEquipment.length; i++) {
-        await DataStore.delete(containerEquipment[i]);
-      }
+    const toDelete = await DataStore.query(Container, item.id);
+    const toDeleteEquipment = await DataStore.query(Equipment, (c) =>
+      c.containerId.eq(item.id),
+    );
+    if (toDelete == null) throw new Error("Container not found");
+    await DataStore.delete(toDelete);
+    for (let i = 0; i < toDeleteEquipment.length; i++) {
+      await DataStore.delete(toDeleteEquipment[i]);
     }
-    if (toDelete == null) throw new Error("Item not found");
+    setIsLoading(false);
+    Alert.alert("Container Deleted Successfully!");
+  } catch (error) {
+    handleError("deleteContainer", error as Error, setIsLoading);
+  }
+};
+
+const deleteEquipment = async (
+  item: ItemObj,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
+) => {
+  try {
+    setIsLoading(true);
+    const toDelete = await DataStore.query(Equipment, item.id);
+    if (toDelete == null) throw new Error("Equipment not found");
     await DataStore.delete(toDelete);
     setIsLoading(false);
     Alert.alert("Equipment Deleted Successfully!");
   } catch (error) {
-    handleError("handleDelete", error as Error, setIsLoading);
+    handleError("deleteEquipment", error as Error, setIsLoading);
   }
 };
 
@@ -46,7 +56,11 @@ export const handleEdit = (
   Alert.alert("Delete Equipment", "Would you like to delete this equipment?", [
     {
       text: "Delete",
-      onPress: () => handleDelete(equipment, setIsLoading),
+      onPress: () => {
+        if (equipment.type === "container")
+          deleteContainer(equipment, setIsLoading);
+        else deleteEquipment(equipment, setIsLoading);
+      },
       style: "destructive",
     },
     {

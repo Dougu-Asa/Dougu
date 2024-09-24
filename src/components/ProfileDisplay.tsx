@@ -3,49 +3,59 @@ import { Image } from "expo-image";
 import { profileMapping } from "../helper/ImageMapping";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../helper/AWS";
-import { useImage } from "../helper/context/ImageContext";
+import { useDisplaytyles } from "../styles/Display";
 
 /*
   ProfileDisplay displays the profile image of a user. It can either
   use a stored image uri or fetch the image from AWS S3.
 */
 export default function ProfileDisplay({
+  isMini,
   profileKey,
-  profileSource,
-  size,
+  source,
   userId,
 }: {
+  isMini: boolean;
   profileKey: string;
-  profileSource: ImageSourcePropType | null;
-  size: number;
+  source: ImageSourcePropType | null;
   userId: string | null | undefined;
 }) {
-  const [imageUri, setImageUri] = useState<ImageSourcePropType>(
+  const [profileSource, setProfileSource] = useState<ImageSourcePropType>(
     profileMapping["default"],
   );
-  const { imageMap } = useImage();
+  const displayStyles = useDisplaytyles();
+  const styles = isMini ? displayStyles.profileMini : displayStyles.profile;
 
   useEffect(() => {
-    if (profileSource) {
-      setImageUri(profileSource);
+    const checkCache = async () => {
+      const path = await Image.getCachePathAsync(profileKey);
+      if (path) {
+        setProfileSource({ uri: path });
+      } else {
+        const fetchPath = `public/profiles/${userId}/profile.jpeg`;
+        const fetchImageUri = await getImageUri(fetchPath);
+        if (fetchImageUri) setProfileSource({ uri: fetchImageUri });
+        else setProfileSource(profileMapping["default"]);
+      }
+    };
+
+    if (source) {
+      setProfileSource(source);
     } else if (profileKey in profileMapping) {
-      setImageUri(profileMapping[profileKey]);
-    } else if (imageMap.has(profileKey)) {
-      setImageUri(imageMap.get(profileKey)!);
+      setProfileSource(profileMapping[profileKey]);
     } else {
-      const path = `public/profiles/${userId}/profile.jpeg`;
-      const fetchImageUri = getImageUri(path, profileMapping);
-      fetchImageUri.then((uri) => {
-        setImageUri(uri);
-        imageMap.set(profileKey, uri);
-      });
+      checkCache();
     }
-  }, [imageMap, profileKey, profileSource, userId]);
+  }, [profileKey, profileSource, source, userId]);
 
   return (
     <Image
-      source={imageUri}
-      style={{ width: size, height: size, borderRadius: size / 2 }}
+      source={
+        typeof profileSource === "object" && "uri" in profileSource
+          ? { uri: profileSource.uri, cacheKey: profileKey }
+          : profileSource
+      }
+      style={styles}
     />
   );
 }

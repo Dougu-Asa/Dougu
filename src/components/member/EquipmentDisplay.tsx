@@ -1,56 +1,59 @@
 import { ImageSourcePropType, Pressable } from "react-native";
 import { Image } from "expo-image";
-import { itemStyles } from "../../styles/ItemStyles";
-import { EquipmentObj, Hex } from "../../types/ModelTypes";
+import { Hex } from "../../types/ModelTypes";
 import { iconMapping } from "../../helper/ImageMapping";
 import { useUser } from "../../helper/context/UserContext";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../../helper/AWS";
-import { useImage } from "../../helper/context/ImageContext";
+import { useItemStyles } from "../../styles/ItemStyles";
 
 /*
   EquipmentDisplay displays the image of an equipment object. It can either
   use a stored image uri or fetch the image from AWS S3.
 */
 export default function EquipmentDisplay({
-  item,
+  imageKey,
   color,
   isMini,
-  imageSource,
+  source,
 }: {
-  item: EquipmentObj | null;
+  imageKey: string;
   color: Hex;
   isMini: boolean;
-  imageSource?: ImageSourcePropType | null;
+  source: ImageSourcePropType | null;
 }) {
+  const itemStyles = useItemStyles();
   const sizeStyles = isMini ? itemStyles.sizeMini : itemStyles.size;
   const radius = isMini
     ? itemStyles.radiusBackgroundMini
     : itemStyles.radiusBackground;
-
-  const [imageUri, setImageUri] = useState<ImageSourcePropType>(
+  const [imageSource, setImageSource] = useState<ImageSourcePropType>(
     iconMapping["default"],
   );
   const { org } = useUser();
-  const { imageMap } = useImage();
 
   // set the image uri
   useEffect(() => {
-    if (!item) return;
-    const image = item.image;
-    if (image in iconMapping) {
-      setImageUri(iconMapping[image]);
-    } else if (imageMap.has(image)) {
-      setImageUri(imageMap.get(image)!);
+    const checkCache = async () => {
+      const path = await Image.getCachePathAsync(imageKey);
+      if (path) {
+        setImageSource({ uri: path });
+      } else {
+        const fetchPath = `public/${org!.id}/equipment/${imageKey}`;
+        const fetchImageUri = await getImageUri(fetchPath);
+        if (fetchImageUri) setImageSource({ uri: fetchImageUri });
+        else setImageSource(iconMapping["default"]);
+      }
+    };
+
+    if (source) {
+      setImageSource(source);
+    } else if (imageKey in iconMapping) {
+      setImageSource(iconMapping[imageKey]);
     } else {
-      const path = `public/${org!.id}/equipment/${image}`;
-      const fetchImageUri = getImageUri(path, iconMapping);
-      fetchImageUri.then((uri) => {
-        setImageUri(uri);
-        imageMap.set(image, uri);
-      });
+      checkCache();
     }
-  }, [imageMap, item, org]);
+  }, [imageKey, org, source]);
 
   return (
     <Pressable
@@ -66,7 +69,11 @@ export default function EquipmentDisplay({
     >
       <Image
         style={sizeStyles}
-        source={imageSource ? imageSource : imageUri}
+        source={
+          typeof imageSource === "object" && "uri" in imageSource
+            ? { uri: imageSource.uri, cacheKey: imageKey }
+            : imageSource
+        }
         contentFit="cover"
         placeholder={iconMapping["default"]}
       />

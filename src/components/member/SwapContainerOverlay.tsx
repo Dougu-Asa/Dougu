@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import {
   View,
   Text,
-  Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
@@ -21,9 +20,10 @@ import Animated, {
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
 import { EquipmentObj } from "../../types/ModelTypes";
-import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import EquipmentItem from "./EquipmentItem";
 import PaginationDots from "./PaginationDots";
+import { useDimensions } from "../../helper/context/DimensionsContext";
+import { useContainerStyles } from "../../styles/ContainerOverlay";
 
 /*
     This overlay is what is shown when the user taps
@@ -32,10 +32,8 @@ import PaginationDots from "./PaginationDots";
 */
 export default function SwapContainerOverlay({
   setContainerPage,
-  containerCounts,
 }: {
   setContainerPage: React.Dispatch<React.SetStateAction<number>>;
-  containerCounts: number[];
 }) {
   const {
     containerItem,
@@ -49,7 +47,8 @@ export default function SwapContainerOverlay({
   // for the pagination dots
   const [currentPage, setCurrentPage] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
-  const { width } = Dimensions.get("window");
+  const { windowWidth } = useDimensions();
+  const containerOverlayStyles = useContainerStyles();
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
@@ -60,12 +59,13 @@ export default function SwapContainerOverlay({
 
   // keep track of the current page
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const pageIndex = Math.round(event.nativeEvent.contentOffset.x / width);
+    const pageIndex = Math.round(
+      event.nativeEvent.contentOffset.x / windowWidth,
+    );
     setCurrentPage(pageIndex);
     setContainerPage(pageIndex);
   };
 
-  let itemIdx = 0;
   return (
     <>
       {swapContainerVisible && (
@@ -104,22 +104,19 @@ export default function SwapContainerOverlay({
                           key={`r${index}`}
                           style={containerOverlayStyles.equipmentRow}
                         >
-                          {row.map((equip) => {
-                            const idx = itemIdx++;
-                            return (
-                              <View
-                                key={equip.id}
-                                style={
-                                  containerOverlayStyles.equipmentItemContainer
-                                }
-                              >
-                                <EquipmentItem
-                                  item={equip as EquipmentObj}
-                                  count={containerCounts[idx]}
-                                />
-                              </View>
-                            );
-                          })}
+                          {row.map((equip) => (
+                            <View
+                              key={equip.id}
+                              style={
+                                containerOverlayStyles.equipmentItemContainer
+                              }
+                            >
+                              <EquipmentItem
+                                item={equip as EquipmentObj}
+                                count={equip.count}
+                              />
+                            </View>
+                          ))}
                         </View>
                       ))}
                     </View>

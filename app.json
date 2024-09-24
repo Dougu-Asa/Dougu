@@ -6,7 +6,7 @@
     "slug": "asa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/asayake.png",
+    "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/splash.png",
@@ -18,7 +18,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.asa.Dougu"
+      "bundleIdentifier": "com.asa.Dougu",
+      "infoPlist": {
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +31,7 @@
       "package": "com.asa.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
     },
     "extra": {
       "eas": {

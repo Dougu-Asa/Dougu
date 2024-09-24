@@ -21,7 +21,7 @@ export default function TeamEquipmentScreen() {
         keyExtractor={(orgItem, index) => index.toString()}
         renderItem={({ item: orgItem }) => (
           <View style={styles.userContainer}>
-            <Text style={styles.scrollText}>{orgItem.assignedToName}</Text>
+            <Text style={styles.scrollText}>{orgItem.assignedTo.name}</Text>
             <ScrollRow listData={orgItem.data} isSwap={false} />
           </View>
         )}

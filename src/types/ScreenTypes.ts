@@ -140,11 +140,6 @@ export type ItemImageScreenProps = NativeStackScreenProps<
   "ItemImage"
 >;
 
-export type OrgImageScreenProps = NativeStackScreenProps<
-  OrgStackParamList,
-  "OrgImage"
->;
-
 export type MemberProfileScreenProps = NativeStackScreenProps<
   OrgStackParamList,
   "MemberProfile"

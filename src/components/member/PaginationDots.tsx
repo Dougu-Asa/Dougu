@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 
 /*
   Dots to display the current page in a horizontal scroll view
-  Mainly used in ContainerOverlay and ScrollRow
+  Only used in ContainerOverlay
 */
 export default function PaginationDots({
   length,

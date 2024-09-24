@@ -17,7 +17,6 @@ type EagerOrganization = {
   readonly id: string;
   readonly name: string;
   readonly accessCode: string;
-  readonly image: string;
   readonly manager: string;
   readonly UserOrStorages?: (OrgUserStorage | null)[] | null;
   readonly equipment?: (Equipment | null)[] | null;
@@ -34,7 +33,6 @@ type LazyOrganization = {
   readonly id: string;
   readonly name: string;
   readonly accessCode: string;
-  readonly image: string;
   readonly manager: string;
   readonly UserOrStorages: AsyncCollection<OrgUserStorage>;
   readonly equipment: AsyncCollection<Equipment>;
@@ -105,6 +103,7 @@ type EagerContainer = {
   readonly organization: Organization;
   readonly lastUpdatedDate: string;
   readonly assignedTo: OrgUserStorage;
+  readonly assignedToId: string;
   readonly color: string;
   readonly group: string;
   readonly details?: string | null;
@@ -124,6 +123,7 @@ type LazyContainer = {
   readonly organization: AsyncItem<Organization>;
   readonly lastUpdatedDate: string;
   readonly assignedTo: AsyncItem<OrgUserStorage>;
+  readonly assignedToId: string;
   readonly color: string;
   readonly group: string;
   readonly details?: string | null;
@@ -149,6 +149,7 @@ type EagerEquipment = {
   readonly organization: Organization;
   readonly lastUpdatedDate: string;
   readonly assignedTo: OrgUserStorage;
+  readonly assignedToId: string;
   readonly image: string;
   readonly color: string;
   readonly group: string;
@@ -170,6 +171,7 @@ type LazyEquipment = {
   readonly organization: AsyncItem<Organization>;
   readonly lastUpdatedDate: string;
   readonly assignedTo: AsyncItem<OrgUserStorage>;
+  readonly assignedToId: string;
   readonly image: string;
   readonly color: string;
   readonly group: string;

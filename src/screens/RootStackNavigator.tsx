@@ -1,17 +1,16 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar } from "react-native";
 
 import HomeScreen from "./HomeScreen";
 import DrawerNav from "./drawer/DrawerNav";
 import SyncScreen from "./SyncScreen";
-import ResendCode from "./ResendCode";
-import ResetPassword from "./ResetPassword";
 import AccessCodeScreen from "./AccessCodeScreen";
 import SpinningIndicator from "../components/SpinningIndicator";
 import { RootStackParamList } from "../types/NavigatorTypes";
 import { useLoad } from "../helper/context/LoadingContext";
-import VerifyEmail from "./VerifyEmail";
 import HeaderProvider from "../helper/context/HeaderContext";
+import VerifyEmailScreen from "./VerifyEmailScreen";
+import ResetPasswordScreen from "./ResetPasswordScreen";
+import ResendCodeScreen from "./ResendCodeScreen";
 
 // Create a stack navigator to handle navigation throughout the app
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -22,7 +21,6 @@ export default function RootStackNavigator() {
 
   return (
     <HeaderProvider>
-      <StatusBar barStyle="dark-content" />
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{ headerTitleAlign: "center" }}
@@ -42,10 +40,10 @@ export default function RootStackNavigator() {
           component={SyncScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="ResendCode" component={ResendCode} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="ResendCode" component={ResendCodeScreen} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="AccessCode" component={AccessCodeScreen} />
-        <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
+        <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
       </Stack.Navigator>
       {isLoading ? <SpinningIndicator /> : null}
     </HeaderProvider>

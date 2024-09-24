@@ -1,22 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ImageSourcePropType,
-  Alert,
-} from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useUser } from "../../helper/context/UserContext";
 import { InfoScreenProps } from "../../types/ScreenTypes";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
-import { getImageUri } from "../../helper/AWS";
-import { orgMapping } from "../../helper/ImageMapping";
-import { Image } from "expo-image";
-import { itemDisplayStyles } from "../../styles/ItemDisplay";
-import { useImage } from "../../helper/context/ImageContext";
+import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -27,36 +16,18 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
   const { org, isManager } = useUser();
   const { setInfoFocus } = useHeader();
   const isFocused = useIsFocused();
-  const { imageMap } = useImage();
-  const [orgImageUri, setOrgImageUri] = useState<ImageSourcePropType>(
-    orgMapping["default"],
-  );
 
   useEffect(() => {
-    const fetchImageUri = async () => {
-      const path = `public/${org!.id}/orgImage.jpeg`;
-      if (imageMap.has(org!.id)) {
-        setOrgImageUri(imageMap.get(org!.id)!);
-      } else {
-        const fetchUri = getImageUri(path, orgMapping);
-        fetchUri.then((uri) => {
-          setOrgImageUri(uri);
-          imageMap.set(org!.id, uri);
-        });
-      }
-    };
-
     if (isFocused) {
       setInfoFocus(true);
-      fetchImageUri();
     } else {
       setInfoFocus(false);
     }
-  }, [imageMap, isFocused, org, setInfoFocus]);
+  }, [isFocused, setInfoFocus]);
 
   const handleOrgImage = () => {
     if (isManager) {
-      navigation.navigate("OrgImage", { imageSource: orgImageUri });
+      navigation.navigate("OrgImage");
     } else {
       Alert.alert(
         "Permission Error",
@@ -68,7 +39,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
 
   return (
     <View style={styles.container}>
-      <Image source={orgImageUri} style={itemDisplayStyles.image} />
+      <OrgImageDisplay />
       <TouchableOpacity onPress={handleOrgImage}>
         <Text style={styles.link}>Edit Org Image</Text>
       </TouchableOpacity>

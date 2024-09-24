@@ -1,9 +1,8 @@
 import { Text, View, TextInput } from "react-native";
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import NetInfo from "@react-native-community/netinfo";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 // project imports
@@ -14,25 +13,16 @@ import { useUser } from "../../helper/context/UserContext";
 import { handleError } from "../../helper/Utils";
 import { JoinOrgScreenProps } from "../../types/ScreenTypes";
 import { createOrgUserStorage } from "../../helper/CreateUtils";
+import { useNetwork } from "../../helper/context/NetworkContext";
+
 /*
   Screen for joining an organization, user enters the access code to join
 */
 export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
   const { setIsLoading } = useLoad();
-  const [code, onChangeCode] = React.useState("");
+  const [code, onChangeCode] = useState("");
   const { user } = useUser();
-  const [hasConnection, setHasConnection] = React.useState(false);
-
-  // ensure network connection since api calls are made
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      setHasConnection(state.isConnected!);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const { isConnected } = useNetwork();
 
   // ensure the code given is valid and the user is not already part of the org
   const checkCode = async () => {
@@ -91,7 +81,7 @@ export default function JoinOrgScreen({ navigation }: JoinOrgScreenProps) {
 
   return (
     <View style={createJoinStyles.mainContainer}>
-      {hasConnection ? (
+      {isConnected ? (
         <View style={createJoinStyles.container}>
           <Text style={createJoinStyles.title}>Join Org</Text>
           <Text style={createJoinStyles.subtitle}>

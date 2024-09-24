@@ -4,7 +4,7 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { ContainerObj, EquipmentObj } from "../../types/ModelTypes";
 import { useEquipment } from "../../helper/context/EquipmentContext";
 import { chunkArray } from "../../helper/EquipmentUtils";
-import { itemStyles } from "../../styles/ItemStyles";
+import { useItemStyles } from "../../styles/ItemStyles";
 import EquipmentDisplay from "./EquipmentDisplay";
 
 /*
@@ -23,6 +23,7 @@ export default function ContainerItem({
 }) {
   const { setContainerItem, setContainerVisible, setSwapContainerVisible } =
     useEquipment();
+  const itemStyles = useItemStyles();
   // only display the first 9 equipment items in a 3x3 grid
   const firstNine = item?.equipment.slice(0, 9);
   const chunkedData = chunkArray(firstNine ? firstNine : [], 3);
@@ -65,9 +66,10 @@ export default function ContainerItem({
                             style={itemStyles.equipmentItemContainer}
                           >
                             <EquipmentDisplay
-                              item={equip as EquipmentObj}
+                              imageKey={equip.image}
                               isMini={true}
                               color={(equip as EquipmentObj).color}
+                              source={null}
                             />
                           </View>
                         ))}

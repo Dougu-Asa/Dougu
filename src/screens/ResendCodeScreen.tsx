@@ -13,7 +13,7 @@ import { handleError } from "../helper/Utils";
   enters their email and receives a code while being 
   directed to the next screen.
 */
-export default function ResendCode({
+export default function ResendCodeScreen({
   navigation,
   route,
 }: ResendCodeScreenProps) {

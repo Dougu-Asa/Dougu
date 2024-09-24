@@ -8,7 +8,7 @@ import { validateRequirements } from "../helper/CreateAccUtils";
 import { loginCreateStyles } from "../styles/LoginCreate";
 import PasswordInput from "../components/PasswordInput";
 
-export default function ResetPassword({
+export default function ResetPasswordScreen({
   route,
   navigation,
 }: ResetPasswordScreenProps) {
@@ -23,12 +23,11 @@ export default function ResetPassword({
     newPassword: string,
   ) => {
     try {
-      const data = await confirmResetPassword({
+      await confirmResetPassword({
         username: email,
         confirmationCode: code,
         newPassword: newPassword,
       });
-      console.log(data);
       Alert.alert("Success", "Password has been reset");
     } catch (err) {
       Alert.alert("Error", (err as Error).message);

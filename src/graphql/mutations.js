@@ -10,7 +10,6 @@ export const createOrganization = /* GraphQL */ `
       id
       name
       accessCode
-      image
       manager
       UserOrStorages {
         nextToken
@@ -45,7 +44,6 @@ export const updateOrganization = /* GraphQL */ `
       id
       name
       accessCode
-      image
       manager
       UserOrStorages {
         nextToken
@@ -80,7 +78,6 @@ export const deleteOrganization = /* GraphQL */ `
       id
       name
       accessCode
-      image
       manager
       UserOrStorages {
         nextToken
@@ -118,7 +115,6 @@ export const createOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -164,7 +160,6 @@ export const updateOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -210,7 +205,6 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -256,7 +250,6 @@ export const createContainer = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -282,6 +275,7 @@ export const createContainer = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       color
       group
       details
@@ -308,7 +302,6 @@ export const updateContainer = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -334,6 +327,7 @@ export const updateContainer = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       color
       group
       details
@@ -360,7 +354,6 @@ export const deleteContainer = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -386,6 +379,7 @@ export const deleteContainer = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       color
       group
       details
@@ -412,7 +406,6 @@ export const createEquipment = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -438,6 +431,7 @@ export const createEquipment = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       image
       color
       group
@@ -466,7 +460,6 @@ export const updateEquipment = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -492,6 +485,7 @@ export const updateEquipment = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       image
       color
       group
@@ -520,7 +514,6 @@ export const deleteEquipment = /* GraphQL */ `
         id
         name
         accessCode
-        image
         manager
         createdAt
         updatedAt
@@ -546,6 +539,7 @@ export const deleteEquipment = /* GraphQL */ `
         organizationUserOrStoragesId
         __typename
       }
+      assignedToId
       image
       color
       group

@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  ImageSourcePropType,
-} from "react-native";
+import { StyleSheet, Pressable, ImageSourcePropType } from "react-native";
 import { profileMapping } from "../../helper/ImageMapping";
 import Animated, {
   FadeIn,
@@ -14,10 +9,10 @@ import Animated, {
 } from "react-native-reanimated";
 import ProfileDisplay from "../ProfileDisplay";
 
-import { containerOverlayStyles } from "../../styles/ContainerOverlay";
 import IconMenu from "../IconMenu";
 import { Tab } from "@rneui/themed";
-import UploadImage from "../organization/UploadImage";
+import UploadImage from "../UploadImage";
+import { useContainerStyles } from "../../styles/ContainerOverlay";
 
 /* 
     Dispay a profile menu for choosing a user's profile image
@@ -42,7 +37,7 @@ export default function ProfileOverlay({
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
   userId?: string;
 }) {
-  const profileSize = Dimensions.get("screen").width / 4;
+  const containerOverlayStyles = useContainerStyles();
   const [selected, setSelected] = useState(0);
 
   // update user profile attributes in Cognito
@@ -69,9 +64,9 @@ export default function ProfileOverlay({
             style={styles.profile}
           >
             <ProfileDisplay
+              isMini={false}
               profileKey={profileKey}
-              profileSource={profileSource}
-              size={profileSize}
+              source={profileSource}
               userId={userId}
             />
           </Animated.View>

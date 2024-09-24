@@ -1,12 +1,11 @@
 import {
   Text,
   View,
-  StyleSheet,
   TouchableOpacity,
   TextInput,
   Alert,
-  Dimensions,
   ImageSourcePropType,
+  StyleSheet,
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -21,13 +20,13 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import ProfileOverlay from "../../components/drawer/ProfileOverlay";
 import ProfileDisplay from "../../components/ProfileDisplay";
 import { uploadImage } from "../../helper/AWS";
+import { useDimensions } from "../../helper/context/DimensionsContext";
+import { useProfileStyles } from "../../styles/ProfileStyles";
 
 /*
   Create storage screen allows a manager to create storage.
   A storage is a non-user entity where equipment can be assigned.
 */
-const profileSize = Dimensions.get("screen").width / 4;
-const editSize = Dimensions.get("screen").width / 10;
 export default function CreateStorageScreen() {
   const [profileSource, setProfileSource] =
     useState<ImageSourcePropType | null>(null);
@@ -37,6 +36,8 @@ export default function CreateStorageScreen() {
   const [details, onChangeDetails] = useState("");
   const { setIsLoading } = useLoad();
   const { org } = useUser();
+  const { windowWidth } = useDimensions();
+  const profileStyles = useProfileStyles();
 
   // Create a new storage
   const handleCreate = async () => {
@@ -74,19 +75,19 @@ export default function CreateStorageScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={profileStyles.container}>
       <TouchableOpacity
-        style={styles.profile}
+        style={profileStyles.profile}
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
-          profileSource={profileSource}
+          isMini={false}
           profileKey={profileKey}
-          size={profileSize}
+          source={profileSource}
           userId={null}
         />
-        <View style={styles.editButton}>
-          <MaterialCommunityIcons name="pencil" size={editSize / 1.8} />
+        <View style={profileStyles.editButton}>
+          <MaterialCommunityIcons name="pencil" size={windowWidth / 18} />
         </View>
       </TouchableOpacity>
       <View style={styles.rowContainer}>
@@ -134,11 +135,6 @@ export default function CreateStorageScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    height: "100%",
-    alignItems: "center",
-  },
   input: {
     height: 40,
     margin: 12,
@@ -150,24 +146,6 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  },
-  editButton: {
-    width: editSize,
-    height: editSize,
-    borderRadius: editSize / 2,
-    backgroundColor: "#D3D3D3",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    right: -5,
-    bottom: -5,
-    borderColor: "white",
-    borderWidth: 5,
-  },
-  profile: {
-    width: profileSize,
-    marginTop: "5%",
-    marginBottom: "5%",
   },
   rowContainer: {
     flexDirection: "row",

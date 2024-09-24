@@ -20,6 +20,7 @@ import { handleEdit } from "../../helper/EditUtils";
   Component for displaying all equipment in the organization
   in a table format
 */
+// row for sub equipment of a container
 function SubEquipmentRow({
   equipment,
   isManager,
@@ -28,14 +29,13 @@ function SubEquipmentRow({
   isManager: boolean;
 }) {
   const { setIsLoading } = useLoad();
-
   return (
     <View style={styles.row}>
       <View style={[styles.cell, { flex: 2 }]}>
         <Entypo name="minus" size={20} />
       </View>
       <View style={[styles.cell, { flex: 10 }]}>
-        <Text style={styles.text}>{equipment.assignedToName}</Text>
+        <Text style={styles.text}>{equipment.assignedTo.name}</Text>
       </View>
       <View style={[styles.cell, { flex: 8 }]}>
         <Text style={styles.text}>{equipment.label}</Text>
@@ -53,6 +53,7 @@ function SubEquipmentRow({
   );
 }
 
+// row for equipment or container
 function TableRow({ item, isManager }: { item: ItemObj; isManager: boolean }) {
   const [openContainer, setOpenContainer] = useState(false);
   const { setIsLoading } = useLoad();
@@ -75,7 +76,7 @@ function TableRow({ item, isManager }: { item: ItemObj; isManager: boolean }) {
           )}
         </View>
         <View style={[styles.cell, { flex: 10 }]}>
-          <Text style={styles.text}>{item.assignedToName}</Text>
+          <Text style={styles.text}>{item.assignedTo.name}</Text>
         </View>
         <View style={[styles.cell, { flex: 8 }]}>
           <Text style={styles.text}>{item.label}</Text>
@@ -145,7 +146,7 @@ export default function EquipmentTable({
           // check label
           equipment.label.toLowerCase().includes(searchFilter.toLowerCase()) ||
           // check assigned to name
-          equipment.assignedToName
+          equipment.assignedTo.name
             .toLowerCase()
             .includes(searchFilter.toLowerCase()) ||
           // check inside containers

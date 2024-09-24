@@ -1,11 +1,22 @@
-import React, { useState, useContext, useEffect } from "react";
+import {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  createContext,
+} from "react";
 import { DataStore } from "@aws-amplify/datastore";
 
-import { EquipmentObj, ContainerObj, OrgItem } from "../../types/ModelTypes";
+import {
+  EquipmentObj,
+  ContainerObj,
+  UserStorageData,
+} from "../../types/ModelTypes";
 import { EquipmentContextType } from "../../types/ContextTypes";
 import { useUser } from "./UserContext";
-import { getOrgItems } from "../EquipmentUtils";
+import { getOrgData } from "../EquipmentUtils";
 import { Equipment, Container, OrgUserStorage } from "../../models";
+import { handleError } from "../Utils";
 
 /* 
   Context only available within MemberTabs that distributes the equipment
@@ -13,7 +24,7 @@ import { Equipment, Container, OrgUserStorage } from "../../models";
   to share equipmentData, we ensure consistency and also custom selection of 
   which equipment id you'd like to swap
 */
-const EquipmentContext = React.createContext<EquipmentContextType | undefined>(
+const EquipmentContext = createContext<EquipmentContextType | undefined>(
   undefined,
 );
 
@@ -24,20 +35,27 @@ export default function EquipmentProvider({
 }) {
   const [equipmentItem, setEquipmentItem] = useState<EquipmentObj | null>(null);
   const [containerItem, setContainerItem] = useState<ContainerObj | null>(null);
-  const [itemData, setItemData] = useState<Map<string, OrgItem>>(new Map());
+  const [itemData, setItemData] = useState<Map<string, UserStorageData>>(
+    new Map(),
+  );
   const [visible, setVisible] = useState<boolean>(false);
   const [containerVisible, setContainerVisible] = useState<boolean>(false);
   const [swapContainerVisible, setSwapContainerVisible] =
     useState<boolean>(false);
   const { org } = useUser();
 
+  const handleGetItems = useCallback(async () => {
+    try {
+      console.log("handleGetItems");
+      const items = await getOrgData(org!.id);
+      setItemData(items);
+    } catch (error) {
+      handleError("handleGetItems", error as Error, null);
+    }
+  }, [org]);
+
   // subscribe to and get all equipment in the organization
   useEffect(() => {
-    const handleGetItems = async () => {
-      const items = await getOrgItems(org!.id);
-      setItemData(items);
-    };
-
     const equipmentSubscription = DataStore.observe(Equipment).subscribe(() => {
       handleGetItems();
     });
@@ -57,29 +75,29 @@ export default function EquipmentProvider({
       containerSubscription.unsubscribe();
       orgUserStorageSubscription.unsubscribe();
     };
-  }, [org]);
+  }, [handleGetItems]);
 
   // select a new default id for the equipment item passed in
   const modifyEquipmentItem = (item: EquipmentObj, newId: string) => {
     // find the equipment object in the equipmentData map
-    const orgItem = itemData.get(item.assignedTo);
+    const orgItem = itemData.get(item.assignedTo.id);
     if (!orgItem) return;
-    let newOrgItem: OrgItem | undefined;
+    let newOrgItem: UserStorageData | undefined;
     if (item.container) {
       newOrgItem = containerOrgItem(item, newId, orgItem);
     } else {
       newOrgItem = equipmentOrgItem(item, newId, orgItem);
     }
     if (!newOrgItem) return;
-    itemData.set(item.assignedTo, newOrgItem);
+    itemData.set(item.assignedTo.name, newOrgItem);
   };
 
   // updates the orgItem's equipment object with the new equipment object
   const equipmentOrgItem = (
     item: EquipmentObj,
     newId: string,
-    orgItem: OrgItem,
-  ): OrgItem | undefined => {
+    orgItem: UserStorageData,
+  ): UserStorageData | undefined => {
     // find the index of the equipment object in the equipment array
     const index = orgItem.data.findIndex((e) => e.id === item.id);
     if (index === -1) return;
@@ -95,8 +113,8 @@ export default function EquipmentProvider({
   const containerOrgItem = (
     item: EquipmentObj,
     newId: string,
-    orgItem: OrgItem,
-  ): OrgItem | undefined => {
+    orgItem: UserStorageData,
+  ): UserStorageData | undefined => {
     // find the index of the container with the equipment object
     const containerIdx = orgItem.data.findIndex(
       (e) => e.id === containerItem!.id,

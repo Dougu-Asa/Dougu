@@ -19,10 +19,6 @@ export default function CustomDrawerContent({
   const { setIsLoading } = useLoad();
   const { user, org, resetContext } = useUser();
 
-  const handleSignOut = async () => {
-    await callSignOut(setIsLoading, navigation, resetContext);
-  };
-
   // Check if there is a current org when the user clicks on the current org button
   const handleCurrOrgNav = () => {
     if (org == null) {
@@ -89,7 +85,7 @@ export default function CustomDrawerContent({
         <DrawerItem
           label="Logout"
           onPress={() => {
-            handleSignOut();
+            callSignOut(setIsLoading, navigation, resetContext);
           }}
         />
       </View>

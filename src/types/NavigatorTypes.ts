@@ -1,7 +1,6 @@
 import type { NavigatorScreenParams } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Organization, OrgUserStorage } from "../models";
-import { ImageSourcePropType } from "react-native";
 
 /* 
     Defines the types for the navigator objects used in the app.
@@ -45,7 +44,7 @@ export type OrgStackParamList = {
   UserStorages: { tabParam: string };
   CreateStorage: undefined;
   Sheet: undefined;
-  OrgImage: { imageSource: ImageSourcePropType };
+  OrgImage: undefined;
   MemberProfile: { member: OrgUserStorage };
 };
 

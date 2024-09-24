@@ -1,36 +1,33 @@
-import { useState, useRef } from "react";
-import { Dimensions } from "react-native";
+import { useState } from "react";
 import {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import { ItemObj, ListCounts } from "../../types/ModelTypes";
+import { ItemObj } from "../../types/ModelTypes";
 
 export default function useSet({
+  windowWidth,
+  windowHeight,
   halfLine,
   topPage,
   bottomPage,
   listOne,
   listTwo,
-  decrementCountAtIndex,
 }: {
+  windowWidth: number;
+  windowHeight: number;
   halfLine: React.MutableRefObject<number>;
   topPage: number;
   bottomPage: number;
   listOne: ItemObj[];
   listTwo: ItemObj[];
-  decrementCountAtIndex: (index: number, type: ListCounts) => void;
 }) {
   const [draggingItem, setDraggingItem] = useState<ItemObj | null>(null);
-  const startSide = useRef<"top" | "bottom" | "container" | null>(null);
-  const startIdx = useRef<number | null>(null);
   const { containerItem } = useEquipment();
   const [containerPage, setContainerPage] = useState(0);
   // calculate the range of the container overlay
-  const windowHeight = Dimensions.get("window").height;
-  const windowWidth = Dimensions.get("window").width;
   const offset = windowWidth / 4;
   const equipmentWidth = windowWidth / 5;
   const containerYRange = {
@@ -66,9 +63,7 @@ export default function useSet({
     const idx = containerPage * 9 + row * 3 + col;
     if (idx < 0 || idx > containerItem.equipment.length - 1) return;
     const item = containerItem.equipment[idx];
-    decrementCountAtIndex(idx, "container");
-    startIdx.current = idx;
-    startSide.current = "container";
+    item.count -= 1;
     setDraggingItem(item);
   };
 
@@ -82,24 +77,19 @@ export default function useSet({
       ? topPage * windowWidth
       : bottomPage * windowWidth;
     const list = isTop ? listOne : listTwo;
-    startSide.current = isTop ? "top" : "bottom";
-    const type = isTop ? "one" : "two";
     if (y < yRange.start || y > yRange.end) return;
     // check if the user is hovering over an item
     const idx = Math.floor((gesture.x + horizontalOffset) / offset);
     // ensure idx is within bounds
     if (idx < 0 || idx > list.length - 1) return;
     const item = list[idx];
-    decrementCountAtIndex(idx, type);
-    startIdx.current = idx;
+    item.count -= 1;
     setDraggingItem(item);
   };
 
   return {
     draggingItem,
     setDraggingItem,
-    startSide,
-    startIdx,
     setContainerPage,
     containerSetItem,
     handleSetItem,

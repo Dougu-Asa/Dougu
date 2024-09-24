@@ -1,4 +1,3 @@
-import { Dimensions } from "react-native";
 import { useRef } from "react";
 import {
   GestureUpdateEvent,
@@ -11,6 +10,8 @@ import { useEquipment } from "../../helper/context/EquipmentContext";
 import { ContainerObj, ItemObj } from "../../types/ModelTypes";
 
 export default function useHover({
+  windowWidth,
+  windowHeight,
   halfLine,
   draggingItem,
   topPage,
@@ -21,6 +22,8 @@ export default function useHover({
   handleScroll,
   clearScroll,
 }: {
+  windowWidth: number;
+  windowHeight: number;
   halfLine: React.MutableRefObject<number>;
   draggingItem: ItemObj | null;
   topPage: number;
@@ -36,8 +39,6 @@ export default function useHover({
   const overlayTimeout = useRef<NodeJS.Timeout | null>(null);
   const hoverContainer = useRef<ContainerObj | null>(null);
   // calculate the range of the container overlay
-  const windowHeight = Dimensions.get("window").height;
-  const windowWidth = Dimensions.get("window").width;
   const offset = windowWidth / 4;
   const equipmentWidth = windowWidth / 5;
   const containerYRange = {

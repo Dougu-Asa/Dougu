@@ -10,12 +10,7 @@ import {
 import Animated, { runOnJS } from "react-native-reanimated";
 
 import { useEquipment } from "../../helper/context/EquipmentContext";
-import {
-  ContainerObj,
-  EquipmentObj,
-  ItemObj,
-  ListCounts,
-} from "../../types/ModelTypes";
+import { ContainerObj, EquipmentObj, ItemObj } from "../../types/ModelTypes";
 import { OrgUserStorage } from "../../models";
 import EquipmentItem from "./EquipmentItem";
 import ContainerItem from "./ContainerItem";
@@ -24,7 +19,6 @@ import ScrollRow from "./ScrollRow";
 import SwapContainerOverlay from "./SwapContainerOverlay";
 import { Divider } from "@rneui/base";
 import useAnimateOverlay from "./useAnimateOverlay";
-import useItemCounts from "./useItemCounts";
 import useScroll from "./useScroll";
 import {
   addEquipmentToContainer,
@@ -36,6 +30,7 @@ import { useUser } from "../../helper/context/UserContext";
 import useSet from "./useSet";
 import useHover from "./useHover";
 import { useLoad } from "../../helper/context/LoadingContext";
+import { useDimensions } from "../../helper/context/DimensionsContext";
 
 export default function SwapGestures({
   listOne,
@@ -53,18 +48,9 @@ export default function SwapGestures({
   const { orgUserStorage } = useUser();
   const { swapContainerVisible } = useEquipment();
   const { setIsLoading } = useLoad();
+  const { windowWidth, windowHeight } = useDimensions();
 
-  // hooks
-  const {
-    listOneCounts,
-    listTwoCounts,
-    containerCounts,
-    incrementCountAtIndex,
-    decrementCountAtIndex,
-  } = useItemCounts({
-    listOne,
-    listTwo,
-  });
+  // handle scrollRow scrolling
   const {
     topPage,
     setTopPage,
@@ -75,26 +61,30 @@ export default function SwapGestures({
     clearScroll,
     handleScroll,
   } = useScroll();
+  // handle setting the dragging item
   const {
     draggingItem,
     setDraggingItem,
-    startSide,
-    startIdx,
     setContainerPage,
     containerSetItem,
     handleSetItem,
   } = useSet({
+    windowWidth,
+    windowHeight,
     halfLine,
     topPage,
     bottomPage,
     listOne,
     listTwo,
-    decrementCountAtIndex,
   });
+  // handle the overlay animation
   const { size, movingStyles, animateStart, animateMove, animateFinalize } =
     useAnimateOverlay({ setDraggingItem });
+  // handle item hovering
   const { handleHover, clearTimeouts, containerHover, hoverContainer } =
     useHover({
+      windowWidth,
+      windowHeight,
       halfLine,
       draggingItem,
       topPage,
@@ -106,6 +96,7 @@ export default function SwapGestures({
       clearScroll,
     });
 
+  // on layout of the top scrollRow, its bottom is the halfline
   const handleLayout = (e: LayoutChangeEvent) => {
     const y = e.nativeEvent.layout.y;
     halfLine.current = y;
@@ -115,20 +106,12 @@ export default function SwapGestures({
   const handleReassign = async (
     gestureEvent: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   ) => {
-    if (!draggingItem || startIdx.current == null) return;
-    let countType: ListCounts;
-    if (startSide.current === "top") {
-      countType = "one";
-    } else if (startSide.current === "bottom") {
-      countType = "two";
-    } else {
-      countType = "container";
-    }
-    incrementCountAtIndex(startIdx.current, countType);
+    if (!draggingItem) return;
+    // set count back to original
+    draggingItem.count += 1;
     if (swapContainerVisible) return;
     // equipment -> container
     if (draggingItem.type === "equipment" && hoverContainer.current) {
-      console.log("reassigning equipment to container");
       addEquipmentToContainer(
         draggingItem as EquipmentObj,
         hoverContainer.current,
@@ -195,7 +178,6 @@ export default function SwapGestures({
             <ScrollRow
               listData={listOne}
               isSwap={true}
-              countData={listOneCounts}
               setPage={setTopPage}
               nextPage={nextTopPage}
             />
@@ -208,15 +190,11 @@ export default function SwapGestures({
             <ScrollRow
               listData={listTwo}
               isSwap={true}
-              countData={listTwoCounts}
               setPage={setBottomPage}
               nextPage={nextBottomPage}
             />
           </View>
-          <SwapContainerOverlay
-            setContainerPage={setContainerPage}
-            containerCounts={containerCounts}
-          />
+          <SwapContainerOverlay setContainerPage={setContainerPage} />
         </View>
       </GestureDetector>
       <Animated.View style={[styles.floatingItem, movingStyles]}>

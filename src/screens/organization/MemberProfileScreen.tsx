@@ -1,6 +1,5 @@
 import { Alert, Text, View } from "react-native";
 import { MemberProfileScreenProps } from "../../types/ScreenTypes";
-import { profileStyles } from "../../styles/ProfileStyles";
 import ProfileDisplay from "../../components/ProfileDisplay";
 import { Button } from "@rneui/themed";
 import { useLoad } from "../../helper/context/LoadingContext";
@@ -8,11 +7,15 @@ import { DataStore } from "@aws-amplify/datastore";
 import { Organization, OrgUserStorage } from "../../models";
 import { handleError } from "../../helper/Utils";
 import { useUser } from "../../helper/context/UserContext";
+import { useProfileStyles } from "../../styles/ProfileStyles";
 
-export default function MemberProfile({ route }: MemberProfileScreenProps) {
+export default function MemberProfileScreen({
+  route,
+}: MemberProfileScreenProps) {
   const { member } = route.params;
   const { setIsLoading } = useLoad();
   const { org, setOrg, isManager, setIsManager } = useUser();
+  const profileStyles = useProfileStyles();
 
   // delete an orgUserStorage associated with the user
   // DOING SO ALSO REMOVES ALL EQUIPMENT ASSOCIATED WITH THE USER
@@ -113,10 +116,10 @@ export default function MemberProfile({ route }: MemberProfileScreenProps) {
     <View style={profileStyles.container}>
       <View style={profileStyles.profile}>
         <ProfileDisplay
+          isMini={false}
           userId={member.user}
           profileKey={member.profile}
-          size={100}
-          profileSource={null}
+          source={null}
         />
       </View>
       <View style={profileStyles.centerRow}>

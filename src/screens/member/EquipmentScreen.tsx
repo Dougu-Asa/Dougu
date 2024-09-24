@@ -29,7 +29,7 @@ export default function EquipmentScreen() {
             <View key={index} style={styles.equipmentRow}>
               {group.map((equip) => (
                 <View key={equip.id} style={styles.equipmentItemContainer}>
-                  <Item data={equip} countData={undefined} swapable={false} />
+                  <Item data={equip} swapable={false} />
                 </View>
               ))}
             </View>

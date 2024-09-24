@@ -3,7 +3,6 @@ import {
   TouchableOpacity,
   Text,
   Alert,
-  Dimensions,
   ImageSourcePropType,
 } from "react-native";
 import React, { useState } from "react";
@@ -20,7 +19,6 @@ import DeleteOverlay from "../../components/drawer/DeleteOverlay";
 import { Organization } from "../../models";
 import { ProfileScreenProps } from "../../types/ScreenTypes";
 import ProfileDisplay from "../../components/ProfileDisplay";
-import { profileStyles } from "../../styles/ProfileStyles";
 import { uploadImage } from "../../helper/AWS";
 import {
   editOrgUserStorages,
@@ -29,6 +27,8 @@ import {
 } from "../../helper/drawer/ModifyProfileUtils";
 import { handleError } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
+import { useProfileStyles } from "../../styles/ProfileStyles";
+import { useDimensions } from "../../helper/context/DimensionsContext";
 
 /*
   Displays user information and provides access for
@@ -40,8 +40,9 @@ export default function ProfileScreen({
 }: {
   navigation: ProfileScreenProps;
 }) {
-  const editIconSize = Dimensions.get("screen").width / 18;
+  const { windowWidth } = useDimensions();
   const { user, setUser } = useUser();
+  const profileStyles = useProfileStyles();
   const [profileVisible, setProfileVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
@@ -97,13 +98,13 @@ export default function ProfileScreen({
         onPress={() => setProfileVisible(true)}
       >
         <ProfileDisplay
+          isMini={false}
           userId={user!.id}
           profileKey={profileKey}
-          size={100}
-          profileSource={profileSource}
+          source={profileSource}
         />
         <View style={profileStyles.editButton}>
-          <MaterialCommunityIcons name="pencil" size={editIconSize} />
+          <MaterialCommunityIcons name="pencil" size={windowWidth / 18} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={updateProfile}>

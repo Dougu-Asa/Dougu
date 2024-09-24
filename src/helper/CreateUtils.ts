@@ -21,6 +21,7 @@ export const createOrg = async (
   code: string,
   userId: string,
 ): Promise<Organization> => {
+  // create a user group for the org
   await createUserGroup(token, name);
   // Add the org to the database
   const newOrg = await DataStore.save(
@@ -28,7 +29,6 @@ export const createOrg = async (
       name: name,
       accessCode: code,
       manager: userId,
-      image: "default",
     }),
   );
   if (newOrg == null) throw new Error("Organization not created successfully.");
@@ -41,6 +41,7 @@ export const createOrgUserStorage = async (
   org: Organization,
   user: UserType,
 ): Promise<boolean> => {
+  // add user to cognito user group
   await addUserToGroup(token, org.name, user!.id);
   // Add the OrgUserStorage to the DB
   const newOrgUserStorage = await DataStore.save(
@@ -76,6 +77,7 @@ export const CreateEquipment = async (
         organization: dataOrg,
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
+        assignedToId: orgUserStorage.id,
         details: details,
         image: image,
         color: color,
@@ -95,7 +97,6 @@ export const CreateContainer = async (
   details: string,
   color: Hex,
 ) => {
-  console.log("quantityCount: ", quantityCount);
   for (let i = 0; i < quantityCount; i++) {
     await DataStore.save(
       new Container({
@@ -103,6 +104,7 @@ export const CreateContainer = async (
         organization: dataOrg,
         lastUpdatedDate: new Date().toISOString(),
         assignedTo: orgUserStorage,
+        assignedToId: orgUserStorage.id,
         details: details,
         color: color,
         group: dataOrg.name,
