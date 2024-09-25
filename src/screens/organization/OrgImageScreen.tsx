@@ -8,7 +8,6 @@ import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
 import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
 import { editOrgImage } from "../../helper/EditUtils";
-import { Image } from "expo-image";
 
 export default function OrgImageScreen() {
   const { org, setOrg } = useUser();
@@ -34,11 +33,6 @@ export default function OrgImageScreen() {
     }
   };
 
-  const clearCache = () => {
-    Image.clearDiskCache();
-    Image.clearMemoryCache();
-  };
-
   return (
     <View style={styles.container}>
       <OrgImageDisplay
@@ -55,15 +49,6 @@ export default function OrgImageScreen() {
         icon={{ name: "upload", type: "antdesign", color: "white", size: 30 }}
         onPress={handleUpload}
         title="Upload"
-        titleStyle={{ fontWeight: "500" }}
-        radius={"md"}
-        size="lg"
-      />
-      <Button
-        buttonStyle={styles.button}
-        containerStyle={styles.buttonContainer}
-        onPress={clearCache}
-        title="Clear"
         titleStyle={{ fontWeight: "500" }}
         radius={"md"}
         size="lg"
