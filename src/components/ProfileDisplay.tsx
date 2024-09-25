@@ -46,7 +46,7 @@ export default function ProfileDisplay({
     } else {
       checkCache();
     }
-  }, [profileKey, profileSource, source, userId]);
+  }, [profileKey, source, userId]);
 
   return (
     <Image

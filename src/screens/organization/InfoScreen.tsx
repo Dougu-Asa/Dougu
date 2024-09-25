@@ -39,7 +39,7 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
 
   return (
     <View style={styles.container}>
-      <OrgImageDisplay />
+      <OrgImageDisplay orgId={org!.id} imageKey={org!.image} />
       <TouchableOpacity onPress={handleOrgImage}>
         <Text style={styles.link}>Edit Org Image</Text>
       </TouchableOpacity>

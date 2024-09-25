@@ -3,7 +3,6 @@ import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { getImageUri } from "../../helper/AWS";
 import { useDisplaytyles } from "../../styles/Display";
-import { useUser } from "../../helper/context/UserContext";
 import { orgMapping } from "../../helper/ImageMapping";
 
 /*
@@ -11,25 +10,28 @@ import { orgMapping } from "../../helper/ImageMapping";
   use a stored image uri or fetch the image from AWS S3.
 */
 export default function OrgImageDisplay({
+  orgId,
+  imageKey,
   imageSource,
 }: {
+  orgId: string;
+  imageKey: string;
   imageSource?: ImageSourcePropType | null;
 }) {
   const displayStyles = useDisplaytyles();
-  const { org } = useUser();
   const [orgSource, setOrgSource] = useState<ImageSourcePropType>(
     orgMapping["default"],
   );
-  const orgId = org!.id;
-  const imageKey = org!.image;
 
   useEffect(() => {
+    console.log("imageSource: ", imageSource);
+    console.log("imageKey: ", imageKey);
     const checkCache = async () => {
       const path = await Image.getCachePathAsync(imageKey);
       if (path) {
         setOrgSource({ uri: path });
       } else {
-        const fetchPath = `public/${orgId}/${imageKey}`;
+        const fetchPath = `public/${orgId}/orgImage.jpeg`;
         const fetchImageUri = await getImageUri(fetchPath);
         if (fetchImageUri) setOrgSource({ uri: fetchImageUri });
         else setOrgSource(orgMapping["default"]);
@@ -37,17 +39,18 @@ export default function OrgImageDisplay({
     };
 
     if (imageSource) {
+      console.log("setting image source: ", imageSource);
       setOrgSource(imageSource);
     } else {
       checkCache();
     }
-  }, [imageKey, imageSource, org, orgId]);
+  }, [imageKey, imageSource, orgId]);
 
   return (
     <Image
       source={
         typeof orgSource === "object" && "uri" in orgSource
-          ? { uri: orgSource.uri, cacheKey: org!.image }
+          ? { uri: orgSource.uri, cacheKey: imageKey }
           : orgSource
       }
       style={displayStyles.image}
