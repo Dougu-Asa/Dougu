@@ -24,8 +24,6 @@ export default function OrgImageDisplay({
   );
 
   useEffect(() => {
-    console.log("imageSource: ", imageSource);
-    console.log("imageKey: ", imageKey);
     const checkCache = async () => {
       const path = await Image.getCachePathAsync(imageKey);
       if (path) {
@@ -39,7 +37,6 @@ export default function OrgImageDisplay({
     };
 
     if (imageSource) {
-      console.log("setting image source: ", imageSource);
       setOrgSource(imageSource);
     } else {
       checkCache();
