@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ImageSourcePropType } from "react-native";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
@@ -22,10 +23,9 @@ export default function OrgImageDisplay({
   const [orgSource, setOrgSource] = useState<ImageSourcePropType>(
     orgMapping["default"],
   );
+  const [canCache, setCanCache] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("imageSource: ", imageSource);
-    console.log("imageKey: ", imageKey);
     const checkCache = async () => {
       const path = await Image.getCachePathAsync(imageKey);
       if (path) {
@@ -33,13 +33,15 @@ export default function OrgImageDisplay({
       } else {
         const fetchPath = `public/${orgId}/orgImage.jpeg`;
         const fetchImageUri = await getImageUri(fetchPath);
-        if (fetchImageUri) setOrgSource({ uri: fetchImageUri });
-        else setOrgSource(orgMapping["default"]);
+        if (fetchImageUri) {
+          setOrgSource({ uri: fetchImageUri });
+          setCanCache(true);
+        } else setOrgSource(orgMapping["default"]);
       }
     };
 
+    setCanCache(false);
     if (imageSource) {
-      console.log("setting image source: ", imageSource);
       setOrgSource(imageSource);
     } else {
       checkCache();
@@ -49,9 +51,7 @@ export default function OrgImageDisplay({
   return (
     <Image
       source={
-        typeof orgSource === "object" && "uri" in orgSource
-          ? { uri: orgSource.uri, cacheKey: imageKey }
-          : orgSource
+        canCache ? { uri: (orgSource as { uri: string }).uri,  cacheKey: imageKey} : orgSource
       }
       style={displayStyles.image}
     />
