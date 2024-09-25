@@ -7,19 +7,25 @@ import { useLoad } from "../../helper/context/LoadingContext";
 import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
 import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
+import { editOrgImage } from "../../helper/EditUtils";
 
 export default function OrgImageScreen() {
-  const { org } = useUser();
+  const { org, setOrg } = useUser();
   const { setIsLoading } = useLoad();
   const [imageUri, setImageUri] = useState<ImageSourcePropType | null>(null);
+  const [imageKey, setImageKey] = useState<string>("default");
 
   const handleUpload = async () => {
     // upload the image to AWS S3
     try {
       if (imageUri) {
         setIsLoading(true);
-        const path = `public/${org!.id}/orgImage.jpeg`;
+        const path = `public/${org!.id}/${imageKey}`;
+        // upload the image to S3
         await uploadImage(imageUri, path);
+        // update datastore and our local context
+        const newOrg = await editOrgImage(org!.id, imageKey);
+        setOrg(newOrg);
         setIsLoading(false);
       }
     } catch (error) {
@@ -31,7 +37,7 @@ export default function OrgImageScreen() {
     <View style={styles.container}>
       <OrgImageDisplay imageSource={imageUri} />
       <View style={styles.uploadContainer}>
-        <UploadImage setImageSource={setImageUri} />
+        <UploadImage setImageSource={setImageUri} setImageKey={setImageKey} />
       </View>
       <Button
         buttonStyle={styles.button}

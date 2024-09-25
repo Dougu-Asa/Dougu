@@ -12,6 +12,7 @@ type Organization
   name: String!
   accessCode: String!
   manager: String!
+  image: String!
   UserOrStorages: [OrgUserStorage] @hasMany
   equipment: [Equipment] @hasMany
   containers: [Container] @hasMany

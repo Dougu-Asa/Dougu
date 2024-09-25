@@ -25,11 +25,17 @@ export default function UploadImage({
   setImageKey,
 }: {
   setImageSource: Dispatch<SetStateAction<ImageSourcePropType | null>>;
-  setImageKey?: Dispatch<SetStateAction<string>>;
+  setImageKey: Dispatch<SetStateAction<string>>;
 }) {
   // set the image source and key after compressing the image
   const setImage = async (asset: ImagePickerAsset) => {
-    if (!asset.fileName) return;
+    let fileName;
+    if (!asset.fileName) {
+      const uriParts = asset.uri.split("/");
+      fileName = uriParts[uriParts.length - 1];
+    } else {
+      fileName = asset.fileName;
+    }
     // compress the image (for cost savings)
     const manipResult = await ImageManipulator.manipulateAsync(
       asset.uri,
@@ -37,8 +43,7 @@ export default function UploadImage({
       { compress: 0, format: ImageManipulator.SaveFormat.PNG },
     );
     setImageSource(manipResult);
-    console.log("manipResult", manipResult);
-    if (setImageKey) setImageKey(asset.fileName);
+    if (setImageKey) setImageKey(fileName);
   };
 
   // pick an image from the gallery

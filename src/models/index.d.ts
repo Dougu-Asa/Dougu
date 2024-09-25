@@ -18,6 +18,7 @@ type EagerOrganization = {
   readonly name: string;
   readonly accessCode: string;
   readonly manager: string;
+  readonly image: string;
   readonly UserOrStorages?: (OrgUserStorage | null)[] | null;
   readonly equipment?: (Equipment | null)[] | null;
   readonly containers?: (Container | null)[] | null;
@@ -34,6 +35,7 @@ type LazyOrganization = {
   readonly name: string;
   readonly accessCode: string;
   readonly manager: string;
+  readonly image: string;
   readonly UserOrStorages: AsyncCollection<OrgUserStorage>;
   readonly equipment: AsyncCollection<Equipment>;
   readonly containers: AsyncCollection<Container>;

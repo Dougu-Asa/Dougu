@@ -11,6 +11,7 @@ export const createOrganization = /* GraphQL */ `
       name
       accessCode
       manager
+      image
       UserOrStorages {
         nextToken
         startedAt
@@ -45,6 +46,7 @@ export const updateOrganization = /* GraphQL */ `
       name
       accessCode
       manager
+      image
       UserOrStorages {
         nextToken
         startedAt
@@ -79,6 +81,7 @@ export const deleteOrganization = /* GraphQL */ `
       name
       accessCode
       manager
+      image
       UserOrStorages {
         nextToken
         startedAt
@@ -116,6 +119,7 @@ export const createOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -161,6 +165,7 @@ export const updateOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -206,6 +211,7 @@ export const deleteOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -251,6 +257,7 @@ export const createContainer = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -303,6 +310,7 @@ export const updateContainer = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -355,6 +363,7 @@ export const deleteContainer = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -407,6 +416,7 @@ export const createEquipment = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -461,6 +471,7 @@ export const updateEquipment = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -515,6 +526,7 @@ export const deleteEquipment = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version

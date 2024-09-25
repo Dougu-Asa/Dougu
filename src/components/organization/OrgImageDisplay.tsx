@@ -20,32 +20,34 @@ export default function OrgImageDisplay({
   const [orgSource, setOrgSource] = useState<ImageSourcePropType>(
     orgMapping["default"],
   );
+  const orgId = org!.id;
+  const imageKey = org!.image;
 
   useEffect(() => {
     const checkCache = async () => {
-      if (imageSource) {
-        setOrgSource(imageSource);
-        return;
-      }
-      const path = await Image.getCachePathAsync(org!.id);
+      const path = await Image.getCachePathAsync(imageKey);
       if (path) {
         setOrgSource({ uri: path });
       } else {
-        const fetchPath = `public/${org!.id}/orgImage.jpeg`;
+        const fetchPath = `public/${orgId}/${imageKey}`;
         const fetchImageUri = await getImageUri(fetchPath);
         if (fetchImageUri) setOrgSource({ uri: fetchImageUri });
         else setOrgSource(orgMapping["default"]);
       }
     };
 
-    checkCache();
-  }, [imageSource, org]);
+    if (imageSource) {
+      setOrgSource(imageSource);
+    } else {
+      checkCache();
+    }
+  }, [imageKey, imageSource, org, orgId]);
 
   return (
     <Image
       source={
         typeof orgSource === "object" && "uri" in orgSource
-          ? { uri: orgSource.uri, cacheKey: org!.id }
+          ? { uri: orgSource.uri, cacheKey: org!.image }
           : orgSource
       }
       style={displayStyles.image}

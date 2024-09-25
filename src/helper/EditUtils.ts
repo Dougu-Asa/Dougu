@@ -1,7 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 import { ItemObj } from "../types/ModelTypes";
 import { DataStore } from "@aws-amplify/datastore";
-import { Equipment, Container } from "../models";
+import {
+  Equipment,
+  Container,
+  Organization,
+  LazyOrganization,
+} from "../models";
 import { handleError } from "./Utils";
 import { Alert } from "react-native";
 
@@ -68,4 +73,18 @@ export const handleEdit = (
       style: "cancel",
     },
   ]);
+};
+
+export const editOrgImage = async (
+  orgId: string,
+  image: string,
+): Promise<LazyOrganization> => {
+  const orgUserStorages = await DataStore.query(Organization, orgId);
+  if (!orgUserStorages) throw new Error("Organization not found");
+  const newOrg = await DataStore.save(
+    Organization.copyOf(orgUserStorages, (updated) => {
+      updated.image = image;
+    }),
+  );
+  return newOrg;
 };

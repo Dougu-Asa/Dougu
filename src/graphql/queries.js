@@ -8,6 +8,7 @@ export const getOrganization = /* GraphQL */ `
       name
       accessCode
       manager
+      image
       UserOrStorages {
         nextToken
         startedAt
@@ -44,6 +45,7 @@ export const listOrganizations = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -75,6 +77,7 @@ export const syncOrganizations = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -98,6 +101,7 @@ export const getOrgUserStorage = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -204,6 +208,7 @@ export const getContainer = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version
@@ -319,6 +324,7 @@ export const getEquipment = /* GraphQL */ `
         name
         accessCode
         manager
+        image
         createdAt
         updatedAt
         _version

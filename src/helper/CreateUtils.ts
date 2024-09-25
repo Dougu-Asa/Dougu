@@ -29,6 +29,7 @@ export const createOrg = async (
       name: name,
       accessCode: code,
       manager: userId,
+      image: "default",
     }),
   );
   if (newOrg == null) throw new Error("Organization not created successfully.");
