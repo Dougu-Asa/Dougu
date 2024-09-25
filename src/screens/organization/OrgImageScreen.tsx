@@ -8,19 +8,20 @@ import { uploadImage } from "../../helper/AWS";
 import { handleError } from "../../helper/Utils";
 import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
 import { editOrgImage } from "../../helper/EditUtils";
+import { Image } from "expo-image";
 
 export default function OrgImageScreen() {
   const { org, setOrg } = useUser();
   const { setIsLoading } = useLoad();
   const [imageUri, setImageUri] = useState<ImageSourcePropType | null>(null);
-  const [imageKey, setImageKey] = useState<string>("default");
+  const [imageKey, setImageKey] = useState<string>(org!.image);
 
   const handleUpload = async () => {
     // upload the image to AWS S3
     try {
       if (imageUri) {
         setIsLoading(true);
-        const path = `public/${org!.id}/${imageKey}`;
+        const path = `public/${org!.id}/orgImage.jpeg`;
         // upload the image to S3
         await uploadImage(imageUri, path);
         // update datastore and our local context
@@ -33,9 +34,18 @@ export default function OrgImageScreen() {
     }
   };
 
+  const clearCache = () => {
+    Image.clearDiskCache();
+    Image.clearMemoryCache();
+  };
+
   return (
     <View style={styles.container}>
-      <OrgImageDisplay imageSource={imageUri} />
+      <OrgImageDisplay
+        orgId={org!.id}
+        imageKey={imageKey}
+        imageSource={imageUri}
+      />
       <View style={styles.uploadContainer}>
         <UploadImage setImageSource={setImageUri} setImageKey={setImageKey} />
       </View>
@@ -45,6 +55,15 @@ export default function OrgImageScreen() {
         icon={{ name: "upload", type: "antdesign", color: "white", size: 30 }}
         onPress={handleUpload}
         title="Upload"
+        titleStyle={{ fontWeight: "500" }}
+        radius={"md"}
+        size="lg"
+      />
+      <Button
+        buttonStyle={styles.button}
+        containerStyle={styles.buttonContainer}
+        onPress={clearCache}
+        title="Clear"
         titleStyle={{ fontWeight: "500" }}
         radius={"md"}
         size="lg"
