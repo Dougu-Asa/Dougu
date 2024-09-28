@@ -88,3 +88,9 @@ export const editOrgImage = async (
   );
   return newOrg;
 };
+
+export const deleteOrg = async (orgId: string) => {
+  const org = await DataStore.query(Organization, orgId);
+  if (!org) throw new Error("Organization not found");
+  await DataStore.delete(org);
+};

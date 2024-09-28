@@ -46,6 +46,7 @@ export type OrgStackParamList = {
   Sheet: undefined;
   OrgImage: undefined;
   MemberProfile: { member: OrgUserStorage };
+  DeleteOrg: undefined;
 };
 
 export interface MyHeaderProfileButtonProps {

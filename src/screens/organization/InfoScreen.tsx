@@ -6,6 +6,7 @@ import { InfoScreenProps } from "../../types/ScreenTypes";
 import { useIsFocused } from "@react-navigation/native";
 import { useHeader } from "../../helper/context/HeaderContext";
 import OrgImageDisplay from "../../components/organization/OrgImageDisplay";
+import { Button } from "@rneui/themed";
 
 /*
   InfoScreen displays the organization's name, access code, and offers
@@ -39,9 +40,8 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
 
   return (
     <View style={styles.container}>
-      <OrgImageDisplay orgId={org!.id} imageKey={org!.image} />
       <TouchableOpacity onPress={handleOrgImage}>
-        <Text style={styles.link}>Edit Org Image</Text>
+        <OrgImageDisplay orgId={org!.id} imageKey={org!.image} />
       </TouchableOpacity>
       <View style={styles.row}>
         <Text style={[styles.rowHeader, { flex: 2 }]}>Name</Text>
@@ -91,6 +91,19 @@ export default function InfoScreen({ navigation }: InfoScreenProps) {
       >
         <Text style={styles.eBtnText}>Manage Equipment</Text>
       </TouchableOpacity>
+      {isManager ? (
+        <Button
+          title="Delete Org"
+          color={"#EEEEEE"}
+          containerStyle={styles.equipmentBtn}
+          titleStyle={styles.deleteText}
+          size="lg"
+          radius="md"
+          onPress={() => {
+            if (isManager) navigation.navigate("DeleteOrg");
+          }}
+        />
+      ) : null}
     </View>
   );
 }
@@ -100,6 +113,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "#fff",
+  },
+  deleteText: {
+    fontWeight: "bold",
+    color: "red",
   },
   equipmentBtn: {
     backgroundColor: "#EEEEEE",

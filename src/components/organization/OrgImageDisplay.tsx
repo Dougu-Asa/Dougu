@@ -28,6 +28,8 @@ export default function OrgImageDisplay({
       const path = await Image.getCachePathAsync(imageKey);
       if (path) {
         setOrgSource({ uri: path });
+      } else if (imageKey in orgMapping) {
+        setOrgSource(orgMapping[imageKey]);
       } else {
         const fetchPath = `public/${orgId}/orgImage.jpeg`;
         const fetchImageUri = await getImageUri(fetchPath);

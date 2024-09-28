@@ -109,6 +109,17 @@ export type OrgStackScreenProps = CompositeScreenProps<
   >
 >;
 
+export type DeleteOrgSreenProps = CompositeScreenProps<
+  NativeStackScreenProps<OrgStackParamList, "DeleteOrg">,
+  CompositeScreenProps<
+    MaterialTopTabScreenProps<TabParamList, "OrgInfo">,
+    CompositeScreenProps<
+      DrawerScreenProps<DrawerParamList>,
+      NativeStackScreenProps<RootStackParamList>
+    >
+  >
+>;
+
 export type InfoScreenProps = NativeStackScreenProps<
   OrgStackParamList,
   "InfoScreen"
