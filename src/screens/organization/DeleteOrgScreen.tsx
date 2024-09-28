@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import { Button } from "@rneui/themed";
 import { useUser } from "../../helper/context/UserContext";
-import { handleError } from "../../helper/Utils";
+import { callSignOut, handleError } from "../../helper/Utils";
 import { useLoad } from "../../helper/context/LoadingContext";
 import { DeleteOrgSreenProps } from "../../types/ScreenTypes";
 import { deleteOrg } from "../../helper/EditUtils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DeleteOrgScreen({ navigation }: DeleteOrgSreenProps) {
   const [orgName, setOrgName] = useState("");
-  const { org, setOrg } = useUser();
+  const { user, org, resetContext } = useUser();
   const { setIsLoading } = useLoad();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     // delete organization
     if (orgName !== org!.name) {
       Alert.alert("Organization name does not match. Please try again.");
@@ -20,9 +21,9 @@ export default function DeleteOrgScreen({ navigation }: DeleteOrgSreenProps) {
     }
     try {
       setIsLoading(true);
-      deleteOrg(org!.id);
-      navigation.navigate("Home");
-      setOrg(null);
+      await deleteOrg(org!.id);
+      await callSignOut(setIsLoading, navigation, resetContext);
+      await AsyncStorage.removeItem(user!.id + " currOrg");
       setIsLoading(false);
     } catch (e) {
       handleError("handleDelete", e as Error, setIsLoading);
