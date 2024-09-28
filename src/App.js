@@ -3,6 +3,7 @@ import { DataStore, AuthModeStrategyType } from "aws-amplify/datastore";
 import { Amplify } from "aws-amplify";
 import "@azure/core-asynciterator-polyfill";
 import { registerRootComponent } from "expo";
+import { StatusBar } from "react-native";
 
 // Project Files
 import DimensionsProvider from "./helper/context/DimensionsContext";
@@ -28,6 +29,7 @@ function App() {
       <LoadingProvider>
         <DimensionsProvider>
           <UserProvider>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <RootStackNavigator />
           </UserProvider>
         </DimensionsProvider>

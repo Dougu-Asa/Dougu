@@ -15,6 +15,7 @@ import { useHeader } from "../../helper/context/HeaderContext";
 import OrgImageScreen from "./OrgImageScreen";
 import UserStoragesScreen from "./UserStoragesScreen";
 import MemberProfileScreen from "./MemberProfileScreen";
+import DeleteOrgScreen from "./DeleteOrgScreen";
 
 /*
     Stack navigator for the organization screens.
@@ -65,6 +66,7 @@ export default function OrgStackNavigator() {
           <Stack.Screen name="Sheet" component={SheetScreen} />
           <Stack.Screen name="OrgImage" component={OrgImageScreen} />
           <Stack.Screen name="MemberProfile" component={MemberProfileScreen} />
+          <Stack.Screen name="DeleteOrg" component={DeleteOrgScreen} />
         </Stack.Navigator>
       </ItemImageProvider>
     </SafeAreaView>
