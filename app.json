@@ -17,7 +17,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "2.1",
+      "buildNumber": "3",
       "supportsTablet": true,
       "bundleIdentifier": "com.asa.Dougu",
       "infoPlist": {
@@ -25,7 +25,7 @@
       }
     },
     "android": {
-      "versionCode": 2.1,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
