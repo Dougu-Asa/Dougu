@@ -68,6 +68,9 @@
                 <mxCell id="8" value="AWS&lt;br&gt;Lambda" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="600" y="230" width="90" height="60" as="geometry"/>
                 </mxCell>
+                <mxCell id="20" value="S3 Bucket" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="530" width="120" height="60" as="geometry"/>
+                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>

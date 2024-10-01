@@ -4,8 +4,8 @@ Dougu is an equipment management app that seeks to make tracking and transferrin
 
 <span >
   <img src="./documents/readme/douguswapgif.gif" width="30%" height="50%" />
-  <img src="./documents/readme/equipmentList.jpg" width="30%" height="50%" />
-  <img src="./documents/readme/orgInfoScreen.jpg" width="30%" height="50%" />
+  <img src="./documents/readme/equipmentSheet.jpg" width="30%" height="50%" />
+  <img src="./documents/readme/profileScreen.jpg" width="30%" height="50%" />
 </span>
   
 #### *Preview displaying drag and drop transfer of equipment, an equipment list for an organization, and an organization member information page*
@@ -18,12 +18,4 @@ The app was designed by [Neela Kolte](https://www.behance.net/neelakolte), and t
 
 # Contributing
 
-This app is currently in internal testing on Google Play Console and Apple Teststore. After a round of testing with members within the organization, the app will likely be optimized and set to release around July or August. This app was mainly built with Expo Go, React Native, and AWS Amplify. To contribute, make sure you have Expo go and Amplify CLI configured. Then, you can install dependencies with `npm install`, setup Amplify [link](https://docs.amplify.aws/react-native/start/) (Make sure you use V5), and then run using npx expo start.
-
-Future features:
-
-- Push notifications notifying users when a change has been made to the equipment they carry
-- Swappable containers with equipment inside that can be dragged in and out of the container
-- Profile images for organizations, equipment, and users for customizability
-- Requests task, where organization managers can specify expected equipment configurations and require users to confirm
-- Profile page for users
+This app is currently in testing for both Google Play Console and App Store. It is planned to release around December, as I would like to some testing in before publishing a production build. Right now, if you want to contribute, please email me at [kal036@ucsd.edu](kal036@ucsd.edu) and I may help you setup the Amplify development environment for this project.
